@@ -12,6 +12,7 @@ namespace PokeChess.Autobattler
         [SerializeField] private GameObject tilePrefab;
         [SerializeField] private Transform boardRoot;
         [SerializeField] private float hexRadius = 0.5f;
+        [SerializeField] private bool useXYPlane = true;
 
         private const int MaxBoardCount = 8;
         private readonly List<GameObject> _spawnedTiles = new();
@@ -45,13 +46,20 @@ namespace PokeChess.Autobattler
         }
 
         /// <summary>
-        /// Axial(q, r) 좌표를 XZ 월드 좌표로 변환합니다.
+        /// Axial(q, r) 좌표를 월드 좌표로 변환합니다.
+        /// 2D 프로토타입에서는 XY 평면, 3D에서는 XZ 평면을 사용할 수 있습니다.
         /// </summary>
         public Vector3 AxialToWorld(HexCoord coord)
         {
             float x = hexRadius * Mathf.Sqrt(3f) * (coord.Q + coord.R * 0.5f);
-            float z = hexRadius * 1.5f * coord.R;
-            return new Vector3(x, 0f, z);
+            float secondaryAxis = hexRadius * 1.5f * coord.R;
+
+            if (useXYPlane)
+            {
+                return new Vector3(x, secondaryAxis, 0f);
+            }
+
+            return new Vector3(x, 0f, secondaryAxis);
         }
 
         private void GenerateSingleBoard(Vector3 origin, int boardIndex)
