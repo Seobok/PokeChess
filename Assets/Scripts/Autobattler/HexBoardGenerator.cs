@@ -46,6 +46,27 @@ namespace PokeChess.Autobattler
         }
 
         /// <summary>
+        /// 지정한 origin 보드의 시각적 중심점을 계산합니다.
+        /// </summary>
+        public Vector3 GetBoardCenter(Vector3 origin)
+        {
+            Vector3 min = origin + AxialToWorld(new HexCoord(0, 0));
+            Vector3 max = min;
+
+            for (int r = 0; r < BoardManager.BoardHeight; r++)
+            {
+                for (int q = 0; q < BoardManager.BoardWidth; q++)
+                {
+                    Vector3 worldPosition = origin + AxialToWorld(new HexCoord(q, r));
+                    min = Vector3.Min(min, worldPosition);
+                    max = Vector3.Max(max, worldPosition);
+                }
+            }
+
+            return (min + max) * 0.5f;
+        }
+
+        /// <summary>
         /// Axial(q, r) 좌표를 월드 좌표로 변환합니다.
         /// 누적 대각 이동이 아닌 odd-r offset 형태(행 단위 반 칸 오프셋)로 배치해
         /// 전형적인 오토배틀러 육각형 보드 형태를 유지합니다.

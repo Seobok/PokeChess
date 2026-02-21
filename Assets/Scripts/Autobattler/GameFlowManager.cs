@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using UnityEngine;
 
@@ -23,23 +24,30 @@ namespace PokeChess.Autobattler
         [SerializeField] private HexBoardGenerator boardGenerator;
         [SerializeField] private bool generateBoardOnSpawn = true;
 
+        [Header("Camera")]
+        [SerializeField] private Camera targetCamera;
+        [SerializeField] private Vector3 cameraOffset = new(0f, 0f, -10f);
+
         [Header("최대 8개 보드 시작 위치")]
         [SerializeField] private List<Vector3> boardOrigins = new();
 
         [Networked] public GameFlowState FlowState { get; private set; }
 
+        private int _lastAppliedBoardIndex = -1;
+
         public override void Spawned()
         {
-            if (HasStateAuthority == false)
-            {
-                Debug.LogWarning("HasStateAuthority is false");
-                return;
-            }
-
-            if (generateBoardOnSpawn)
+            if (HasStateAuthority && generateBoardOnSpawn)
             {
                 StartFlowForConnectedPlayers();
             }
+
+            TryFocusLocalCameraToAssignedBoard();
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            TryFocusLocalCameraToAssignedBoard();
         }
 
         /// <summary>
@@ -107,6 +115,60 @@ namespace PokeChess.Autobattler
             {
                 boardGenerator = gameObject.AddComponent<HexBoardGenerator>();
             }
+        }
+
+        private void TryFocusLocalCameraToAssignedBoard()
+        {
+            if (Runner == null)
+            {
+                return;
+            }
+
+            int localBoardIndex = GetLocalPlayerBoardIndex();
+            if (localBoardIndex < 0 || localBoardIndex >= boardOrigins.Count || localBoardIndex == _lastAppliedBoardIndex)
+            {
+                return;
+            }
+
+            if (targetCamera == null)
+            {
+                targetCamera = Camera.main;
+            }
+
+            if (targetCamera == null)
+            {
+                return;
+            }
+
+            EnsureBoardGenerator();
+            Vector3 boardCenter = boardGenerator.GetBoardCenter(boardOrigins[localBoardIndex]);
+            targetCamera.transform.position = boardCenter + cameraOffset;
+            _lastAppliedBoardIndex = localBoardIndex;
+        }
+
+        private int GetLocalPlayerBoardIndex()
+        {
+            if (Runner == null)
+            {
+                return -1;
+            }
+
+            PlayerRef localPlayer = Runner.LocalPlayer;
+            if (localPlayer == PlayerRef.None)
+            {
+                return -1;
+            }
+
+            List<PlayerRef> orderedPlayers = Runner.ActivePlayers.OrderBy(player => player.AsIndex).ToList();
+            for (int i = 0; i < orderedPlayers.Count; i++)
+            {
+                if (orderedPlayers[i] == localPlayer)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }
