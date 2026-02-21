@@ -94,6 +94,14 @@ namespace PokeChess.Autobattler
             }
 
             tile.name = $"Board{boardIndex}_Hex_{coord.Q}_{coord.R}";
+
+            HexTile hexTile = tile.GetComponent<HexTile>();
+            if (hexTile == null)
+            {
+                hexTile = tile.AddComponent<HexTile>();
+            }
+
+            hexTile.Initialize(coord);
             return tile;
         }
 
