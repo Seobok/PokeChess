@@ -22,6 +22,7 @@ namespace PokeChess.Autobattler
         [Header("Board")]
         [SerializeField] private HexBoardGenerator boardGenerator;
         [SerializeField] private bool generateBoardOnSpawn = true;
+        [SerializeField] private int offlineTestPlayerCount = 1;
 
         [Header("최대 8개 보드 시작 위치")]
         [SerializeField] private List<Vector3> boardOrigins = new();
@@ -51,9 +52,22 @@ namespace PokeChess.Autobattler
                 return;
             }
 
+            StartFlowForPlayerCount(GetConnectedPlayerCount());
+        }
+
+        /// <summary>
+        /// 네트워크 연결 없이도 지정한 인원 수 기준으로 보드를 생성합니다.
+        /// </summary>
+        public void StartFlowForPlayerCount(int playerCount)
+        {
+            if (HasStateAuthority == false)
+            {
+                return;
+            }
+
             EnsureBoardGenerator();
-            int connectedPlayerCount = GetConnectedPlayerCount();
-            boardGenerator.GenerateBoardsAt(boardOrigins, connectedPlayerCount);
+            int boardCount = Mathf.Clamp(playerCount, 0, MaxPlayerCount);
+            boardGenerator.GenerateBoardsAt(boardOrigins, boardCount);
             FlowState = GameFlowState.Preparation;
         }
 
@@ -81,7 +95,7 @@ namespace PokeChess.Autobattler
         {
             if (Runner == null)
             {
-                return 0;
+                return Mathf.Clamp(offlineTestPlayerCount, 0, MaxPlayerCount);
             }
 
             int count = 0;

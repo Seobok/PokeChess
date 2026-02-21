@@ -13,7 +13,6 @@ namespace PokeChess.Autobattler
         [SerializeField] private Transform boardRoot;
         [SerializeField] private float hexRadius = 0.5f;
 
-        private const int MaxBoardCount = 8;
         private readonly List<GameObject> _spawnedTiles = new();
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            int boardCount = Mathf.Min(playerCount, MaxBoardCount, origins.Count);
+            int boardCount = BoardGenerationPlan.CalculateBoardCount(origins.Count, playerCount);
             for (int i = 0; i < boardCount; i++)
             {
                 GenerateSingleBoard(origins[i], i + 1);
@@ -56,15 +55,11 @@ namespace PokeChess.Autobattler
 
         private void GenerateSingleBoard(Vector3 origin, int boardIndex)
         {
-            for (int r = 0; r < BoardManager.BoardHeight; r++)
+            foreach (HexCoord coord in BoardGenerationPlan.EnumerateBoardCoords())
             {
-                for (int q = 0; q < BoardManager.BoardWidth; q++)
-                {
-                    HexCoord coord = new HexCoord(q, r);
-                    Vector3 worldPosition = origin + AxialToWorld(coord);
-                    GameObject tile = CreateTile(coord, worldPosition, boardIndex);
-                    _spawnedTiles.Add(tile);
-                }
+                Vector3 worldPosition = origin + AxialToWorld(coord);
+                GameObject tile = CreateTile(coord, worldPosition, boardIndex);
+                _spawnedTiles.Add(tile);
             }
         }
 
