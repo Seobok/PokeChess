@@ -47,11 +47,14 @@ namespace PokeChess.Autobattler
 
         /// <summary>
         /// Axial(q, r) 좌표를 월드 좌표로 변환합니다.
+        /// 누적 대각 이동이 아닌 odd-r offset 형태(행 단위 반 칸 오프셋)로 배치해
+        /// 전형적인 오토배틀러 육각형 보드 형태를 유지합니다.
         /// 2D 프로토타입에서는 XY 평면, 3D에서는 XZ 평면을 사용할 수 있습니다.
         /// </summary>
         public Vector3 AxialToWorld(HexCoord coord)
         {
-            float x = hexRadius * Mathf.Sqrt(3f) * (coord.Q + coord.R * 0.5f);
+            float rowOffset = (coord.R & 1) * 0.5f;
+            float x = hexRadius * Mathf.Sqrt(3f) * (coord.Q + rowOffset);
             float secondaryAxis = hexRadius * 1.5f * coord.R;
 
             if (useXYPlane)
