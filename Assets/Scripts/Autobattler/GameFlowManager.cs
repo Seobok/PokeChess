@@ -32,6 +32,7 @@ namespace PokeChess.Autobattler
         {
             if (HasStateAuthority == false)
             {
+                Debug.LogWarning("HasStateAuthority is false");
                 return;
             }
 
@@ -48,6 +49,7 @@ namespace PokeChess.Autobattler
         {
             if (HasStateAuthority == false)
             {
+                Debug.LogWarning("HasStateAuthority is false");
                 return;
             }
 
