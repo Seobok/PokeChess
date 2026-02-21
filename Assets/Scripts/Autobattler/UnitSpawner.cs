@@ -21,12 +21,18 @@ namespace PokeChess.Autobattler
 
         public UnitController SpawnUnit(HexCoord spawnCell)
         {
+            return SpawnUnit(spawnCell, null);
+        }
+
+        public UnitController SpawnUnit(HexCoord spawnCell, Vector3? worldPosition)
+        {
             if (Runner == null || Runner.IsServer == false || boardManager == null)
             {
                 return null;
             }
 
-            NetworkObject unitObject = Runner.Spawn(unitPrefab, Vector3.zero, Quaternion.identity);
+            Vector3 spawnPosition = worldPosition ?? Vector3.zero;
+            NetworkObject unitObject = Runner.Spawn(unitPrefab, spawnPosition, Quaternion.identity);
             if (unitObject == null)
             {
                 return null;
@@ -37,6 +43,11 @@ namespace PokeChess.Autobattler
             {
                 Runner.Despawn(unitObject);
                 return null;
+            }
+
+            if (worldPosition.HasValue)
+            {
+                unit.transform.position = worldPosition.Value;
             }
 
             return unit;
