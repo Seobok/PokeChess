@@ -102,27 +102,14 @@ namespace PokeChess.Autobattler
 
         private GameObject CreateTile(HexCoord coord, Vector3 worldPosition, int boardIndex)
         {
-            GameObject tile;
-            if (tilePrefab != null)
-            {
-                tile = Instantiate(tilePrefab, worldPosition, Quaternion.identity, boardRoot);
-            }
-            else
-            {
-                tile = new GameObject();
-                tile.transform.SetParent(boardRoot);
-                tile.transform.position = worldPosition;
-            }
+            GameObject tile = tilePrefab != null
+                ? Instantiate(tilePrefab, worldPosition, Quaternion.identity, boardRoot)
+                : new GameObject();
 
             tile.name = $"Board{boardIndex}_Hex_{coord.Q}_{coord.R}";
 
-            HexTile hexTile = tile.GetComponent<HexTile>();
-            if (hexTile == null)
-            {
-                hexTile = tile.AddComponent<HexTile>();
-            }
-
-            hexTile.Initialize(coord);
+            var hexTile = tile.GetComponent<HexTile>() ?? tile.AddComponent<HexTile>();
+            hexTile.Initialize((byte)(boardIndex - 1), coord); // ✅ 0-based boardIndex 권장
             return tile;
         }
 

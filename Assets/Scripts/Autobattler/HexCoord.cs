@@ -3,85 +3,70 @@ using Fusion;
 
 namespace PokeChess.Autobattler
 {
-    /// <summary>
-    /// 육각형 보드의 Axial 좌표(q, r)를 표현하는 네트워크 구조체입니다.
-    /// </summary>
     [Serializable]
     public struct HexCoord : INetworkStruct, IEquatable<HexCoord>
     {
-        // Axial 좌표의 q 축
         public int Q;
-
-        // Axial 좌표의 r 축
         public int R;
+        public const int NeighborCount = 6;
 
-        public HexCoord(int q, int r)
-        {
-            Q = q;
-            R = r;
-        }
+        public HexCoord(int q, int r) { Q = q; R = r; }
 
-        /// <summary>
-        /// Axial 좌표 기준 6방향 이웃 벡터(시계 방향)입니다.
-        /// </summary>
-        public static readonly HexCoord[] NeighborDirections =
+        // odd-r offset (행이 홀수면 오른쪽으로 반 칸 밀림) 기준 6방향
+        private static readonly HexCoord[] NeighborEvenR =
         {
-            new HexCoord(+1, 0),
-            new HexCoord(+1, -1),
-            new HexCoord(0, -1),
-            new HexCoord(-1, 0),
-            new HexCoord(-1, +1),
-            new HexCoord(0, +1)
+            new(+1, 0),  // E
+            new(0, -1),  // NE
+            new(-1, -1), // NW
+            new(-1, 0),  // W
+            new(-1, +1), // SW
+            new(0, +1)   // SE
         };
 
-        /// <summary>
-        /// 두 Hex 좌표 사이의 거리(헥스 맨해튼 거리)를 계산합니다.
-        /// </summary>
-        public static int Distance(HexCoord a, HexCoord b)
+        private static readonly HexCoord[] NeighborOddR =
         {
-            int dx = a.Q - b.Q;
-            int dz = a.R - b.R;
-            int dy = -dx - dz;
-            return (Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz)) / 2;
-        }
+            new(+1, 0),  // E
+            new(+1, -1), // NE
+            new(0, -1),  // NW
+            new(-1, 0),  // W
+            new(0, +1),  // SW
+            new(+1, +1)  // SE
+        };
 
-        /// <summary>
-        /// 주어진 방향 인덱스(0~5)의 인접 칸 좌표를 반환합니다.
-        /// </summary>
         public HexCoord Neighbor(int directionIndex)
         {
-            HexCoord dir = NeighborDirections[directionIndex];
-            return new HexCoord(Q + dir.Q, R + dir.R);
+            var dirs = (R & 1) == 0 ? NeighborEvenR : NeighborOddR;
+            var d = dirs[directionIndex];
+            return new HexCoord(Q + d.Q, R + d.R);
         }
 
-        public bool Equals(HexCoord other)
+        // odd-r offset -> cube 변환 후 거리
+        public static int Distance(HexCoord a, HexCoord b)
         {
-            return Q == other.Q && R == other.R;
+            var ac = ToCube(a);
+            var bc = ToCube(b);
+
+            int dx = Math.Abs(ac.x - bc.x);
+            int dy = Math.Abs(ac.y - bc.y);
+            int dz = Math.Abs(ac.z - bc.z);
+
+            return (dx + dy + dz) / 2;
         }
 
-        public override bool Equals(object obj)
+        private static (int x, int y, int z) ToCube(HexCoord h)
         {
-            return obj is HexCoord other && Equals(other);
+            // odd-r: x = col - (row - (row&1))/2, z=row
+            int x = h.Q - ((h.R - (h.R & 1)) / 2);
+            int z = h.R;
+            int y = -x - z;
+            return (x, y, z);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Q, R);
-        }
-
-        public static bool operator ==(HexCoord left, HexCoord right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(HexCoord left, HexCoord right)
-        {
-            return !left.Equals(right);
-        }
-
-        public override string ToString()
-        {
-            return $"({Q}, {R})";
-        }
+        public bool Equals(HexCoord other) => Q == other.Q && R == other.R;
+        public override bool Equals(object obj) => obj is HexCoord other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(Q, R);
+        public static bool operator ==(HexCoord left, HexCoord right) => left.Equals(right);
+        public static bool operator !=(HexCoord left, HexCoord right) => !left.Equals(right);
+        public override string ToString() => $"({Q}, {R})";
     }
 }

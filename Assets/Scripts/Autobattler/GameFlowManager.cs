@@ -170,5 +170,35 @@ namespace PokeChess.Autobattler
 
             return -1;
         }
+
+        public bool TryGetBoardIndex(PlayerRef player, out byte index)
+        {
+            index = 0;
+            if (Runner == null || player == PlayerRef.None) return false;
+
+            var ordered = Runner.ActivePlayers.OrderBy(p => p.AsIndex).ToList();
+            for (int i = 0; i < ordered.Count; i++)
+            {
+                if (ordered[i] == player)
+                {
+                    index = (byte)i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public Vector3 GetBoardOrigin(byte boardIndex)
+        {
+            if (boardIndex >= boardOrigins.Count) return Vector3.zero;
+            return boardOrigins[boardIndex];
+        }
+
+        public Vector3 GetCellWorldPosition(byte boardIndex, HexCoord cell)
+        {
+            EnsureBoardGenerator();
+            if (boardIndex >= boardOrigins.Count) return Vector3.zero;
+            return boardOrigins[boardIndex] + boardGenerator.AxialToWorld(cell);
+        }
     }
 }

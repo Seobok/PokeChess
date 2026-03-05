@@ -104,7 +104,7 @@ namespace Fusion {
       // an lose track of it
       if (IsMultiplePeer) {
         var scene = SceneManager.CreateScene($"{runner.name}_{runner.LocalPlayer}",
-          new CreateSceneParameters(LocalPhysicsMode.Physics2D | LocalPhysicsMode.Physics3D));
+          new CreateSceneParameters(LocalPhysicsMode.None | LocalPhysicsMode.Physics3D));
         Log.TraceSceneManager(Runner, $"Assigned an initial scene: {scene.Dump()}");
 
         MultiPeerScene                 = scene;

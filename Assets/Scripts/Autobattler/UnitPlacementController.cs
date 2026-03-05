@@ -1,6 +1,8 @@
 using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace PokeChess.Autobattler
 {
@@ -14,6 +16,7 @@ namespace PokeChess.Autobattler
         [SerializeField] private GameObject unitGhostPrefab;
         [SerializeField] private Camera targetCamera;
         [SerializeField] private float ghostZ = -0.1f;
+        [SerializeField] private LayerMask tileMask = ~0;
 
         private GameObject _activeGhost;
         private bool _isPlacementMode;
@@ -53,7 +56,7 @@ namespace PokeChess.Autobattler
 
             if (unitSpawner == null)
             {
-                unitSpawner = FindObjectOfType<UnitSpawner>();
+                unitSpawner = FindAnyObjectByType<UnitSpawner>();
             }
 
             if (unitSpawner == null)
@@ -92,19 +95,17 @@ namespace PokeChess.Autobattler
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
+                Debug.Log("EventSystem Error");
                 return;
             }
 
             if (TryGetHoveredTile(out HexTile tile) == false)
             {
+                Debug.Log("GetHoverdTile Error");
                 return;
             }
 
-            UnitController unit = unitSpawner.SpawnUnit(tile.Coord, tile.transform.position);
-            if (unit == null)
-            {
-                return;
-            }
+            unitSpawner.RequestSpawn(tile.BoardIndex, tile.Coord);
 
             ExitPlacementMode();
         }
@@ -112,31 +113,13 @@ namespace PokeChess.Autobattler
         private bool TryGetHoveredTile(out HexTile tile)
         {
             tile = null;
-            if (targetCamera == null)
-            {
-                return false;
-            }
+            if (!targetCamera) return false;
 
-            Vector2 mousePosition = Input.mousePosition;
-            Ray ray = targetCamera.ScreenPointToRay(mousePosition);
+            var ray = targetCamera.ScreenPointToRay(Input.mousePosition);
+            var hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileMask);
 
-            RaycastHit2D[] hits2D = Physics2D.GetRayIntersectionAll(ray);
-            for (int i = 0; i < hits2D.Length; i++)
-            {
-                tile = hits2D[i].collider.GetComponentInParent<HexTile>();
-                if (tile != null)
-                {
-                    return true;
-                }
-            }
-
-            if (Physics.Raycast(ray, out RaycastHit hit3D))
-            {
-                tile = hit3D.collider.GetComponentInParent<HexTile>();
-                return tile != null;
-            }
-
-            return false;
+            if (!hit.collider) return false;
+            return hit.collider.TryGetComponent(out tile);
         }
 
         private void ExitPlacementMode()

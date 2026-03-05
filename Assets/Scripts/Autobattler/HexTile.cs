@@ -7,15 +7,13 @@ namespace PokeChess.Autobattler
     /// </summary>
     public class HexTile : MonoBehaviour
     {
-        [field: SerializeField] public int Q { get; private set; }
-        [field: SerializeField] public int R { get; private set; }
+        public HexCoord Coord { get; private set; }
+        public byte BoardIndex { get; private set; }
 
-        public HexCoord Coord => new(Q, R);
-
-        public void Initialize(HexCoord coord)
+        public void Initialize(byte boardIndex, HexCoord coord)
         {
-            Q = coord.Q;
-            R = coord.R;
+            BoardIndex = boardIndex;
+            Coord = coord;
         }
     }
 }
