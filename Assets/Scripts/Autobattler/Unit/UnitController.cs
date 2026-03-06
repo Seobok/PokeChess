@@ -192,5 +192,22 @@ namespace PokeChess.Autobattler
             _lerpTo = _flow.GetCellWorldPosition(BoardIndex, Cell);
             _lerpTo.z = unitZ;
         }
+
+        public bool ForceRelocateToBoard(byte targetBoardIndex, HexCoord targetCell)
+        {
+            if (!HasStateAuthority || boardManager == null)
+                return false;
+
+            if (boardManager.TryTransferUnit(Object.Id, BoardIndex, Cell, targetBoardIndex, targetCell) == false)
+                return false;
+
+            BoardIndex = targetBoardIndex;
+            Cell = targetCell;
+
+            TargetId = default;
+            AttackCooldown = TickTimer.None;
+
+            return true;
+        }
     }
 }

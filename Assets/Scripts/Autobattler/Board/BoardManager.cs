@@ -85,4 +85,27 @@ public class BoardManager : NetworkBehaviour
         _occupants[toKey] = unitId;
         return true;
     }
+
+    public bool TryTransferUnit(NetworkId unitId, byte fromBoard, HexCoord fromCell, byte toBoard, HexCoord toCell)
+    {
+        if (!HasStateAuthority) return false;
+        if (unitId == default) return false;
+        if (!IsInside(fromCell) || !IsInside(toCell)) return false;
+
+        var fromKey = new BoardCellKey(fromBoard, fromCell);
+        var toKey = new BoardCellKey(toBoard, toCell);
+
+        if (_occupants.TryGetValue(fromKey, out var foundId) == false)
+            return false;
+
+        if (foundId != unitId)
+            return false;
+
+        if (_occupants.ContainsKey(toKey))
+            return false;
+
+        _occupants.Remove(fromKey);
+        _occupants[toKey] = unitId;
+        return true;
+    }
 }

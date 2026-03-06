@@ -48,6 +48,31 @@ namespace PokeChess.Autobattler
         // 카메라가 이미 목적지에 붙어있으면 불필요한 set 방지
         private const float CameraSnapEpsilonSqr = 0.0001f;
 
+        private struct CombatReturnData
+        {
+            public NetworkId UnitId;
+            public byte OriginalBoardIndex;
+            public HexCoord OriginalCell;
+
+            public CombatReturnData(NetworkId unitId, byte originalBoardIndex, HexCoord originalCell)
+            {
+                UnitId = unitId;
+                OriginalBoardIndex = originalBoardIndex;
+                OriginalCell = originalCell;
+            }
+        }
+
+        private class CombatPairRuntime
+        {
+            public PlayerRef HostPlayer;
+            public PlayerRef GuestPlayer;
+            public byte HostBoardIndex;
+            public byte GuestBoardIndex;
+            public readonly List<CombatReturnData> ReturnUnits = new();
+        }
+
+        private readonly List<CombatPairRuntime> _activeCombatPairs = new();
+
         public override void Spawned()
         {
             EnsureBoardGenerator();
@@ -189,7 +214,7 @@ namespace PokeChess.Autobattler
             if (Runner == null) return;
             if (BoardCount <= 0) return;
 
-            int localBoardIndex = GetLocalPlayerBoardIndex();
+            int localBoardIndex = GetLocalPlayerViewBoardIndex();
             if (localBoardIndex < 0) return;
             if (boardOrigins == null || localBoardIndex >= boardOrigins.Count) return;
 
@@ -215,6 +240,9 @@ namespace PokeChess.Autobattler
 
             targetCamera.transform.position = desired;
             _lastAppliedBoardIndex = localBoardIndex;
+
+            float zRot = GetLocalPlayerCombatCameraZRotation();
+            targetCamera.transform.rotation = Quaternion.Euler(0f, 0f, zRot);
         }
 
         private Camera FindBestCamera()
@@ -284,5 +312,187 @@ namespace PokeChess.Autobattler
             if (boardOrigins == null || boardIndex >= boardOrigins.Count) return Vector3.zero;
             return boardOrigins[boardIndex] + boardGenerator.AxialToWorld(cell);
         }
+
+        private bool PrepareCombatPair(PlayerRef hostPlayer, PlayerRef guestPlayer)
+        {
+            if (!HasStateAuthority || Runner == null)
+                return false;
+
+            if (!TryGetBoardIndex(hostPlayer, out byte hostBoard))
+                return false;
+
+            if (!TryGetBoardIndex(guestPlayer, out byte guestBoard))
+                return false;
+
+            CombatPairRuntime runtime = new CombatPairRuntime
+            {
+                HostPlayer = hostPlayer,
+                GuestPlayer = guestPlayer,
+                HostBoardIndex = hostBoard,
+                GuestBoardIndex = guestBoard
+            };
+
+            var allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+
+            foreach (var unit in allUnits)
+            {
+                if (unit == null || unit.Object == null)
+                    continue;
+
+                if (unit.BoardIndex != guestBoard)
+                    continue;
+
+                HexCoord targetCell = Rotate180(unit.Cell);
+
+                runtime.ReturnUnits.Add(new CombatReturnData(
+                    unit.Object.Id,
+                    unit.BoardIndex,
+                    unit.Cell));
+
+                bool moved = unit.ForceRelocateToBoard(hostBoard, targetCell);
+                if (!moved)
+                {
+                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed. guest={guestPlayer}, unit={unit.Object.Id}");
+                    return false;
+                }
+            }
+
+            _activeCombatPairs.Add(runtime);
+            return true;
+        }
+
+        public bool StartCombatRound(List<MatchPair> pairs)
+        {
+            if (!HasStateAuthority || Runner == null)
+                return false;
+
+            _activeCombatPairs.Clear();
+
+            foreach (var pair in pairs)
+            {
+                if (pair.A == PlayerRef.None)
+                    continue;
+
+                // BYE 처리
+                if (pair.B == PlayerRef.None)
+                    continue;
+
+                PlayerRef host = pair.A;
+                PlayerRef guest = pair.B;
+
+                bool ok = PrepareCombatPair(host, guest);
+                if (!ok)
+                {
+                    Debug.LogWarning($"[GameFlowManager] StartCombatRound failed while preparing pair {pair.A} vs {pair.B}");
+                    return false;
+                }
+            }
+
+            FlowState = GameFlowState.Combat;
+            return true;
+        }
+
+        public void RestoreCombatRound()
+        {
+            if (!HasStateAuthority || Runner == null)
+                return;
+
+            foreach (var pair in _activeCombatPairs)
+            {
+                foreach (var data in pair.ReturnUnits)
+                {
+                    if (!Runner.TryFindObject(data.UnitId, out NetworkObject obj))
+                        continue;
+
+                    if (!obj.TryGetComponent<UnitController>(out var unit))
+                        continue;
+
+                    bool restored = unit.ForceRelocateToBoard(data.OriginalBoardIndex, data.OriginalCell);
+                    if (!restored)
+                    {
+                        Debug.LogWarning($"[GameFlowManager] Restore failed: unit={data.UnitId}");
+                    }
+                }
+            }
+
+            _activeCombatPairs.Clear();
+            FlowState = GameFlowState.Result;
+        }
+
+        private HexCoord Rotate180(HexCoord source)
+        {
+            return new HexCoord(
+                BoardManager.BoardWidth - 1 - source.Q,
+                BoardManager.BoardHeight - 1 - source.R
+            );
+        }
+
+        private int GetLocalPlayerViewBoardIndex()
+        {
+            if (Runner == null)
+                return -1;
+
+            PlayerRef local = Runner.LocalPlayer;
+            if (local == PlayerRef.None)
+                return -1;
+
+            if (FlowState != GameFlowState.Combat)
+                return GetLocalPlayerBoardIndex();
+
+            foreach (var pair in _activeCombatPairs)
+            {
+                if (pair.HostPlayer == local)
+                    return pair.HostBoardIndex;
+
+                if (pair.GuestPlayer == local)
+                    return pair.HostBoardIndex;
+            }
+
+            return GetLocalPlayerBoardIndex();
+        }
+
+        private float GetLocalPlayerCombatCameraZRotation()
+        {
+            if (Runner == null)
+                return 0f;
+
+            PlayerRef local = Runner.LocalPlayer;
+            if (local == PlayerRef.None)
+                return 0f;
+
+            if (FlowState != GameFlowState.Combat)
+                return 0f;
+
+            foreach (var pair in _activeCombatPairs)
+            {
+                if (pair.HostPlayer == local)
+                    return 0f;
+
+                if (pair.GuestPlayer == local)
+                    return 180f;
+            }
+
+            return 0f;
+        }
+
+        #region debug
+        [ContextMenu("Debug Prepare Combat A vs B")]
+        public void DebugPrepareCombat()
+        {
+            if (!HasStateAuthority || Runner == null) return;
+
+            var players = Runner.ActivePlayers.ToList();
+            if (players.Count < 2) return;
+
+            PrepareCombatPair(players[0], players[1]);
+        }
+
+        [ContextMenu("Debug Restore Combat Round")]
+        public void DebugRestoreCombat()
+        {
+            if (!HasStateAuthority) return;
+            RestoreCombatRound();
+        }
+        #endregion
     }
 }
