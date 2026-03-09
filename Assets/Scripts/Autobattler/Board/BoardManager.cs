@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using PokeChess.Autobattler;
 using System.Collections.Generic;
 
@@ -20,17 +20,10 @@ public class BoardManager : NetworkBehaviour
         => _occupants.ContainsKey(new BoardCellKey(boardIndex, coord));
 
     public bool TryDeployUnit(NetworkId unitId, byte boardIndex, HexCoord coord)
-    {
-        if (!HasStateAuthority) return false;
-        if (unitId == default) return false;
-        if (!IsDeployZone(coord)) return false;
+        => TryPlaceUnit(unitId, boardIndex, coord, requireDeployZone: true);
 
-        var key = new BoardCellKey(boardIndex, coord);
-        if (_occupants.ContainsKey(key)) return false;
-
-        _occupants[key] = unitId;
-        return true;
-    }
+    public bool TryOccupyUnit(NetworkId unitId, byte boardIndex, HexCoord coord)
+        => TryPlaceUnit(unitId, boardIndex, coord, requireDeployZone: false);
 
     public bool RemoveUnit(byte boardIndex, HexCoord coord)
     {
@@ -38,9 +31,6 @@ public class BoardManager : NetworkBehaviour
         return _occupants.Remove(new BoardCellKey(boardIndex, coord));
     }
 
-    /// <summary>
-    /// 보드 내부에 있는 인접 6방향 좌표만 반환합니다.
-    /// </summary>
     public IEnumerable<HexCoord> GetNeighbors(HexCoord origin)
     {
         for (int i = 0; i < HexCoord.NeighborCount; i++)
@@ -51,35 +41,27 @@ public class BoardManager : NetworkBehaviour
         }
     }
 
-    /// <summary>
-    /// 보드 밖도 포함해서 6방향 전부 반환.
-    /// </summary>
     public IEnumerable<HexCoord> GetNeighborsUnsafe(HexCoord origin)
     {
         for (int i = 0; i < HexCoord.NeighborCount; i++)
             yield return origin.Neighbor(i);
     }
 
-    /// <summary>
-    /// 유닛을 from -> to로 이동시킵니다. (State Authority에서만 성공)
-    /// 멀티 보드 지원: boardIndex + coord로 점유를 관리합니다.
-    /// </summary>
     public bool TryMoveUnit(byte boardIndex, HexCoord from, HexCoord to)
     {
-        if (HasStateAuthority == false)
+        if (!HasStateAuthority)
             return false;
 
-        // 목적지는 보드 내부여야 함
-        if (IsInside(to) == false)
+        if (!IsInside(to))
             return false;
 
         var toKey = new BoardCellKey(boardIndex, to);
         if (_occupants.ContainsKey(toKey))
-            return false; // 목적지 점유 중
+            return false;
 
         var fromKey = new BoardCellKey(boardIndex, from);
-        if (_occupants.TryGetValue(fromKey, out NetworkId unitId) == false)
-            return false; // 출발지에 유닛 없음
+        if (!_occupants.TryGetValue(fromKey, out NetworkId unitId))
+            return false;
 
         _occupants.Remove(fromKey);
         _occupants[toKey] = unitId;
@@ -95,7 +77,7 @@ public class BoardManager : NetworkBehaviour
         var fromKey = new BoardCellKey(fromBoard, fromCell);
         var toKey = new BoardCellKey(toBoard, toCell);
 
-        if (_occupants.TryGetValue(fromKey, out var foundId) == false)
+        if (!_occupants.TryGetValue(fromKey, out var foundId))
             return false;
 
         if (foundId != unitId)
@@ -106,6 +88,20 @@ public class BoardManager : NetworkBehaviour
 
         _occupants.Remove(fromKey);
         _occupants[toKey] = unitId;
+        return true;
+    }
+
+    private bool TryPlaceUnit(NetworkId unitId, byte boardIndex, HexCoord coord, bool requireDeployZone)
+    {
+        if (!HasStateAuthority) return false;
+        if (unitId == default) return false;
+        if (!IsInside(coord)) return false;
+        if (requireDeployZone && !IsDeployZone(coord)) return false;
+
+        var key = new BoardCellKey(boardIndex, coord);
+        if (_occupants.ContainsKey(key)) return false;
+
+        _occupants[key] = unitId;
         return true;
     }
 }

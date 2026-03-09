@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
@@ -21,13 +21,19 @@ namespace PokeChess.Autobattler
         [Networked] public NetworkId TargetId { get; private set; }
         [Networked] public TickTimer AttackCooldown { get; private set; }
         [Networked] public byte BoardIndex { get; private set; }
+        [Networked] public NetworkBool IsCombatClone { get; private set; }
+        [Networked] public NetworkId SourceUnitId { get; private set; }
 
-        // ✅ Spawn 직전(서버) 전달받는 초기화 데이터 (Networked 아님)
         private bool _pendingInit;
         private byte _pendingBoardIndex;
         private HexCoord _pendingCell;
+        private bool _pendingRequireDeployZone = true;
 
-        // ✅ 1초/칸 게이트 (서버만 의미 있음)
+        private bool _pendingCombatClone;
+        private NetworkId _pendingCloneSourceUnitId;
+        private int _pendingCloneHp;
+        private int _pendingCloneMana;
+
         [Networked] private int NextMoveTick { get; set; }
 
         private GameFlowManager _flow;
@@ -39,11 +45,20 @@ namespace PokeChess.Autobattler
         private Vector3 _lerpFrom;
         private Vector3 _lerpTo;
 
-        public void SetPendingInit(byte boardIndex, HexCoord cell)
+        public void SetPendingInit(byte boardIndex, HexCoord cell, bool requireDeployZone = true)
         {
             _pendingInit = true;
             _pendingBoardIndex = boardIndex;
             _pendingCell = cell;
+            _pendingRequireDeployZone = requireDeployZone;
+        }
+
+        public void SetPendingCombatClone(NetworkId sourceUnitId, int hp, int mana)
+        {
+            _pendingCombatClone = true;
+            _pendingCloneSourceUnitId = sourceUnitId;
+            _pendingCloneHp = hp;
+            _pendingCloneMana = mana;
         }
 
         public override void Spawned()
@@ -55,37 +70,36 @@ namespace PokeChess.Autobattler
             {
                 if (_pendingInit)
                 {
-                    bool ok = InitializeAt(_pendingBoardIndex, _pendingCell);
+                    bool ok = InitializeAt(_pendingBoardIndex, _pendingCell, _pendingRequireDeployZone);
                     _pendingInit = false;
 
                     if (!ok)
                     {
-                        Debug.LogWarning($"[UnitController] InitializeAt FAILED in Spawned -> Despawn. board={_pendingBoardIndex}, cell={_pendingCell}", this);
+                        Debug.LogWarning($"[UnitController] InitializeAt failed in Spawned. board={_pendingBoardIndex}, cell={_pendingCell}", this);
                         Runner.Despawn(Object);
                         return;
                     }
                 }
 
-                if (stats != null)
-                {
-                    HP = stats.maxHp;
-                    Mana = 0;
-                }
+                ApplySpawnState();
             }
 
-            // ✅ 처음 위치 스냅
             SnapToCellImmediate();
-
             _lastVisualCell = Cell;
             _lastVisualBoard = BoardIndex;
         }
 
         public override void FixedUpdateNetwork()
         {
-            if (HasStateAuthority == false) return;
+            if (!HasStateAuthority)
+                return;
 
-            // ✅ 1초/칸 제한
-            if (Runner.Tick < NextMoveTick) return;
+            _flow ??= FindAnyObjectByType<GameFlowManager>();
+            if (_flow != null && !_flow.ShouldUnitSimulate(this))
+                return;
+
+            if (Runner.Tick < NextMoveTick)
+                return;
 
             if (autoMoveToDebugTarget)
             {
@@ -99,55 +113,52 @@ namespace PokeChess.Autobattler
 
         private int GetTicksForSeconds(float seconds)
         {
-            // Runner.DeltaTime = 한 Tick의 시간(초)
             float dt = Runner.DeltaTime;
             if (dt <= 0f) return 1;
             return Mathf.Max(1, Mathf.RoundToInt(seconds / dt));
         }
 
-        public bool InitializeAt(byte boardIndex, HexCoord spawnCell)
+        public bool InitializeAt(byte boardIndex, HexCoord spawnCell, bool requireDeployZone = true)
         {
             if (!HasStateAuthority || boardManager == null)
                 return false;
 
-            if (!boardManager.TryDeployUnit(Object.Id, boardIndex, spawnCell))
+            bool occupied = requireDeployZone
+                ? boardManager.TryDeployUnit(Object.Id, boardIndex, spawnCell)
+                : boardManager.TryOccupyUnit(Object.Id, boardIndex, spawnCell);
+
+            if (!occupied)
                 return false;
 
             BoardIndex = boardIndex;
             Cell = spawnCell;
             TargetId = default;
             AttackCooldown = TickTimer.None;
-
-            // 서버에서도 바로 스냅(호스트 화면)
             SnapToCellImmediate();
-
             return true;
         }
 
         public bool TryMoveOneStep(HexCoord targetCell)
         {
-            if (HasStateAuthority == false || boardManager == null)
+            if (!HasStateAuthority || boardManager == null)
                 return false;
 
-            if (HexPathfinder.TryFindPath(boardManager, BoardIndex, Cell, targetCell, out List<HexCoord> path) == false)
+            if (!HexPathfinder.TryFindPath(boardManager, BoardIndex, Cell, targetCell, out List<HexCoord> path))
                 return false;
 
             if (path.Count < 2)
                 return false;
 
             HexCoord next = path[1];
-
-            if (boardManager.TryMoveUnit(BoardIndex, Cell, next) == false)
+            if (!boardManager.TryMoveUnit(BoardIndex, Cell, next))
                 return false;
 
-            Cell = next; // ✅ 로직 이동(서버)
+            Cell = next;
             return true;
         }
 
-        // ✅ 시각적 이동(모든 클라이언트)
         private void Update()
         {
-            // Cell/BoardIndex 변경 감지 -> 1초 동안 lerp
             if (_lastVisualBoard != BoardIndex || _lastVisualCell != Cell)
             {
                 StartVisualLerpToCell();
@@ -175,9 +186,9 @@ namespace PokeChess.Autobattler
             if (_flow == null) _flow = FindAnyObjectByType<GameFlowManager>();
             if (_flow == null) return;
 
-            var p = _flow.GetCellWorldPosition(BoardIndex, Cell);
-            p.z = unitZ;
-            transform.position = p;
+            var position = _flow.GetCellWorldPosition(BoardIndex, Cell);
+            position.z = unitZ;
+            transform.position = position;
         }
 
         private void StartVisualLerpToCell()
@@ -188,7 +199,6 @@ namespace PokeChess.Autobattler
             _lerping = true;
             _lerpStartTime = Time.time;
             _lerpFrom = transform.position;
-
             _lerpTo = _flow.GetCellWorldPosition(BoardIndex, Cell);
             _lerpTo.z = unitZ;
         }
@@ -198,16 +208,43 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority || boardManager == null)
                 return false;
 
-            if (boardManager.TryTransferUnit(Object.Id, BoardIndex, Cell, targetBoardIndex, targetCell) == false)
+            if (!boardManager.TryTransferUnit(Object.Id, BoardIndex, Cell, targetBoardIndex, targetCell))
                 return false;
 
             BoardIndex = targetBoardIndex;
             Cell = targetCell;
+            TargetId = default;
+            AttackCooldown = TickTimer.None;
+            return true;
+        }
 
+        public bool RemoveFromBoard()
+        {
+            if (!HasStateAuthority || boardManager == null)
+                return false;
+
+            return boardManager.RemoveUnit(BoardIndex, Cell);
+        }
+
+        private void ApplySpawnState()
+        {
             TargetId = default;
             AttackCooldown = TickTimer.None;
 
-            return true;
+            if (_pendingCombatClone)
+            {
+                IsCombatClone = true;
+                SourceUnitId = _pendingCloneSourceUnitId;
+                HP = Mathf.Max(0, _pendingCloneHp);
+                Mana = Mathf.Max(0, _pendingCloneMana);
+                _pendingCombatClone = false;
+                return;
+            }
+
+            IsCombatClone = false;
+            SourceUnitId = default;
+            HP = stats != null ? stats.maxHp : 0;
+            Mana = 0;
         }
     }
 }

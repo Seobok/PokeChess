@@ -107,8 +107,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PokeChess.Autobattler.UnitController
   stats: {fileID: 11400000, guid: 7faddd2637335ad45a672f02ad61256b, type: 2}
   boardManager: {fileID: 0}
-  autoMoveToDebugTarget: 1
+  autoMoveToDebugTarget: 0
   debugTargetCoord: {x: 5, y: 5}
+  secondsPerStep: 1
+  unitZ: -1
   _Cell:
     Q: 0
     R: 0
@@ -116,6 +118,7 @@ MonoBehaviour:
   _Mana: 0
   _TargetId:
     Raw: 0
+  _BoardIndex: 0
 --- !u!114 &-9038875942853718213
 MonoBehaviour:
   m_ObjectHideFlags: 0

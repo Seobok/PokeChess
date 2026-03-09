@@ -1,14 +1,12 @@
-using Fusion;
-using System.Collections.Generic;
+﻿using Fusion;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 namespace PokeChess.Autobattler
 {
     /// <summary>
-    /// 버튼 클릭으로 유닛 배치 모드(고스트 표시)를 시작하고,
-    /// 타일 클릭 시 실제 유닛을 스폰합니다.
+    /// Button click enters placement mode, then a primary pointer click places the unit on a hovered tile.
     /// </summary>
     public class UnitPlacementController : MonoBehaviour
     {
@@ -36,16 +34,21 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            UpdateGhostPosition();
-
-            if (Input.GetMouseButtonDown(0))
+            if (!TryGetPointerScreenPosition(out Vector2 pointerScreenPosition))
             {
-                TryPlaceUnit();
+                return;
+            }
+
+            UpdateGhostPosition(pointerScreenPosition);
+
+            if (WasPrimaryPointerPressedThisFrame())
+            {
+                TryPlaceUnit(pointerScreenPosition);
             }
         }
 
         /// <summary>
-        /// UI 버튼 OnClick에 연결하는 진입점입니다.
+        /// UI button OnClick entry point.
         /// </summary>
         public void BeginPlacementMode()
         {
@@ -75,14 +78,14 @@ namespace PokeChess.Autobattler
             _isPlacementMode = true;
         }
 
-        private void UpdateGhostPosition()
+        private void UpdateGhostPosition(Vector2 pointerScreenPosition)
         {
             if (_activeGhost == null || targetCamera == null)
             {
                 return;
             }
 
-            Ray ray = targetCamera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = targetCamera.ScreenPointToRay(pointerScreenPosition);
             Plane plane = new(Vector3.forward, new Vector3(0f, 0f, ghostZ));
 
             if (plane.Raycast(ray, out float enter))
@@ -91,7 +94,7 @@ namespace PokeChess.Autobattler
             }
         }
 
-        private void TryPlaceUnit()
+        private void TryPlaceUnit(Vector2 pointerScreenPosition)
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
@@ -99,27 +102,66 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            if (TryGetHoveredTile(out HexTile tile) == false)
+            if (TryGetHoveredTile(pointerScreenPosition, out HexTile tile) == false)
             {
                 Debug.Log("GetHoverdTile Error");
                 return;
             }
 
             unitSpawner.RequestSpawn(tile.BoardIndex, tile.Coord);
-
             ExitPlacementMode();
         }
 
-        private bool TryGetHoveredTile(out HexTile tile)
+        private bool TryGetHoveredTile(Vector2 pointerScreenPosition, out HexTile tile)
         {
             tile = null;
-            if (!targetCamera) return false;
+            if (!targetCamera)
+            {
+                return false;
+            }
 
-            var ray = targetCamera.ScreenPointToRay(Input.mousePosition);
+            var ray = targetCamera.ScreenPointToRay(pointerScreenPosition);
             var hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileMask);
 
-            if (!hit.collider) return false;
+            if (!hit.collider)
+            {
+                return false;
+            }
+
             return hit.collider.TryGetComponent(out tile);
+        }
+
+        private bool TryGetPointerScreenPosition(out Vector2 pointerScreenPosition)
+        {
+            if (Mouse.current != null)
+            {
+                pointerScreenPosition = Mouse.current.position.ReadValue();
+                return true;
+            }
+
+            if (Touchscreen.current != null)
+            {
+                pointerScreenPosition = Touchscreen.current.primaryTouch.position.ReadValue();
+                return true;
+            }
+
+            pointerScreenPosition = default;
+            return false;
+        }
+
+        private bool WasPrimaryPointerPressedThisFrame()
+        {
+            if (Mouse.current?.leftButton.wasPressedThisFrame == true)
+            {
+                return true;
+            }
+
+            if (Touchscreen.current?.primaryTouch.press.wasPressedThisFrame == true)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void ExitPlacementMode()

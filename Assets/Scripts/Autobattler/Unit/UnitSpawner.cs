@@ -1,3 +1,4 @@
+﻿using System;
 using Fusion;
 using PokeChess.Autobattler;
 using UnityEngine;
@@ -23,9 +24,7 @@ public class UnitSpawner : NetworkBehaviour
 
     public override void Spawned()
     {
-        boardManager ??= FindAnyObjectByType<BoardManager>();
-        flowManager ??= FindAnyObjectByType<GameFlowManager>();
-        boardGenerator ??= FindAnyObjectByType<HexBoardGenerator>();
+        EnsureDependencies();
 
         Log($"Spawned | HasStateAuthority={HasStateAuthority} HasInputAuthority={HasInputAuthority} " +
             $"Runner={(Runner ? "OK" : "NULL")} Mode={Runner?.GameMode} IsServer={Runner?.IsServer} " +
@@ -54,7 +53,6 @@ public class UnitSpawner : NetworkBehaviour
             return;
         }
 
-        // 서버(권한자)면 바로 스폰
         if (HasStateAuthority)
         {
             Log("RequestSpawn -> SpawnOnServer DIRECT (I am StateAuthority)");
@@ -62,9 +60,46 @@ public class UnitSpawner : NetworkBehaviour
             return;
         }
 
-        // 클라면 RPC
         Log($"RequestSpawn -> RPC_RequestSpawn SEND to StateAuthority | from={Runner.LocalPlayer}");
         RPC_RequestSpawn(boardIndex, cell.Q, cell.R);
+    }
+
+    public bool TrySpawnCombatClone(UnitController sourceUnit, byte boardIndex, HexCoord cell, out NetworkObject spawnedObj)
+    {
+        spawnedObj = null;
+
+        if (!HasStateAuthority)
+        {
+            LogW("TrySpawnCombatClone ABORT: HasStateAuthority is FALSE");
+            return false;
+        }
+
+        if (sourceUnit == null || sourceUnit.Object == null || sourceUnit.IsCombatClone)
+        {
+            LogW("TrySpawnCombatClone ABORT: invalid source unit");
+            return false;
+        }
+
+        if (!EnsureDependencies())
+        {
+            LogE("TrySpawnCombatClone ABORT: refs missing");
+            return false;
+        }
+
+        if (!boardManager.IsInside(cell) || boardManager.IsOccupied(boardIndex, cell))
+        {
+            LogW($"TrySpawnCombatClone ABORT: invalid target cell | boardIndex={boardIndex} cell={cell}");
+            return false;
+        }
+
+        PlayerRef inputAuthority = sourceUnit.Object.InputAuthority;
+        return TrySpawnUnit(
+            boardIndex,
+            cell,
+            inputAuthority,
+            requireDeployZone: false,
+            configureBeforeSpawn: unit => unit.SetPendingCombatClone(sourceUnit.Object.Id, sourceUnit.HP, sourceUnit.Mana),
+            out spawnedObj);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -87,14 +122,12 @@ public class UnitSpawner : NetworkBehaviour
             return;
         }
 
-        if (boardManager == null || flowManager == null || boardGenerator == null)
+        if (!EnsureDependencies())
         {
-            LogE($"SpawnOnServer ABORT: refs missing | boardManager={(boardManager ? "OK" : "NULL")}, " +
-                 $"flowManager={(flowManager ? "OK" : "NULL")}, boardGenerator={(boardGenerator ? "OK" : "NULL")}");
+            LogE("SpawnOnServer ABORT: refs missing");
             return;
         }
 
-        // 요청자 보드 할당 검증
         if (!flowManager.TryGetBoardIndex(requester, out byte assigned))
         {
             LogW($"SpawnOnServer ABORT: flowManager.TryGetBoardIndex FAILED for requester={requester}");
@@ -107,7 +140,6 @@ public class UnitSpawner : NetworkBehaviour
             return;
         }
 
-        // 배치 구역 검증
         if (!boardManager.IsDeployZone(cell))
         {
             LogW($"SpawnOnServer ABORT: IsDeployZone FALSE | cell={cell} DeployStartRow={BoardManager.DeployStartRow}");
@@ -120,17 +152,45 @@ public class UnitSpawner : NetworkBehaviour
             return;
         }
 
-        // 서버에서 월드 좌표 계산
+        if (!TrySpawnUnit(boardIndex, cell, requester, requireDeployZone: true, configureBeforeSpawn: null, out _))
+        {
+            LogE($"SpawnOnServer FAIL: Runner.Spawn failed | boardIndex={boardIndex} cell={cell}");
+        }
+    }
+
+    private bool TrySpawnUnit(
+        byte boardIndex,
+        HexCoord cell,
+        PlayerRef inputAuthority,
+        bool requireDeployZone,
+        Action<UnitController> configureBeforeSpawn,
+        out NetworkObject spawnedObj)
+    {
+        spawnedObj = null;
+
+        if (Runner == null)
+        {
+            LogE("TrySpawnUnit FAIL: Runner is NULL");
+            return false;
+        }
+
+        if (!unitPrefab.IsValid)
+        {
+            LogE("TrySpawnUnit FAIL: unitPrefab is not valid");
+            return false;
+        }
+
         Vector3 origin = flowManager.GetBoardOrigin(boardIndex);
         Vector3 pos = origin + boardGenerator.AxialToWorld(cell);
         pos.z = unitZ;
 
-        Log($"SpawnOnServer PASS -> Runner.Spawn | origin={origin} pos={pos} unitZ={unitZ} inputAuthority={requester}");
+        Log($"TrySpawnUnit PASS -> Runner.Spawn | origin={origin} pos={pos} unitZ={unitZ} inputAuthority={inputAuthority}");
 
-        NetworkObject spawnedObj = null;
-
-        spawnedObj = Runner.Spawn(unitPrefab, pos, Quaternion.identity,
-            inputAuthority: requester,
+        spawnedObj = Runner.Spawn(
+            unitPrefab,
+            pos,
+            Quaternion.identity,
+            inputAuthority: inputAuthority,
             onBeforeSpawned: (runner, obj) =>
             {
                 if (obj == null)
@@ -147,9 +207,20 @@ public class UnitSpawner : NetworkBehaviour
                     return;
                 }
 
-                unit.SetPendingInit(boardIndex, cell);
+                unit.SetPendingInit(boardIndex, cell, requireDeployZone);
+                configureBeforeSpawn?.Invoke(unit);
             });
 
         Log($"Runner.Spawn RETURN | spawnedObj={(spawnedObj ? spawnedObj.name : "NULL")} id={spawnedObj?.Id}");
+        return spawnedObj != null;
+    }
+
+    private bool EnsureDependencies()
+    {
+        boardManager ??= FindAnyObjectByType<BoardManager>();
+        flowManager ??= FindAnyObjectByType<GameFlowManager>();
+        boardGenerator ??= FindAnyObjectByType<HexBoardGenerator>();
+
+        return boardManager != null && flowManager != null && boardGenerator != null;
     }
 }

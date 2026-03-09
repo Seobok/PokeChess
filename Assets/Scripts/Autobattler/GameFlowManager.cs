@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using UnityEngine;
@@ -13,54 +13,35 @@ namespace PokeChess.Autobattler
         Result = 3
     }
 
-    /// <summary>
-    /// 게임 라운드 플로우를 관리하고, 접속 인원 수에 맞춰 지정된 위치들에 Hex 보드를 생성합니다.
-    /// 타일은 네트워크 스폰이 아니라 로컬 생성이므로, 서버가 BoardCount를 Networked로 전파하고
-    /// 모든 클라이언트가 동일하게 로컬 생성합니다.
-    /// </summary>
     public class GameFlowManager : NetworkBehaviour
     {
         private const int MaxPlayerCount = 8;
+        private const byte InvalidBoardIndex = byte.MaxValue;
 
         [Header("Board")]
         [SerializeField] private HexBoardGenerator boardGenerator;
+        [SerializeField] private UnitSpawner unitSpawner;
         [SerializeField] private bool generateBoardOnSpawn = true;
 
         [Header("Camera")]
         [SerializeField] private Camera targetCamera;
         [SerializeField] private Vector3 cameraOffset = new(0f, 0f, -10f);
-
-        [Tooltip("다른 스크립트(또는 Cinemachine)가 카메라를 덮어쓰는 경우를 대비해 LateUpdate에서 매 프레임 적용합니다.")]
         [SerializeField] private bool applyCameraEveryFrame = true;
 
-        [Header("최대 8개 보드 시작 위치")]
+        [Header("Board Origins")]
         [SerializeField] private List<Vector3> boardOrigins = new();
 
         [Networked] public GameFlowState FlowState { get; private set; }
-
-        // ✅ 서버가 결정해서 모든 클라이언트에게 공유하는 보드 개수
         [Networked] public byte BoardCount { get; private set; }
+        [Networked, Capacity(MaxPlayerCount)] private NetworkArray<byte> CombatViewBoardByPlayerBoard => default;
+        [Networked, Capacity(MaxPlayerCount)] private NetworkArray<NetworkBool> CombatViewRotatedByPlayerBoard => default;
 
         private int _lastAppliedBoardIndex = -1;
         private int _lastGeneratedBoardCount = -1;
         private int _lastConnectedPlayerCount = -1;
+        private float _lastAppliedCameraZRotation = float.NaN;
 
-        // 카메라가 이미 목적지에 붙어있으면 불필요한 set 방지
         private const float CameraSnapEpsilonSqr = 0.0001f;
-
-        private struct CombatReturnData
-        {
-            public NetworkId UnitId;
-            public byte OriginalBoardIndex;
-            public HexCoord OriginalCell;
-
-            public CombatReturnData(NetworkId unitId, byte originalBoardIndex, HexCoord originalCell)
-            {
-                UnitId = unitId;
-                OriginalBoardIndex = originalBoardIndex;
-                OriginalCell = originalCell;
-            }
-        }
 
         private class CombatPairRuntime
         {
@@ -68,7 +49,7 @@ namespace PokeChess.Autobattler
             public PlayerRef GuestPlayer;
             public byte HostBoardIndex;
             public byte GuestBoardIndex;
-            public readonly List<CombatReturnData> ReturnUnits = new();
+            public readonly List<NetworkId> SpawnedCloneIds = new();
         }
 
         private readonly List<CombatPairRuntime> _activeCombatPairs = new();
@@ -76,37 +57,32 @@ namespace PokeChess.Autobattler
         public override void Spawned()
         {
             EnsureBoardGenerator();
+            EnsureUnitSpawner();
 
-            // 서버는 시작 시 BoardCount 설정 + Preparation 전환
             if (HasStateAuthority && generateBoardOnSpawn)
             {
                 StartFlowForConnectedPlayers();
             }
 
-            // ✅ Host/Client 모두: BoardCount가 유효하면 로컬로 보드 생성
             TryGenerateBoardsIfNeeded();
-
-            // ✅ 최초 1회 강제 포커스
             TryFocusLocalCameraToAssignedBoard(force: true);
         }
 
         public override void FixedUpdateNetwork()
         {
-            // 서버: Preparation 단계에서는 접속 인원 변화에 따라 BoardCount 갱신
             if (HasStateAuthority && FlowState == GameFlowState.Preparation)
             {
                 UpdateBoardCountIfNeeded();
             }
 
-            // Host/Client 모두: BoardCount 변화가 오면 로컬 보드 재생성
             TryGenerateBoardsIfNeeded();
 
-            // 네트워크 틱에서도 한 번 시도 (하지만 실제 카메라 덮어쓰기 문제는 LateUpdate가 더 강함)
             if (!applyCameraEveryFrame)
+            {
                 TryFocusLocalCameraToAssignedBoard();
+            }
         }
 
-        // ✅ 중요: 다른 스크립트가 Update에서 카메라를 바꾸더라도, LateUpdate에서 마지막으로 덮어쓴다.
         private void LateUpdate()
         {
             if (!applyCameraEveryFrame) return;
@@ -116,10 +92,6 @@ namespace PokeChess.Autobattler
             TryFocusLocalCameraToAssignedBoard();
         }
 
-        /// <summary>
-        /// 현재 접속한 플레이어 수를 기준으로 "보드 개수"를 결정하고 준비 단계로 전환합니다.
-        /// (보드 생성 자체는 모든 클라이언트가 BoardCount를 보고 로컬로 수행)
-        /// </summary>
         public void StartFlowForConnectedPlayers()
         {
             if (!HasStateAuthority)
@@ -129,19 +101,48 @@ namespace PokeChess.Autobattler
             }
 
             UpdateBoardCountIfNeeded(force: true);
+            ClearActiveCombatPairs();
+            ResetCombatViewMappings();
             FlowState = GameFlowState.Preparation;
         }
 
         public void StartCombat()
         {
             if (!HasStateAuthority) return;
+            ResetCombatViewMappings();
             FlowState = GameFlowState.Combat;
         }
 
         public void FinishRound()
         {
             if (!HasStateAuthority) return;
+            ClearActiveCombatPairs();
+            ResetCombatViewMappings();
             FlowState = GameFlowState.Result;
+        }
+
+        public bool ShouldUnitSimulate(UnitController unit)
+        {
+            if (unit == null)
+                return false;
+
+            if (FlowState != GameFlowState.Combat)
+                return !unit.IsCombatClone;
+
+            if (unit.IsCombatClone)
+                return true;
+
+            for (int i = 0; i < _activeCombatPairs.Count; i++)
+            {
+                CombatPairRuntime pair = _activeCombatPairs[i];
+                if (unit.BoardIndex == pair.HostBoardIndex)
+                    return true;
+
+                if (unit.BoardIndex == pair.GuestBoardIndex)
+                    return false;
+            }
+
+            return false;
         }
 
         private void UpdateBoardCountIfNeeded(bool force = false)
@@ -159,10 +160,11 @@ namespace PokeChess.Autobattler
             if (BoardCount != newCount)
             {
                 BoardCount = newCount;
-
-                // 보드 개수 바뀌면 보드 재생성/카메라 재포커스 유도
+                ClearActiveCombatPairs();
+                ResetCombatViewMappings();
                 _lastGeneratedBoardCount = -1;
                 _lastAppliedBoardIndex = -1;
+                _lastAppliedCameraZRotation = float.NaN;
             }
         }
 
@@ -171,7 +173,11 @@ namespace PokeChess.Autobattler
             if (Runner == null) return 0;
 
             int count = 0;
-            foreach (PlayerRef _ in Runner.ActivePlayers) count++;
+            foreach (PlayerRef _ in Runner.ActivePlayers)
+            {
+                count++;
+            }
+
             return Mathf.Min(count, MaxPlayerCount);
         }
 
@@ -182,7 +188,18 @@ namespace PokeChess.Autobattler
             boardGenerator = FindAnyObjectByType<HexBoardGenerator>();
             if (boardGenerator == null)
             {
-                Debug.LogError("[GameFlowManager] HexBoardGenerator is missing in scene. Please place it in the scene and assign tilePrefab.", this);
+                Debug.LogError("[GameFlowManager] HexBoardGenerator is missing in scene.", this);
+            }
+        }
+
+        private void EnsureUnitSpawner()
+        {
+            if (unitSpawner != null) return;
+
+            unitSpawner = FindAnyObjectByType<UnitSpawner>();
+            if (unitSpawner == null)
+            {
+                Debug.LogError("[GameFlowManager] UnitSpawner is missing in scene.", this);
             }
         }
 
@@ -204,9 +221,8 @@ namespace PokeChess.Autobattler
 
             boardGenerator.GenerateBoardsAt(boardOrigins, BoardCount);
             _lastGeneratedBoardCount = BoardCount;
-
-            // 생성/재생성 되었으면 카메라도 다시 맞추게 리셋
             _lastAppliedBoardIndex = -1;
+            _lastAppliedCameraZRotation = float.NaN;
         }
 
         private void TryFocusLocalCameraToAssignedBoard(bool force = false)
@@ -218,7 +234,6 @@ namespace PokeChess.Autobattler
             if (localBoardIndex < 0) return;
             if (boardOrigins == null || localBoardIndex >= boardOrigins.Count) return;
 
-            // 카메라 확실히 찾기
             if (targetCamera == null || !targetCamera.isActiveAndEnabled)
             {
                 targetCamera = FindBestCamera();
@@ -230,29 +245,29 @@ namespace PokeChess.Autobattler
 
             Vector3 boardCenter = boardGenerator.GetBoardCenter(boardOrigins[localBoardIndex]);
             Vector3 desired = boardCenter + cameraOffset;
+            float zRot = GetLocalPlayerCombatCameraZRotation();
 
-            // 같은 보드로 이미 적용했고, 현재 위치도 거의 같으면 스킵
             if (!force && localBoardIndex == _lastAppliedBoardIndex)
             {
-                if ((targetCamera.transform.position - desired).sqrMagnitude < CameraSnapEpsilonSqr)
+                bool samePosition = (targetCamera.transform.position - desired).sqrMagnitude < CameraSnapEpsilonSqr;
+                bool sameRotation = !float.IsNaN(_lastAppliedCameraZRotation)
+                    && Mathf.Abs(Mathf.DeltaAngle(_lastAppliedCameraZRotation, zRot)) < 0.01f;
+                if (samePosition && sameRotation)
                     return;
             }
 
             targetCamera.transform.position = desired;
             _lastAppliedBoardIndex = localBoardIndex;
-
-            float zRot = GetLocalPlayerCombatCameraZRotation();
             targetCamera.transform.rotation = Quaternion.Euler(0f, 0f, zRot);
+            _lastAppliedCameraZRotation = zRot;
         }
 
         private Camera FindBestCamera()
         {
-            // 1) MainCamera 태그가 있으면 최우선
             var cam = Camera.main;
             if (cam != null && cam.isActiveAndEnabled)
                 return cam;
 
-            // 2) 씬의 활성 카메라 중 하나를 선택
             var cams = FindObjectsByType<Camera>(FindObjectsSortMode.None);
             for (int i = 0; i < cams.Length; i++)
             {
@@ -263,7 +278,6 @@ namespace PokeChess.Autobattler
             return null;
         }
 
-        // ✅ 지금 단계에서는 기존 방식(ActivePlayers 정렬)이 가장 단순/실용적
         private int GetLocalPlayerBoardIndex()
         {
             if (Runner == null) return -1;
@@ -295,6 +309,7 @@ namespace PokeChess.Autobattler
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -318,6 +333,10 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority || Runner == null)
                 return false;
 
+            EnsureUnitSpawner();
+            if (unitSpawner == null)
+                return false;
+
             if (!TryGetBoardIndex(hostPlayer, out byte hostBoard))
                 return false;
 
@@ -332,29 +351,30 @@ namespace PokeChess.Autobattler
                 GuestBoardIndex = guestBoard
             };
 
-            var allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            SetCombatViewForBoard(hostBoard, hostBoard, false);
+            SetCombatViewForBoard(guestBoard, hostBoard, true);
 
+            var allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
             foreach (var unit in allUnits)
             {
                 if (unit == null || unit.Object == null)
+                    continue;
+
+                if (unit.IsCombatClone)
                     continue;
 
                 if (unit.BoardIndex != guestBoard)
                     continue;
 
                 HexCoord targetCell = Rotate180(unit.Cell);
-
-                runtime.ReturnUnits.Add(new CombatReturnData(
-                    unit.Object.Id,
-                    unit.BoardIndex,
-                    unit.Cell));
-
-                bool moved = unit.ForceRelocateToBoard(hostBoard, targetCell);
-                if (!moved)
+                if (!unitSpawner.TrySpawnCombatClone(unit, hostBoard, targetCell, out NetworkObject cloneObject))
                 {
-                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed. guest={guestPlayer}, unit={unit.Object.Id}");
+                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed while spawning clone for unit={unit.Object.Id}");
+                    CleanupCombatPair(runtime);
                     return false;
                 }
+
+                runtime.SpawnedCloneIds.Add(cloneObject.Id);
             }
 
             _activeCombatPairs.Add(runtime);
@@ -366,24 +386,19 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority || Runner == null)
                 return false;
 
-            _activeCombatPairs.Clear();
+            ClearActiveCombatPairs();
+            ResetCombatViewMappings();
 
             foreach (var pair in pairs)
             {
-                if (pair.A == PlayerRef.None)
+                if (pair.A == PlayerRef.None || pair.B == PlayerRef.None)
                     continue;
 
-                // BYE 처리
-                if (pair.B == PlayerRef.None)
-                    continue;
-
-                PlayerRef host = pair.A;
-                PlayerRef guest = pair.B;
-
-                bool ok = PrepareCombatPair(host, guest);
-                if (!ok)
+                if (!PrepareCombatPair(pair.A, pair.B))
                 {
                     Debug.LogWarning($"[GameFlowManager] StartCombatRound failed while preparing pair {pair.A} vs {pair.B}");
+                    ClearActiveCombatPairs();
+                    ResetCombatViewMappings();
                     return false;
                 }
             }
@@ -397,26 +412,45 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority || Runner == null)
                 return;
 
-            foreach (var pair in _activeCombatPairs)
+            ClearActiveCombatPairs();
+            ResetCombatViewMappings();
+            FlowState = GameFlowState.Result;
+        }
+
+        private void ClearActiveCombatPairs()
+        {
+            for (int i = 0; i < _activeCombatPairs.Count; i++)
             {
-                foreach (var data in pair.ReturnUnits)
-                {
-                    if (!Runner.TryFindObject(data.UnitId, out NetworkObject obj))
-                        continue;
-
-                    if (!obj.TryGetComponent<UnitController>(out var unit))
-                        continue;
-
-                    bool restored = unit.ForceRelocateToBoard(data.OriginalBoardIndex, data.OriginalCell);
-                    if (!restored)
-                    {
-                        Debug.LogWarning($"[GameFlowManager] Restore failed: unit={data.UnitId}");
-                    }
-                }
+                CleanupCombatPair(_activeCombatPairs[i]);
             }
 
             _activeCombatPairs.Clear();
-            FlowState = GameFlowState.Result;
+        }
+
+        private void CleanupCombatPair(CombatPairRuntime runtime)
+        {
+            for (int i = 0; i < runtime.SpawnedCloneIds.Count; i++)
+            {
+                DespawnCombatClone(runtime.SpawnedCloneIds[i]);
+            }
+
+            runtime.SpawnedCloneIds.Clear();
+        }
+
+        private void DespawnCombatClone(NetworkId cloneId)
+        {
+            if (Runner == null)
+                return;
+
+            if (!Runner.TryFindObject(cloneId, out NetworkObject obj))
+                return;
+
+            if (obj.TryGetComponent(out UnitController unit))
+            {
+                unit.RemoveFromBoard();
+            }
+
+            Runner.Despawn(obj);
         }
 
         private HexCoord Rotate180(HexCoord source)
@@ -432,50 +466,65 @@ namespace PokeChess.Autobattler
             if (Runner == null)
                 return -1;
 
-            PlayerRef local = Runner.LocalPlayer;
-            if (local == PlayerRef.None)
+            if (!TryGetLocalPlayerBoardIndex(out byte playerBoardIndex))
                 return -1;
 
             if (FlowState != GameFlowState.Combat)
-                return GetLocalPlayerBoardIndex();
+                return playerBoardIndex;
 
-            foreach (var pair in _activeCombatPairs)
-            {
-                if (pair.HostPlayer == local)
-                    return pair.HostBoardIndex;
+            byte mappedBoardIndex = CombatViewBoardByPlayerBoard[playerBoardIndex];
+            if (mappedBoardIndex == InvalidBoardIndex)
+                return playerBoardIndex;
 
-                if (pair.GuestPlayer == local)
-                    return pair.HostBoardIndex;
-            }
-
-            return GetLocalPlayerBoardIndex();
+            return mappedBoardIndex;
         }
 
         private float GetLocalPlayerCombatCameraZRotation()
         {
-            if (Runner == null)
-                return 0f;
-
-            PlayerRef local = Runner.LocalPlayer;
-            if (local == PlayerRef.None)
+            if (!TryGetLocalPlayerBoardIndex(out byte playerBoardIndex))
                 return 0f;
 
             if (FlowState != GameFlowState.Combat)
                 return 0f;
 
-            foreach (var pair in _activeCombatPairs)
-            {
-                if (pair.HostPlayer == local)
-                    return 0f;
-
-                if (pair.GuestPlayer == local)
-                    return 180f;
-            }
-
-            return 0f;
+            return CombatViewRotatedByPlayerBoard[playerBoardIndex] ? 180f : 0f;
         }
 
-        #region debug
+        private bool TryGetLocalPlayerBoardIndex(out byte boardIndex)
+        {
+            boardIndex = 0;
+            int localBoardIndex = GetLocalPlayerBoardIndex();
+            if (localBoardIndex < 0 || localBoardIndex > byte.MaxValue)
+                return false;
+
+            boardIndex = (byte)localBoardIndex;
+            return true;
+        }
+
+        private void ResetCombatViewMappings()
+        {
+            if (!HasStateAuthority)
+                return;
+
+            for (byte i = 0; i < MaxPlayerCount; i++)
+            {
+                CombatViewBoardByPlayerBoard.Set(i, i < BoardCount ? i : InvalidBoardIndex);
+                CombatViewRotatedByPlayerBoard.Set(i, false);
+            }
+
+            _lastAppliedBoardIndex = -1;
+            _lastAppliedCameraZRotation = float.NaN;
+        }
+
+        private void SetCombatViewForBoard(byte playerBoardIndex, byte viewBoardIndex, bool rotated)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            CombatViewBoardByPlayerBoard.Set(playerBoardIndex, viewBoardIndex);
+            CombatViewRotatedByPlayerBoard.Set(playerBoardIndex, rotated);
+        }
+
         [ContextMenu("Debug Prepare Combat A vs B")]
         public void DebugPrepareCombat()
         {
@@ -484,7 +533,13 @@ namespace PokeChess.Autobattler
             var players = Runner.ActivePlayers.ToList();
             if (players.Count < 2) return;
 
-            PrepareCombatPair(players[0], players[1]);
+            ClearActiveCombatPairs();
+            ResetCombatViewMappings();
+
+            if (PrepareCombatPair(players[0], players[1]))
+            {
+                FlowState = GameFlowState.Combat;
+            }
         }
 
         [ContextMenu("Debug Restore Combat Round")]
@@ -493,6 +548,5 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority) return;
             RestoreCombatRound();
         }
-        #endregion
     }
 }
