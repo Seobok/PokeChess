@@ -1,5 +1,8 @@
 using PokeChess.Autobattler;
 
+/// <summary>
+/// Compact key used to index a cell within a specific board.
+/// </summary>
 public readonly struct BoardCellKey : System.IEquatable<BoardCellKey>
 {
     public readonly byte Board;

@@ -1,7 +1,10 @@
-﻿using Fusion;
+using Fusion;
 using PokeChess.Autobattler;
 using System.Collections.Generic;
 
+/// <summary>
+/// Stores per-board occupancy state and validates movement or placement requests.
+/// </summary>
 public class BoardManager : NetworkBehaviour
 {
     public const int BoardWidth = 7;
@@ -105,3 +108,4 @@ public class BoardManager : NetworkBehaviour
         return true;
     }
 }
+

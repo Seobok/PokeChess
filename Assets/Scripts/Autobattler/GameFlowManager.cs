@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using UnityEngine;
 
 namespace PokeChess.Autobattler
 {
+    /// <summary>
+    /// High-level match flow state shared across all players.
+    /// </summary>
     public enum GameFlowState : byte
     {
         None = 0,
@@ -13,6 +16,9 @@ namespace PokeChess.Autobattler
         Result = 3
     }
 
+    /// <summary>
+    /// Coordinates board generation, combat clone rounds, and local board presentation.
+    /// </summary>
     public class GameFlowManager : NetworkBehaviour
     {
         private const int MaxPlayerCount = 8;
@@ -35,6 +41,7 @@ namespace PokeChess.Autobattler
         [Networked] public byte BoardCount { get; private set; }
         [Networked, Capacity(MaxPlayerCount)] private NetworkArray<byte> CombatViewBoardByPlayerBoard => default;
         [Networked, Capacity(MaxPlayerCount)] private NetworkArray<NetworkBool> CombatViewRotatedByPlayerBoard => default;
+        [Networked, Capacity(MaxPlayerCount)] private NetworkArray<NetworkBool> CombatHideOriginalsByBoard => default;
 
         private int _lastAppliedBoardIndex = -1;
         private int _lastGeneratedBoardCount = -1;
@@ -43,12 +50,27 @@ namespace PokeChess.Autobattler
 
         private const float CameraSnapEpsilonSqr = 0.0001f;
 
+        private struct OriginalUnitData
+        {
+            public NetworkId UnitId;
+            public byte BoardIndex;
+            public HexCoord Cell;
+
+            public OriginalUnitData(NetworkId unitId, byte boardIndex, HexCoord cell)
+            {
+                UnitId = unitId;
+                BoardIndex = boardIndex;
+                Cell = cell;
+            }
+        }
+
         private class CombatPairRuntime
         {
             public PlayerRef HostPlayer;
             public PlayerRef GuestPlayer;
             public byte HostBoardIndex;
             public byte GuestBoardIndex;
+            public readonly List<OriginalUnitData> HiddenOriginals = new();
             public readonly List<NetworkId> SpawnedCloneIds = new();
         }
 
@@ -73,6 +95,11 @@ namespace PokeChess.Autobattler
             if (HasStateAuthority && FlowState == GameFlowState.Preparation)
             {
                 UpdateBoardCountIfNeeded();
+            }
+
+            if (HasStateAuthority && FlowState == GameFlowState.Combat)
+            {
+                EvaluateCombatRoundProgress();
             }
 
             TryGenerateBoardsIfNeeded();
@@ -129,20 +156,24 @@ namespace PokeChess.Autobattler
             if (FlowState != GameFlowState.Combat)
                 return !unit.IsCombatClone;
 
+            return unit.IsCombatClone;
+        }
+
+        public bool ShouldUnitBeVisible(UnitController unit)
+        {
+            if (unit == null)
+                return false;
+
+            if (FlowState != GameFlowState.Combat)
+                return !unit.IsCombatClone;
+
             if (unit.IsCombatClone)
                 return true;
 
-            for (int i = 0; i < _activeCombatPairs.Count; i++)
-            {
-                CombatPairRuntime pair = _activeCombatPairs[i];
-                if (unit.BoardIndex == pair.HostBoardIndex)
-                    return true;
+            if (unit.BoardIndex >= MaxPlayerCount)
+                return true;
 
-                if (unit.BoardIndex == pair.GuestBoardIndex)
-                    return false;
-            }
-
-            return false;
+            return !CombatHideOriginalsByBoard[unit.BoardIndex];
         }
 
         private void UpdateBoardCountIfNeeded(bool force = false)
@@ -351,31 +382,54 @@ namespace PokeChess.Autobattler
                 GuestBoardIndex = guestBoard
             };
 
-            SetCombatViewForBoard(hostBoard, hostBoard, false);
-            SetCombatViewForBoard(guestBoard, hostBoard, true);
+            List<UnitController> hostUnits = CollectOriginalUnitsOnBoard(hostBoard);
+            List<UnitController> guestUnits = CollectOriginalUnitsOnBoard(guestBoard);
 
-            var allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
-            foreach (var unit in allUnits)
+            foreach (var unit in hostUnits)
             {
-                if (unit == null || unit.Object == null)
-                    continue;
+                runtime.HiddenOriginals.Add(new OriginalUnitData(unit.Object.Id, unit.BoardIndex, unit.Cell));
+            }
 
-                if (unit.IsCombatClone)
-                    continue;
+            foreach (var unit in guestUnits)
+            {
+                runtime.HiddenOriginals.Add(new OriginalUnitData(unit.Object.Id, unit.BoardIndex, unit.Cell));
+            }
 
-                if (unit.BoardIndex != guestBoard)
-                    continue;
+            if (!TemporarilyRemoveOriginalsFromBoard(runtime.HiddenOriginals))
+            {
+                CleanupCombatPair(runtime);
+                return false;
+            }
 
-                HexCoord targetCell = Rotate180(unit.Cell);
-                if (!unitSpawner.TrySpawnCombatClone(unit, hostBoard, targetCell, out NetworkObject cloneObject))
+            foreach (var unit in hostUnits)
+            {
+                if (!unitSpawner.TrySpawnCombatClone(unit, hostBoard, unit.Cell, out NetworkObject cloneObject))
                 {
-                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed while spawning clone for unit={unit.Object.Id}");
+                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed while spawning host clone for unit={unit.Object.Id}");
                     CleanupCombatPair(runtime);
                     return false;
                 }
 
                 runtime.SpawnedCloneIds.Add(cloneObject.Id);
             }
+
+            foreach (var unit in guestUnits)
+            {
+                HexCoord targetCell = Rotate180(unit.Cell);
+                if (!unitSpawner.TrySpawnCombatClone(unit, hostBoard, targetCell, out NetworkObject cloneObject))
+                {
+                    Debug.LogWarning($"[GameFlowManager] PrepareCombatPair failed while spawning guest clone for unit={unit.Object.Id}");
+                    CleanupCombatPair(runtime);
+                    return false;
+                }
+
+                runtime.SpawnedCloneIds.Add(cloneObject.Id);
+            }
+
+            SetCombatViewForBoard(hostBoard, hostBoard, false);
+            SetCombatViewForBoard(guestBoard, hostBoard, true);
+            SetHideOriginalsForBoard(hostBoard, true);
+            SetHideOriginalsForBoard(guestBoard, true);
 
             _activeCombatPairs.Add(runtime);
             return true;
@@ -417,6 +471,47 @@ namespace PokeChess.Autobattler
             FlowState = GameFlowState.Result;
         }
 
+        private List<UnitController> CollectOriginalUnitsOnBoard(byte boardIndex)
+        {
+            var units = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            var result = new List<UnitController>();
+
+            for (int i = 0; i < units.Length; i++)
+            {
+                UnitController unit = units[i];
+                if (unit == null || unit.Object == null)
+                    continue;
+
+                if (unit.IsCombatClone)
+                    continue;
+
+                if (unit.BoardIndex != boardIndex)
+                    continue;
+
+                result.Add(unit);
+            }
+
+            return result;
+        }
+
+        private bool TemporarilyRemoveOriginalsFromBoard(List<OriginalUnitData> originals)
+        {
+            for (int i = 0; i < originals.Count; i++)
+            {
+                OriginalUnitData data = originals[i];
+                if (!Runner.TryFindObject(data.UnitId, out NetworkObject obj))
+                    return false;
+
+                if (!obj.TryGetComponent(out UnitController unit))
+                    return false;
+
+                if (!unit.RemoveFromBoard())
+                    return false;
+            }
+
+            return true;
+        }
+
         private void ClearActiveCombatPairs()
         {
             for (int i = 0; i < _activeCombatPairs.Count; i++)
@@ -433,8 +528,13 @@ namespace PokeChess.Autobattler
             {
                 DespawnCombatClone(runtime.SpawnedCloneIds[i]);
             }
-
             runtime.SpawnedCloneIds.Clear();
+
+            for (int i = 0; i < runtime.HiddenOriginals.Count; i++)
+            {
+                RestoreOriginalToBoard(runtime.HiddenOriginals[i]);
+            }
+            runtime.HiddenOriginals.Clear();
         }
 
         private void DespawnCombatClone(NetworkId cloneId)
@@ -453,12 +553,92 @@ namespace PokeChess.Autobattler
             Runner.Despawn(obj);
         }
 
+        private void RestoreOriginalToBoard(OriginalUnitData data)
+        {
+            if (Runner == null)
+                return;
+
+            if (!Runner.TryFindObject(data.UnitId, out NetworkObject obj))
+                return;
+
+            if (!obj.TryGetComponent(out UnitController unit))
+                return;
+
+            unit.RegisterOnBoard();
+        }
+
         private HexCoord Rotate180(HexCoord source)
         {
             return new HexCoord(
                 BoardManager.BoardWidth - 1 - source.Q,
                 BoardManager.BoardHeight - 1 - source.R
             );
+        }
+
+        private void EvaluateCombatRoundProgress()
+        {
+            if (_activeCombatPairs.Count == 0)
+                return;
+
+            for (int i = 0; i < _activeCombatPairs.Count; i++)
+            {
+                if (!IsCombatPairResolved(_activeCombatPairs[i]))
+                    return;
+            }
+
+            RestoreCombatRound();
+        }
+
+        private bool IsCombatPairResolved(CombatPairRuntime runtime)
+        {
+            bool hostAlive = false;
+            bool guestAlive = false;
+
+            for (int i = 0; i < runtime.SpawnedCloneIds.Count; i++)
+            {
+                if (!Runner.TryFindObject(runtime.SpawnedCloneIds[i], out NetworkObject cloneObject))
+                    continue;
+
+                if (!cloneObject.TryGetComponent(out UnitController cloneUnit))
+                    continue;
+
+                if (!cloneUnit.IsCombatClone || cloneUnit.HP <= 0)
+                    continue;
+
+                byte teamBoardIndex = GetCombatCloneSourceBoardIndex(cloneUnit);
+                if (teamBoardIndex == runtime.HostBoardIndex)
+                {
+                    hostAlive = true;
+                }
+                else if (teamBoardIndex == runtime.GuestBoardIndex)
+                {
+                    guestAlive = true;
+                }
+
+                if (hostAlive && guestAlive)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private byte GetCombatCloneSourceBoardIndex(UnitController cloneUnit)
+        {
+            if (cloneUnit == null)
+                return InvalidBoardIndex;
+
+            if (!cloneUnit.IsCombatClone)
+                return cloneUnit.BoardIndex;
+
+            if (Runner != null
+                && cloneUnit.SourceUnitId != default
+                && Runner.TryFindObject(cloneUnit.SourceUnitId, out NetworkObject sourceObject)
+                && sourceObject.TryGetComponent(out UnitController sourceUnit))
+            {
+                return sourceUnit.BoardIndex;
+            }
+
+            return cloneUnit.BoardIndex;
         }
 
         private int GetLocalPlayerViewBoardIndex()
@@ -510,6 +690,7 @@ namespace PokeChess.Autobattler
             {
                 CombatViewBoardByPlayerBoard.Set(i, i < BoardCount ? i : InvalidBoardIndex);
                 CombatViewRotatedByPlayerBoard.Set(i, false);
+                CombatHideOriginalsByBoard.Set(i, false);
             }
 
             _lastAppliedBoardIndex = -1;
@@ -523,6 +704,14 @@ namespace PokeChess.Autobattler
 
             CombatViewBoardByPlayerBoard.Set(playerBoardIndex, viewBoardIndex);
             CombatViewRotatedByPlayerBoard.Set(playerBoardIndex, rotated);
+        }
+
+        private void SetHideOriginalsForBoard(byte boardIndex, bool hidden)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            CombatHideOriginalsByBoard.Set(boardIndex, hidden);
         }
 
         [ContextMenu("Debug Prepare Combat A vs B")]
@@ -550,3 +739,6 @@ namespace PokeChess.Autobattler
         }
     }
 }
+
+
+

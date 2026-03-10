@@ -3,6 +3,9 @@ using Fusion;
 
 namespace PokeChess.Autobattler
 {
+    /// <summary>
+    /// Network-serializable odd-r offset hex coordinate.
+    /// </summary>
     [Serializable]
     public struct HexCoord : INetworkStruct, IEquatable<HexCoord>
     {
@@ -12,7 +15,7 @@ namespace PokeChess.Autobattler
 
         public HexCoord(int q, int r) { Q = q; R = r; }
 
-        // odd-r offset (행이 홀수면 오른쪽으로 반 칸 밀림) 기준 6방향
+        // odd-r offset (?�이 ?�?�면 ?�른쪽으�?�?�?밀�? 기�? 6방향
         private static readonly HexCoord[] NeighborEvenR =
         {
             new(+1, 0),  // E
@@ -40,7 +43,7 @@ namespace PokeChess.Autobattler
             return new HexCoord(Q + d.Q, R + d.R);
         }
 
-        // odd-r offset -> cube 변환 후 거리
+        // odd-r offset -> cube 변????거리
         public static int Distance(HexCoord a, HexCoord b)
         {
             var ac = ToCube(a);

@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 namespace PokeChess.Autobattler
 {
     /// <summary>
-    /// Button click enters placement mode, then a primary pointer click places the unit on a hovered tile.
+    /// Handles click-to-place unit spawning from the local player''s camera view.
     /// </summary>
     public class UnitPlacementController : MonoBehaviour
     {
@@ -177,3 +177,4 @@ namespace PokeChess.Autobattler
         }
     }
 }
+
