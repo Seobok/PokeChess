@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace PokeChess.Autobattler
 {
+    public enum UnitAnimationEventType : byte
+    {
+        None = 0,
+        Attack = 1,
+        Skill = 2,
+        Hit = 3
+    }
+
     /// <summary>
     /// Owns replicated unit state, board movement, combat logic, and visual syncing.
     /// Skills are delegated to UnitSkillDefinition assets referenced by UnitStats.
@@ -18,6 +26,15 @@ namespace PokeChess.Autobattler
         [Header("Visual Move")]
         [SerializeField] private float secondsPerStep = 1f;
         [SerializeField] private float unitZ = -1f;
+
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private string moveBoolParameter = "IsMoving";
+        [SerializeField] private string attackTriggerParameter = "Attack";
+        [SerializeField] private string skillTriggerParameter = "Skill";
+        [SerializeField] private string hitTriggerParameter = "Hit";
+        [SerializeField] private string deadBoolParameter = "IsDead";
+        [SerializeField] private float deathDespawnDelaySeconds = 0.75f;
 
         [Networked] public HexCoord Cell { get; private set; }
         [Networked] public float HP { get; private set; }
@@ -38,6 +55,10 @@ namespace PokeChess.Autobattler
         private float _pendingCloneHp;
         private int _pendingCloneMana;
 
+        [Networked] private UnitAnimationEventType AnimationEvent { get; set; }
+        [Networked] private int AnimationEventSequence { get; set; }
+        [Networked] private NetworkBool IsDead { get; set; }
+        [Networked] private TickTimer DeathDespawnTimer { get; set; }
         [Networked] private int NextMoveTick { get; set; }
 
         private GameFlowManager _flow;
@@ -53,12 +74,25 @@ namespace PokeChess.Autobattler
         private Renderer[] _renderers;
         private Collider[] _colliders3D;
         private Collider2D[] _colliders2D;
+        private int _lastConsumedAnimationEventSequence = -1;
+
+        private int _moveBoolHash;
+        private int _attackTriggerHash;
+        private int _skillTriggerHash;
+        private int _hitTriggerHash;
+        private int _deadBoolHash;
+        private bool _hasMoveBool;
+        private bool _hasAttackTrigger;
+        private bool _hasSkillTrigger;
+        private bool _hasHitTrigger;
+        private bool _hasDeadBool;
 
         public bool IsNetworkStateReady { get; private set; }
         public UnitStats Stats => stats;
         public UnitSkillDefinition Skill => stats != null ? stats.skill : null;
         public float MaxHp => stats != null ? Mathf.Max(1f, stats.maxHp) : 1f;
         public int MaxMana => stats != null ? Mathf.Max(0, stats.maxMana) : 0;
+        public bool IsDeadOrDying => IsDead || HP <= 0f;
         public float HealthNormalized => !IsNetworkStateReady || MaxHp <= 0f ? 0f : Mathf.Clamp01(HP / MaxHp);
         public float ManaNormalized => !IsNetworkStateReady || MaxMana <= 0 ? 0f : Mathf.Clamp01((float)Mana / MaxMana);
 
@@ -83,6 +117,7 @@ namespace PokeChess.Autobattler
             boardManager ??= FindAnyObjectByType<BoardManager>();
             _flow ??= FindAnyObjectByType<GameFlowManager>();
             CacheVisualComponents();
+            CacheAnimationComponents();
 
             if (HasStateAuthority)
             {
@@ -107,6 +142,7 @@ namespace PokeChess.Autobattler
             _lastVisualCell = Cell;
             _lastVisualBoard = BoardIndex;
             ApplyVisibility(force: true);
+            ApplyAnimationState();
         }
 
         private void OnDisable()
@@ -123,6 +159,16 @@ namespace PokeChess.Autobattler
         {
             if (!HasStateAuthority)
                 return;
+
+            if (IsDead)
+            {
+                if (DeathDespawnTimer.ExpiredOrNotRunning(Runner) && Object != null && Runner != null)
+                {
+                    Runner.Despawn(Object);
+                }
+
+                return;
+            }
 
             _flow ??= FindAnyObjectByType<GameFlowManager>();
             if (_flow != null && !_flow.ShouldUnitSimulate(this))
@@ -296,6 +342,8 @@ namespace PokeChess.Autobattler
                     transform.position = Vector3.Lerp(_lerpFrom, _lerpTo, t);
                 }
             }
+
+            ApplyAnimationState();
         }
 
         private void SnapToCellImmediate()
@@ -360,6 +408,10 @@ namespace PokeChess.Autobattler
                 HP = 0f;
                 HandleDeath();
             }
+            else
+            {
+                RaiseAnimationEvent(UnitAnimationEventType.Hit);
+            }
 
             return true;
         }
@@ -414,7 +466,13 @@ namespace PokeChess.Autobattler
             if (skill == null)
                 return false;
 
-            return skill.TryCast(this, preferredTarget);
+            bool casted = skill.TryCast(this, preferredTarget);
+            if (casted)
+            {
+                RaiseAnimationEvent(UnitAnimationEventType.Skill);
+            }
+
+            return casted;
         }
 
         private void ApplySpawnState()
@@ -422,6 +480,10 @@ namespace PokeChess.Autobattler
             TargetId = default;
             AttackCooldown = TickTimer.None;
             NextMoveTick = default;
+            IsDead = false;
+            DeathDespawnTimer = TickTimer.None;
+            AnimationEvent = UnitAnimationEventType.None;
+            AnimationEventSequence = 0;
 
             if (_pendingCombatClone)
             {
@@ -552,6 +614,7 @@ namespace PokeChess.Autobattler
             if (!target.ReceiveDamage(damage, this))
                 return false;
 
+            RaiseAnimationEvent(UnitAnimationEventType.Attack);
             GainMana(GetManaGainOnAttack(), target);
             AttackCooldown = TickTimer.CreateFromSeconds(Runner, GetAttackIntervalSeconds());
             return true;
@@ -709,18 +772,20 @@ namespace PokeChess.Autobattler
 
         private void HandleDeath()
         {
+            if (IsDead)
+                return;
+
+            IsDead = true;
             TargetId = default;
             AttackCooldown = TickTimer.None;
             NextMoveTick = default;
+            DeathDespawnTimer = deathDespawnDelaySeconds > 0f
+                ? TickTimer.CreateFromSeconds(Runner, deathDespawnDelaySeconds)
+                : TickTimer.None;
 
             if (boardManager != null)
             {
                 boardManager.RemoveUnit(BoardIndex, Cell);
-            }
-
-            if (Object != null && Runner != null)
-            {
-                Runner.Despawn(Object);
             }
         }
 
@@ -729,6 +794,82 @@ namespace PokeChess.Autobattler
             _renderers = GetComponentsInChildren<Renderer>(true);
             _colliders3D = GetComponentsInChildren<Collider>(true);
             _colliders2D = GetComponentsInChildren<Collider2D>(true);
+        }
+
+        private void CacheAnimationComponents()
+        {
+            animator ??= GetComponentInChildren<Animator>(true);
+            if (animator == null)
+                return;
+
+            AnimatorControllerParameter[] parameters = animator.parameters;
+            _moveBoolHash = Animator.StringToHash(moveBoolParameter);
+            _attackTriggerHash = Animator.StringToHash(attackTriggerParameter);
+            _skillTriggerHash = Animator.StringToHash(skillTriggerParameter);
+            _hitTriggerHash = Animator.StringToHash(hitTriggerParameter);
+            _deadBoolHash = Animator.StringToHash(deadBoolParameter);
+
+            _hasMoveBool = HasAnimatorParameter(parameters, _moveBoolHash, AnimatorControllerParameterType.Bool);
+            _hasAttackTrigger = HasAnimatorParameter(parameters, _attackTriggerHash, AnimatorControllerParameterType.Trigger);
+            _hasSkillTrigger = HasAnimatorParameter(parameters, _skillTriggerHash, AnimatorControllerParameterType.Trigger);
+            _hasHitTrigger = HasAnimatorParameter(parameters, _hitTriggerHash, AnimatorControllerParameterType.Trigger);
+            _hasDeadBool = HasAnimatorParameter(parameters, _deadBoolHash, AnimatorControllerParameterType.Bool);
+        }
+
+        private static bool HasAnimatorParameter(AnimatorControllerParameter[] parameters, int hash, AnimatorControllerParameterType type)
+        {
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].nameHash == hash && parameters[i].type == type)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ApplyAnimationState()
+        {
+            if (animator == null)
+                return;
+
+            if (_hasMoveBool)
+            {
+                animator.SetBool(_moveBoolHash, _lerping && !IsDeadOrDying);
+            }
+
+            if (_hasDeadBool)
+            {
+                animator.SetBool(_deadBoolHash, IsDeadOrDying);
+            }
+
+            if (_lastConsumedAnimationEventSequence == AnimationEventSequence)
+                return;
+
+            _lastConsumedAnimationEventSequence = AnimationEventSequence;
+            switch (AnimationEvent)
+            {
+                case UnitAnimationEventType.Attack:
+                    if (_hasAttackTrigger)
+                        animator.SetTrigger(_attackTriggerHash);
+                    break;
+                case UnitAnimationEventType.Skill:
+                    if (_hasSkillTrigger)
+                        animator.SetTrigger(_skillTriggerHash);
+                    break;
+                case UnitAnimationEventType.Hit:
+                    if (_hasHitTrigger)
+                        animator.SetTrigger(_hitTriggerHash);
+                    break;
+            }
+        }
+
+        private void RaiseAnimationEvent(UnitAnimationEventType animationEvent)
+        {
+            if (!HasStateAuthority || animationEvent == UnitAnimationEventType.None)
+                return;
+
+            AnimationEvent = animationEvent;
+            AnimationEventSequence++;
         }
 
         private void ApplyVisibility(bool force = false)
