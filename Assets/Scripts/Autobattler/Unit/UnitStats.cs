@@ -3,9 +3,6 @@ using UnityEngine.Serialization;
 
 namespace PokeChess.Autobattler
 {
-    /// <summary>
-    /// Authoring asset that defines combat, movement, mana, and skill data for a unit.
-    /// </summary>
     [CreateAssetMenu(menuName = "PokeChess/Autobattler/Unit Stats", fileName = "UnitStats")]
     public class UnitStats : ScriptableObject
     {
@@ -35,39 +32,29 @@ namespace PokeChess.Autobattler
         Special = 1
     }
 
-    public abstract class UnitSkillDefinition : ScriptableObject
+    public enum SkillTargetTeam : byte
     {
-        [Header("Targeting")]
-        [Min(0)] public int castRange = 1;
-        public DamageType damageType = DamageType.Special;
-
-        public abstract bool TryCast(UnitController caster, UnitController preferredTarget);
-
-        protected UnitController ResolveTarget(UnitController caster, UnitController preferredTarget)
-        {
-            if (caster == null)
-                return null;
-
-            if (caster.IsEnemyInRange(preferredTarget, castRange))
-                return preferredTarget;
-
-            return caster.FindClosestEnemyInRange(castRange);
-        }
+        Enemy = 0,
+        Ally = 1,
+        AllyOrSelf = 2,
+        Self = 3
     }
 
-    [CreateAssetMenu(menuName = "PokeChess/Autobattler/Skills/Direct Damage Skill", fileName = "DirectDamageSkill")]
-    public class DirectDamageSkillDefinition : UnitSkillDefinition
+    public enum BuffStatType : byte
     {
-        [Header("Effect")]
-        [Min(0f)] public float damage = 50f;
+        AttackPower = 0,
+        Armor = 1,
+        MagicResist = 2,
+        AttackSpeed = 3,
+        MoveSpeed = 4,
+        AttackRange = 5
+    }
 
-        public override bool TryCast(UnitController caster, UnitController preferredTarget)
-        {
-            UnitController target = ResolveTarget(caster, preferredTarget);
-            if (target == null)
-                return false;
-
-            return caster.TryApplyDamage(target, damage, damageType);
-        }
+    [System.Serializable]
+    public struct StatBuffEffect
+    {
+        public BuffStatType statType;
+        public float additiveAmount;
+        public float multiplier;
     }
 }

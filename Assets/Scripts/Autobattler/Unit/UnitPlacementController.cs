@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 namespace PokeChess.Autobattler
 {
     /// <summary>
-    /// Handles click-to-place unit spawning from the local player''s camera view.
+    /// Handles click-to-place unit spawning from the local player's camera view.
     /// </summary>
     public class UnitPlacementController : MonoBehaviour
     {
@@ -15,12 +15,16 @@ namespace PokeChess.Autobattler
         [SerializeField] private Camera targetCamera;
         [SerializeField] private float ghostZ = -0.1f;
         [SerializeField] private LayerMask tileMask = ~0;
+        [SerializeField] private byte defaultUnitTypeId;
 
         private GameObject _activeGhost;
         private bool _isPlacementMode;
+        private byte _selectedUnitTypeId;
 
         private void Awake()
         {
+            _selectedUnitTypeId = defaultUnitTypeId;
+
             if (targetCamera == null)
             {
                 targetCamera = Camera.main;
@@ -52,10 +56,20 @@ namespace PokeChess.Autobattler
         /// </summary>
         public void BeginPlacementMode()
         {
+            BeginPlacementMode(_selectedUnitTypeId);
+        }
+
+        /// <summary>
+        /// UI button entry point that selects a unit type before entering placement mode.
+        /// </summary>
+        public void BeginPlacementMode(int unitTypeId)
+        {
             if (_isPlacementMode)
             {
                 return;
             }
+
+            _selectedUnitTypeId = (byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue);
 
             if (unitSpawner == null)
             {
@@ -68,14 +82,31 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            if (unitGhostPrefab == null)
+            if (!unitSpawner.IsValidUnitType(_selectedUnitTypeId))
             {
-                Debug.LogWarning("UnitGhostPrefab is not assigned.");
+                Debug.LogWarning($"Unit type '{_selectedUnitTypeId}' is not configured.");
                 return;
             }
 
-            _activeGhost = Instantiate(unitGhostPrefab);
+            GameObject ghostPrefab = unitSpawner.GetGhostPrefab(_selectedUnitTypeId);
+            if (ghostPrefab == null)
+            {
+                ghostPrefab = unitGhostPrefab;
+            }
+
+            if (ghostPrefab == null)
+            {
+                Debug.LogWarning("Unit ghost prefab is not assigned.");
+                return;
+            }
+
+            _activeGhost = Instantiate(ghostPrefab);
             _isPlacementMode = true;
+        }
+
+        public void SelectUnitType(int unitTypeId)
+        {
+            _selectedUnitTypeId = (byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue);
         }
 
         private void UpdateGhostPosition(Vector2 pointerScreenPosition)
@@ -108,7 +139,7 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            unitSpawner.RequestSpawn(tile.BoardIndex, tile.Coord);
+            unitSpawner.RequestSpawn(tile.BoardIndex, tile.Coord, _selectedUnitTypeId);
             ExitPlacementMode();
         }
 
@@ -177,4 +208,3 @@ namespace PokeChess.Autobattler
         }
     }
 }
-

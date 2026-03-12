@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace PokeChess.Autobattler
 {
-    /// <summary>
-    /// Owns replicated unit state, board movement, combat logic, and visual syncing.
-    /// Skills are delegated to UnitSkillDefinition assets referenced by UnitStats.
-    /// </summary>
     public class UnitController : NetworkBehaviour
     {
         [SerializeField] private UnitStats stats;
@@ -25,11 +21,23 @@ namespace PokeChess.Autobattler
         [Networked] public NetworkId TargetId { get; private set; }
         [Networked] public TickTimer AttackCooldown { get; private set; }
         [Networked] public byte BoardIndex { get; private set; }
+        [Networked] public byte UnitTypeId { get; private set; }
         [Networked] public NetworkBool IsCombatClone { get; private set; }
         [Networked] public NetworkId SourceUnitId { get; private set; }
+        [Networked] private int NextMoveTick { get; set; }
+        [Networked] private float BuffAttackPowerAdd { get; set; }
+        [Networked] private float BuffArmorAdd { get; set; }
+        [Networked] private float BuffMagicResistAdd { get; set; }
+        [Networked] private float BuffAttackSpeedMul { get; set; }
+        [Networked] private float BuffMoveSpeedMul { get; set; }
+        [Networked] private int BuffAttackRangeAdd { get; set; }
+        [Networked] private TickTimer BuffExpireTimer { get; set; }
+        [Networked] private TickTimer RootExpireTimer { get; set; }
+        [Networked] private TickTimer StunExpireTimer { get; set; }
 
         private bool _pendingInit;
         private byte _pendingBoardIndex;
+        private byte _pendingUnitTypeId;
         private HexCoord _pendingCell;
         private bool _pendingRequireDeployZone = true;
 
@@ -37,8 +45,6 @@ namespace PokeChess.Autobattler
         private NetworkId _pendingCloneSourceUnitId;
         private float _pendingCloneHp;
         private int _pendingCloneMana;
-
-        [Networked] private int NextMoveTick { get; set; }
 
         private GameFlowManager _flow;
         private HexCoord _lastVisualCell;
@@ -54,18 +60,24 @@ namespace PokeChess.Autobattler
         private Collider[] _colliders3D;
         private Collider2D[] _colliders2D;
 
+        private bool _skillMoveLocked;
+        private bool _skillAttackLocked;
+        private UnitSkillRuntime _activeSkillRuntime;
+
         public bool IsNetworkStateReady { get; private set; }
         public UnitStats Stats => stats;
         public UnitSkillDefinition Skill => stats != null ? stats.skill : null;
         public float MaxHp => stats != null ? Mathf.Max(1f, stats.maxHp) : 1f;
         public int MaxMana => stats != null ? Mathf.Max(0, stats.maxMana) : 0;
+        public bool IsAlive => IsNetworkStateReady && HP > 0f;
         public float HealthNormalized => !IsNetworkStateReady || MaxHp <= 0f ? 0f : Mathf.Clamp01(HP / MaxHp);
         public float ManaNormalized => !IsNetworkStateReady || MaxMana <= 0 ? 0f : Mathf.Clamp01((float)Mana / MaxMana);
 
-        public void SetPendingInit(byte boardIndex, HexCoord cell, bool requireDeployZone = true)
+        public void SetPendingInit(byte boardIndex, HexCoord cell, byte unitTypeId, bool requireDeployZone = true)
         {
             _pendingInit = true;
             _pendingBoardIndex = boardIndex;
+            _pendingUnitTypeId = unitTypeId;
             _pendingCell = cell;
             _pendingRequireDeployZone = requireDeployZone;
         }
@@ -88,7 +100,7 @@ namespace PokeChess.Autobattler
             {
                 if (_pendingInit)
                 {
-                    bool ok = InitializeAt(_pendingBoardIndex, _pendingCell, _pendingRequireDeployZone);
+                    bool ok = InitializeAt(_pendingBoardIndex, _pendingCell, _pendingUnitTypeId, _pendingRequireDeployZone);
                     _pendingInit = false;
 
                     if (!ok)
@@ -112,11 +124,13 @@ namespace PokeChess.Autobattler
         private void OnDisable()
         {
             IsNetworkStateReady = false;
+            ClearSkillActionLock();
         }
 
         private void OnDestroy()
         {
             IsNetworkStateReady = false;
+            ClearSkillActionLock();
         }
 
         public override void FixedUpdateNetwork()
@@ -128,7 +142,12 @@ namespace PokeChess.Autobattler
             if (_flow != null && !_flow.ShouldUnitSimulate(this))
                 return;
 
+            UpdateBuffState();
+
             if (HP <= 0f)
+                return;
+
+            if (TickActiveSkillRuntime())
                 return;
 
             if (_flow != null && _flow.FlowState == GameFlowState.Combat)
@@ -137,17 +156,76 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            if (Runner.Tick < NextMoveTick)
+            if (Runner.Tick < NextMoveTick || IsMovementLocked())
                 return;
 
             if (autoMoveToDebugTarget)
             {
                 bool moved = TryMoveOneStep(new HexCoord(debugTargetCoord.x, debugTargetCoord.y));
                 if (moved)
-                {
                     NextMoveTick = Runner.Tick + GetTicksForSeconds(secondsPerStep);
-                }
             }
+        }
+
+        public bool CanContinueSkillRuntime()
+        {
+            return HasStateAuthority && Runner != null && Object != null && IsAlive;
+        }
+
+        public bool TryStartSkillRuntime(UnitSkillRuntime runtime)
+        {
+            if (!HasStateAuthority || runtime == null || _activeSkillRuntime != null || HP <= 0f)
+                return false;
+
+            if (!runtime.Start())
+                return false;
+
+            _activeSkillRuntime = runtime;
+            return true;
+        }
+
+        public void SetSkillActionLock(bool lockMovement, bool lockAttack)
+        {
+            _skillMoveLocked = lockMovement;
+            _skillAttackLocked = lockAttack;
+        }
+
+        public void ClearSkillActionLock()
+        {
+            _skillMoveLocked = false;
+            _skillAttackLocked = false;
+        }
+
+        public bool ApplyRoot(float durationSeconds)
+        {
+            if (!HasStateAuthority || HP <= 0f || durationSeconds <= 0f)
+                return false;
+
+            RootExpireTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds);
+            return true;
+        }
+
+        public bool ApplyStun(float durationSeconds)
+        {
+            if (!HasStateAuthority || HP <= 0f || durationSeconds <= 0f)
+                return false;
+
+            StunExpireTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds);
+            return true;
+        }
+
+        private bool TickActiveSkillRuntime()
+        {
+            if (_activeSkillRuntime == null)
+                return false;
+
+            bool stillRunning = _activeSkillRuntime.Tick();
+            if (stillRunning)
+                return true;
+
+            _activeSkillRuntime.Stop();
+            _activeSkillRuntime = null;
+            return false;
         }
 
         private void TickCombatBehaviour()
@@ -162,11 +240,12 @@ namespace PokeChess.Autobattler
             {
                 if (IsWithinAttackRange(currentTarget, attackRange))
                 {
-                    TryAttack(currentTarget);
+                    if (!IsAttackLocked())
+                        TryAttack(currentTarget);
                     return;
                 }
 
-                if (Runner.Tick < NextMoveTick)
+                if (Runner.Tick < NextMoveTick || IsMovementLocked())
                     return;
 
                 if (TryMoveOneStepToward(currentTarget))
@@ -181,7 +260,7 @@ namespace PokeChess.Autobattler
             }
 
             UnitController attackableEnemy = FindClosestAttackableEnemy();
-            if (attackableEnemy != null)
+            if (attackableEnemy != null && !IsAttackLocked())
             {
                 TargetId = attackableEnemy.Object.Id;
                 TryAttack(attackableEnemy);
@@ -194,7 +273,7 @@ namespace PokeChess.Autobattler
 
             TargetId = nearestEnemy.Object.Id;
 
-            if (Runner.Tick < NextMoveTick)
+            if (Runner.Tick < NextMoveTick || IsMovementLocked())
                 return;
 
             if (TryMoveOneStepToward(nearestEnemy))
@@ -211,19 +290,19 @@ namespace PokeChess.Autobattler
         {
             UnitController attackableEnemy = FindClosestAttackableEnemy();
             if (attackableEnemy != null)
-            {
                 TargetId = attackableEnemy.Object.Id;
-            }
         }
 
         private int GetTicksForSeconds(float seconds)
         {
             float dt = Runner.DeltaTime;
-            if (dt <= 0f) return 1;
+            if (dt <= 0f)
+                return 1;
+
             return Mathf.Max(1, Mathf.RoundToInt(seconds / dt));
         }
 
-        public bool InitializeAt(byte boardIndex, HexCoord spawnCell, bool requireDeployZone = true)
+        public bool InitializeAt(byte boardIndex, HexCoord spawnCell, byte unitTypeId, bool requireDeployZone = true)
         {
             if (!HasStateAuthority || boardManager == null)
                 return false;
@@ -255,7 +334,7 @@ namespace PokeChess.Autobattler
 
         public bool TryMoveOneStep(HexCoord targetCell)
         {
-            if (!HasStateAuthority || boardManager == null)
+            if (!HasStateAuthority || boardManager == null || IsMovementLocked())
                 return false;
 
             if (!HexPathfinder.TryFindPath(boardManager, BoardIndex, Cell, targetCell, out List<HexCoord> path))
@@ -300,18 +379,22 @@ namespace PokeChess.Autobattler
 
         private void SnapToCellImmediate()
         {
-            if (_flow == null) _flow = FindAnyObjectByType<GameFlowManager>();
-            if (_flow == null) return;
+            if (_flow == null)
+                _flow = FindAnyObjectByType<GameFlowManager>();
+            if (_flow == null)
+                return;
 
-            var position = _flow.GetCellWorldPosition(BoardIndex, Cell);
+            Vector3 position = _flow.GetCellWorldPosition(BoardIndex, Cell);
             position.z = unitZ;
             transform.position = position;
         }
 
         private void StartVisualLerpToCell()
         {
-            if (_flow == null) _flow = FindAnyObjectByType<GameFlowManager>();
-            if (_flow == null) return;
+            if (_flow == null)
+                _flow = FindAnyObjectByType<GameFlowManager>();
+            if (_flow == null)
+                return;
 
             _lerping = true;
             _lerpStartTime = Time.time;
@@ -333,6 +416,77 @@ namespace PokeChess.Autobattler
             TargetId = default;
             AttackCooldown = TickTimer.None;
             return true;
+        }
+
+        public bool TryTeleportBehindTarget(UnitController target)
+        {
+            if (!HasStateAuthority || target == null || !IsEnemyCombatUnit(target) || boardManager == null)
+                return false;
+
+            if (!TryFindCellBehindTarget(target, out HexCoord teleportCell))
+                return false;
+
+            return ForceRelocateToBoard(BoardIndex, teleportCell);
+        }
+
+        private bool TryFindCellBehindTarget(UnitController target, out HexCoord teleportCell)
+        {
+            teleportCell = default;
+            int bestDistance = int.MinValue;
+            bool found = false;
+
+            foreach (HexCoord neighbor in boardManager.GetNeighbors(target.Cell))
+            {
+                if (boardManager.IsOccupied(BoardIndex, neighbor))
+                    continue;
+
+                int distanceFromCaster = HexCoord.Distance(neighbor, Cell);
+                if (!found || distanceFromCaster > bestDistance)
+                {
+                    bestDistance = distanceFromCaster;
+                    teleportCell = neighbor;
+                    found = true;
+                }
+            }
+
+            return found;
+        }
+
+        public void SetCurrentTarget(UnitController target)
+        {
+            if (target == null || !IsEnemyCombatUnit(target))
+            {
+                TargetId = default;
+                return;
+            }
+
+            TargetId = target.Object.Id;
+        }
+
+        public void PlaySkillProjectileVisual(HexCoord from, HexCoord to, float durationSeconds)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            RpcPlaySkillProjectileVisual(from, to, durationSeconds);
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RpcPlaySkillProjectileVisual(HexCoord from, HexCoord to, float durationSeconds)
+        {
+            if (Skill is not IProjectileVisualSkillDefinition visualSkill || visualSkill.ProjectileViewPrefab == null)
+                return;
+
+            _flow ??= FindAnyObjectByType<GameFlowManager>();
+            if (_flow == null)
+                return;
+
+            Vector3 start = _flow.GetCellWorldPosition(BoardIndex, from) + visualSkill.ProjectileViewOffset;
+            Vector3 end = _flow.GetCellWorldPosition(BoardIndex, to) + visualSkill.ProjectileViewOffset;
+            SkillProjectileView view = Instantiate(visualSkill.ProjectileViewPrefab, start, Quaternion.identity);
+            view.Initialize(start);
+            view.SetSegment(start, end, durationSeconds);
+            Destroy(view.gameObject, Mathf.Max(0.5f, durationSeconds + 0.5f));
         }
 
         public bool RemoveFromBoard()
@@ -396,14 +550,55 @@ namespace PokeChess.Autobattler
             return true;
         }
 
+        public bool ApplyBuff(IReadOnlyList<StatBuffEffect> effects, float durationSeconds)
+        {
+            if (!HasStateAuthority || HP <= 0f || effects == null || effects.Count == 0 || durationSeconds <= 0f)
+                return false;
+
+            ClearBuffState();
+
+            for (int i = 0; i < effects.Count; i++)
+            {
+                StatBuffEffect effect = effects[i];
+                float multiplier = effect.multiplier == 0f ? 1f : Mathf.Max(0f, effect.multiplier);
+
+                switch (effect.statType)
+                {
+                    case BuffStatType.AttackPower:
+                        BuffAttackPowerAdd += effect.additiveAmount;
+                        break;
+                    case BuffStatType.Armor:
+                        BuffArmorAdd += effect.additiveAmount;
+                        break;
+                    case BuffStatType.MagicResist:
+                        BuffMagicResistAdd += effect.additiveAmount;
+                        break;
+                    case BuffStatType.AttackSpeed:
+                        BuffAttackSpeedMul *= multiplier;
+                        if (BuffAttackSpeedMul <= 0f)
+                            BuffAttackSpeedMul = multiplier;
+                        break;
+                    case BuffStatType.MoveSpeed:
+                        BuffMoveSpeedMul *= multiplier;
+                        if (BuffMoveSpeedMul <= 0f)
+                            BuffMoveSpeedMul = multiplier;
+                        break;
+                    case BuffStatType.AttackRange:
+                        BuffAttackRangeAdd += Mathf.RoundToInt(effect.additiveAmount);
+                        break;
+                }
+            }
+
+            BuffExpireTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds);
+            return true;
+        }
+
         private void ResolveManaThreshold()
         {
             if (Mana < MaxMana)
                 return;
 
             UnitController preferredTarget = GetCurrentValidTarget();
-
-            // Reaching max mana immediately attempts skill usage, and failure still consumes mana.
             Mana = 0;
             TryCastSkill(preferredTarget);
         }
@@ -422,6 +617,11 @@ namespace PokeChess.Autobattler
             TargetId = default;
             AttackCooldown = TickTimer.None;
             NextMoveTick = default;
+            ClearBuffState();
+            RootExpireTimer = TickTimer.None;
+            StunExpireTimer = TickTimer.None;
+            ClearSkillActionLock();
+            _activeSkillRuntime = null;
 
             if (_pendingCombatClone)
             {
@@ -460,7 +660,7 @@ namespace PokeChess.Autobattler
 
         private UnitController FindClosestEnemy(int maxDistance = int.MaxValue, bool requireAttackRange = false)
         {
-            var allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            UnitController[] allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
             UnitController best = null;
             int bestDistance = int.MaxValue;
 
@@ -495,12 +695,118 @@ namespace PokeChess.Autobattler
             return FindClosestEnemy(maxDistance: range);
         }
 
+        public UnitController FindFarthestEnemyInRange(int range)
+        {
+            if (range < 0)
+                return null;
+
+            UnitController[] allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            UnitController best = null;
+            int bestDistance = int.MinValue;
+
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                UnitController candidate = allUnits[i];
+                if (!IsEnemyCombatUnit(candidate))
+                    continue;
+
+                int distance = HexCoord.Distance(Cell, candidate.Cell);
+                if (distance > range)
+                    continue;
+
+                if (distance > bestDistance)
+                {
+                    best = candidate;
+                    bestDistance = distance;
+                }
+            }
+
+            return best;
+        }
+
+        public UnitController FindLowestHealthAllyInRange(int range, bool includeSelf)
+        {
+            if (range < 0)
+                return null;
+
+            UnitController[] allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            UnitController best = null;
+            float bestRatio = float.MaxValue;
+            int bestDistance = int.MaxValue;
+
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                UnitController candidate = allUnits[i];
+                if (!IsFriendlyCombatUnit(candidate, includeSelf))
+                    continue;
+
+                int distance = HexCoord.Distance(Cell, candidate.Cell);
+                if (distance > range)
+                    continue;
+
+                float ratio = candidate.MaxHp <= 0f ? 1f : candidate.HP / candidate.MaxHp;
+                if (ratio < bestRatio || (Mathf.Approximately(ratio, bestRatio) && distance < bestDistance))
+                {
+                    best = candidate;
+                    bestRatio = ratio;
+                    bestDistance = distance;
+                }
+            }
+
+            return best;
+        }
+
+        public List<UnitController> FindUnitsInRange(HexCoord center, int range, SkillTargetTeam targetTeam, bool includeSelf)
+        {
+            var results = new List<UnitController>();
+            if (range < 0)
+                return results;
+
+            UnitController[] allUnits = FindObjectsByType<UnitController>(FindObjectsSortMode.None);
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                UnitController candidate = allUnits[i];
+                if (!MatchesTargetTeam(candidate, targetTeam, includeSelf))
+                    continue;
+
+                if (HexCoord.Distance(center, candidate.Cell) <= range)
+                    results.Add(candidate);
+            }
+
+            return results;
+        }
+
         public bool IsEnemyInRange(UnitController target, int range)
         {
             if (!IsEnemyCombatUnit(target))
                 return false;
 
             return IsWithinRange(target, range);
+        }
+
+        public bool IsAllyInRange(UnitController target, int range, bool includeSelf)
+        {
+            if (!IsFriendlyCombatUnit(target, includeSelf))
+                return false;
+
+            return IsWithinRange(target, range);
+        }
+
+        private bool MatchesTargetTeam(UnitController candidate, SkillTargetTeam targetTeam, bool includeSelf)
+        {
+            switch (targetTeam)
+            {
+                case SkillTargetTeam.Enemy:
+                    return IsEnemyCombatUnit(candidate);
+                case SkillTargetTeam.Ally:
+                    return IsFriendlyCombatUnit(candidate, includeSelf: false);
+                case SkillTargetTeam.AllyOrSelf:
+                    return IsFriendlyCombatUnit(candidate, includeSelf);
+                case SkillTargetTeam.Self:
+                    return candidate == this && IsFriendlyCombatUnit(candidate, includeSelf: true);
+                default:
+                    return false;
+            }
         }
 
         private bool IsEnemyCombatUnit(UnitController candidate)
@@ -515,6 +821,23 @@ namespace PokeChess.Autobattler
                 return false;
 
             return GetCombatTeamBoardIndex(candidate) != GetCombatTeamBoardIndex(this);
+        }
+
+        private bool IsFriendlyCombatUnit(UnitController candidate, bool includeSelf)
+        {
+            if (candidate == null)
+                return false;
+
+            if (!includeSelf && candidate == this)
+                return false;
+
+            if (!candidate.IsNetworkStateReady || candidate.Object == null)
+                return false;
+
+            if (!candidate.IsCombatClone || candidate.BoardIndex != BoardIndex || candidate.HP <= 0f)
+                return false;
+
+            return GetCombatTeamBoardIndex(candidate) == GetCombatTeamBoardIndex(this);
         }
 
         private byte GetCombatTeamBoardIndex(UnitController unit)
@@ -539,7 +862,7 @@ namespace PokeChess.Autobattler
 
         private bool TryAttack(UnitController target)
         {
-            if (target == null || !IsEnemyCombatUnit(target))
+            if (target == null || !IsEnemyCombatUnit(target) || IsAttackLocked())
                 return false;
 
             if (!IsWithinAttackRange(target))
@@ -559,7 +882,7 @@ namespace PokeChess.Autobattler
 
         private float GetAttackDamageAgainst(UnitController target)
         {
-            float rawDamage = stats != null ? stats.attackPower : 1f;
+            float rawDamage = GetAttackPower();
             return CalculateDamageAfterResistance(target, rawDamage, DamageType.Physical);
         }
 
@@ -575,11 +898,11 @@ namespace PokeChess.Autobattler
         private float CalculateDamageAfterResistance(UnitController target, float rawDamage, DamageType damageType)
         {
             float resistance = 0f;
-            if (target != null && target.stats != null)
+            if (target != null)
             {
                 resistance = damageType == DamageType.Physical
-                    ? target.stats.armor
-                    : target.stats.magicResist;
+                    ? target.GetArmor()
+                    : target.GetMagicResist();
             }
 
             return ApplyResistance(rawDamage, resistance);
@@ -592,9 +915,7 @@ namespace PokeChess.Autobattler
                 return 0f;
 
             if (resistance >= 0f)
-            {
                 return clampedRawDamage / (1f + resistance * 0.01f);
-            }
 
             return clampedRawDamage * (2f - 1f / (1f - resistance * 0.01f));
         }
@@ -621,7 +942,7 @@ namespace PokeChess.Autobattler
 
         private float GetAttackIntervalSeconds()
         {
-            float attackSpeed = stats != null ? stats.attackSpeed : 1f;
+            float attackSpeed = GetAttackSpeed();
             if (attackSpeed <= 0f)
                 return 1f;
 
@@ -630,12 +951,13 @@ namespace PokeChess.Autobattler
 
         private int GetAttackRange()
         {
-            return Mathf.Max(1, stats != null ? stats.attackRange : 1);
+            float baseRange = stats != null ? stats.attackRange : 1;
+            return Mathf.Max(1, Mathf.RoundToInt(baseRange + BuffAttackRangeAdd));
         }
 
         private int GetMoveTickInterval()
         {
-            float moveSpeed = stats != null ? stats.moveSpeed : 1f;
+            float moveSpeed = GetMoveSpeed();
             if (moveSpeed <= 0f)
                 return int.MaxValue / 4;
 
@@ -652,9 +974,41 @@ namespace PokeChess.Autobattler
             return stats != null ? Mathf.Max(0, stats.manaGainOnHit) : 10;
         }
 
+        private float GetAttackPower()
+        {
+            float baseValue = stats != null ? stats.attackPower : 1f;
+            return Mathf.Max(0f, baseValue + BuffAttackPowerAdd);
+        }
+
+        private float GetArmor()
+        {
+            float baseValue = stats != null ? stats.armor : 0f;
+            return baseValue + BuffArmorAdd;
+        }
+
+        private float GetMagicResist()
+        {
+            float baseValue = stats != null ? stats.magicResist : 0f;
+            return baseValue + BuffMagicResistAdd;
+        }
+
+        private float GetAttackSpeed()
+        {
+            float baseValue = stats != null ? stats.attackSpeed : 1f;
+            float multiplier = BuffAttackSpeedMul <= 0f ? 1f : BuffAttackSpeedMul;
+            return Mathf.Max(0.1f, baseValue * multiplier);
+        }
+
+        private float GetMoveSpeed()
+        {
+            float baseValue = stats != null ? stats.moveSpeed : 1f;
+            float multiplier = BuffMoveSpeedMul <= 0f ? 1f : BuffMoveSpeedMul;
+            return Mathf.Max(0f, baseValue * multiplier);
+        }
+
         private bool TryMoveOneStepToward(UnitController target)
         {
-            if (target == null || boardManager == null)
+            if (target == null || boardManager == null || IsMovementLocked())
                 return false;
 
             if (!TryGetBestPathStepToward(target, out HexCoord nextStep))
@@ -690,8 +1044,7 @@ namespace PokeChess.Autobattler
                     if (path.Count < 2)
                         continue;
 
-                    if (path.Count < bestPathLength
-                        || (path.Count == bestPathLength && targetDistance < bestTargetDistance))
+                    if (path.Count < bestPathLength || (path.Count == bestPathLength && targetDistance < bestTargetDistance))
                     {
                         bestPath = path;
                         bestPathLength = path.Count;
@@ -707,21 +1060,58 @@ namespace PokeChess.Autobattler
             return true;
         }
 
+        private void UpdateBuffState()
+        {
+            if (!HasStateAuthority)
+                return;
+
+            if (BuffExpireTimer.IsRunning && BuffExpireTimer.Expired(Runner))
+                ClearBuffState();
+        }
+
+        private bool IsMovementLocked()
+        {
+            return _skillMoveLocked || IsTimerActive(RootExpireTimer) || IsTimerActive(StunExpireTimer);
+        }
+
+        private bool IsAttackLocked()
+        {
+            return _skillAttackLocked || IsTimerActive(StunExpireTimer);
+        }
+
+        private bool IsTimerActive(TickTimer timer)
+        {
+            return timer.IsRunning && !timer.ExpiredOrNotRunning(Runner);
+        }
+
+        private void ClearBuffState()
+        {
+            BuffAttackPowerAdd = 0f;
+            BuffArmorAdd = 0f;
+            BuffMagicResistAdd = 0f;
+            BuffAttackSpeedMul = 1f;
+            BuffMoveSpeedMul = 1f;
+            BuffAttackRangeAdd = 0;
+            BuffExpireTimer = TickTimer.None;
+        }
+
         private void HandleDeath()
         {
             TargetId = default;
             AttackCooldown = TickTimer.None;
             NextMoveTick = default;
+            ClearBuffState();
+            RootExpireTimer = TickTimer.None;
+            StunExpireTimer = TickTimer.None;
+            _activeSkillRuntime?.Stop();
+            _activeSkillRuntime = null;
+            ClearSkillActionLock();
 
             if (boardManager != null)
-            {
                 boardManager.RemoveUnit(BoardIndex, Cell);
-            }
 
             if (Object != null && Runner != null)
-            {
                 Runner.Despawn(Object);
-            }
         }
 
         private void CacheVisualComponents()
@@ -769,3 +1159,8 @@ namespace PokeChess.Autobattler
         }
     }
 }
+
+
+
+
+
