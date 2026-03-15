@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: PiercingRootProjectileSkill
   m_EditorClassIdentifier: Assembly-CSharp::PiercingRootProjectileSkillDefinition
-  castRange: 1
+  castRange: 5
   damageType: 1
   damage: 50
   projectileCellsPerSecond: 6
-  onHitStatus: {fileID: 0}
+  onHitStatus: {fileID: 11400000, guid: 2d48d70296a68774cb313d21ca0864c1, type: 2}
+  projectileViewPrefab: {fileID: 8462122863363019367, guid: 66cb6524a1152894eafc9e24ab188c4c, type: 3}
+  projectileViewOffset: {x: 0, y: 0, z: 0}

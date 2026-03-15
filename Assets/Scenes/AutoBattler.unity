@@ -170,6 +170,7 @@ MonoBehaviour:
   tileMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  defaultUnitTypeId: 0
 --- !u!1 &131211016
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,67 +308,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1001 &460339272
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -9038875942853718213, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: SortKey
-      value: 3778183754
-      objectReference: {fileID: 0}
-    - target: {fileID: 5724598627955368034, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_Name
-      value: Bulbasaur
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7130726428380087940, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c3c1f35dac931e541ab6375135c9cb01, type: 3}
 --- !u!1 &538667367
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,7 +656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardGenerator: {fileID: 538667368}
-  unitSpawner: {fileID: 0}
+  unitSpawner: {fileID: 1738083387}
   generateBoardOnSpawn: 1
   targetCamera: {fileID: 0}
   cameraOffset: {x: 0, y: 0, z: -10}
@@ -957,11 +897,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4587e8f1f4844db0843d26ef51c8ce39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PokeChess.Autobattler.UnitSpawner
-  unitPrefab:
-    RawGuidValue: 4835ea639193acc4dbd6d836d153e1f1
-  boardManager: {fileID: 0}
-  flowManager: {fileID: 0}
-  boardGenerator: {fileID: 0}
+  spawnableUnits:
+  - prefab:
+      RawGuidValue: c3c1f35dac931e541ab6375135c9cb01
+    ghostPrefab: {fileID: 5724598627955368034, guid: 9dabdd148eebe5f45b10e9cc2f90e276, type: 3}
+  boardManager: {fileID: 1460598105}
+  flowManager: {fileID: 1116893493}
+  boardGenerator: {fileID: 538667368}
   unitZ: -1
 --- !u!4 &1738083388
 Transform:
@@ -1121,4 +1063,3 @@ SceneRoots:
   - {fileID: 816673856}
   - {fileID: 783940769}
   - {fileID: 656843139}
-  - {fileID: 460339272}

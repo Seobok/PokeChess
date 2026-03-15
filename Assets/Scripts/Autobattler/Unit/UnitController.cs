@@ -71,7 +71,6 @@ namespace PokeChess.Autobattler
         [Networked] private int AnimationEventSequence { get; set; }
         [Networked] private NetworkBool IsDead { get; set; }
         [Networked] private TickTimer DeathDespawnTimer { get; set; }
-        [Networked] private int NextMoveTick { get; set; }
 
         private GameFlowManager _flow;
         private HexCoord _lastVisualCell;
@@ -1185,9 +1184,6 @@ namespace PokeChess.Autobattler
 
             if (boardManager != null)
                 boardManager.RemoveUnit(BoardIndex, Cell);
-
-            if (Object != null && Runner != null)
-                Runner.Despawn(Object);
         }
 
         private void CacheVisualComponents()
@@ -1311,8 +1307,6 @@ namespace PokeChess.Autobattler
         }
     }
 }
-
-
 
 
 
