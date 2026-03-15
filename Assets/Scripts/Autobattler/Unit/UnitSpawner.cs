@@ -8,7 +8,14 @@ using UnityEngine;
 /// </summary>
 public class UnitSpawner : NetworkBehaviour
 {
-    [SerializeField] private NetworkPrefabRef unitPrefab;
+    [Serializable]
+    private struct SpawnableUnitEntry
+    {
+        public NetworkPrefabRef prefab;
+        public GameObject ghostPrefab;
+    }
+
+    [SerializeField] private SpawnableUnitEntry[] spawnableUnits;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private GameFlowManager flowManager;
     [SerializeField] private HexBoardGenerator boardGenerator;
@@ -24,16 +31,36 @@ public class UnitSpawner : NetworkBehaviour
     /// </summary>
     public void RequestSpawn(byte boardIndex, HexCoord cell)
     {
-        if (Runner == null || !unitPrefab.IsValid)
+        RequestSpawn(boardIndex, cell, 0);
+    }
+
+    /// <summary>
+    /// Requests a unit spawn for a specific unit type.
+    /// </summary>
+    public void RequestSpawn(byte boardIndex, HexCoord cell, byte unitTypeId)
+    {
+        if (Runner == null || !TryGetSpawnableUnit(unitTypeId, out _))
             return;
 
         if (HasStateAuthority)
         {
-            SpawnOnServer(boardIndex, cell, Runner.LocalPlayer);
+            SpawnOnServer(boardIndex, cell, unitTypeId, Runner.LocalPlayer);
             return;
         }
 
-        RPC_RequestSpawn(boardIndex, cell.Q, cell.R);
+        RPC_RequestSpawn(boardIndex, cell.Q, cell.R, unitTypeId);
+    }
+
+    public bool IsValidUnitType(byte unitTypeId)
+    {
+        return TryGetSpawnableUnit(unitTypeId, out _);
+    }
+
+    public GameObject GetGhostPrefab(byte unitTypeId)
+    {
+        return TryGetSpawnableUnit(unitTypeId, out SpawnableUnitEntry entry)
+            ? entry.ghostPrefab
+            : null;
     }
 
     /// <summary>
@@ -52,11 +79,15 @@ public class UnitSpawner : NetworkBehaviour
         if (!EnsureDependencies())
             return false;
 
+        if (!TryGetSpawnableUnit(sourceUnit.UnitTypeId, out _))
+            return false;
+
         if (!boardManager.IsInside(cell) || boardManager.IsOccupied(boardIndex, cell))
             return false;
 
         PlayerRef inputAuthority = sourceUnit.Object.InputAuthority;
         return TrySpawnUnit(
+            sourceUnit.UnitTypeId,
             boardIndex,
             cell,
             inputAuthority,
@@ -66,20 +97,23 @@ public class UnitSpawner : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_RequestSpawn(byte boardIndex, int q, int r, RpcInfo info = default)
+    private void RPC_RequestSpawn(byte boardIndex, int q, int r, byte unitTypeId, RpcInfo info = default)
     {
-        SpawnOnServer(boardIndex, new HexCoord(q, r), info.Source);
+        SpawnOnServer(boardIndex, new HexCoord(q, r), unitTypeId, info.Source);
     }
 
     /// <summary>
     /// Validates ownership and deploy rules before creating the networked unit.
     /// </summary>
-    private void SpawnOnServer(byte boardIndex, HexCoord cell, PlayerRef requester)
+    private void SpawnOnServer(byte boardIndex, HexCoord cell, byte unitTypeId, PlayerRef requester)
     {
         if (!HasStateAuthority)
             return;
 
         if (!EnsureDependencies())
+            return;
+
+        if (!TryGetSpawnableUnit(unitTypeId, out _))
             return;
 
         if (!flowManager.TryGetBoardIndex(requester, out byte assigned))
@@ -94,13 +128,14 @@ public class UnitSpawner : NetworkBehaviour
         if (boardManager.IsOccupied(boardIndex, cell))
             return;
 
-        TrySpawnUnit(boardIndex, cell, requester, requireDeployZone: true, configureBeforeSpawn: null, out _);
+        TrySpawnUnit(unitTypeId, boardIndex, cell, requester, requireDeployZone: true, configureBeforeSpawn: null, out _);
     }
 
     /// <summary>
     /// Creates the network object and injects pending board state before spawn completes.
     /// </summary>
     private bool TrySpawnUnit(
+        byte unitTypeId,
         byte boardIndex,
         HexCoord cell,
         PlayerRef inputAuthority,
@@ -110,7 +145,7 @@ public class UnitSpawner : NetworkBehaviour
     {
         spawnedObj = null;
 
-        if (Runner == null || !unitPrefab.IsValid)
+        if (Runner == null || !TryGetSpawnableUnit(unitTypeId, out SpawnableUnitEntry entry))
             return false;
 
         Vector3 origin = flowManager.GetBoardOrigin(boardIndex);
@@ -118,7 +153,7 @@ public class UnitSpawner : NetworkBehaviour
         pos.z = unitZ;
 
         spawnedObj = Runner.Spawn(
-            unitPrefab,
+            entry.prefab,
             pos,
             Quaternion.identity,
             inputAuthority: inputAuthority,
@@ -131,11 +166,22 @@ public class UnitSpawner : NetworkBehaviour
                 if (unit == null)
                     return;
 
-                unit.SetPendingInit(boardIndex, cell, requireDeployZone);
+                unit.SetPendingInit(boardIndex, cell, unitTypeId, requireDeployZone);
                 configureBeforeSpawn?.Invoke(unit);
             });
 
         return spawnedObj != null;
+    }
+
+    private bool TryGetSpawnableUnit(byte unitTypeId, out SpawnableUnitEntry entry)
+    {
+        entry = default;
+
+        if (spawnableUnits == null || unitTypeId >= spawnableUnits.Length)
+            return false;
+
+        entry = spawnableUnits[unitTypeId];
+        return entry.prefab.IsValid;
     }
 
     /// <summary>
