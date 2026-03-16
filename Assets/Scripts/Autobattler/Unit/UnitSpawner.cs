@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using PokeChess.Autobattler;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class UnitSpawner : NetworkBehaviour
     {
         public NetworkPrefabRef prefab;
         public GameObject ghostPrefab;
+        public Sprite buttonSprite;
     }
 
     [SerializeField] private SpawnableUnitEntry[] spawnableUnits;
@@ -61,6 +63,38 @@ public class UnitSpawner : NetworkBehaviour
         return TryGetSpawnableUnit(unitTypeId, out SpawnableUnitEntry entry)
             ? entry.ghostPrefab
             : null;
+    }
+
+    public Sprite GetButtonSprite(byte unitTypeId)
+    {
+        return TryGetSpawnableUnit(unitTypeId, out SpawnableUnitEntry entry)
+            ? entry.buttonSprite
+            : null;
+    }
+
+    public bool TryGetRandomSpawnableUnitType(out byte unitTypeId)
+    {
+        unitTypeId = 0;
+
+        if (spawnableUnits == null || spawnableUnits.Length == 0)
+            return false;
+
+        List<byte> validUnitTypes = null;
+        for (byte i = 0; i < spawnableUnits.Length; i++)
+        {
+            if (!spawnableUnits[i].prefab.IsValid)
+                continue;
+
+            validUnitTypes ??= new List<byte>();
+            validUnitTypes.Add(i);
+        }
+
+        if (validUnitTypes == null || validUnitTypes.Count == 0)
+            return false;
+
+        int randomIndex = UnityEngine.Random.Range(0, validUnitTypes.Count);
+        unitTypeId = validUnitTypes[randomIndex];
+        return true;
     }
 
     /// <summary>

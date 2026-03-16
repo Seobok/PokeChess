@@ -1,6 +1,9 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace PokeChess.Autobattler
 {
@@ -15,19 +18,35 @@ namespace PokeChess.Autobattler
         [SerializeField] private float ghostZ = -0.1f;
         [SerializeField] private LayerMask tileMask = ~0;
         [SerializeField] private byte defaultUnitTypeId;
+        [Header("Random Summon Buttons")]
+        [SerializeField] private Button[] summonButtons = new Button[5];
 
         private GameObject _activeGhost;
         private bool _isPlacementMode;
         private byte _selectedUnitTypeId;
+        private byte[] _randomSummonUnitTypeIds;
+        private UnityAction[] _summonButtonActions;
 
         private void Awake()
         {
             _selectedUnitTypeId = defaultUnitTypeId;
+            _randomSummonUnitTypeIds = new byte[summonButtons != null ? summonButtons.Length : 0];
+            _summonButtonActions = new UnityAction[summonButtons != null ? summonButtons.Length : 0];
 
             if (targetCamera == null)
             {
                 targetCamera = Camera.main;
             }
+        }
+
+        private void Start()
+        {
+            RefreshRandomSummonButtons();
+        }
+
+        private void OnDestroy()
+        {
+            UnbindSummonButtons();
         }
 
         private void Update()
@@ -106,6 +125,125 @@ namespace PokeChess.Autobattler
         public void SelectUnitType(int unitTypeId)
         {
             _selectedUnitTypeId = (byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue);
+        }
+
+        [ContextMenu("Refresh Random Summon Buttons")]
+        public void RefreshRandomSummonButtons()
+        {
+            if (unitSpawner == null)
+            {
+                unitSpawner = FindAnyObjectByType<UnitSpawner>();
+            }
+
+            if (unitSpawner == null || summonButtons == null || summonButtons.Length == 0)
+            {
+                return;
+            }
+
+            if (_randomSummonUnitTypeIds == null || _randomSummonUnitTypeIds.Length != summonButtons.Length)
+            {
+                _randomSummonUnitTypeIds = new byte[summonButtons.Length];
+            }
+
+            if (_summonButtonActions == null || _summonButtonActions.Length != summonButtons.Length)
+            {
+                _summonButtonActions = new UnityAction[summonButtons.Length];
+            }
+
+            for (int i = 0; i < summonButtons.Length; i++)
+            {
+                Button button = summonButtons[i];
+                if (button == null)
+                {
+                    continue;
+                }
+
+                if (!unitSpawner.TryGetRandomSpawnableUnitType(out byte randomUnitTypeId))
+                {
+                    button.interactable = false;
+                    continue;
+                }
+
+                _randomSummonUnitTypeIds[i] = randomUnitTypeId;
+                BindSummonButton(button, i);
+                button.interactable = true;
+                UpdateSummonButtonVisual(button, randomUnitTypeId);
+            }
+        }
+
+        public void OnClickRandomSummonButton(int buttonIndex)
+        {
+            if (summonButtons == null || buttonIndex < 0 || buttonIndex >= summonButtons.Length)
+            {
+                return;
+            }
+
+            if (_randomSummonUnitTypeIds == null || buttonIndex >= _randomSummonUnitTypeIds.Length)
+            {
+                return;
+            }
+
+            BeginPlacementMode(_randomSummonUnitTypeIds[buttonIndex]);
+        }
+
+        private void BindSummonButton(Button button, int buttonIndex)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            // These summon buttons may still have old inspector-persistent listeners.
+            // Replace the click event so only the runtime-assigned slot action remains.
+            button.onClick = new Button.ButtonClickedEvent();
+
+            UnityAction action = () => OnClickRandomSummonButton(buttonIndex);
+            _summonButtonActions[buttonIndex] = action;
+            button.onClick.AddListener(action);
+        }
+
+        private void UnbindSummonButtons()
+        {
+            if (summonButtons == null || _summonButtonActions == null)
+            {
+                return;
+            }
+
+            int count = Mathf.Min(summonButtons.Length, _summonButtonActions.Length);
+            for (int i = 0; i < count; i++)
+            {
+                if (summonButtons[i] == null || _summonButtonActions[i] == null)
+                {
+                    continue;
+                }
+
+                summonButtons[i].onClick.RemoveListener(_summonButtonActions[i]);
+            }
+        }
+
+        private void UpdateSummonButtonVisual(Button button, byte unitTypeId)
+        {
+            if (button == null || unitSpawner == null)
+            {
+                return;
+            }
+
+            Sprite buttonSprite = unitSpawner.GetButtonSprite(unitTypeId);
+            if (button.image != null)
+            {
+                button.image.sprite = buttonSprite;
+                button.image.enabled = buttonSprite != null;
+            }
+
+            TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null)
+            {
+                label.gameObject.SetActive(buttonSprite == null);
+                if (buttonSprite == null)
+                {
+                    label.text = unitTypeId.ToString();
+                }
+            }
         }
 
         private void UpdateGhostPosition(Vector2 pointerScreenPosition)
