@@ -1,4 +1,3 @@
-using Fusion;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;

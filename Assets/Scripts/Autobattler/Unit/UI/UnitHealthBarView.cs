@@ -21,6 +21,8 @@ public class UnitHealthBarView : MonoBehaviour
     private bool _uiInitialized;
     private bool _lastVisibleState = true;
     private readonly List<RectTransform> _ticks = new();
+    private Vector3 _initialLocalPosition;
+    private bool _localPositionCached;
 
     private void Awake()
     {
@@ -32,6 +34,8 @@ public class UnitHealthBarView : MonoBehaviour
 
         if (targetCanvas == null)
             targetCanvas = GetComponentInChildren<Canvas>(true);
+
+        CacheInitialLocalPosition();
     }
 
     private void LateUpdate()
@@ -58,10 +62,8 @@ public class UnitHealthBarView : MonoBehaviour
             RefreshFill();
         }
 
-        if (faceCamera && targetCamera != null)
-        {
-            transform.forward = targetCamera.transform.forward;
-        }
+        FaceCameraIfNeeded();
+        UpdateAnchoredHeightForCamera();
     }
 
     private void UpdateVisibility()
@@ -129,5 +131,47 @@ public class UnitHealthBarView : MonoBehaviour
             tick.anchoredPosition = new Vector2(width * t, 0f);
             _ticks.Add(tick);
         }
+    }
+
+    private void FaceCameraIfNeeded()
+    {
+        if (!faceCamera)
+            return;
+
+        if (targetCamera == null || !targetCamera.isActiveAndEnabled)
+            targetCamera = Camera.main;
+
+        if (targetCamera == null)
+            return;
+
+        // Keep the bar upright on screen even when the combat camera is rolled 180 degrees.
+        transform.rotation = Quaternion.LookRotation(targetCamera.transform.forward, Vector3.up);
+    }
+
+    private void UpdateAnchoredHeightForCamera()
+    {
+        CacheInitialLocalPosition();
+
+        Vector3 localPosition = _initialLocalPosition;
+        localPosition.y = ShouldInvertVerticalOffset() ? -Mathf.Abs(_initialLocalPosition.y) : Mathf.Abs(_initialLocalPosition.y);
+        transform.localPosition = localPosition;
+    }
+
+    private void CacheInitialLocalPosition()
+    {
+        if (_localPositionCached)
+            return;
+
+        _initialLocalPosition = transform.localPosition;
+        _localPositionCached = true;
+    }
+
+    private bool ShouldInvertVerticalOffset()
+    {
+        if (targetCamera == null)
+            return false;
+
+        float zRotation = Mathf.Repeat(targetCamera.transform.eulerAngles.z, 360f);
+        return Mathf.Abs(Mathf.DeltaAngle(zRotation, 180f)) < 1f;
     }
 }

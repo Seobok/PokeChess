@@ -932,6 +932,10 @@ namespace PokeChess.Autobattler
             if (target == null || !IsEnemyCombatUnit(target) || IsAttackLocked())
                 return false;
 
+            // Do not attack until the current movement step has fully elapsed.
+            if (Runner != null && Runner.Tick < NextMoveTick)
+                return false;
+
             if (!IsWithinAttackRange(target))
                 return false;
 
