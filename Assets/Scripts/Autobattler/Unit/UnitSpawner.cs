@@ -28,6 +28,26 @@ public class UnitSpawner : NetworkBehaviour
         EnsureDependencies();
     }
 
+    public bool TryFindFirstEmptyBenchSlot(byte boardIndex, out HexCoord cell)
+    {
+        cell = default;
+
+        if (!EnsureDependencies())
+            return false;
+
+        for (int i = 0; i < BoardManager.BenchSlotCount; i++)
+        {
+            HexCoord candidate = BoardManager.GetBenchCoord(i);
+            if (boardManager.IsOccupied(boardIndex, candidate))
+                continue;
+
+            cell = candidate;
+            return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Requests a unit spawn from the state authority for the local player's board.
     /// </summary>
@@ -46,11 +66,42 @@ public class UnitSpawner : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            SpawnOnServer(boardIndex, cell, unitTypeId, Runner.LocalPlayer);
+            SpawnOnServer(boardIndex, cell, unitTypeId, Runner.LocalPlayer, spawnToBench: false);
             return;
         }
 
         RPC_RequestSpawn(boardIndex, cell.Q, cell.R, unitTypeId);
+    }
+
+    public void RequestSpawnToBench(byte unitTypeId)
+    {
+        if (Runner == null || !EnsureDependencies() || !TryGetSpawnableUnit(unitTypeId, out _))
+            return;
+
+        if (!flowManager.TryGetBoardIndex(Runner.LocalPlayer, out byte boardIndex))
+            return;
+
+        if (HasStateAuthority)
+        {
+            SpawnOnServer(boardIndex, default, unitTypeId, Runner.LocalPlayer, spawnToBench: true);
+            return;
+        }
+
+        RPC_RequestSpawnToBench(unitTypeId);
+    }
+
+    public void RequestMoveUnit(NetworkId unitId, HexCoord targetCell)
+    {
+        if (Runner == null)
+            return;
+
+        if (HasStateAuthority)
+        {
+            MoveUnitOnServer(unitId, targetCell, Runner.LocalPlayer);
+            return;
+        }
+
+        RPC_RequestMoveUnit(unitId, targetCell.Q, targetCell.R);
     }
 
     public bool IsValidUnitType(byte unitTypeId)
@@ -133,13 +184,25 @@ public class UnitSpawner : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestSpawn(byte boardIndex, int q, int r, byte unitTypeId, RpcInfo info = default)
     {
-        SpawnOnServer(boardIndex, new HexCoord(q, r), unitTypeId, info.Source);
+        SpawnOnServer(boardIndex, new HexCoord(q, r), unitTypeId, info.Source, spawnToBench: false);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestSpawnToBench(byte unitTypeId, RpcInfo info = default)
+    {
+        SpawnOnServer(0, default, unitTypeId, info.Source, spawnToBench: true);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestMoveUnit(NetworkId unitId, int targetQ, int targetR, RpcInfo info = default)
+    {
+        MoveUnitOnServer(unitId, new HexCoord(targetQ, targetR), info.Source);
     }
 
     /// <summary>
     /// Validates ownership and deploy rules before creating the networked unit.
     /// </summary>
-    private void SpawnOnServer(byte boardIndex, HexCoord cell, byte unitTypeId, PlayerRef requester)
+    private void SpawnOnServer(byte boardIndex, HexCoord cell, byte unitTypeId, PlayerRef requester, bool spawnToBench)
     {
         if (!HasStateAuthority)
             return;
@@ -153,16 +216,79 @@ public class UnitSpawner : NetworkBehaviour
         if (!flowManager.TryGetBoardIndex(requester, out byte assigned))
             return;
 
-        if (assigned != boardIndex)
+        if (spawnToBench)
+        {
+            boardIndex = assigned;
+            if (!TryFindFirstEmptyBenchSlot(boardIndex, out cell))
+                return;
+        }
+        else
+        {
+            if (assigned != boardIndex)
+                return;
+
+            if (!boardManager.IsDeployZone(cell))
+                return;
+
+            if (boardManager.IsOccupied(boardIndex, cell))
+                return;
+        }
+
+        TrySpawnUnit(unitTypeId, boardIndex, cell, requester, requireDeployZone: !spawnToBench, configureBeforeSpawn: null, out _);
+    }
+
+    private void MoveUnitOnServer(NetworkId unitId, HexCoord targetCell, PlayerRef requester)
+    {
+        if (!HasStateAuthority || unitId == default)
             return;
 
-        if (!boardManager.IsDeployZone(cell))
+        if (!EnsureDependencies())
             return;
 
-        if (boardManager.IsOccupied(boardIndex, cell))
+        if (!flowManager.TryGetBoardIndex(requester, out byte assignedBoard))
             return;
 
-        TrySpawnUnit(unitTypeId, boardIndex, cell, requester, requireDeployZone: true, configureBeforeSpawn: null, out _);
+        if (!boardManager.IsPlayerPlacementCell(targetCell))
+            return;
+
+        if (!Runner.TryFindObject(unitId, out NetworkObject obj))
+            return;
+
+        if (!obj.TryGetComponent(out UnitController movingUnit))
+            return;
+
+        if (movingUnit.IsCombatClone || movingUnit.BoardIndex != assignedBoard)
+            return;
+
+        if (obj.InputAuthority != requester)
+            return;
+
+        HexCoord sourceCell = movingUnit.Cell;
+        if (sourceCell == targetCell)
+            return;
+
+        if (!boardManager.IsPlayerPlacementCell(sourceCell))
+            return;
+
+        if (!boardManager.TryGetOccupant(assignedBoard, targetCell, out NetworkId targetOccupantId))
+        {
+            movingUnit.ForceRelocateToBoard(assignedBoard, targetCell);
+            return;
+        }
+
+        if (targetOccupantId == unitId)
+            return;
+
+        if (!Runner.TryFindObject(targetOccupantId, out NetworkObject targetObject))
+            return;
+
+        if (!targetObject.TryGetComponent(out UnitController targetUnit))
+            return;
+
+        if (targetUnit.IsCombatClone || targetUnit.BoardIndex != assignedBoard)
+            return;
+
+        movingUnit.SwapPlacementWith(targetUnit);
     }
 
     /// <summary>

@@ -16,4 +16,21 @@ namespace PokeChess.Autobattler
             Coord = coord;
         }
     }
+
+    /// <summary>
+    /// Clickable waiting-area slot that maps to a board-local placement coordinate.
+    /// </summary>
+    public class BenchSlot : MonoBehaviour
+    {
+        public byte BoardIndex { get; private set; }
+        public int SlotIndex { get; private set; }
+        public HexCoord Coord { get; private set; }
+
+        public void Initialize(byte boardIndex, int slotIndex)
+        {
+            BoardIndex = boardIndex;
+            SlotIndex = slotIndex;
+            Coord = BoardManager.GetBenchCoord(slotIndex);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 using TMPro;
+using Fusion;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -8,7 +9,7 @@ using UnityEngine.Events;
 namespace PokeChess.Autobattler
 {
     /// <summary>
-    /// Handles click-to-place unit spawning from the local player's camera view.
+    /// Handles bench spawning and drag-move placement from the local player's camera view.
     /// </summary>
     public class UnitPlacementController : MonoBehaviour
     {
@@ -22,10 +23,13 @@ namespace PokeChess.Autobattler
         [SerializeField] private Button[] summonButtons = new Button[5];
 
         private GameObject _activeGhost;
-        private bool _isPlacementMode;
         private byte _selectedUnitTypeId;
         private byte[] _randomSummonUnitTypeIds;
         private UnityAction[] _summonButtonActions;
+        private GameFlowManager _flowManager;
+        private BoardManager _boardManager;
+        private UnitController _draggingUnit;
+        private HexCoord _dragOriginCell;
 
         private void Awake()
         {
@@ -51,21 +55,19 @@ namespace PokeChess.Autobattler
 
         private void Update()
         {
-            if (_isPlacementMode == false)
-            {
-                return;
-            }
-
             if (!TryGetPointerScreenPosition(out Vector2 pointerScreenPosition))
             {
                 return;
             }
 
-            UpdateGhostPosition(pointerScreenPosition);
+            if (_draggingUnit != null)
+            {
+                UpdateGhostPosition(pointerScreenPosition);
+            }
 
             if (WasPrimaryPointerPressedThisFrame())
             {
-                TryPlaceUnit(pointerScreenPosition);
+                HandlePrimaryPointerPressed(pointerScreenPosition);
             }
         }
 
@@ -82,11 +84,6 @@ namespace PokeChess.Autobattler
         /// </summary>
         public void BeginPlacementMode(int unitTypeId)
         {
-            if (_isPlacementMode)
-            {
-                return;
-            }
-
             _selectedUnitTypeId = (byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue);
 
             if (unitSpawner == null)
@@ -106,20 +103,7 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            GameObject ghostPrefab = unitSpawner.GetGhostPrefab(_selectedUnitTypeId);
-            if (ghostPrefab == null)
-            {
-                ghostPrefab = unitGhostPrefab;
-            }
-
-            if (ghostPrefab == null)
-            {
-                Debug.LogWarning("Unit ghost prefab is not assigned.");
-                return;
-            }
-
-            _activeGhost = Instantiate(ghostPrefab);
-            _isPlacementMode = true;
+            unitSpawner.RequestSpawnToBench(_selectedUnitTypeId);
         }
 
         public void SelectUnitType(int unitTypeId)
@@ -262,41 +246,275 @@ namespace PokeChess.Autobattler
             }
         }
 
-        private void TryPlaceUnit(Vector2 pointerScreenPosition)
+        private void HandlePrimaryPointerPressed(Vector2 pointerScreenPosition)
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
-                Debug.Log("EventSystem Error");
+                if (_draggingUnit != null)
+                {
+                    CancelDrag();
+                }
+
                 return;
             }
 
-            if (TryGetHoveredTile(pointerScreenPosition, out HexTile tile) == false)
+            if (_draggingUnit != null)
             {
-                Debug.Log("GetHoverdTile Error");
+                TryDropDraggedUnit(pointerScreenPosition);
                 return;
             }
 
-            unitSpawner.RequestSpawn(tile.BoardIndex, tile.Coord, _selectedUnitTypeId);
-            ExitPlacementMode();
+            TryBeginUnitDrag(pointerScreenPosition);
+        }
+
+        private void TryBeginUnitDrag(Vector2 pointerScreenPosition)
+        {
+            if (!TryResolveControllableUnit(pointerScreenPosition, out UnitController unit))
+            {
+                return;
+            }
+
+            if (!CanControlUnit(unit))
+            {
+                return;
+            }
+
+            _draggingUnit = unit;
+            _dragOriginCell = unit.Cell;
+            _draggingUnit.SetLocallyHiddenForPlacementDrag(true);
+            SpawnGhost(unit.UnitTypeId);
+            UpdateGhostPosition(pointerScreenPosition);
+        }
+
+        private bool TryResolveControllableUnit(Vector2 pointerScreenPosition, out UnitController unit)
+        {
+            unit = null;
+
+            if (TryGetHoveredUnit(pointerScreenPosition, out unit) && unit != null)
+            {
+                return true;
+            }
+
+            if (TryGetHoveredBenchSlot(pointerScreenPosition, out BenchSlot benchSlot)
+                && TryGetOccupyingUnit(benchSlot.BoardIndex, benchSlot.Coord, out unit))
+            {
+                return true;
+            }
+
+            if (TryGetHoveredTile(pointerScreenPosition, out HexTile tile)
+                && TryGetOccupyingUnit(tile.BoardIndex, tile.Coord, out unit))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void TryDropDraggedUnit(Vector2 pointerScreenPosition)
+        {
+            if (_draggingUnit == null)
+            {
+                return;
+            }
+
+            if (!TryGetDropTarget(pointerScreenPosition, out HexCoord targetCell))
+            {
+                CancelDrag();
+                return;
+            }
+
+            if (targetCell == _dragOriginCell)
+            {
+                CancelDrag();
+                return;
+            }
+
+            unitSpawner.RequestMoveUnit(_draggingUnit.Object.Id, targetCell);
+            ExitDragMode();
+        }
+
+        private bool TryGetDropTarget(Vector2 pointerScreenPosition, out HexCoord targetCell)
+        {
+            targetCell = default;
+
+            if (TryGetHoveredUnit(pointerScreenPosition, out UnitController hoveredUnit)
+                && hoveredUnit != null
+                && hoveredUnit != _draggingUnit
+                && CanControlUnit(hoveredUnit))
+            {
+                targetCell = hoveredUnit.Cell;
+                return true;
+            }
+
+            if (TryGetHoveredBenchSlot(pointerScreenPosition, out BenchSlot benchSlot) && IsValidPlacementTarget(benchSlot.BoardIndex, benchSlot.Coord))
+            {
+                targetCell = benchSlot.Coord;
+                return true;
+            }
+
+            if (TryGetHoveredTile(pointerScreenPosition, out HexTile tile) && IsValidPlacementTarget(tile.BoardIndex, tile.Coord))
+            {
+                targetCell = tile.Coord;
+                return true;
+            }
+
+            return false;
         }
 
         private bool TryGetHoveredTile(Vector2 pointerScreenPosition, out HexTile tile)
         {
-            tile = null;
-            if (!targetCamera)
+            tile = GetHoveredComponent<HexTile>(pointerScreenPosition);
+            return tile != null;
+        }
+
+        private bool TryGetHoveredBenchSlot(Vector2 pointerScreenPosition, out BenchSlot benchSlot)
+        {
+            benchSlot = GetHoveredComponent<BenchSlot>(pointerScreenPosition);
+            return benchSlot != null;
+        }
+
+        private bool TryGetHoveredUnit(Vector2 pointerScreenPosition, out UnitController unit)
+        {
+            unit = GetHoveredComponent<UnitController>(pointerScreenPosition);
+            return unit != null;
+        }
+
+        private bool TryGetOccupyingUnit(byte boardIndex, HexCoord coord, out UnitController unit)
+        {
+            unit = null;
+            EnsureDependencies();
+
+            if (_boardManager == null || unitSpawner == null || unitSpawner.Runner == null)
             {
                 return false;
             }
 
-            var ray = targetCamera.ScreenPointToRay(pointerScreenPosition);
-            var hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileMask);
-
-            if (!hit.collider)
+            if (!_boardManager.TryGetOccupant(boardIndex, coord, out NetworkId occupantId) || occupantId == default)
             {
                 return false;
             }
 
-            return hit.collider.TryGetComponent(out tile);
+            if (!unitSpawner.Runner.TryFindObject(occupantId, out NetworkObject occupantObject))
+            {
+                return false;
+            }
+
+            return occupantObject.TryGetComponent(out unit);
+        }
+
+        private T GetHoveredComponent<T>(Vector2 pointerScreenPosition) where T : Component
+        {
+            if (targetCamera == null)
+            {
+                return null;
+            }
+
+            Ray ray = targetCamera.ScreenPointToRay(pointerScreenPosition);
+            RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(ray, Mathf.Infinity, tileMask);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider2D collider = hits[i].collider;
+                if (collider == null)
+                {
+                    continue;
+                }
+
+                if (collider.TryGetComponent(out T component))
+                {
+                    return component;
+                }
+
+                component = collider.GetComponentInParent<T>();
+                if (component != null)
+                {
+                    return component;
+                }
+            }
+
+            return null;
+        }
+
+        private bool CanControlUnit(UnitController unit)
+        {
+            if (unit == null || unit.Object == null || unit.IsCombatClone)
+            {
+                return false;
+            }
+
+            EnsureDependencies();
+            if (_flowManager == null || unitSpawner == null || unitSpawner.Runner == null)
+            {
+                return false;
+            }
+
+            if (!_flowManager.TryGetBoardIndex(unitSpawner.Runner.LocalPlayer, out byte localBoardIndex))
+            {
+                return false;
+            }
+
+            return unit.BoardIndex == localBoardIndex;
+        }
+
+        private bool IsValidPlacementTarget(byte boardIndex, HexCoord coord)
+        {
+            EnsureDependencies();
+            if (_flowManager == null || _boardManager == null || unitSpawner == null || unitSpawner.Runner == null)
+            {
+                return false;
+            }
+
+            if (!_flowManager.TryGetBoardIndex(unitSpawner.Runner.LocalPlayer, out byte localBoardIndex))
+            {
+                return false;
+            }
+
+            return boardIndex == localBoardIndex && _boardManager.IsPlayerPlacementCell(coord);
+        }
+
+        private void SpawnGhost(byte unitTypeId)
+        {
+            GameObject ghostPrefab = unitSpawner.GetGhostPrefab(unitTypeId);
+            if (ghostPrefab == null)
+            {
+                ghostPrefab = unitGhostPrefab;
+            }
+
+            if (ghostPrefab == null)
+            {
+                Debug.LogWarning("Unit ghost prefab is not assigned.");
+                return;
+            }
+
+            if (_activeGhost != null)
+            {
+                Destroy(_activeGhost);
+            }
+
+            _activeGhost = Instantiate(ghostPrefab);
+        }
+
+        private void CancelDrag()
+        {
+            ExitDragMode();
+        }
+
+        private void ExitDragMode()
+        {
+            if (_draggingUnit != null)
+            {
+                _draggingUnit.SetLocallyHiddenForPlacementDrag(false);
+            }
+
+            _draggingUnit = null;
+            _dragOriginCell = default;
+            ExitPlacementMode();
+        }
+
+        private void EnsureDependencies()
+        {
+            unitSpawner ??= FindAnyObjectByType<UnitSpawner>();
+            _flowManager ??= FindAnyObjectByType<GameFlowManager>();
+            _boardManager ??= FindAnyObjectByType<BoardManager>();
         }
 
         private bool TryGetPointerScreenPosition(out Vector2 pointerScreenPosition)
@@ -334,8 +552,6 @@ namespace PokeChess.Autobattler
 
         private void ExitPlacementMode()
         {
-            _isPlacementMode = false;
-
             if (_activeGhost != null)
             {
                 Destroy(_activeGhost);

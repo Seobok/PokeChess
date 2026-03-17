@@ -12,6 +12,18 @@ namespace PokeChess.Autobattler
         Hit = 3
     }
 
+    public enum UnitAnimationDirection : byte
+    {
+        Down = 0,
+        LeftDown = 1,
+        Left = 2,
+        LeftUp = 3,
+        Up = 4,
+        RightUp = 5,
+        Right = 6,
+        RightDown = 7
+    }
+
     /// <summary>
     /// Owns replicated unit state, board movement, combat logic, and visual syncing.
     /// Skills are delegated to UnitSkillDefinition assets referenced by UnitStats.
@@ -35,6 +47,7 @@ namespace PokeChess.Autobattler
         [SerializeField] private string hitTriggerParameter = "Hit";
         [SerializeField] private string deadBoolParameter = "IsDead";
         [SerializeField] private float deathDespawnDelaySeconds = 0.75f;
+        [SerializeField] private string locomotionStatePrefix = "Walk_";
 
         [Networked] public HexCoord Cell { get; private set; }
         [Networked] public float HP { get; private set; }
@@ -69,6 +82,7 @@ namespace PokeChess.Autobattler
 
         [Networked] private UnitAnimationEventType AnimationEvent { get; set; }
         [Networked] private int AnimationEventSequence { get; set; }
+        [Networked] private byte AnimationDirectionValue { get; set; }
         [Networked] private NetworkBool IsDead { get; set; }
         [Networked] private TickTimer DeathDespawnTimer { get; set; }
 
@@ -92,6 +106,7 @@ namespace PokeChess.Autobattler
         private int _skillTriggerHash;
         private int _hitTriggerHash;
         private int _deadBoolHash;
+        private int _lastLocomotionStateHash;
         private bool _hasMoveBool;
         private bool _hasAttackTrigger;
         private bool _hasSkillTrigger;
@@ -101,6 +116,7 @@ namespace PokeChess.Autobattler
         private bool _skillMoveLocked;
         private bool _skillAttackLocked;
         private UnitSkillRuntime _activeSkillRuntime;
+        private bool _locallyHiddenForPlacementDrag;
 
         public bool IsNetworkStateReady { get; private set; }
         public UnitStats Stats => stats;
@@ -111,6 +127,8 @@ namespace PokeChess.Autobattler
         public bool IsDeadOrDying => IsDead || HP <= 0f;
         public float HealthNormalized => !IsNetworkStateReady || MaxHp <= 0f ? 0f : Mathf.Clamp01(HP / MaxHp);
         public float ManaNormalized => !IsNetworkStateReady || MaxMana <= 0 ? 0f : Mathf.Clamp01((float)Mana / MaxMana);
+        public UnitAnimationDirection AnimationDirection => (UnitAnimationDirection)AnimationDirectionValue;
+        public bool IsLocallyHiddenForPlacementDrag => _locallyHiddenForPlacementDrag;
 
         public void SetPendingInit(byte boardIndex, HexCoord cell, byte unitTypeId, bool requireDeployZone = true)
         {
@@ -367,6 +385,7 @@ namespace PokeChess.Autobattler
 
             BoardIndex = boardIndex;
             Cell = spawnCell;
+            UnitTypeId = unitTypeId;
             TargetId = default;
             AttackCooldown = TickTimer.None;
             SnapToCellImmediate();
@@ -381,6 +400,37 @@ namespace PokeChess.Autobattler
             return requireDeployZone
                 ? boardManager.TryDeployUnit(Object.Id, BoardIndex, Cell)
                 : boardManager.TryOccupyUnit(Object.Id, BoardIndex, Cell);
+        }
+
+        public bool SwapPlacementWith(UnitController other)
+        {
+            if (!HasStateAuthority || boardManager == null || other == null || other == this)
+                return false;
+
+            if (other.boardManager != boardManager || other.BoardIndex != BoardIndex)
+                return false;
+
+            HexCoord sourceCell = Cell;
+            HexCoord targetCell = other.Cell;
+
+            if (!boardManager.TrySwapUnits(BoardIndex, sourceCell, targetCell))
+                return false;
+
+            Cell = targetCell;
+            other.Cell = sourceCell;
+            TargetId = default;
+            other.TargetId = default;
+            AttackCooldown = TickTimer.None;
+            other.AttackCooldown = TickTimer.None;
+            UpdateAnimationDirectionFromStep(sourceCell, targetCell);
+            other.UpdateAnimationDirectionFromStep(targetCell, sourceCell);
+            return true;
+        }
+
+        public void SetLocallyHiddenForPlacementDrag(bool hidden)
+        {
+            _locallyHiddenForPlacementDrag = hidden;
+            ApplyVisibility(force: true);
         }
 
         public bool TryMoveOneStep(HexCoord targetCell)
@@ -398,6 +448,7 @@ namespace PokeChess.Autobattler
             if (!boardManager.TryMoveUnit(BoardIndex, Cell, next))
                 return false;
 
+            UpdateAnimationDirectionFromStep(Cell, next);
             Cell = next;
             return true;
         }
@@ -408,7 +459,16 @@ namespace PokeChess.Autobattler
 
             if (_lastVisualBoard != BoardIndex || _lastVisualCell != Cell)
             {
-                StartVisualLerpToCell();
+                if (_flow != null && _flow.FlowState != GameFlowState.Combat)
+                {
+                    SnapToCellImmediate();
+                    _lerping = false;
+                }
+                else
+                {
+                    StartVisualLerpToCell();
+                }
+
                 _lastVisualBoard = BoardIndex;
                 _lastVisualCell = Cell;
             }
@@ -461,6 +521,9 @@ namespace PokeChess.Autobattler
             if (!HasStateAuthority || boardManager == null)
                 return false;
 
+            HexCoord previousCell = Cell;
+            byte previousBoardIndex = BoardIndex;
+
             if (!boardManager.TryTransferUnit(Object.Id, BoardIndex, Cell, targetBoardIndex, targetCell))
                 return false;
 
@@ -468,6 +531,15 @@ namespace PokeChess.Autobattler
             Cell = targetCell;
             TargetId = default;
             AttackCooldown = TickTimer.None;
+            if (previousBoardIndex != targetBoardIndex)
+            {
+                ResetAnimationDirectionToDefault();
+            }
+            else
+            {
+                UpdateAnimationDirectionFromStep(previousCell, targetCell);
+            }
+
             return true;
         }
 
@@ -684,6 +756,7 @@ namespace PokeChess.Autobattler
             DeathDespawnTimer = TickTimer.None;
             AnimationEvent = UnitAnimationEventType.None;
             AnimationEventSequence = 0;
+            AnimationDirectionValue = (byte)GetDefaultAnimationDirection();
             ClearBuffState();
             RootExpireTimer = TickTimer.None;
             StunExpireTimer = TickTimer.None;
@@ -1215,6 +1288,7 @@ namespace PokeChess.Autobattler
             _hasSkillTrigger = HasAnimatorParameter(parameters, _skillTriggerHash, AnimatorControllerParameterType.Trigger);
             _hasHitTrigger = HasAnimatorParameter(parameters, _hitTriggerHash, AnimatorControllerParameterType.Trigger);
             _hasDeadBool = HasAnimatorParameter(parameters, _deadBoolHash, AnimatorControllerParameterType.Bool);
+            _lastLocomotionStateHash = 0;
         }
 
         private static bool HasAnimatorParameter(AnimatorControllerParameter[] parameters, int hash, AnimatorControllerParameterType type)
@@ -1233,15 +1307,19 @@ namespace PokeChess.Autobattler
             if (animator == null)
                 return;
 
+            bool isMoving = _lerping && !IsDeadOrDying;
+
             if (_hasMoveBool)
             {
-                animator.SetBool(_moveBoolHash, _lerping && !IsDeadOrDying);
+                animator.SetBool(_moveBoolHash, isMoving);
             }
 
             if (_hasDeadBool)
             {
                 animator.SetBool(_deadBoolHash, IsDeadOrDying);
             }
+
+            ApplyLocomotionAnimation(isMoving);
 
             if (_lastConsumedAnimationEventSequence == AnimationEventSequence)
                 return;
@@ -1273,10 +1351,160 @@ namespace PokeChess.Autobattler
             AnimationEventSequence++;
         }
 
+        private void ApplyLocomotionAnimation(bool isMoving)
+        {
+            int stateHash = GetLocomotionStateHash(AnimationDirection);
+            if (stateHash == 0 || !animator.HasState(0, stateHash))
+                return;
+
+            if (isMoving)
+            {
+                if (_lastLocomotionStateHash != stateHash)
+                {
+                    animator.CrossFadeInFixedTime(stateHash, 0.05f);
+                    _lastLocomotionStateHash = stateHash;
+                }
+
+                return;
+            }
+
+            animator.Play(stateHash, 0, 0f);
+            animator.Update(0f);
+            _lastLocomotionStateHash = stateHash;
+        }
+
+        private int GetLocomotionStateHash(UnitAnimationDirection direction)
+        {
+            string suffix = direction switch
+            {
+                UnitAnimationDirection.Down => "D",
+                UnitAnimationDirection.LeftDown => "LD",
+                UnitAnimationDirection.Left => "L",
+                UnitAnimationDirection.LeftUp => "LU",
+                UnitAnimationDirection.Up => "U",
+                UnitAnimationDirection.RightUp => "RU",
+                UnitAnimationDirection.Right => "R",
+                UnitAnimationDirection.RightDown => "RD",
+                _ => "D"
+            };
+
+            return Animator.StringToHash($"{locomotionStatePrefix}{suffix}");
+        }
+
+        private void UpdateAnimationDirectionFromStep(HexCoord from, HexCoord to)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            if (!TryResolveAnimationDirection(from, to, out UnitAnimationDirection direction))
+                return;
+
+            AnimationDirectionValue = (byte)direction;
+        }
+
+        private void ResetAnimationDirectionToDefault()
+        {
+            if (!HasStateAuthority)
+                return;
+
+            AnimationDirectionValue = (byte)GetDefaultAnimationDirection();
+        }
+
+        private UnitAnimationDirection GetDefaultAnimationDirection()
+        {
+            byte teamBoardIndex = GetCombatTeamBoardIndex(this);
+            if (IsCombatClone && teamBoardIndex != byte.MaxValue && teamBoardIndex != BoardIndex)
+                return UnitAnimationDirection.Up;
+
+            return UnitAnimationDirection.Down;
+        }
+
+        private bool TryResolveAnimationDirection(HexCoord from, HexCoord to, out UnitAnimationDirection direction)
+        {
+            direction = AnimationDirection;
+
+            if (from == to)
+                return false;
+
+            int dq = to.Q - from.Q;
+            int dr = to.R - from.R;
+            bool isOddRow = (from.R & 1) != 0;
+
+            if (dr == 0)
+            {
+                if (dq == -1)
+                {
+                    direction = UnitAnimationDirection.Left;
+                    return true;
+                }
+
+                if (dq == 1)
+                {
+                    direction = UnitAnimationDirection.Right;
+                    return true;
+                }
+            }
+
+            if (isOddRow)
+            {
+                if (dq == 0 && dr == -1)
+                {
+                    direction = UnitAnimationDirection.LeftUp;
+                    return true;
+                }
+
+                if (dq == 1 && dr == -1)
+                {
+                    direction = UnitAnimationDirection.RightUp;
+                    return true;
+                }
+
+                if (dq == 0 && dr == 1)
+                {
+                    direction = UnitAnimationDirection.LeftDown;
+                    return true;
+                }
+
+                if (dq == 1 && dr == 1)
+                {
+                    direction = UnitAnimationDirection.RightDown;
+                    return true;
+                }
+            }
+            else
+            {
+                if (dq == -1 && dr == -1)
+                {
+                    direction = UnitAnimationDirection.LeftUp;
+                    return true;
+                }
+
+                if (dq == 0 && dr == -1)
+                {
+                    direction = UnitAnimationDirection.RightUp;
+                    return true;
+                }
+
+                if (dq == -1 && dr == 1)
+                {
+                    direction = UnitAnimationDirection.LeftDown;
+                    return true;
+                }
+
+                if (dq == 0 && dr == 1)
+                {
+                    direction = UnitAnimationDirection.RightDown;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void ApplyVisibility(bool force = false)
         {
             _flow ??= FindAnyObjectByType<GameFlowManager>();
-            bool hidden = _flow != null && !_flow.ShouldUnitBeVisible(this);
+            bool hidden = (_flow != null && !_flow.ShouldUnitBeVisible(this)) || _locallyHiddenForPlacementDrag;
             if (!force && hidden == _lastHiddenState)
                 return;
 

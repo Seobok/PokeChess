@@ -356,7 +356,7 @@ namespace PokeChess.Autobattler
             if (boardGenerator == null) return Vector3.zero;
 
             if (boardOrigins == null || boardIndex >= boardOrigins.Count) return Vector3.zero;
-            return boardOrigins[boardIndex] + boardGenerator.AxialToWorld(cell);
+            return boardGenerator.GetPlacementWorldPosition(boardOrigins[boardIndex], cell);
         }
 
         private bool PrepareCombatPair(PlayerRef hostPlayer, PlayerRef guestPlayer)
@@ -486,6 +486,9 @@ namespace PokeChess.Autobattler
                     continue;
 
                 if (unit.BoardIndex != boardIndex)
+                    continue;
+
+                if (unit.Cell.R >= BoardManager.DeployStartRow)
                     continue;
 
                 result.Add(unit);

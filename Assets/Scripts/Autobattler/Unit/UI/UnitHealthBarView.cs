@@ -75,6 +75,11 @@ public class UnitHealthBarView : MonoBehaviour
             visible = flow.ShouldUnitBeVisible(unit);
         }
 
+        if (unit != null && unit.IsLocallyHiddenForPlacementDrag)
+        {
+            visible = false;
+        }
+
         if (visible == _lastVisibleState)
             return;
 

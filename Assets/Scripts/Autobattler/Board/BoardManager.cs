@@ -10,17 +10,34 @@ public class BoardManager : NetworkBehaviour
     public const int BoardWidth = 7;
     public const int BoardHeight = 8;
     public const int DeployStartRow = 4;
+    public const int BenchSlotCount = 10;
+    public const int BenchRow = BoardHeight;
 
     private readonly Dictionary<BoardCellKey, NetworkId> _occupants = new();
+
+    public static HexCoord GetBenchCoord(int slotIndex)
+        => new(slotIndex, BenchRow);
 
     public bool IsInside(HexCoord coord)
         => coord.Q >= 0 && coord.Q < BoardWidth && coord.R >= 0 && coord.R < BoardHeight;
 
+    public bool IsBenchCell(HexCoord coord)
+        => coord.R == BenchRow && coord.Q >= 0 && coord.Q < BenchSlotCount;
+
     public bool IsDeployZone(HexCoord coord)
         => IsInside(coord) && coord.R < DeployStartRow;
 
+    public bool IsStorageCell(HexCoord coord)
+        => IsInside(coord) || IsBenchCell(coord);
+
+    public bool IsPlayerPlacementCell(HexCoord coord)
+        => IsDeployZone(coord) || IsBenchCell(coord);
+
     public bool IsOccupied(byte boardIndex, HexCoord coord)
         => _occupants.ContainsKey(new BoardCellKey(boardIndex, coord));
+
+    public bool TryGetOccupant(byte boardIndex, HexCoord coord, out NetworkId occupantId)
+        => _occupants.TryGetValue(new BoardCellKey(boardIndex, coord), out occupantId);
 
     public bool TryDeployUnit(NetworkId unitId, byte boardIndex, HexCoord coord)
         => TryPlaceUnit(unitId, boardIndex, coord, requireDeployZone: true);
@@ -75,7 +92,7 @@ public class BoardManager : NetworkBehaviour
     {
         if (!HasStateAuthority) return false;
         if (unitId == default) return false;
-        if (!IsInside(fromCell) || !IsInside(toCell)) return false;
+        if (!IsStorageCell(fromCell) || !IsStorageCell(toCell)) return false;
 
         var fromKey = new BoardCellKey(fromBoard, fromCell);
         var toKey = new BoardCellKey(toBoard, toCell);
@@ -94,12 +111,40 @@ public class BoardManager : NetworkBehaviour
         return true;
     }
 
+    public bool TrySwapUnits(byte boardIndex, HexCoord first, HexCoord second)
+    {
+        if (!HasStateAuthority)
+            return false;
+
+        if (!IsStorageCell(first) || !IsStorageCell(second) || first == second)
+            return false;
+
+        var firstKey = new BoardCellKey(boardIndex, first);
+        var secondKey = new BoardCellKey(boardIndex, second);
+
+        if (!_occupants.TryGetValue(firstKey, out NetworkId firstUnitId))
+            return false;
+
+        if (!_occupants.TryGetValue(secondKey, out NetworkId secondUnitId))
+            return false;
+
+        _occupants[firstKey] = secondUnitId;
+        _occupants[secondKey] = firstUnitId;
+        return true;
+    }
+
     private bool TryPlaceUnit(NetworkId unitId, byte boardIndex, HexCoord coord, bool requireDeployZone)
     {
         if (!HasStateAuthority) return false;
         if (unitId == default) return false;
-        if (!IsInside(coord)) return false;
-        if (requireDeployZone && !IsDeployZone(coord)) return false;
+        if (requireDeployZone)
+        {
+            if (!IsDeployZone(coord)) return false;
+        }
+        else if (!IsStorageCell(coord))
+        {
+            return false;
+        }
 
         var key = new BoardCellKey(boardIndex, coord);
         if (_occupants.ContainsKey(key)) return false;
