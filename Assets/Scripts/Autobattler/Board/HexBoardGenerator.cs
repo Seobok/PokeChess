@@ -159,7 +159,7 @@ namespace PokeChess.Autobattler
         {
             float xStep = hexRadius * Mathf.Sqrt(3f) * Mathf.Max(0.1f, benchHorizontalSpacingMultiplier);
             float totalWidth = xStep * (BoardManager.BenchSlotCount - 1);
-            float x = -totalWidth * 0.5f + (slotIndex * xStep);
+            float x = -totalWidth * 0.5f + (slotIndex * xStep) + 2.75f;
             float secondaryAxis = -benchVerticalGap;
 
             if (useXYPlane)

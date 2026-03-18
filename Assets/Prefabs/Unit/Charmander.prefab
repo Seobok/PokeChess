@@ -351,7 +351,7 @@ Animator:
   m_GameObject: {fileID: 5369105940141994805}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b0fcc9f0420e8f54b9192024d394c167, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -424,6 +424,7 @@ MonoBehaviour:
   hitTriggerParameter: Hit
   deadBoolParameter: IsDead
   deathDespawnDelaySeconds: 0.75
+  locomotionStatePrefix: Walk_
   _Cell:
     Q: 0
     R: 0
@@ -557,7 +558,7 @@ Transform:
   m_GameObject: {fileID: 6132945257141647810}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.56, z: 0}
+  m_LocalPosition: {x: 0, y: 0.56, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -863,7 +864,7 @@ Transform:
   m_GameObject: {fileID: 7867987963504036218}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.64, z: 0}
+  m_LocalPosition: {x: 0, y: 0.64, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

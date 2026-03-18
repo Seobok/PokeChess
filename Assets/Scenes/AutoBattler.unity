@@ -1065,7 +1065,7 @@ MonoBehaviour:
   unitSpawner: {fileID: 1738083387}
   generateBoardOnSpawn: 1
   targetCamera: {fileID: 0}
-  cameraOffset: {x: 0, y: 0, z: -10}
+  cameraOffset: {x: 0, y: -1.5, z: -10}
   applyCameraEveryFrame: 1
   boardOrigins:
   - {x: -20, y: 10, z: 0}
@@ -1958,13 +1958,117 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PokeChess.Autobattler.UnitSpawner
   spawnableUnits:
   - prefab:
+      RawGuidValue: 63c20a90af22cb147a8b51512aca8fd6
+    ghostPrefab: {fileID: 5724598627955368034, guid: 39d9279608f44e6b8cfd67c0b5958c2d, type: 3}
+    buttonSprite: {fileID: 1389214655783058611, guid: d738bcc60a949a041ad05af4fa01a5b6, type: 3}
+  - prefab:
+      RawGuidValue: 87e7e577acb4462d8bd64b0b1e35b438
+    ghostPrefab: {fileID: 5724598627955368034, guid: a2f22b5882b24799a5c88689c883f413, type: 3}
+    buttonSprite: {fileID: 3912959703957404735, guid: c3ae4fb974286fe459eabec0824ac2f6, type: 3}
+  - prefab:
       RawGuidValue: c3c1f35dac931e541ab6375135c9cb01
     ghostPrefab: {fileID: 5724598627955368034, guid: dac119dbd4226dc438fefd7f00a175cc, type: 3}
     buttonSprite: {fileID: -2322721346146537594, guid: a571e1869df53d94b85296f4b5105d4c, type: 3}
   - prefab:
+      RawGuidValue: 13cd8219641f4a308f704731674e9ad7
+    ghostPrefab: {fileID: 5724598627955368034, guid: b42d12ab62a8402ebf261cdc93f01344, type: 3}
+    buttonSprite: {fileID: -7315640357359909806, guid: 26c1292e8c86ae340a7dde4edb7b0236, type: 3}
+  - prefab:
       RawGuidValue: d3b305a609e49d94ea88b9a53ded3875
     ghostPrefab: {fileID: 5724598627955368034, guid: 077f759037d22204a8138b6d7e3ed9c2, type: 3}
     buttonSprite: {fileID: -1536614205520497713, guid: 06f2cad8e2fbf7249937476e51cf6cda, type: 3}
+  - prefab:
+      RawGuidValue: 7fdd7191f6a9450587aa345f0507e2d8
+    ghostPrefab: {fileID: 5724598627955368034, guid: 2f3c6d697b6a44a38e4adee29cba8ede, type: 3}
+    buttonSprite: {fileID: -3401614760010535903, guid: 7d6a1260fca93d545b8f08267ebb288f, type: 3}
+  - prefab:
+      RawGuidValue: ac7d3761e9744949b889bc5dcfa119f0
+    ghostPrefab: {fileID: 5724598627955368034, guid: 86fe710bcebb4c32be0979775731a3af, type: 3}
+    buttonSprite: {fileID: -1021400853936825660, guid: 744519599e9becd47abdc93c5c92643b, type: 3}
+  - prefab:
+      RawGuidValue: b118670fc3bb44edbcffd00e4d4f2782
+    ghostPrefab: {fileID: 5724598627955368034, guid: c224504eda244f36b3233333a0d7cd6c, type: 3}
+    buttonSprite: {fileID: -4662032960262985420, guid: 13f8a78ada330684abb76546af59a273, type: 3}
+  - prefab:
+      RawGuidValue: d6d01f9c58ec40d4bb7cef9059cda5d6
+    ghostPrefab: {fileID: 5724598627955368034, guid: 624323a5abb247eeb59069b2838c7732, type: 3}
+    buttonSprite: {fileID: -671403222442195617, guid: d38d1695d2cff3644903e60e39d8982d, type: 3}
+  - prefab:
+      RawGuidValue: a0bb38ecb40a49a9b2d478afdd6e71ec
+    ghostPrefab: {fileID: 5724598627955368034, guid: 0193e13d50b04c49b4de2ff85cc6ab3f, type: 3}
+    buttonSprite: {fileID: 7854683886493153683, guid: 3098779d94b8cb44e82ffdf12d38fd8a, type: 3}
+  - prefab:
+      RawGuidValue: 19813b797e9a46879dc15c19c083bf9e
+    ghostPrefab: {fileID: 5724598627955368034, guid: ac7b8f3c284b4e43ae89aba74ce583e8, type: 3}
+    buttonSprite: {fileID: 1047246389968761444, guid: 1492a636616aef44c8b3f2cf6d43313d, type: 3}
+  - prefab:
+      RawGuidValue: 2a64be5822c449f5a5dc04bbb7890306
+    ghostPrefab: {fileID: 5724598627955368034, guid: 292d7fe8861d4b268a4179a083de68bb, type: 3}
+    buttonSprite: {fileID: -7645433572972495852, guid: 31a18bf838828f8418b51708e420885e, type: 3}
+  - prefab:
+      RawGuidValue: 6dbd4cb5c8dd46c588059a765a6e1052
+    ghostPrefab: {fileID: 5724598627955368034, guid: 285d2d8d61aa43ce85572afbbf7e3a5b, type: 3}
+    buttonSprite: {fileID: -6847573699199365215, guid: e3d3a70bde9adc248a23192b5030d941, type: 3}
+  - prefab:
+      RawGuidValue: 9c2901b89ded477293aaef9097785db8
+    ghostPrefab: {fileID: 5724598627955368034, guid: 239ba0a4a13446d7b4866f1ba113263f, type: 3}
+    buttonSprite: {fileID: -3352062462530251017, guid: 2c9dd370e52b17c40bc7ab4467e0b8f3, type: 3}
+  - prefab:
+      RawGuidValue: 097aec02962c4bf4b4e9109bb71bba4d
+    ghostPrefab: {fileID: 5724598627955368034, guid: c7185225f7ae4a8f96342bf6d9c3adde, type: 3}
+    buttonSprite: {fileID: -6551142698247795633, guid: 3ecf458d39be51241b0a210ef5c6c716, type: 3}
+  - prefab:
+      RawGuidValue: 37f8e5da9e594e94a682758eb6b21b0d
+    ghostPrefab: {fileID: 5724598627955368034, guid: 4710885af0344a299cdb5942202b7b4d, type: 3}
+    buttonSprite: {fileID: -7210277518348237887, guid: 3caabb9acb1c4284ea18e121a4619800, type: 3}
+  - prefab:
+      RawGuidValue: 241918b2509542a99e0eb89ebe8370fe
+    ghostPrefab: {fileID: 5724598627955368034, guid: 6430edc49c0949fd9e46854b0c381b70, type: 3}
+    buttonSprite: {fileID: -4353694715409566339, guid: 2b6984c8b6659864c9f858b4760b7306, type: 3}
+  - prefab:
+      RawGuidValue: 1f7b094de33b4b00a0100063c0c17bba
+    ghostPrefab: {fileID: 5724598627955368034, guid: c221f81dcfd24711a2b5419edaaefbbb, type: 3}
+    buttonSprite: {fileID: -1317143471378093872, guid: 0c155d1847ccc404cb2c9e7371c1dc28, type: 3}
+  - prefab:
+      RawGuidValue: 8c255a6feea8491d94d4901006ebf4a0
+    ghostPrefab: {fileID: 5724598627955368034, guid: ea50bf4769c44e36a5def0995a74b677, type: 3}
+    buttonSprite: {fileID: -6207564211282279465, guid: 7afb6ac223ac51a458a36b424edfb4be, type: 3}
+  - prefab:
+      RawGuidValue: 1722b2a408a644bbb7b14f7dd08ab32c
+    ghostPrefab: {fileID: 5724598627955368034, guid: 71a00939489d4bfc9b9a339120bf2d74, type: 3}
+    buttonSprite: {fileID: -5525526035888503090, guid: 3e15effaeb62c1e47820f7058636a312, type: 3}
+  - prefab:
+      RawGuidValue: 28d6c059cf5647c5938ced264784023c
+    ghostPrefab: {fileID: 5724598627955368034, guid: 0202206e955c4eb18eb21052b6c7addb, type: 3}
+    buttonSprite: {fileID: -6446654658882316954, guid: 83cad618ee037ae4bbc2db6e1108d6a1, type: 3}
+  - prefab:
+      RawGuidValue: 94d4d68aca1b434bbe624a4ff1aaa0d5
+    ghostPrefab: {fileID: 5724598627955368034, guid: 813f3624683f4bd5a68aec84db140a4e, type: 3}
+    buttonSprite: {fileID: 2103536375647702007, guid: 007f7094eb05895449de6b3379e01673, type: 3}
+  - prefab:
+      RawGuidValue: 1b4fa153bdfb4580b65d1495744b4b04
+    ghostPrefab: {fileID: 5724598627955368034, guid: cdb2a0c416d642138cd96693bc8dedc7, type: 3}
+    buttonSprite: {fileID: -3446642378255018357, guid: 5116174806e0d3a4bb661ec630847fe2, type: 3}
+  - prefab:
+      RawGuidValue: dc2d65b4daf94642b5d1e0e95452612a
+    ghostPrefab: {fileID: 5724598627955368034, guid: 1ac6a41b44384671adb0abd8721414c3, type: 3}
+    buttonSprite: {fileID: -1443610226743345453, guid: 11fdf590bfc9ade4ba84108c55a642ac, type: 3}
+  - prefab:
+      RawGuidValue: d43ffcfb1bb849148c21e701266cd1e9
+    ghostPrefab: {fileID: 5724598627955368034, guid: 30769857276c426a8a2d1df459b518fe, type: 3}
+    buttonSprite: {fileID: -1355426788373200715, guid: 24ff5d98374efe040bf139375077d855, type: 3}
+  - prefab:
+      RawGuidValue: 1f8b13ad04b24d7fbd72aa2c31170813
+    ghostPrefab: {fileID: 5724598627955368034, guid: 05a55beefbda4955a937b0ab9ebf030c, type: 3}
+    buttonSprite: {fileID: -148381095160323197, guid: e5fd299f334ed704f8d27aff30298f8b, type: 3}
+  - prefab:
+      RawGuidValue: dddd100aa5754b45918fe95c71b68bb9
+    ghostPrefab: {fileID: 5724598627955368034, guid: c5bf45a9df114466a997bd610bae0bdc, type: 3}
+    buttonSprite: {fileID: 3626278535686598224, guid: ff351c256ea762748accccf346a91595, type: 3}
+  - prefab:
+      RawGuidValue: d5afee1ea6bd455aad4298492da01110
+    ghostPrefab: {fileID: 5724598627955368034, guid: 6b7910450b17496990a5c5529d0b3301, type: 3}
+    buttonSprite: {fileID: 2459495974422395428, guid: 9bd2d6f34a3593c4cbb0f48b90e63237, type: 3}
   boardManager: {fileID: 1460598105}
   flowManager: {fileID: 1116893493}
   boardGenerator: {fileID: 538667368}
