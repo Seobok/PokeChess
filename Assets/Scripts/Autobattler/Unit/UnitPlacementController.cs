@@ -76,7 +76,7 @@ namespace PokeChess.Autobattler
         /// </summary>
         public void BeginPlacementMode()
         {
-            BeginPlacementMode(_selectedUnitTypeId);
+            TryBeginPlacementMode(_selectedUnitTypeId);
         }
 
         /// <summary>
@@ -84,7 +84,12 @@ namespace PokeChess.Autobattler
         /// </summary>
         public void BeginPlacementMode(int unitTypeId)
         {
-            _selectedUnitTypeId = (byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue);
+            TryBeginPlacementMode((byte)Mathf.Clamp(unitTypeId, 0, byte.MaxValue));
+        }
+
+        private bool TryBeginPlacementMode(byte unitTypeId)
+        {
+            _selectedUnitTypeId = unitTypeId;
 
             if (unitSpawner == null)
             {
@@ -94,16 +99,17 @@ namespace PokeChess.Autobattler
             if (unitSpawner == null)
             {
                 Debug.LogWarning("UnitSpawner is not assigned.");
-                return;
+                return false;
             }
 
             if (!unitSpawner.IsValidUnitType(_selectedUnitTypeId))
             {
                 Debug.LogWarning($"Unit type '{_selectedUnitTypeId}' is not configured.");
-                return;
+                return false;
             }
 
             unitSpawner.RequestSpawnToBench(_selectedUnitTypeId);
+            return true;
         }
 
         public void SelectUnitType(int unitTypeId)
@@ -167,7 +173,12 @@ namespace PokeChess.Autobattler
                 return;
             }
 
-            BeginPlacementMode(_randomSummonUnitTypeIds[buttonIndex]);
+            if (!TryBeginPlacementMode(_randomSummonUnitTypeIds[buttonIndex]))
+            {
+                return;
+            }
+
+            ClearSummonButton(buttonIndex);
         }
 
         private void BindSummonButton(Button button, int buttonIndex)
@@ -205,14 +216,48 @@ namespace PokeChess.Autobattler
             }
         }
 
-        private void UpdateSummonButtonVisual(Button button, byte unitTypeId)
+        private void ClearSummonButton(int buttonIndex)
         {
-            if (button == null || unitSpawner == null)
+            if (summonButtons == null || buttonIndex < 0 || buttonIndex >= summonButtons.Length)
             {
                 return;
             }
 
-            Sprite buttonSprite = unitSpawner.GetButtonSprite(unitTypeId);
+            Button button = summonButtons[buttonIndex];
+            if (button == null)
+            {
+                return;
+            }
+
+            button.onClick = new Button.ButtonClickedEvent();
+
+            if (_summonButtonActions != null && buttonIndex < _summonButtonActions.Length)
+            {
+                _summonButtonActions[buttonIndex] = null;
+            }
+
+            if (_randomSummonUnitTypeIds != null && buttonIndex < _randomSummonUnitTypeIds.Length)
+            {
+                _randomSummonUnitTypeIds[buttonIndex] = 0;
+            }
+
+            button.interactable = false;
+            UpdateSummonButtonVisual(button, 0, clearVisual: true);
+        }
+
+        private void UpdateSummonButtonVisual(Button button, byte unitTypeId, bool clearVisual = false)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            Sprite buttonSprite = null;
+            if (!clearVisual && unitSpawner != null)
+            {
+                buttonSprite = unitSpawner.GetButtonSprite(unitTypeId);
+            }
+
             if (button.image != null)
             {
                 button.image.sprite = buttonSprite;
@@ -222,8 +267,9 @@ namespace PokeChess.Autobattler
             TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>();
             if (label != null)
             {
-                label.gameObject.SetActive(buttonSprite == null);
-                if (buttonSprite == null)
+                bool showLabel = !clearVisual && buttonSprite == null;
+                label.gameObject.SetActive(showLabel);
+                if (showLabel)
                 {
                     label.text = unitTypeId.ToString();
                 }
