@@ -24,6 +24,14 @@ namespace PokeChess.Autobattler
         RightDown = 7
     }
 
+    public enum UnitAnimationClipEventType : byte
+    {
+        None = 0,
+        RushFrame = 1,
+        HitFrame = 2,
+        ReturnFrame = 3
+    }
+
     /// <summary>
     /// Owns replicated unit state, board movement, combat logic, and visual syncing.
     /// Skills are delegated to UnitSkillDefinition assets referenced by UnitStats.
@@ -46,8 +54,10 @@ namespace PokeChess.Autobattler
         [SerializeField] private string skillTriggerParameter = "Skill";
         [SerializeField] private string hitTriggerParameter = "Hit";
         [SerializeField] private string deadBoolParameter = "IsDead";
+        [SerializeField] private string directionIntParameter = "Direction";
         [SerializeField] private float deathDespawnDelaySeconds = 0.75f;
         [SerializeField] private string locomotionStatePrefix = "Walk_";
+        [SerializeField] private string idleStatePrefix = "Idle_";
 
         [Networked] public HexCoord Cell { get; private set; }
         [Networked] public float HP { get; private set; }
@@ -106,12 +116,14 @@ namespace PokeChess.Autobattler
         private int _skillTriggerHash;
         private int _hitTriggerHash;
         private int _deadBoolHash;
+        private int _directionIntHash;
         private int _lastLocomotionStateHash;
         private bool _hasMoveBool;
         private bool _hasAttackTrigger;
         private bool _hasSkillTrigger;
         private bool _hasHitTrigger;
         private bool _hasDeadBool;
+        private bool _hasDirectionInt;
 
         private bool _skillMoveLocked;
         private bool _skillAttackLocked;
@@ -129,6 +141,7 @@ namespace PokeChess.Autobattler
         public float ManaNormalized => !IsNetworkStateReady || MaxMana <= 0 ? 0f : Mathf.Clamp01((float)Mana / MaxMana);
         public UnitAnimationDirection AnimationDirection => (UnitAnimationDirection)AnimationDirectionValue;
         public bool IsLocallyHiddenForPlacementDrag => _locallyHiddenForPlacementDrag;
+        public event System.Action<UnitAnimationClipEventType> AnimationClipEventFired;
 
         public void SetPendingInit(byte boardIndex, HexCoord cell, byte unitTypeId, bool requireDeployZone = true)
         {
@@ -1282,12 +1295,14 @@ namespace PokeChess.Autobattler
             _skillTriggerHash = Animator.StringToHash(skillTriggerParameter);
             _hitTriggerHash = Animator.StringToHash(hitTriggerParameter);
             _deadBoolHash = Animator.StringToHash(deadBoolParameter);
+            _directionIntHash = Animator.StringToHash(directionIntParameter);
 
             _hasMoveBool = HasAnimatorParameter(parameters, _moveBoolHash, AnimatorControllerParameterType.Bool);
             _hasAttackTrigger = HasAnimatorParameter(parameters, _attackTriggerHash, AnimatorControllerParameterType.Trigger);
             _hasSkillTrigger = HasAnimatorParameter(parameters, _skillTriggerHash, AnimatorControllerParameterType.Trigger);
             _hasHitTrigger = HasAnimatorParameter(parameters, _hitTriggerHash, AnimatorControllerParameterType.Trigger);
             _hasDeadBool = HasAnimatorParameter(parameters, _deadBoolHash, AnimatorControllerParameterType.Bool);
+            _hasDirectionInt = HasAnimatorParameter(parameters, _directionIntHash, AnimatorControllerParameterType.Int);
             _lastLocomotionStateHash = 0;
         }
 
@@ -1319,7 +1334,14 @@ namespace PokeChess.Autobattler
                 animator.SetBool(_deadBoolHash, IsDeadOrDying);
             }
 
-            ApplyLocomotionAnimation(isMoving);
+            if (_hasDirectionInt)
+            {
+                animator.SetInteger(_directionIntHash, (int)AnimationDirection);
+            }
+            else
+            {
+                ApplyLocomotionAnimation(isMoving);
+            }
 
             if (_lastConsumedAnimationEventSequence == AnimationEventSequence)
                 return;
@@ -1353,7 +1375,13 @@ namespace PokeChess.Autobattler
 
         private void ApplyLocomotionAnimation(bool isMoving)
         {
-            int stateHash = GetLocomotionStateHash(AnimationDirection);
+            int stateHash = isMoving
+                ? GetLocomotionStateHash(AnimationDirection)
+                : GetIdleStateHash(AnimationDirection);
+
+            if (stateHash == 0 && !isMoving)
+                stateHash = GetLocomotionStateHash(AnimationDirection);
+
             if (stateHash == 0 || !animator.HasState(0, stateHash))
                 return;
 
@@ -1371,6 +1399,35 @@ namespace PokeChess.Autobattler
             animator.Play(stateHash, 0, 0f);
             animator.Update(0f);
             _lastLocomotionStateHash = stateHash;
+        }
+
+        private int GetIdleStateHash(UnitAnimationDirection direction)
+        {
+            if (string.IsNullOrWhiteSpace(idleStatePrefix))
+                return 0;
+
+            string suffix = direction switch
+            {
+                UnitAnimationDirection.Down => "D",
+                UnitAnimationDirection.LeftDown => "LD",
+                UnitAnimationDirection.Left => "L",
+                UnitAnimationDirection.LeftUp => "LU",
+                UnitAnimationDirection.Up => "U",
+                UnitAnimationDirection.RightUp => "RU",
+                UnitAnimationDirection.Right => "R",
+                UnitAnimationDirection.RightDown => "RD",
+                _ => "D"
+            };
+
+            return Animator.StringToHash($"{idleStatePrefix}{suffix}");
+        }
+
+        public void NotifyAnimationClipEvent(UnitAnimationClipEventType eventType)
+        {
+            if (eventType == UnitAnimationClipEventType.None)
+                return;
+
+            AnimationClipEventFired?.Invoke(eventType);
         }
 
         private int GetLocomotionStateHash(UnitAnimationDirection direction)

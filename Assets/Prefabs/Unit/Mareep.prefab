@@ -260,6 +260,7 @@ GameObject:
   - component: {fileID: 4533249055418415970}
   - component: {fileID: 5470499015413416892}
   - component: {fileID: 8424834163761977667}
+  - component: {fileID: 7436872855073252234}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -351,7 +352,7 @@ Animator:
   m_GameObject: {fileID: 5369105940141994805}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6b1eaa71f30b6bb4a8641cce99375d9c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -363,6 +364,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7436872855073252234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5369105940141994805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 720991fc158a70349b2fc0a9aa13c4db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PokeChess.Autobattler.UnitAnimationEventRelay
+  owner: {fileID: 0}
 --- !u!1 &5724598627955368034
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,8 +437,10 @@ MonoBehaviour:
   skillTriggerParameter: Skill
   hitTriggerParameter: Hit
   deadBoolParameter: IsDead
+  directionIntParameter: Direction
   deathDespawnDelaySeconds: 0.75
   locomotionStatePrefix: Walk_
+  idleStatePrefix: Idle_
   _Cell:
     Q: 0
     R: 0
