@@ -111,7 +111,8 @@ namespace PokeChess.Core.Tests
             sim.Step();b.TryMoveUnit("z",P(6,7));var events=sim.Step();
             Assert.That(policy.Hits,Is.Zero);
             Assert.That(events.Any(e=>e.Action==CombatActionState.Attacking&&e.Kind==CombatActionSignalKind.Cancelled),Is.True);
-            Assert.That(U(b,"a").CurrentTargetId,Is.Null);
+            Assert.That(U(b,"a").CurrentTargetId,Is.EqualTo("z"));
+            Assert.That(U(b,"a").ActionState,Is.EqualTo(CombatActionState.Moving));
         }
         [Test]
         public void SkillCastHasOneStartAndEffectThenReturnsToIdle()

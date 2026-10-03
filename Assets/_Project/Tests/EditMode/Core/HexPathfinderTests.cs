@@ -53,7 +53,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void RandomOccupiedBoardsMatchIndependentBfs()
         {
-            var rng=new Random(150);var start=P(0,0);
+            var rng=new System.Random(150);var start=P(0,0);
             for(int trial=0;trial<20;trial++)
             {
                 var b=new CombatBoard();b.TryPlace("mover",start);

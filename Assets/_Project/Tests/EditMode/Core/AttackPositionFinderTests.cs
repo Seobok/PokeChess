@@ -23,7 +23,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void RandomSetupsChooseShortestReachableAttackCellWithStableTieBreak()
         {
-            var rng=new Random(151);var start=P(0,0);var target=P(6,7);
+            var rng=new System.Random(151);var start=P(0,0);var target=P(6,7);
             for(int trial=0;trial<40;trial++)
             {
                 var b=Board(start,target);int range=1+trial%3;

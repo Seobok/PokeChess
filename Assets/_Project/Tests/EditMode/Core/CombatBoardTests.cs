@@ -103,7 +103,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void OneThousandOperationsMatchReferenceMap()
         {
-            var b=new CombatBoard(); var map=new Dictionary<string,BoardPosition>(); var rng=new Random(140);
+            var b=new CombatBoard(); var map=new Dictionary<string,BoardPosition>(); var rng=new System.Random(140);
             for(int i=0;i<1000;i++)
             {
                 string id="u"+rng.Next(20); var dest=P(rng.Next(8),rng.Next(9)); int op=rng.Next(3);

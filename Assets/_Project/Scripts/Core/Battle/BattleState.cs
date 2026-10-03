@@ -24,7 +24,16 @@ namespace PokeChess.Core.Battle
         public float CurrentEnergy { get; private set; }
         public bool IsAlive => CurrentHP > 0;
         public bool IsOnBoard { get; private set; } = true;
-        public bool IsTargetable => IsAlive && IsOnBoard;
+        public bool IsUntargetable { get; private set; }
+        public string TauntSourceId { get; private set; }
+        public bool IsTargetable => IsAlive && IsOnBoard && !IsUntargetable;
+        // Status application/duration/stack rules are supplied by WBS 1.15.
+        public void SetUntargetable(bool value) => IsUntargetable = value;
+        public void SetTauntSource(string sourceId)
+        {
+            if(sourceId != null && string.IsNullOrWhiteSpace(sourceId))throw new ArgumentException("Invalid taunt source.");
+            TauntSourceId = sourceId;
+        }
         public string CurrentTargetId { get; internal set; }
         public CombatActionState ActionState { get; internal set; }
         public IReadOnlyList<string> ItemInstanceIds { get; }
@@ -77,6 +86,7 @@ namespace PokeChess.Core.Battle
         public string BattleId { get; }
         public int RoundNumber { get; }
         public ulong BattleSeed { get; }
+        public PokeChess.Core.Random.BattleRandomStreams RngStreams { get; }
         public int TickRate { get; }
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
@@ -110,6 +120,7 @@ namespace PokeChess.Core.Battle
             if (tickRate < 1) throw new ArgumentOutOfRangeException(nameof(tickRate));
             RoundNumber = roundNumber;
             BattleSeed = seed;
+            RngStreams = new PokeChess.Core.Random.BattleRandomStreams(seed);
             TickRate = tickRate;
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);

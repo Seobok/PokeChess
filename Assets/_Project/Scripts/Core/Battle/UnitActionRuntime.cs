@@ -24,6 +24,9 @@ namespace PokeChess.Core.Battle
         public long EffectTick { get; internal set; }
         public bool EffectApplied { get; internal set; }
         public BoardPosition? MoveDestination { get; internal set; }
+        public string MovementTargetId { get; internal set; }
+        public bool IsAttackTargetLocked { get; internal set; }
+        public long NextAttackTick { get; internal set; }
         internal UnitActionRuntime(string unitId) { UnitId = unitId; }
     }
 

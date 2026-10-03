@@ -53,6 +53,8 @@ namespace PokeChess.Core.Battle
                     else Advance(unit,runtime);
                 }
                 CleanupUnavailable(); // Effects may kill units already processed earlier in this tick.
+                ReevaluateLostAttackTargets();
+                CleanupUnavailable();
                 battle.CurrentTick=checked(battle.CurrentTick+1);
                 return Array.AsReadOnly(signals.ToArray());
             }
@@ -66,6 +68,7 @@ namespace PokeChess.Core.Battle
                     var runtime=actions[unit.UnitInstanceId];
                     if(runtime.EndTick>0||runtime.MoveDestination.HasValue)Finish(unit,runtime,true);
                     Reservations.Release(unit.UnitInstanceId);
+                    runtime.IsAttackTargetLocked=false;runtime.MovementTargetId=null;
                     unit.CurrentTargetId=null;unit.ActionState=CombatActionState.Dead;
                 }
         }
@@ -78,9 +81,14 @@ namespace PokeChess.Core.Battle
         private void Decide(UnitCombatState unit,UnitActionRuntime runtime)
         {
             var target=Target(unit);
-            if(target==null)
+            var forced=ForcedTarget(unit);
+            bool retain=runtime.IsAttackTargetLocked && target!=null &&
+                HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange);
+            if(forced!=null && (target==null || forced.UnitInstanceId!=target.UnitInstanceId))retain=false;
+            if(!retain)
             {
-                unit.CurrentTargetId=policy.SelectTarget(battle,unit);
+                runtime.IsAttackTargetLocked=false;
+                unit.CurrentTargetId=forced!=null ? forced.UnitInstanceId : policy.SelectTarget(battle,unit);
                 target=Target(unit);
             }
             if(target==null){unit.CurrentTargetId=null;return;}
@@ -94,7 +102,7 @@ namespace PokeChess.Core.Battle
             }
             if(HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange))
             {
-                if(policy.CanAttack(battle,unit))
+                if(policy.CanAttack(battle,unit) && battle.CurrentTick>=runtime.NextAttackTick)
                 {
                     Begin(unit,runtime,CombatActionState.Attacking,policy.GetAttackTiming(battle,unit));
                     Advance(unit,runtime);
@@ -108,6 +116,7 @@ namespace PokeChess.Core.Battle
             var next=path.Path[1];
             if(!Reservations.TryReserve(unit.UnitInstanceId,next))return;
             runtime.MoveDestination=next;
+            runtime.MovementTargetId=target.UnitInstanceId;
             Begin(unit,runtime,CombatActionState.Moving,
                 new CombatActionTiming(ToTicks(1.0/unit.Stats.MoveSpeed,battle.TickRate),0));
         }
@@ -115,8 +124,10 @@ namespace PokeChess.Core.Battle
         {
             if(timing.DurationTicks<1)throw new InvalidOperationException("Invalid action timing.");
             unit.ActionState=state;
+            if(state==CombatActionState.Attacking)runtime.IsAttackTargetLocked=true;
             runtime.StartTick=battle.CurrentTick;
             runtime.EndTick=checked(battle.CurrentTick+timing.DurationTicks);
+            if(state==CombatActionState.Attacking)runtime.NextAttackTick=runtime.EndTick;
             runtime.EffectTick=checked(battle.CurrentTick+timing.EffectOffsetTicks);
             runtime.EffectApplied=false;
             Emit(unit,CombatActionSignalKind.Started);
@@ -136,7 +147,10 @@ namespace PokeChess.Core.Battle
             if(unit.ActionState==CombatActionState.Attacking&&!runtime.EffectApplied &&
                 (target==null||!policy.CanAttack(battle,unit)||
                  !HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange)))
-            {unit.CurrentTargetId=null;Finish(unit,runtime,true);return;}
+            {CancelAttackAndReplan(unit,runtime);return;}
+            var forced=ForcedTarget(unit);
+            if(unit.ActionState==CombatActionState.Attacking && forced!=null && forced.UnitInstanceId!=unit.CurrentTargetId)
+            {CancelAttackAndReplan(unit,runtime);return;}
             if(unit.ActionState==CombatActionState.Casting&&!policy.CanContinueSkill(battle,unit,target))
             {unit.CurrentTargetId=null;Finish(unit,runtime,true);return;}
             if(!runtime.EffectApplied&&battle.CurrentTick>=runtime.EffectTick)
@@ -153,8 +167,34 @@ namespace PokeChess.Core.Battle
         {
             Emit(unit,cancelled?CombatActionSignalKind.Cancelled:CombatActionSignalKind.Completed);
             Reservations.Release(unit.UnitInstanceId);
+            if(unit.ActionState==CombatActionState.Moving)
+            {runtime.MovementTargetId=null;unit.CurrentTargetId=null;}
+            if(cancelled)runtime.IsAttackTargetLocked=false;
             runtime.MoveDestination=null;runtime.EndTick=0;
             unit.ActionState=CombatActionState.Idle;
+        }
+        private UnitCombatState ForcedTarget(UnitCombatState unit) =>
+            CombatTargetSelector.ResolveTaunt(battle,unit,policy.GetTauntSource(unit),policy.IsTargetable);
+        private void CancelAttackAndReplan(UnitCombatState unit,UnitActionRuntime runtime)
+        {
+            Finish(unit,runtime,true);
+            unit.CurrentTargetId=null;
+            runtime.IsAttackTargetLocked=false;
+            if(unit.IsAlive&&unit.IsOnBoard)Decide(unit,runtime);
+        }
+        private void ReevaluateLostAttackTargets()
+        {
+            foreach(var unit in ordered)
+            {
+                var runtime=actions[unit.UnitInstanceId];
+                if(!unit.IsAlive||!unit.IsOnBoard||!runtime.IsAttackTargetLocked||
+                    (unit.ActionState!=CombatActionState.Attacking&&unit.ActionState!=CombatActionState.Idle))continue;
+                var target=Target(unit);
+                var forced=ForcedTarget(unit);
+                if(target==null||!HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange)||
+                    (forced!=null&&forced.UnitInstanceId!=unit.CurrentTargetId))
+                    CancelAttackAndReplan(unit,runtime);
+            }
         }
         private void Emit(UnitCombatState unit,CombatActionSignalKind kind)=>
             signals.Add(new CombatActionSignal(battle.CurrentTick,unit.UnitInstanceId,unit.ActionState,kind));

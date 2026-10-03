@@ -4,14 +4,12 @@ using PokeChess.Core.Board;
 
 namespace PokeChess.Core.Battle
 {
-    /// <summary>Temporary nearest/ordinal-ID targeting. Replace with WBS 1.7; no damage or skill effects by default.</summary>
+    /// <summary>Nearest/center/TargetRng targeting for all units; no damage or skill effects by default.</summary>
     public class CombatBehaviorPolicy
     {
         public virtual string SelectTarget(BattleState battle, UnitCombatState unit) =>
-            battle.Units.Where(t => t.TeamId != unit.TeamId && IsTargetable(t))
-                .OrderBy(t => HexCoordinates.Distance(unit.Position, t.Position))
-                .ThenBy(t => t.UnitInstanceId, StringComparer.Ordinal)
-                .Select(t => t.UnitInstanceId).FirstOrDefault();
+            CombatTargetSelector.Select(battle, unit, IsTargetable, GetTauntSource(unit));
+        public virtual string GetTauntSource(UnitCombatState unit) => unit.TauntSourceId;
         public virtual bool IsTargetable(UnitCombatState unit) => unit.IsTargetable;
         public virtual bool CanMove(BattleState battle, UnitCombatState unit) => true;
         public virtual bool CanAttack(BattleState battle, UnitCombatState unit) => true;
