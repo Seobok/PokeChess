@@ -78,6 +78,7 @@ namespace PokeChess.Core.Battle
         public int RoundNumber { get; }
         public ulong BattleSeed { get; }
         public int TickRate { get; }
+        internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
         public bool IsOvertime { get; internal set; }
