@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Pokemon;
+using PokeChess.Core.Board;
 
 namespace PokeChess.Core.Battle
 {
@@ -22,7 +23,8 @@ namespace PokeChess.Core.Battle
         public float CurrentHP { get; private set; }
         public float CurrentEnergy { get; private set; }
         public bool IsAlive => CurrentHP > 0;
-        public bool IsTargetable => IsAlive;
+        public bool IsOnBoard { get; private set; } = true;
+        public bool IsTargetable => IsAlive && IsOnBoard;
         public string CurrentTargetId { get; internal set; }
         public CombatActionState ActionState { get; internal set; }
         public IReadOnlyList<string> ItemInstanceIds { get; }
@@ -51,7 +53,8 @@ namespace PokeChess.Core.Battle
             CurrentEnergy = energy; // Energy overflow is supported by the combat specification.
             if (!IsAlive) ActionState = CombatActionState.Dead;
         }
-        public void SetPosition(BoardPosition position) => Position = position;
+        internal void SetPosition(BoardPosition position) => Position = position;
+        internal void MarkRemovedFromBoard() => IsOnBoard = false;
     }
 
     public sealed class BattleUnitSetup
@@ -81,8 +84,25 @@ namespace PokeChess.Core.Battle
         public BattleResult Result { get; internal set; } = BattleResult.InProgress;
         public BattleEndReason EndReason { get; internal set; } = BattleEndReason.None;
         public IReadOnlyList<UnitCombatState> Units { get; }
+        private readonly CombatBoard board;
+        private readonly Dictionary<string, UnitCombatState> unitsById;
+        public IReadOnlyCombatBoard Board => board.ReadOnly;
 
-        internal BattleState(string battleId, int roundNumber, ulong seed, int tickRate, UnitCombatState[] units)
+        // Occupancy operations only: AI movement timing and death rules are implemented later.
+        public BoardOperationResult TryMoveUnit(string unitId, BoardPosition destination)
+        {
+            var result = board.TryMove(unitId, destination);
+            if (result == BoardOperationResult.Success) unitsById[unitId].SetPosition(destination);
+            return result;
+        }
+        public BoardOperationResult TryRemoveUnit(string unitId)
+        {
+            var result = board.TryRemove(unitId);
+            if (result == BoardOperationResult.Success) unitsById[unitId].MarkRemovedFromBoard();
+            return result;
+        }
+
+        internal BattleState(string battleId, int roundNumber, ulong seed, int tickRate, UnitCombatState[] units, CombatBoard board)
         {
             BattleId = ModelGuard.Id(battleId, nameof(battleId));
             if (roundNumber < 1) throw new ArgumentOutOfRangeException(nameof(roundNumber));
@@ -90,6 +110,8 @@ namespace PokeChess.Core.Battle
             RoundNumber = roundNumber;
             BattleSeed = seed;
             TickRate = tickRate;
+            this.board = board ?? throw new ArgumentNullException(nameof(board));
+            unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);
         }
     }
@@ -108,6 +130,14 @@ namespace PokeChess.Core.Battle
                 throw new ArgumentException("Duplicate unit instance IDs.");
             if (!entries.Any(e => e.TeamId == 1) || !entries.Any(e => e.TeamId == 2))
                 throw new ArgumentException("Both combat teams are required.");
+            // Validate the entire setup before invoking stat policies or exposing a battle.
+            var board = new CombatBoard();
+            foreach (var entry in entries)
+            {
+                var placement = board.TryPlace(entry.Unit.InstanceId, entry.Position);
+                if (placement != BoardOperationResult.Success)
+                    throw new ArgumentException("Invalid initial placement: " + placement, nameof(setup));
+            }
             var states = entries.Select(e =>
             {
                 var definition = catalog.Get(e.Unit.DefinitionId);
@@ -115,7 +145,7 @@ namespace PokeChess.Core.Battle
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
                 return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position);
             }).ToArray();
-            return new BattleState(battleId, roundNumber, seed, tickRate, states);
+            return new BattleState(battleId, roundNumber, seed, tickRate, states, board);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace PokeChess.Core.Tests
             var battle = Battle(catalog, a, Unit(catalog, "u2", "p2"));
             a.AddItem("item-after-setup");
             battle.Units[0].SetVitals(40, 120);
-            battle.Units[0].SetPosition(new BoardPosition(1, 0));
+            Assert.That(battle.TryMoveUnit("u1", new BoardPosition(1, 0)), Is.EqualTo(PokeChess.Core.Board.BoardOperationResult.Success));
             Assert.That(catalog.Get("test").BaseStats.MaxHP, Is.EqualTo(100));
             Assert.That(a.Placement.Position.Value, Is.EqualTo(new BoardPosition(0,0)));
             Assert.That(battle.Units[0].ItemInstanceIds, Is.Empty);
