@@ -42,8 +42,7 @@ namespace PokeChess.Core.Battle
             if(battle==null)throw new ArgumentNullException(nameof(battle));
             var source=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.SourceId);
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
-            if(source==null||target==null||source.TeamId==target.TeamId||!source.IsAlive||
-                !source.IsOnBoard||!target.IsTargetable)throw new InvalidOperationException("Invalid damage participants.");
+            if(source==null||target==null||source.TeamId==target.TeamId||!target.IsTargetable)throw new InvalidOperationException("Invalid damage participants.");
             float applied=Math.Min(target.CurrentHP,request.RawDamage);
             target.SetVitals(target.CurrentHP-applied,target.CurrentEnergy);
             if(!target.IsAlive)battle.TryRemoveUnit(target.UnitInstanceId);
@@ -63,18 +62,18 @@ namespace PokeChess.Core.Battle
             result=default;
             if(source==null||target==null||!battle.Units.Contains(source)||!battle.Units.Contains(target)||
                 source.TeamId==target.TeamId||!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||
-                source.Stats.AttackRange!=1||!HexCoordinates.IsInRange(source.Position,target.Position,1))return false;
+                source.Stats.AttackDelivery!=PokeChess.Core.Pokemon.AttackDeliveryType.Melee||!HexCoordinates.IsInRange(source.Position,target.Position,source.Stats.AttackRange))return false;
             result=damage.Apply(battle,new DamageRequest(source.UnitInstanceId,target.UnitInstanceId,
                 source.Stats.Attack,DamageType.Physical));
             return true;
         }
     }
-    // Range 1 is the current melee classification; explicit attack delivery data comes with 1.9.
+    // Explicit melee-only policy retained for callers that need it.
     public class MeleeCombatBehaviorPolicy : CombatBehaviorPolicy
     {
         private readonly MeleeAttackResolver resolver;
         public MeleeCombatBehaviorPolicy(IDamageProcessor damage=null) { resolver=new MeleeAttackResolver(damage); }
-        public override bool CanAttack(BattleState battle, UnitCombatState unit) => unit.Stats.AttackRange==1;
+        public override bool CanAttack(BattleState battle, UnitCombatState unit) => unit.Stats.AttackDelivery==PokeChess.Core.Pokemon.AttackDeliveryType.Melee;
         public override void OnAttackTiming(BattleState battle, UnitCombatState unit, UnitCombatState target)
         { resolver.TryResolve(battle,unit,target,out _); }
     }

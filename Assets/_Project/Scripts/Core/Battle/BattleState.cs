@@ -88,6 +88,7 @@ namespace PokeChess.Core.Battle
         public ulong BattleSeed { get; }
         public PokeChess.Core.Random.BattleRandomStreams RngStreams { get; }
         public int TickRate { get; }
+        public ProjectileSystem Projectiles { get; }
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
@@ -126,6 +127,7 @@ namespace PokeChess.Core.Battle
             BattleSeed = seed;
             RngStreams = new PokeChess.Core.Random.BattleRandomStreams(seed);
             TickRate = tickRate;
+            Projectiles = new ProjectileSystem(this);
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);

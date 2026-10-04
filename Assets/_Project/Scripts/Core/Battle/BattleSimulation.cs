@@ -20,7 +20,7 @@ namespace PokeChess.Core.Battle
         {
             this.battle=battle??throw new ArgumentNullException(nameof(battle));
             if(battle.HasSimulation)throw new InvalidOperationException("Battle already has a simulation owner.");
-            this.policy=policy??new MeleeCombatBehaviorPolicy();
+            this.policy=policy??new BasicAttackCombatBehaviorPolicy();
             ordered=battle.Units.OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
             units=ordered.ToDictionary(u=>u.UnitInstanceId,StringComparer.Ordinal);
             actions=ordered.ToDictionary(u=>u.UnitInstanceId,u=>new UnitActionRuntime(u.UnitInstanceId),StringComparer.Ordinal);
@@ -43,6 +43,7 @@ namespace PokeChess.Core.Battle
             {
                 signals.Clear();
                 battle.BeginDamageTick();
+                battle.Projectiles.BeginTick();
                 int count=inputs.Count;
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
                 CleanupUnavailable();
@@ -53,6 +54,7 @@ namespace PokeChess.Core.Battle
                     if(unit.ActionState==CombatActionState.Idle) Decide(unit,runtime);
                     else Advance(unit,runtime);
                 }
+                policy.OnProjectilesTiming(battle);
                 CleanupUnavailable(); // Effects may kill units already processed earlier in this tick.
                 ReevaluateLostAttackTargets();
                 CleanupUnavailable();

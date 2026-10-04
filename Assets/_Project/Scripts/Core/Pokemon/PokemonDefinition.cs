@@ -28,6 +28,8 @@ namespace PokeChess.Core.Pokemon
 
     // SpellPower is a percentage: 50 means +50%, not 0.5.
     // Speeds use attacks/second and hexes/second. Hit time uses seconds.
+    public enum AttackDeliveryType { Melee, Projectile }
+
     public sealed class PokemonStats
     {
         public float MaxHP { get; }
@@ -41,10 +43,13 @@ namespace PokeChess.Core.Pokemon
         public float MaxEnergy { get; }
         public float StartingEnergy { get; }
         public float AttackHitTime { get; }
+        public AttackDeliveryType AttackDelivery { get; }
+        public float ProjectileSpeed { get; }
 
         public PokemonStats(float maxHP, float attack, float spellPower, float attackSpeed,
             float armor, float magicResistance, int attackRange, float moveSpeed,
-            float maxEnergy, float startingEnergy, float attackHitTime)
+            float maxEnergy, float startingEnergy, float attackHitTime,
+            AttackDeliveryType attackDelivery = AttackDeliveryType.Melee, float projectileSpeed = 6)
         {
             MaxHP = ModelGuard.Number(maxHP, nameof(maxHP), float.Epsilon);
             Attack = ModelGuard.Number(attack, nameof(attack));
@@ -59,6 +64,9 @@ namespace PokeChess.Core.Pokemon
             StartingEnergy = ModelGuard.Number(startingEnergy, nameof(startingEnergy));
             if (startingEnergy > maxEnergy) throw new ArgumentOutOfRangeException(nameof(startingEnergy));
             AttackHitTime = ModelGuard.Number(attackHitTime, nameof(attackHitTime));
+            if(!Enum.IsDefined(typeof(AttackDeliveryType),attackDelivery))throw new ArgumentOutOfRangeException(nameof(attackDelivery));
+            AttackDelivery = attackDelivery;
+            ProjectileSpeed = ModelGuard.Number(projectileSpeed,nameof(projectileSpeed),float.Epsilon);
         }
     }
 

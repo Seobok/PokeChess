@@ -23,6 +23,7 @@ namespace PokeChess.Core.Battle
             int duration = Math.Max(BattleSimulation.ToTicks(1.0 / Math.Max(0.1, Math.Min(5.0, unit.Stats.AttackSpeed)), battle.TickRate), hit);
             return new CombatActionTiming(duration, hit);
         }
+        public virtual void OnProjectilesTiming(BattleState battle) { }
         public virtual void OnSkillStarted(BattleState battle, UnitCombatState unit, UnitCombatState target) { }
         public virtual void OnAttackTiming(BattleState battle, UnitCombatState unit, UnitCombatState target) { }
         public virtual void OnSkillTiming(BattleState battle, UnitCombatState unit, UnitCombatState target) { }

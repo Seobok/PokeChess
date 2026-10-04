@@ -11,7 +11,7 @@ namespace PokeChess.Core.Tests
         private static BattleState Create(float attack=10,float hit=.25f,float speed=1,int range=1,bool reversed=false)
         {
             var catalog=new PokemonCatalog(new[]{
-                new PokemonDefinition("test","Test",1,new PokemonStats(100,attack,0,speed,100,0,range,2,100,0,hit),"r","s")});
+                new PokemonDefinition("test","Test",1,new PokemonStats(100,attack,0,speed,100,0,range,2,100,0,hit,range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee),"r","s")});
             var setup=new[]{
                 new BattleUnitSetup(catalog.CreateUnit("a","test","p1",UnitRank.One,0,UnitPlacement.Unplaced),1,new BoardPosition(0,0)),
                 new BattleUnitSetup(catalog.CreateUnit("z","test","p2",UnitRank.One,0,UnitPlacement.Unplaced),2,new BoardPosition(1,0))};
@@ -78,7 +78,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void RangedUnitsDoNotApplyInstantMeleeDamage()
         {
-            var b=Create(range:3);var sim=new BattleSimulation(b);
+            var b=Create(range:3);var sim=new BattleSimulation(b,new MeleeCombatBehaviorPolicy());
             for(int i=0;i<60;i++)sim.Step();
             Assert.That(U(b,"z").CurrentHP,Is.EqualTo(100));
             Assert.That(U(b,"a").CurrentHP,Is.EqualTo(100));
