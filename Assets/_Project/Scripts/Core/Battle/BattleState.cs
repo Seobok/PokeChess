@@ -95,6 +95,10 @@ namespace PokeChess.Core.Battle
         public BattleResult Result { get; internal set; } = BattleResult.InProgress;
         public BattleEndReason EndReason { get; internal set; } = BattleEndReason.None;
         public IReadOnlyList<UnitCombatState> Units { get; }
+        private readonly List<DamageResult> damageResults = new List<DamageResult>();
+        public IReadOnlyList<DamageResult> DamageResultsThisTick => Array.AsReadOnly(damageResults.ToArray());
+        internal void BeginDamageTick() => damageResults.Clear();
+        internal void RecordDamage(DamageResult result) => damageResults.Add(result);
         private readonly CombatBoard board;
         private readonly Dictionary<string, UnitCombatState> unitsById;
         public IReadOnlyCombatBoard Board => board.ReadOnly;

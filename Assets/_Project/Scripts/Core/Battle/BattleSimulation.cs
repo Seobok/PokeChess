@@ -20,7 +20,7 @@ namespace PokeChess.Core.Battle
         {
             this.battle=battle??throw new ArgumentNullException(nameof(battle));
             if(battle.HasSimulation)throw new InvalidOperationException("Battle already has a simulation owner.");
-            this.policy=policy??new CombatBehaviorPolicy();
+            this.policy=policy??new MeleeCombatBehaviorPolicy();
             ordered=battle.Units.OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
             units=ordered.ToDictionary(u=>u.UnitInstanceId,StringComparer.Ordinal);
             actions=ordered.ToDictionary(u=>u.UnitInstanceId,u=>new UnitActionRuntime(u.UnitInstanceId),StringComparer.Ordinal);
@@ -42,6 +42,7 @@ namespace PokeChess.Core.Battle
             try
             {
                 signals.Clear();
+                battle.BeginDamageTick();
                 int count=inputs.Count;
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
                 CleanupUnavailable();
@@ -65,6 +66,7 @@ namespace PokeChess.Core.Battle
             foreach(var unit in ordered)
                 if(!unit.IsAlive||!unit.IsOnBoard)
                 {
+                    if(!unit.IsAlive&&unit.IsOnBoard)battle.TryRemoveUnit(unit.UnitInstanceId);
                     var runtime=actions[unit.UnitInstanceId];
                     if(runtime.EndTick>0||runtime.MoveDestination.HasValue)Finish(unit,runtime,true);
                     Reservations.Release(unit.UnitInstanceId);
