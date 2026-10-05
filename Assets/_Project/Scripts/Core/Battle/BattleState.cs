@@ -101,7 +101,10 @@ namespace PokeChess.Core.Battle
         public EnergySystem Energy { get; }
         private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
         public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
-        internal void BeginSkillTick() => skillEvents.Clear();
+        private readonly List<SkillEffectEvent> skillEffectEvents = new List<SkillEffectEvent>();
+        public IReadOnlyList<SkillEffectEvent> SkillEffectEventsThisTick => Array.AsReadOnly(skillEffectEvents.ToArray());
+        internal void RecordSkillEffect(SkillEffectEvent signal) => skillEffectEvents.Add(signal);
+        internal void BeginSkillTick() { skillEvents.Clear(); skillEffectEvents.Clear(); }
         internal void RecordSkill(SkillEvent signal) => skillEvents.Add(signal);
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }

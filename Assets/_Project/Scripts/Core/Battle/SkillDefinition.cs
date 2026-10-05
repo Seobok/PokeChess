@@ -20,27 +20,42 @@ namespace PokeChess.Core.Battle
         public SkillTargetRule TargetRule { get; }
         public TargetLostPolicy TargetLostPolicy { get; }
         public int Range { get; }
-        public SkillEffectKind EffectKind { get; }
-        public float EffectValue { get; }
-        public DamageType DamageType { get; }
-        public float ProjectileSpeed { get; }
+        public IReadOnlyList<SkillEffectDefinition> Effects { get; }
         public SkillDefinition(string id,float castTime,float postCastTime,SkillTargetRule targetRule,
             TargetLostPolicy targetLostPolicy,SkillEffectKind effectKind,float effectValue,
             int range=3,bool interruptible=true,float? energyLock=null,DamageType damageType=DamageType.Magic,float projectileSpeed=6)
+            : this(id,castTime,postCastTime,targetRule,targetLostPolicy,Legacy(effectKind,effectValue,damageType,projectileSpeed),
+                range,interruptible,energyLock) { }
+        private static SkillEffectDefinition[] Legacy(SkillEffectKind kind,float value,DamageType damage,float speed)
+        {
+            if(!Enum.IsDefined(typeof(SkillEffectKind),kind))throw new ArgumentOutOfRangeException(nameof(kind));
+            return new[]{new SkillEffectDefinition(kind==SkillEffectKind.SelfShield?SkillEffectType.Shield:
+                kind==SkillEffectKind.Damage?SkillEffectType.Damage:SkillEffectType.ProjectileDamage,
+                kind==SkillEffectKind.SelfShield?EffectTargetSelector.Self:EffectTargetSelector.CastTarget,
+                value,false,damage,projectileSpeed:speed)};
+        }
+        public SkillDefinition(string id,float castTime,float postCastTime,SkillTargetRule targetRule,
+            TargetLostPolicy targetLostPolicy,IEnumerable<SkillEffectDefinition> effects,
+            int range=3,bool interruptible=true,float? energyLock=null)
         {
             if(string.IsNullOrWhiteSpace(id))throw new ArgumentException(nameof(id));
-            DamageCalculator.Validate(castTime,true); DamageCalculator.Validate(postCastTime,true);
-            DamageCalculator.Validate(effectValue,true); DamageCalculator.Validate(projectileSpeed,true);
+            DamageCalculator.Validate(castTime,true);DamageCalculator.Validate(postCastTime,true);
             if(energyLock.HasValue)DamageCalculator.Validate(energyLock.Value,true);
-            if(range<1||projectileSpeed<=0||!Enum.IsDefined(typeof(SkillTargetRule),targetRule)||
-                !Enum.IsDefined(typeof(TargetLostPolicy),targetLostPolicy)||!Enum.IsDefined(typeof(SkillEffectKind),effectKind)||
-                !Enum.IsDefined(typeof(DamageType),damageType))throw new ArgumentOutOfRangeException();
-            if(effectKind!=SkillEffectKind.SelfShield &&
-                (targetRule!=SkillTargetRule.Enemy||targetLostPolicy==TargetLostPolicy.ContinueWithoutTarget))
-                throw new ArgumentException("Damage requires an enemy target.");
-            Id=id; CastTime=castTime; PostCastTime=postCastTime; EnergyLock=energyLock; Interruptible=interruptible;
-            TargetRule=targetRule; TargetLostPolicy=targetLostPolicy; Range=range; EffectKind=effectKind;
-            EffectValue=effectValue; DamageType=damageType; ProjectileSpeed=projectileSpeed;
+            if(range<1||!Enum.IsDefined(typeof(SkillTargetRule),targetRule)||!Enum.IsDefined(typeof(TargetLostPolicy),targetLostPolicy))
+                throw new ArgumentOutOfRangeException();
+            var copy=(effects??throw new ArgumentNullException(nameof(effects))).ToArray();
+            if(copy.Length==0||copy.Any(e=>e==null))throw new ArgumentException("Effects cannot be empty/null.");
+            foreach(var e in copy) {
+                if(e.TargetSelector==EffectTargetSelector.CastTarget &&
+                    ((e.IsDamage&&targetRule!=SkillTargetRule.Enemy)||(!e.IsDamage&&targetRule!=SkillTargetRule.Self)))
+                    throw new ArgumentException("Cast target team is incompatible with effect.");
+                if(e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget&&targetRule!=SkillTargetRule.Enemy)
+                    throw new ArgumentException("Enemy area requires enemy cast target.");
+            }
+            if(targetLostPolicy==TargetLostPolicy.ContinueWithoutTarget&&copy.All(e=>e.NeedsCastTarget))
+                throw new ArgumentException("ContinueWithoutTarget requires an independent effect.");
+            Id=id;CastTime=castTime;PostCastTime=postCastTime;EnergyLock=energyLock;Interruptible=interruptible;
+            TargetRule=targetRule;TargetLostPolicy=targetLostPolicy;Range=range;Effects=Array.AsReadOnly(copy);
         }
     }
     public sealed class SkillCatalog
@@ -89,24 +104,6 @@ namespace PokeChess.Core.Battle
     public interface ISkillEffectExecutor
     {
         void Execute(BattleState battle,UnitCombatState caster,UnitCombatState target,SkillDefinition skill);
-    }
-    public sealed class SkillEffectExecutor : ISkillEffectExecutor
-    {
-        private readonly IDamageProcessor damage;
-        public SkillEffectExecutor(IDamageProcessor damage=null) { this.damage=damage??new DamageProcessor(); }
-        public void Execute(BattleState battle,UnitCombatState caster,UnitCombatState target,SkillDefinition skill)
-        {
-            if(skill.EffectKind==SkillEffectKind.SelfShield) {
-                double total=(double)caster.CurrentShield+skill.EffectValue;
-                if(total>float.MaxValue)throw new OverflowException();
-                caster.SetShield((float)total);return;
-            }
-            if(target==null)throw new InvalidOperationException("Missing skill target.");
-            var request=new DamageRequest(caster.UnitInstanceId,target.UnitInstanceId,skill.EffectValue,skill.DamageType);
-            if(skill.EffectKind==SkillEffectKind.ProjectileDamage)
-                battle.Projectiles.TrySpawnSkill(caster,target,skill.Range,skill.ProjectileSpeed,request);
-            else damage.Apply(battle,request);
-        }
     }
     public class SkillCombatBehaviorPolicy : BasicAttackCombatBehaviorPolicy
     {

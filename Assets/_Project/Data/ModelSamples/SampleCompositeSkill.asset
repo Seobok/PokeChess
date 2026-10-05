@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11e661a0f32a1524a8a27213a9b0bc91, type: 3}
-  m_Name: SampleSkill
+  m_Name: SampleCompositeSkill
   m_EditorClassIdentifier: PokeChess.Client::PokeChess.Client.Data.SkillDefinitionAsset
-  skillId: test-skill
+  skillId: sample-composite
   castTime: 0.25
   postCastTime: 0.25
   overrideEnergyLock: 0
@@ -28,8 +28,22 @@ MonoBehaviour:
   effects:
   - type: 0
     targetSelector: 0
+    baseValue: 80
+    spellPowerScalable: 1
+    damageType: 1
+    radius: 1
+    projectileSpeed: 6
+  - type: 2
+    targetSelector: 1
     baseValue: 40
     spellPowerScalable: 0
+    damageType: 1
+    radius: 1
+    projectileSpeed: 6
+  - type: 1
+    targetSelector: 1
+    baseValue: 20
+    spellPowerScalable: 1
     damageType: 1
     radius: 1
     projectileSpeed: 6
