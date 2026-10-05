@@ -77,18 +77,18 @@ namespace PokeChess.Core.Battle
             if(source==null||target==null||source.TeamId==target.TeamId||!target.IsTargetable)
                 throw new InvalidOperationException("Invalid damage participants.");
             bool canCrit=request.CanCrit&&request.Type!=DamageType.True&&
-                ((double)request.RawDamage+request.BonusDamage+source.DamageModifiers.BonusAttackDamage)>0;
-            float bonus=request.BonusDamage+(request.CanCrit?source.DamageModifiers.BonusAttackDamage:0);
+                ((double)request.RawDamage+request.BonusDamage+source.EffectiveDamageModifiers.BonusAttackDamage)>0;
+            float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0);
             // Validate arithmetic before consuming RNG or changing state.
-            DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.Stats.Armor,
-                target.Stats.MagicResistance,canCrit,source.Stats.CritMultiplier,
-                source.DamageModifiers.Amplification,target.DamageModifiers.Reduction);
+            DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.EffectiveStats.Armor,
+                target.EffectiveStats.MagicResistance,canCrit,source.Stats.CritMultiplier,
+                source.EffectiveDamageModifiers.Amplification,target.EffectiveDamageModifiers.Reduction);
             bool critical=canCrit&&(source.Stats.CritChance>=1 ||
                 (source.Stats.CritChance>0 &&
                  (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<source.Stats.CritChance));
-            var calculation=DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.Stats.Armor,
-                target.Stats.MagicResistance,critical,source.Stats.CritMultiplier,
-                source.DamageModifiers.Amplification,target.DamageModifiers.Reduction);
+            var calculation=DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.EffectiveStats.Armor,
+                target.EffectiveStats.MagicResistance,critical,source.Stats.CritMultiplier,
+                source.EffectiveDamageModifiers.Amplification,target.EffectiveDamageModifiers.Reduction);
             float post=calculation.FinalDamage;
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));

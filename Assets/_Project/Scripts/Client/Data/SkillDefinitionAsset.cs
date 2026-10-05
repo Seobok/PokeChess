@@ -14,8 +14,10 @@ namespace PokeChess.Client.Data
         public DamageType damageType=DamageType.Magic;
         public int radius=1;
         public float projectileSpeed=6;
+        public string statusId;
+        public StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy;
         public SkillEffectDefinition ToDefinition() => new SkillEffectDefinition(type,targetSelector,baseValue,
-            spellPowerScalable,damageType,radius,projectileSpeed);
+            spellPowerScalable,damageType,radius,projectileSpeed,statusId,statusTargetTeam);
     }
     [CreateAssetMenu(menuName="PokeChess/Data/Skill Definition")]
     public sealed class SkillDefinitionAsset : ScriptableObject

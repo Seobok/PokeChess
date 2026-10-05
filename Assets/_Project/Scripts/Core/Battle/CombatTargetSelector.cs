@@ -32,7 +32,7 @@ namespace PokeChess.Core.Battle
             if(unit==null||!battle.Units.Contains(unit))throw new ArgumentException("Unit must belong to battle.",nameof(unit));
             if(!unit.IsAlive||!unit.IsOnBoard)return null;
             targetable=targetable??(t=>t.IsTargetable);
-            tauntSourceId=tauntSourceId??unit.TauntSourceId;
+            tauntSourceId=tauntSourceId??unit.EffectiveTauntSource;
             var taunt=ResolveTaunt(battle,unit,tauntSourceId,targetable);
             if(taunt!=null)return taunt.UnitInstanceId;
             var candidates=battle.Units.Where(t=>t.TeamId!=unit.TeamId&&t.IsTargetable&&targetable(t))

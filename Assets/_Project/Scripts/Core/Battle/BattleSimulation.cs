@@ -17,7 +17,7 @@ namespace PokeChess.Core.Battle
         private bool stepping;
         private readonly HashSet<string> skillInterrupts = new HashSet<string>(StringComparer.Ordinal);
         public MovementReservations Reservations { get; } = new MovementReservations();
-        public BattleSimulation(BattleState battle, CombatBehaviorPolicy policy = null, SkillCatalog skillCatalog = null, ISkillEffectExecutor skillExecutor = null)
+        public BattleSimulation(BattleState battle, CombatBehaviorPolicy policy = null, SkillCatalog skillCatalog = null, ISkillEffectExecutor skillExecutor = null, StatusCatalog statusCatalog = null)
         {
             this.battle=battle??throw new ArgumentNullException(nameof(battle));
             if(battle.HasSimulation)throw new InvalidOperationException("Battle already has a simulation owner.");
@@ -26,7 +26,29 @@ namespace PokeChess.Core.Battle
             ordered=battle.Units.OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
             units=ordered.ToDictionary(u=>u.UnitInstanceId,StringComparer.Ordinal);
             actions=ordered.ToDictionary(u=>u.UnitInstanceId,u=>new UnitActionRuntime(u.UnitInstanceId),StringComparer.Ordinal);
+            if(statusCatalog!=null)battle.StatusEffects.UseCatalog(statusCatalog);
+            battle.StatusEffects.Changed += OnStatusChanged;
             battle.HasSimulation=true;
+        }
+        private bool CanMove(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
+            !u.HasCrowdControl(CrowdControlKind.Root)&&policy.CanMove(battle,u);
+        private bool CanAttack(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
+            !u.HasCrowdControl(CrowdControlKind.Disarm)&&policy.CanAttack(battle,u);
+        private bool CanUseSkill(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
+            !u.HasCrowdControl(CrowdControlKind.Silence)&&policy.CanUseSkill(battle,u);
+        private void OnStatusChanged(UnitCombatState u)
+        {
+            if(!u.IsAlive||!u.IsOnBoard)return;
+            var runtime=actions[u.UnitInstanceId];bool stun=u.HasCrowdControl(CrowdControlKind.Stun);
+            if(u.ActionState==CombatActionState.Moving&&(stun||u.HasCrowdControl(CrowdControlKind.Root)))
+                Finish(u,runtime,true);
+            else if(u.ActionState==CombatActionState.Attacking&&(stun||
+                (!runtime.EffectApplied&&u.HasCrowdControl(CrowdControlKind.Disarm))))
+                Finish(u,runtime,true);
+            else if(runtime.IsSkillActive&&stun&&(runtime.SkillCast==null||runtime.SkillCast.Definition.Interruptible)) {
+                if(runtime.SkillCast!=null)runtime.SkillCast.CancelReason=SkillCancelReason.Interrupted;
+                Finish(u,runtime,true);
+            }
         }
         public void QueueSkillInterrupt(string unitId)
         {
@@ -51,6 +73,7 @@ namespace PokeChess.Core.Battle
                 signals.Clear();
                 battle.BeginDamageTick();
                 battle.BeginSkillTick();
+                battle.StatusEffects.BeginTick();
                 battle.Energy.BeginTick();
                 battle.Projectiles.BeginTick();
                 int count=inputs.Count;
@@ -67,6 +90,7 @@ namespace PokeChess.Core.Battle
                 CleanupUnavailable(); // Effects may kill units already processed earlier in this tick.
                 ReevaluateLostAttackTargets();
                 ReevaluateLostSkillTargets();
+                battle.StatusEffects.Cleanup();
                 CleanupUnavailable();
                 battle.CurrentTick=checked(battle.CurrentTick+1);
                 return Array.AsReadOnly(signals.ToArray());
@@ -108,7 +132,7 @@ namespace PokeChess.Core.Battle
             }
             if(TryStartDataSkill(unit,runtime))return;
             if(target==null){unit.CurrentTargetId=null;return;}
-            if(battle.Energy.IsSkillReady(unit)&&policy.CanUseSkill(battle,unit)&&policy.TryGetSkillTiming(battle,unit,target,out var timing))
+            if(battle.Energy.IsSkillReady(unit)&&CanUseSkill(unit)&&policy.TryGetSkillTiming(battle,unit,target,out var timing))
             {
                 if(timing.DurationTicks<1)throw new InvalidOperationException("Invalid skill timing.");
                 // Validate all scheduled ticks before consuming energy.
@@ -123,14 +147,14 @@ namespace PokeChess.Core.Battle
             }
             if(HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange))
             {
-                if(policy.CanAttack(battle,unit) && battle.CurrentTick>=runtime.NextAttackTick)
+                if(CanAttack(unit) && battle.CurrentTick>=runtime.NextAttackTick)
                 {
                     Begin(unit,runtime,CombatActionState.Attacking,policy.GetAttackTiming(battle,unit));
                     Advance(unit,runtime);
                 }
                 return;
             }
-            if(!policy.CanMove(battle,unit))return;
+            if(!CanMove(unit))return;
             var path=AttackPositionFinder.FindPosition(Reservations.Overlay(battle.Board),unit.UnitInstanceId,
                 target.UnitInstanceId,unit.Stats.AttackRange);
             if(path.Status!=PathSearchStatus.PathFound)return;
@@ -139,7 +163,7 @@ namespace PokeChess.Core.Battle
             runtime.MoveDestination=next;
             runtime.MovementTargetId=target.UnitInstanceId;
             Begin(unit,runtime,CombatActionState.Moving,
-                new CombatActionTiming(ToTicks(1.0/unit.Stats.MoveSpeed,battle.TickRate),0));
+                new CombatActionTiming(ToTicks(1.0/unit.EffectiveStats.MoveSpeed,battle.TickRate),0));
         }
         private UnitCombatState SkillTarget(UnitCombatState unit,SkillDefinition skill,string id)
         {
@@ -158,7 +182,7 @@ namespace PokeChess.Core.Battle
         }
         private bool TryStartDataSkill(UnitCombatState unit,UnitActionRuntime runtime)
         {
-            if(!battle.Energy.IsSkillReady(unit)||!policy.CanUseSkill(battle,unit)||
+            if(!battle.Energy.IsSkillReady(unit)||!CanUseSkill(unit)||
                 !policy.TryGetSkillDefinition(battle,unit,out var skill))return false;
             var target=SelectSkillTarget(unit,skill,true);
             if(target==null)return false;
@@ -228,7 +252,7 @@ namespace PokeChess.Core.Battle
             { AdvanceDataSkill(unit,runtime);return; }
             if(unit.ActionState==CombatActionState.Moving)
             {
-                if(!policy.CanMove(battle,unit)||!runtime.MoveDestination.HasValue||
+                if(!CanMove(unit)||!runtime.MoveDestination.HasValue||
                     !Reservations.TryGetOwner(runtime.MoveDestination.Value,out var owner)||owner!=unit.UnitInstanceId)
                 {Finish(unit,runtime,true);return;}
                 if(battle.CurrentTick<runtime.EndTick)return;
@@ -237,7 +261,7 @@ namespace PokeChess.Core.Battle
             }
             var target=Target(unit);
             if(unit.ActionState==CombatActionState.Attacking&&!runtime.EffectApplied &&
-                (target==null||!policy.CanAttack(battle,unit)||
+                (target==null||!CanAttack(unit)||
                  !HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange)))
             {CancelAttackAndReplan(unit,runtime);return;}
             var forced=ForcedTarget(unit);

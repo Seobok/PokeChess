@@ -9,7 +9,7 @@ namespace PokeChess.Core.Battle
     {
         public virtual string SelectTarget(BattleState battle, UnitCombatState unit) =>
             CombatTargetSelector.Select(battle, unit, IsTargetable, GetTauntSource(unit));
-        public virtual string GetTauntSource(UnitCombatState unit) => unit.TauntSourceId;
+        public virtual string GetTauntSource(UnitCombatState unit) => unit.EffectiveTauntSource;
         public virtual bool IsTargetable(UnitCombatState unit) => unit.IsTargetable;
         public virtual bool CanMove(BattleState battle, UnitCombatState unit) => true;
         public virtual bool CanAttack(BattleState battle, UnitCombatState unit) => true;
@@ -24,7 +24,7 @@ namespace PokeChess.Core.Battle
         public virtual CombatActionTiming GetAttackTiming(BattleState battle, UnitCombatState unit)
         {
             int hit = BattleSimulation.ToTicks(unit.Stats.AttackHitTime, battle.TickRate, false);
-            int duration = Math.Max(BattleSimulation.ToTicks(1.0 / Math.Max(0.1, Math.Min(5.0, unit.Stats.AttackSpeed)), battle.TickRate), hit);
+            int duration = Math.Max(BattleSimulation.ToTicks(1.0 / Math.Max(0.1, Math.Min(5.0, unit.EffectiveStats.AttackSpeed)), battle.TickRate), hit);
             return new CombatActionTiming(duration, hit);
         }
         public virtual void OnProjectilesTiming(BattleState battle) { }

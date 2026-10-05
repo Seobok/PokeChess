@@ -20,6 +20,11 @@ namespace PokeChess.Core.Battle
         public UnitRank Rank { get; }
         public int EvolutionStage { get; }
         public PokemonStats Stats { get; }
+        internal StatusEffectSystem StatusSystem { get; set; }
+        public EffectiveCombatStats EffectiveStats => StatusSystem.Resolve(this);
+        public DamageModifiers EffectiveDamageModifiers => StatusSystem.ResolveDamageModifiers(this);
+        public bool HasCrowdControl(CrowdControlKind kind) => StatusSystem.Has(this,kind);
+        public string EffectiveTauntSource => StatusSystem.TauntSource(this) ?? TauntSourceId;
         public BoardPosition Position { get; private set; }
         public float CurrentHP { get; private set; }
         public float CurrentEnergy { get; private set; }
@@ -99,6 +104,7 @@ namespace PokeChess.Core.Battle
         public int TickRate { get; }
         public ProjectileSystem Projectiles { get; }
         public EnergySystem Energy { get; }
+        public StatusEffectSystem StatusEffects { get; }
         private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
         public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
         private readonly List<SkillEffectEvent> skillEffectEvents = new List<SkillEffectEvent>();
@@ -146,6 +152,8 @@ namespace PokeChess.Core.Battle
             TickRate = tickRate;
             Projectiles = new ProjectileSystem(this);
             Energy = new EnergySystem(this);
+            StatusEffects = new StatusEffectSystem(this);
+            foreach(var unit in units)unit.StatusSystem=StatusEffects;
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);

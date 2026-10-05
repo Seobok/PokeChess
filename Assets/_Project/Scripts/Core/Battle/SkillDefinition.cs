@@ -47,7 +47,7 @@ namespace PokeChess.Core.Battle
             if(copy.Length==0||copy.Any(e=>e==null))throw new ArgumentException("Effects cannot be empty/null.");
             foreach(var e in copy) {
                 if(e.TargetSelector==EffectTargetSelector.CastTarget &&
-                    ((e.IsDamage&&targetRule!=SkillTargetRule.Enemy)||(!e.IsDamage&&targetRule!=SkillTargetRule.Self)))
+                    ((e.RequiresEnemy&&targetRule!=SkillTargetRule.Enemy)||(!e.RequiresEnemy&&targetRule!=SkillTargetRule.Self)))
                     throw new ArgumentException("Cast target team is incompatible with effect.");
                 if(e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget&&targetRule!=SkillTargetRule.Enemy)
                     throw new ArgumentException("Enemy area requires enemy cast target.");

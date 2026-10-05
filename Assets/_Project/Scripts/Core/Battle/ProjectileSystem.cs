@@ -79,7 +79,7 @@ namespace PokeChess.Core.Battle
                 if(reason!=ProjectileExpireReason.None)
                 { events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,reason));continue; }
                 var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);
-                damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.Stats.Attack,DamageType.Physical,true,isBasicAttack:true));
+                damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
                 events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Hit));
             }
         }

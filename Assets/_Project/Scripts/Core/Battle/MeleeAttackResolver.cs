@@ -81,7 +81,7 @@ namespace PokeChess.Core.Battle
                 source.TeamId==target.TeamId||!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||
                 source.Stats.AttackDelivery!=PokeChess.Core.Pokemon.AttackDeliveryType.Melee||!HexCoordinates.IsInRange(source.Position,target.Position,source.Stats.AttackRange))return false;
             result=damage.Apply(battle,new DamageRequest(source.UnitInstanceId,target.UnitInstanceId,
-                source.Stats.Attack,DamageType.Physical,true,isBasicAttack:true));
+                source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
             return true;
         }
     }
