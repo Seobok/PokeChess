@@ -25,7 +25,8 @@ namespace PokeChess.Core.Match
         // The final survivor of the purchased copy, which may be an existing unit.
         public UnitInstance Unit { get; }
         public IReadOnlyList<UnitRankedUp> RankUps { get; }
-        internal PurchaseResult(UnitInstance unit,IReadOnlyList<UnitRankedUp> rankUps) { Unit=unit;RankUps=rankUps; }
+        public bool MergeNextPreparation { get; }
+        internal PurchaseResult(UnitInstance unit,IReadOnlyList<UnitRankedUp> rankUps,bool mergeNextPreparation=false) { Unit=unit;RankUps=rankUps;MergeNextPreparation=mergeNextPreparation; }
     }
     internal sealed class RankNode
     {
@@ -41,18 +42,19 @@ namespace PokeChess.Core.Match
         internal readonly UnitInstance Added;
         internal readonly RankNode[] Final;
         internal readonly IReadOnlyList<UnitRankedUp> Events;
+        internal bool PendingPreparationMerge => Final.Where(n=>n.Rank!=UnitRank.Three && n.Placement.Kind!=PlacementKind.Unplaced).GroupBy(n=>new {n.Unit.DefinitionId,n.Unit.EvolutionStage,n.Rank}).Any(g=>g.Count()>=3);
         internal bool Changed => Added!=null || Events.Count>0;
         internal UnitInstance PurchaseSurvivor => Final.Single(n=>n.Originals.Contains(Added)).Unit;
         private RankUpPlan(UnitInstance[] before,UnitInstance added,RankNode[] final,List<UnitRankedUp> events)
         { Before=before;Added=added;Final=final;Events=events.AsReadOnly(); }
-        internal static RankUpPlan Build(PlayerState player,PokemonCatalog catalog,UnitInstance added=null)
+        internal static RankUpPlan Build(PlayerState player,PokemonCatalog catalog,UnitInstance added=null,bool benchOnly=false)
         {
             var before=player.Units.ToArray();var nodes=before.Select(u=>new RankNode(u)).ToList();
             if(added!=null) nodes.Add(new RankNode(added));
             var events=new List<UnitRankedUp>();
             foreach(var rank in new[]{UnitRank.One,UnitRank.Two})
             {
-                var groups=nodes.Where(n=>n.Rank==rank && n.Placement.Kind!=PlacementKind.Unplaced)
+                var groups=nodes.Where(n=>n.Rank==rank && n.Placement.Kind!=PlacementKind.Unplaced && (!benchOnly || n.Placement.Kind==PlacementKind.Bench))
                     .GroupBy(n=>new {n.Unit.DefinitionId,n.Unit.EvolutionStage})
                     .OrderBy(g=>g.Key.DefinitionId,StringComparer.Ordinal).ThenBy(g=>g.Key.EvolutionStage).ToArray();
                 foreach(var group in groups)

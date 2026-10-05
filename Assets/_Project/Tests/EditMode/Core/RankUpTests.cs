@@ -53,12 +53,12 @@ namespace PokeChess.Core.Tests
             var before=Snapshot();for(int i=0;i<10;i++) trades.PreviewBuy(match,"p1",0,player.Shop.Revision);
             Assert.That(Snapshot(),Is.EqualTo(before));Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision).InstanceId,Is.EqualTo("unit-1"));
         }
-        [TestCase("gold")] [TestCase("stale")] [TestCase("full")] [TestCase("combat")]
+        [TestCase("gold")] [TestCase("stale")] [TestCase("full")] [TestCase("result")]
         public void RejectedPreviewAndBuyUseSameValidationWithoutMutation(string reason)
         {
             if(reason=="gold") player.SetProgress(0,0,1);
             if(reason=="full") for(int i=0;i<9;i++) Add("f"+i,i,UnitRank.Three);
-            if(reason=="combat") match.TransitionTo(MatchPhase.Combat);
+            if(reason=="result") { match.TransitionTo(MatchPhase.Combat);match.TransitionTo(MatchPhase.Result); }
             long revision=player.Shop.Revision-(reason=="stale" ? 1 : 0);var before=Snapshot();
             var preview=Assert.Throws<InvalidOperationException>(()=>trades.PreviewBuy(match,"p1",0,revision));Assert.That(Snapshot(),Is.EqualTo(before));
             var buy=Assert.Throws<InvalidOperationException>(()=>trades.Buy(match,"p1",0,revision));Assert.That(buy.Message,Is.EqualTo(preview.Message));Assert.That(Snapshot(),Is.EqualTo(before));

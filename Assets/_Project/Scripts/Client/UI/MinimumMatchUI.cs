@@ -33,9 +33,10 @@ namespace PokeChess.Client.UI
         private string selectedUnitId;
         private long displayedShopRevision,displayedPlacementRevision;
         private bool shopCollapsed,busy,displayedLocked;
+        private MatchPhase? shopPhase;
         private readonly Dictionary<string,float> highlights=new Dictionary<string,float>();
         public string SelectedUnitId => selectedUnitId;
-        public bool ShopExpanded => Match.Phase==MatchPhase.Preparation && !shopCollapsed;
+        public bool ShopExpanded => (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
         public UnityEngine.UI.Button ShopButton(int slot) => shopCards[slot];
         public UnityEngine.UI.Button SellButton => sellButton;
         public UnityEngine.UI.Button XPButton => xpButton;
@@ -68,7 +69,7 @@ namespace PokeChess.Client.UI
             ActionButton("Reset match",new Vector2(110,31),new Vector2(432,-21),ResetMatchUI);
             ActionButton("Rank demo",new Vector2(110,31),new Vector2(548,-21),ResetRankDemo);
             ActionButton("Full bench",new Vector2(110,31),new Vector2(432,-60),ResetFullBenchDemo);
-            ActionButton("Phase",new Vector2(110,31),new Vector2(548,-60),TogglePhase);
+            ActionButton("Fixed foe",new Vector2(110,31),new Vector2(548,-60),ResetOpponent);
             debugLabel=Label("DebugState",canvasRect,"",11,new Vector2(225,42),new Vector2(490,-110));
             shopFrame=Panel("ShopFrame",new Vector2(1220,200),new Vector2(0,-240));
             status=Label("Feedback",canvasRect,"",14,new Vector2(1180,24),new Vector2(0,-152));
@@ -82,7 +83,7 @@ namespace PokeChess.Client.UI
             rerollButton=ActionButton("Reroll",new Vector2(170,32),new Vector2(490,-224),RequestReroll);
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),()=>Perform(()=>commands.BuyXP()));
-            ConfigureShopPanel();
+            ConfigureShopPanel();BuildRoundUI();
         }
         private void ConfigureShopPanel()
         {
@@ -99,15 +100,15 @@ namespace PokeChess.Client.UI
         }
         private void AttachMinimumMatch()
         {
-            if(!Player.Shop.IsInitialized) new ShopSystem().RefreshForRound(Match,"p1");
-            commands=new LocalMatchCommandGateway(Match,catalog,"p1");selectedUnitId=null;LastPurchase=null;shopCollapsed=false;highlights.Clear();
+            foreach(var player in Match.Players)if(!player.Shop.IsInitialized)new ShopSystem().RefreshForRound(Match,player.PlayerId);
+            commands=new LocalMatchCommandGateway(Match,catalog,"p1");selectedUnitId=null;LastPurchase=null;shopCollapsed=false;shopPhase=null;highlights.Clear();AttachRoundLoop();
         }
         public void ResetMatchUI()
         {
             CancelDrag("Reset.");catalog=new PokemonCatalog(CreateSandboxDefinitions());
             Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
-            Feedback("Buy a card, then drag from bench to board. Click a unit to inspect or sell.");Render();
+            ResetOpponent();Feedback("Buy and deploy units, then choose Ready / Start battle. Drag to shop to sell.");Render();
         }
         public void ResetFullBenchDemo()
         {
@@ -119,7 +120,9 @@ namespace PokeChess.Client.UI
         }
         private void Perform(Func<MatchCommandResult> action)
         {
-            if(busy) return;busy=true;CancelDrag("Action requested.");
+            if(busy) return;
+            if(RoundLoop!=null && RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before sending commands.");return; }
+            busy=true;CancelDrag("Action requested.");
             try
             {
                 var result=action();LastPurchase=result.Purchase;
@@ -129,7 +132,7 @@ namespace PokeChess.Client.UI
                     var purchase=result.Purchase;highlights[purchase.Unit.InstanceId]=Time.unscaledTime+1.2f;
                     string rank=purchase.RankUps.Count==0 ? "" : " / rank "+string.Join(" -> ",purchase.RankUps.Select(e=>(int)e.Rank));
                     int returned=purchase.RankUps.Sum(e=>e.ReturnedItemIds.Count);
-                    Feedback("Bought "+catalog.Get(purchase.Unit.DefinitionId).DisplayName+rank+(returned==0 ? "." : "; "+returned+" item(s) returned."));
+                    Feedback("Bought "+catalog.Get(purchase.Unit.DefinitionId).DisplayName+rank+(returned==0 ? "." : "; "+returned+" item(s) returned.")+(purchase.MergeNextPreparation ? " Merge pending: next preparation (board copies required)." : ""));
                 }
                 else Feedback(result.Message);
             }
@@ -153,7 +156,7 @@ namespace PokeChess.Client.UI
             if(selectedUnitId==null) { Feedback("Select your unit first.");return; }
             string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
         }
-        public void ToggleShop() { if(Match.Phase==MatchPhase.Preparation) { shopCollapsed=!shopCollapsed;Render(); } }
+        public void ToggleShop() { if(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) { shopCollapsed=!shopCollapsed;Render(); } }
         private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board && Match.Phase!=MatchPhase.Preparation ? new Color(.12f,.12f,.18f) : slot.Color;
         private void UpdateTokenFeedback()
         {
@@ -165,25 +168,26 @@ namespace PokeChess.Client.UI
         }
         private void RenderMinimumUI()
         {
+            if(shopPhase!=Match.Phase) { shopCollapsed=Match.Phase!=MatchPhase.Preparation;shopPhase=Match.Phase; }
             if(commands==null) return;
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
-            bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy;
+            bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
             header.text="ROUND "+Match.RoundNumber+"    |    BOARD "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
             playersLabel.text="PLAYERS\n"+string.Join("\n",Match.Players.Select(p=>(p.PlayerId=="p1" ? "YOU " : "")+p.PlayerId+"   HP "+p.HP));
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;
-            debugLabel.text=Match.Phase+" / test input only\nShop rev "+Player.Shop.Revision+" / Placement rev "+Player.PlacementRevision;
+            debugLabel.text=Match.Phase+" / local round sandbox\nShop rev "+Player.Shop.Revision+" / Placement rev "+Player.PlacementRevision;
             shopFrame.GetComponent<UnityEngine.UI.Image>().color=new Color(.065f,.105f,.16f);
-            shopToggle.interactable=live && Match.Phase==MatchPhase.Preparation;ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
+            shopToggle.interactable=live && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
             for(int i=0;i<shopCards.Length;i++)
             {
                 shopCards[i].gameObject.SetActive(ShopExpanded);var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) { cardText[i].text="EMPTY SLOT";shopCards[i].interactable=false;continue; }
                 var availability=commands.PreviewBuy(i,displayedShopRevision);var definition=catalog.Get(offer.DefinitionId);
                 int owned=Player.Units.Count(u=>u.DefinitionId==offer.DefinitionId && u.EvolutionStage==0);
-                cardText[i].text=definition.DisplayName+"\nCost "+offer.Cost+" / "+offer.Cost+"G\nOwned units: "+owned+"\n"+(availability.Accepted ? availability.Preview.RankUpCount>0 ? "BUY + RANK UP" : "BUY" : availability.Message);
-                shopCards[i].interactable=trade && availability.Accepted;
+                cardText[i].text=definition.DisplayName+"\nCost "+offer.Cost+" / "+offer.Cost+"G\nOwned units: "+owned+"\n"+(availability.Accepted ? availability.Preview.MergeNextPreparation ? (availability.Preview.RankUpCount>0 ? "BENCH RANK UP + NEXT PREP MERGE" : "BUY / MERGE NEXT PREP") : availability.Preview.RankUpCount>0 ? "BUY + RANK UP" : "BUY" : availability.Message);
+                shopCards[i].interactable=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability.Accepted;
             }
             rerollButton.gameObject.SetActive(ShopExpanded);lockButton.gameObject.SetActive(ShopExpanded);xpButton.gameObject.SetActive(ShopExpanded);
             rerollButton.interactable=trade && Player.Gold>=commands.ShopRules.RerollGoldCost;ButtonText(rerollButton,"Reroll / "+commands.ShopRules.RerollGoldCost+"G");
@@ -198,7 +202,7 @@ namespace PokeChess.Client.UI
                 detailLabel.text=catalog.Get(selected.DefinitionId).DisplayName+" / R"+(int)selected.Rank+"\n"+selected.InstanceId+" / stage "+selected.EvolutionStage+"\n"+selected.Placement.Kind+"\nItems: "+selected.ItemInstanceIds.Count+"\n"+string.Join(", ",selected.ItemInstanceIds.Take(2));
                 sellButton.interactable=trade && selected.Placement.Kind!=PlacementKind.Unplaced;ButtonText(sellButton,"Sell / +"+price+"G");
             }
-            UpdateTokenFeedback();
+            UpdateTokenFeedback();RenderRoundUI();
         }
     }
 }

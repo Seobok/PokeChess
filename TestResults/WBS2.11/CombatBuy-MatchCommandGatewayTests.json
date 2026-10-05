@@ -1,0 +1,92 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.MatchCommandGatewayTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 8,
+        "Passed": 8,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.CombatAllowsBuyAndBlocksOtherEconomyCommands",
+          "Status": "Passed",
+          "Duration": 0.0038245,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.InsufficientGoldReturnsReasonAndPreservesState",
+          "Status": "Passed",
+          "Duration": 0.0006081,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.LockAllowsPurchaseAndManualRerollAndPreservesNextRoundOffers",
+          "Status": "Passed",
+          "Duration": 0.000901,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.OtherPlayersUnitsCannotBeSoldOrChangeEconomy",
+          "Status": "Passed",
+          "Duration": 0.000805,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.PreviewHasNoSideEffectsAndBuyUpdatesOwnedState",
+          "Status": "Passed",
+          "Duration": 0.0008419,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.SellReturnsItemsAndStaleSelectionRejects",
+          "Status": "Passed",
+          "Duration": 0.0011293,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.StaleShopActionsReturnChangedAndDoNotMutate",
+          "Status": "Passed",
+          "Duration": 0.0003989,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchCommandGatewayTests.XPUsesCoreCostAndLevelRulesAndMaximumIsRejected",
+          "Status": "Passed",
+          "Duration": 0.00084,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.55,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.MatchCommandGatewayTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

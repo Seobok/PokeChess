@@ -106,10 +106,10 @@ namespace PokeChess.Core.Tests
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>trades.Sell(match,"p2","a"));
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>trades.Sell(match,"p1","missing"));Assert.That(Snapshot(),Is.EqualTo(before));
         }
-        [Test] public void CombatBlocksBothCommands()
+        [Test] public void CombatAllowsBuyButBlocksSell()
         {
             Add("a",1);match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
-            Assert.Throws<InvalidOperationException>(()=>trades.Buy(match,"p1",0,player.Shop.Revision));
+            Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision),Is.Not.Null);before=Snapshot();
             Assert.Throws<InvalidOperationException>(()=>trades.Sell(match,"p1","a"));Assert.That(Snapshot(),Is.EqualTo(before));
         }
         [Test] public void CatalogCostMismatchAndEmptySlotAreAtomic()

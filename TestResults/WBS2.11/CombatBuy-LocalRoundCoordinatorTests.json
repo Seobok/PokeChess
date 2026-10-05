@@ -1,0 +1,141 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.LocalRoundCoordinatorTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 15,
+        "Passed": 15,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.CombatPurchaseMergesPreparationUnitsWithoutChangingBattleSnapshot",
+          "Status": "Passed",
+          "Duration": 0.021415,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.EmptyBoardsSettleWithoutInvalidBattle(False,False,Draw)",
+          "Status": "Passed",
+          "Duration": 0.0034622,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.EmptyBoardsSettleWithoutInvalidBattle(True,False,TeamOneWin)",
+          "Status": "Passed",
+          "Duration": 0.0004073,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.EmptyBoardsSettleWithoutInvalidBattle(False,True,TeamTwoWin)",
+          "Status": "Passed",
+          "Duration": 0.0002682,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.FailedSettlementPreflightsAllPlayersAndCanRetry",
+          "Status": "Passed",
+          "Duration": 0.0005672,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.FirstPreparationDoesNotAwardIncomeOrXP",
+          "Status": "Passed",
+          "Duration": 0.0003249,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.LockedShopPreservesPurchasedHoleAndRngAfterAutomaticLevelUp",
+          "Status": "Passed",
+          "Duration": 0.0008206,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.LongBattleReachesOvertimeAndTimeLimitDraw",
+          "Status": "Passed",
+          "Duration": 0.0326741,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.RealCombatPreservesOwnedUnitsItemsPlacementAndPool",
+          "Status": "Passed",
+          "Duration": 0.0091388,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.ResultRejectsPrematureSettlementAndDeadPlayerCannotStart",
+          "Status": "Passed",
+          "Duration": 0.0004418,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.RoundCommandsAndSettlementAreIdempotent",
+          "Status": "Passed",
+          "Duration": 0.0060868,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.ShopRefreshRetryDoesNotRedrawCompletedPlayer",
+          "Status": "Passed",
+          "Duration": 0.0009387,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.SnapshotMirrorsOpponentAndIgnoresBench",
+          "Status": "Passed",
+          "Duration": 0.0011717,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.TenRoundsPreserveStateAndRefreshOncePerRound",
+          "Status": "Passed",
+          "Duration": 0.0458387,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalRoundCoordinatorTests.TickSteppingIsDeterministicForSameSnapshotAndSeed",
+          "Status": "Passed",
+          "Duration": 0.0095784,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.69,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.LocalRoundCoordinatorTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -42,13 +42,13 @@ namespace PokeChess.Client.UI
         {
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");
-            if(keyboard!=null && keyboard.spaceKey.wasPressedThisFrame) TogglePhase();
+            if(keyboard!=null && keyboard.spaceKey.wasPressedThisFrame) AdvanceRound();
             if(IsDragging)
             {
                 var source=Player.Units.FirstOrDefault(u=>u.InstanceId==dragged);
                 if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (Match.Phase!=MatchPhase.Combat || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
             }
-            UpdateTokenFeedback();AnimateShop();
+            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();
         }
         private void OnApplicationFocus(bool focus) { if(!focus && canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
         private void OnDisable() { if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
@@ -129,7 +129,7 @@ namespace PokeChess.Client.UI
             var initial=new[]{UnitPlacement.OnBoard(new BoardPosition(2,0)),UnitPlacement.OnBench(0),UnitPlacement.OnBench(1),UnitPlacement.OnBench(2)};
             for(int i=0;i<4;i++) SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(((char)('A'+i)).ToString(),"bulbasaur","p1",i<2 ? UnitRank.Two : UnitRank.One,0,initial[i],i==1 ? new[]{"demo-item"} : null),"bulbasaur");
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);new ShopSystem().RefreshForRound(Match,"p1");AttachMinimumMatch();
-            Feedback("Rank demo ready. Buy copy: R1 -> R2 -> R3; board A survives and B's item returns.");Render();
+            Feedback("Rank demo ready. Buy a shop card: R1 -> R2 -> R3; board A survives and B's item returns.");Render();
         }
         public void BuyCopy()
         {

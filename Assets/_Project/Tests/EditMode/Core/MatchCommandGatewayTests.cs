@@ -56,10 +56,10 @@ namespace PokeChess.Core.Tests
             Assert.That(commands.Sell(unit.InstanceId,revision).Failure,Is.EqualTo(MatchCommandFailure.Changed));Assert.That(Snapshot(),Is.EqualTo(before));
             var sale=commands.Sell(unit.InstanceId,player.PlacementRevision);Assert.That(sale.Accepted,Is.True);Assert.That(sale.SaleGold,Is.EqualTo(1));Assert.That(sale.ReturnedItems,Is.EqualTo(1));Assert.That(player.ItemInventory,Is.EqualTo(new[]{"item"}));
         }
-        [Test] public void CombatAndEliminationBlockAllOwnerEconomyCommands()
+        [Test] public void CombatAllowsBuyAndBlocksOtherEconomyCommands()
         {
             var unit=commands.Buy(0,player.Shop.Revision).Purchase.Unit;match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
-            Assert.That(commands.Buy(1,player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
+            Assert.That(commands.Buy(1,player.Shop.Revision).Accepted,Is.True);before=Snapshot();Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
             Assert.That(commands.Sell(unit.InstanceId,player.PlacementRevision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));Assert.That(commands.Lock(true,player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
             Assert.That(Snapshot(),Is.EqualTo(before));player.SetHP(0);Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.Eliminated));Assert.That(commands.Reroll(player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.Eliminated));
         }

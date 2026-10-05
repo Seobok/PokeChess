@@ -1,0 +1,1 @@
+Combat shop change: 98/98 related tests passed; UI pointer-event checks and render passed. Current battle snapshot unchanged; merged Rank applies next battle. Windows build succeeded, 0 errors, 2 warnings. Executable: Builds/WBS2.11/PokeChessRoundLoop.exe.

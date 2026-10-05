@@ -1,0 +1,253 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.ShopTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 31,
+        "Passed": 31,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(1,100,0,0,0,0)",
+          "Status": "Passed",
+          "Duration": 0.0054383,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(2,100,0,0,0,0)",
+          "Status": "Passed",
+          "Duration": 0.0004498,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(3,75,25,0,0,0)",
+          "Status": "Passed",
+          "Duration": 0.0004124,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(4,55,30,15,0,0)",
+          "Status": "Passed",
+          "Duration": 0.0003982,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(5,45,33,20,2,0)",
+          "Status": "Passed",
+          "Duration": 0.0003963,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(6,30,40,25,5,0)",
+          "Status": "Passed",
+          "Duration": 0.0004075,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(7,19,35,35,10,1)",
+          "Status": "Passed",
+          "Duration": 0.0004032,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(8,18,25,36,18,3)",
+          "Status": "Passed",
+          "Duration": 0.0004075,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(9,10,20,25,35,10)",
+          "Status": "Passed",
+          "Duration": 0.0004074,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllLevelsUseExactCumulativeIntervals(10,5,10,20,40,25)",
+          "Status": "Passed",
+          "Duration": 0.0004152,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllShopMutationsRequirePreparation(Waiting)",
+          "Status": "Passed",
+          "Duration": 0.0023234,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllShopMutationsRequirePreparation(Starting)",
+          "Status": "Passed",
+          "Duration": 0.0003448,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllShopMutationsRequirePreparation(Combat)",
+          "Status": "Passed",
+          "Duration": 0.0002883,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllShopMutationsRequirePreparation(Result)",
+          "Status": "Passed",
+          "Duration": 0.0002959,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.AllShopMutationsRequirePreparation(Finished)",
+          "Status": "Passed",
+          "Duration": 0.0003358,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InitialShopIsEmptyAndFirstRefreshIsFree",
+          "Status": "Passed",
+          "Duration": 0.0028914,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(0)",
+          "Status": "Passed",
+          "Duration": 0.0012847,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(1)",
+          "Status": "Passed",
+          "Duration": 0.0020125,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(2)",
+          "Status": "Passed",
+          "Duration": 0.000619,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(3)",
+          "Status": "Passed",
+          "Duration": 0.0003467,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(4)",
+          "Status": "Passed",
+          "Duration": 0.0003298,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.InvalidCandidateSourceDoesNotCommitGoldSlotsRandomOrRound(5)",
+          "Status": "Passed",
+          "Duration": 0.0003061,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.LevelUpDoesNotAlterOffersAndNextRefreshUsesNewProbabilities",
+          "Status": "Passed",
+          "Duration": 0.000755,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.ManualCommandsWaitForCurrentRoundRefresh",
+          "Status": "Passed",
+          "Duration": 0.0006337,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.MissingZeroProbabilityCostsAreAllowedAndSamePokemonCanRepeat",
+          "Status": "Passed",
+          "Duration": 0.0003711,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.PersistentLockSkipsAutomaticRefreshAndAllowsManualReroll",
+          "Status": "Passed",
+          "Duration": 0.0007169,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.PlayerRandomStreamsRemainIndependent",
+          "Status": "Passed",
+          "Duration": 0.0004338,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.RefreshDuplicateAndSkippedRoundsAreRejectedWithoutChanges",
+          "Status": "Passed",
+          "Duration": 0.0009006,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.RerollChargesExactlyTwoAndOldSlotSnapshotsRemainStable",
+          "Status": "Passed",
+          "Duration": 0.000908,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.RulesCandidateCatalogAndReadOnlyCollectionsAreValidated",
+          "Status": "Passed",
+          "Duration": 0.0020507,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShopTests.SameSeedAndReversedRegistrationsReproduceEveryRefresh",
+          "Status": "Passed",
+          "Duration": 0.0014556,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.68,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.ShopTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

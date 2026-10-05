@@ -1,0 +1,204 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.LevelTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 24,
+        "Passed": 24,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.AutomaticXPIsSequentialAndIndependentOfEconomyAndPurchases",
+          "Status": "Passed",
+          "Duration": 0.0013079,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.AutomaticXPReachesLevelTenAcrossSequentialRounds",
+          "Status": "Passed",
+          "Duration": 0.0003329,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.DefaultPurchaseCanAdvanceTwoLevelsAndPreservesOtherState",
+          "Status": "Passed",
+          "Duration": 0.000368,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.DeploymentLimitCannotBeBypassedAndExistingMovesRemainAllowed",
+          "Status": "Passed",
+          "Duration": 0.0023372,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(1,2)",
+          "Status": "Passed",
+          "Duration": 0.00047,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(2,2)",
+          "Status": "Passed",
+          "Duration": 0.000111,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(3,6)",
+          "Status": "Passed",
+          "Duration": 0.0000901,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(4,10)",
+          "Status": "Passed",
+          "Duration": 0.0000841,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(5,20)",
+          "Status": "Passed",
+          "Duration": 0.0000805,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(6,36)",
+          "Status": "Passed",
+          "Duration": 0.0000784,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(7,60)",
+          "Status": "Passed",
+          "Duration": 0.0000851,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(8,68)",
+          "Status": "Passed",
+          "Duration": 0.0000812,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.EveryThresholdHandlesBelowExactAndExcess(9,68)",
+          "Status": "Passed",
+          "Duration": 0.0000772,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.InvalidGrantsAndMaximumXPStorageAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0006366,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.LevelRulesAreCopiedValidatedAndMatchConfigurationMustAgree",
+          "Status": "Passed",
+          "Duration": 0.0024988,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.MaximumPurchaseDoesNotChargeGold",
+          "Status": "Passed",
+          "Duration": 0.0006355,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.MaxLevelStillRecordsAutomaticRound",
+          "Status": "Passed",
+          "Duration": 0.0002114,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseRejectsAllOtherPhases(Waiting)",
+          "Status": "Passed",
+          "Duration": 0.0004974,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseRejectsAllOtherPhases(Starting)",
+          "Status": "Passed",
+          "Duration": 0.000133,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseRejectsAllOtherPhases(Combat)",
+          "Status": "Passed",
+          "Duration": 0.000148,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseRejectsAllOtherPhases(Result)",
+          "Status": "Passed",
+          "Duration": 0.0001424,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseRejectsAllOtherPhases(Finished)",
+          "Status": "Passed",
+          "Duration": 0.0001227,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.PurchaseValidatesFundsPlayerAndMatchAtomically",
+          "Status": "Passed",
+          "Duration": 0.0008113,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LevelTests.RemainderAndLargeGrantsReachMaximumSafely",
+          "Status": "Passed",
+          "Duration": 0.0003449,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.72,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.LevelTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

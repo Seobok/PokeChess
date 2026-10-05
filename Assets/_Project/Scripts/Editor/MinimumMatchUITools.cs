@@ -38,7 +38,8 @@ namespace PokeChess.Editor
             Check(view.Player.Gold==2 && view.Player.Shop.IsLocked,"Manual reroll while locked");
             var offers=view.Player.Shop.Slots.Select(s=>s.DefinitionId).ToArray();var rng=view.Player.Shop.RandomState;long revision=view.Player.Shop.Revision;
             view.TogglePhase();Check(!view.ShopExpanded && !view.ShopButton(0).gameObject.activeSelf && !view.XPButton.gameObject.activeSelf,"Combat collapses shop");
-            view.BuySlot(1);Check(view.Player.Gold==2 && view.Player.Units.Count==1,"Combat buy rejected");
+            view.BuySlot(1);Check(view.Player.Gold==1 && view.Player.Units.Count==2,"Combat buy allowed");
+            offers=view.Player.Shop.Slots.Select(s=>s.DefinitionId).ToArray();revision=view.Player.Shop.Revision;
             view.TogglePhase();Check(view.Match.RoundNumber==2 && view.ShopExpanded,"Next preparation");
             Check(view.Player.Shop.Revision==revision && view.Player.Shop.RandomState==rng && view.Player.Shop.Slots.Select(s=>s.DefinitionId).SequenceEqual(offers),"Locked round refresh preserved");
             view.ResetMatchUI();new ShopSystem().Reroll(view.Match,"p1");revision=view.Player.Shop.Revision;rng=view.Player.Shop.RandomState;
@@ -57,6 +58,72 @@ namespace PokeChess.Editor
             view.Player.SetHP(0);view.RefreshFromState();Check(!view.LockButton.interactable && !view.SellButton.interactable,"Elimination input disabled");
             view.Match.Pool.AssertConservation(view.Match);view.ResetMatchUI();
             return "Passed: 5 cards, starting rules, owner-only HUD, buy/sale/item return, click vs drag, XP/cap/MAX, Lock/manual reroll/round refresh, combat collapse, stale card/selection, chain rank-up, full bench merge, insufficient gold, elimination.";
+        }
+        public static string VerifyRoundStart()
+        {
+            if(!EditorApplication.isPlaying)throw new Exception("Enter Play mode.");
+            UnityEngine.Application.runInBackground=true;
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();view.ResetMatchUI();
+            Click(view.ShopButton(0).gameObject);var unit=view.LastPurchase.Unit;
+            var placement=new PlayerPlacementSystem().Move(view.Match,"p1",unit.InstanceId,UnitPlacement.OnBoard(new BoardPosition(2,0)),view.Player.PlacementRevision);
+            Check(placement.Accepted,"Deploy bought unit");view.RefreshFromState();Click(view.RoundButton.gameObject);
+            Check(view.Match.Phase==MatchPhase.Combat && view.RoundLoop.Battle.Units.Count==2,"Ready starts real two-team combat");
+            Check(!view.ShopExpanded && !view.RoundButton.interactable,"Combat inputs locked");
+            Capture("TestResults/WBS2.11/combat.png");
+            return "Passed: buy, deploy, Ready pointer event, snapshot, real combat view, locked shop.";
+        }
+        public static string VerifyRoundResult()
+        {
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();
+            for(int i=0;i<1400 && view.Match.Phase==MatchPhase.Combat;i++)view.RoundLoop.Step();
+            view.RefreshFromState();Check(view.Match.Phase==MatchPhase.Result && view.RoundLoop.IsSettled,"Combat automatically reaches settled Result");
+            Check(view.Player.LastEconomyRound==1 && view.Player.LastAutomaticXPRound==1 && view.Player.Level==2,"Income and automatic XP");
+            Check(view.Player.Units.Single().Placement.Position.Value.Equals(new BoardPosition(2,0)),"Preparation position restored");
+            Check(view.RoundResultText.Contains("Income") && view.RoundResultText.Contains("Automatic XP"),"Result feedback");
+            Check(view.RoundButton.interactable,"Next round enabled");Capture("TestResults/WBS2.11/result.png");
+            return "Passed: real battle completion, income, automatic XP, result summary, preparation restoration.";
+        }
+        public static string VerifyNextRound()
+        {
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();int gold=view.Player.Gold;
+            Click(view.RoundButton.gameObject);Click(view.RoundButton.gameObject);
+            Check(view.Match.Phase==MatchPhase.Preparation && view.Match.RoundNumber==2,"Next pointer event advances once");
+            Check(view.Player.Gold==gold && view.Player.Shop.LastRefreshRound==2,"No duplicate payout; fresh round shop");
+            Check(view.ShopExpanded && view.Player.BoardCapacity==2,"Shop and board cap updated");
+            view.Match.Pool.AssertConservation(view.Match);Capture("TestResults/WBS2.11/next-preparation.png",1024,768);
+            return "Passed: Next pointer event, double click guard, no duplicate payout, updated shop/cap and pool conservation.";
+        }
+        public static string VerifyChangedRosterNextCombat()
+        {
+            VerifyRoundStart();VerifyRoundResult();
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();string removed=view.Player.Units.Single().InstanceId;
+            Check(view.RoundLoop.NextRound(1),"Second preparation");view.RefreshFromState();view.SelectUnit(removed);view.SellSelected();view.BuySlot(0);
+            var unit=view.LastPurchase.Unit;var placement=new PlayerPlacementSystem().Move(view.Match,"p1",unit.InstanceId,UnitPlacement.OnBoard(new BoardPosition(2,0)),view.Player.PlacementRevision);
+            Check(placement.Accepted,"New roster deploy");view.RefreshFromState();Check(view.RoundLoop.StartCombat(2),"Second real combat");view.RefreshFromState();
+            var root=view.GetComponentInChildren<Canvas>().transform.Find("CombatView");Check(!root.Find("Fighter_"+removed).gameObject.activeSelf,"Previous sold fighter hidden");
+            Check(root.Find("Fighter_"+unit.InstanceId).gameObject.activeSelf,"New fighter visible");view.Match.Pool.AssertConservation(view.Match);
+            return "Passed: sell/buy between rounds; second combat displays current snapshot only.";
+        }
+        public static string VerifyCombatShop()
+        {
+            VerifyRoundStart();var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();var battle=view.RoundLoop.Battle;
+            view.ToggleShop();Check(view.ShopExpanded && view.ShopButton(1).interactable,"Combat shop opens and card enabled");
+            Check(!view.XPButton.interactable && !view.RerollButton.interactable && !view.LockButton.interactable,"Other actions remain preparation only");
+            int gold=view.Player.Gold;Click(view.ShopButton(1).gameObject);Check(view.Player.Gold==gold-1 && view.Player.Units.Count==2,"Combat purchase pointer event");
+            Check(view.RoundLoop.Battle==battle && battle.Units.Count==2 && !battle.Units.Any(u=>u.UnitInstanceId==view.LastPurchase.Unit.InstanceId),"Current battle unchanged");
+            Capture("TestResults/WBS2.11/combat-shop-open.png");
+            view.ResetFullBenchDemo();view.TogglePhase();view.ToggleShop();Click(view.ShopButton(0).gameObject);
+            Check(view.Player.Units.Count==8 && view.Player.GetUnit("A").Rank==UnitRank.Two,"Full bench merging buy in Combat");view.Match.Pool.AssertConservation(view.Match);
+            return "Passed: Combat shop open, buy pointer event, frozen snapshot, preparation-only other actions, full bench merge purchase.";
+        }
+        public static string VerifyDeferredCombatMerge()
+        {
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();view.ResetRankDemo();view.TogglePhase();view.ToggleShop();Click(view.ShopButton(0).gameObject);
+            Check(view.Player.GetUnit("A").Rank==UnitRank.Two,"Board Rank unchanged during Combat");
+            Check(view.Player.Units.Where(u=>u.Placement.Kind==PlacementKind.Bench).Any(u=>u.Rank==UnitRank.Two),"Bench-only Rank Two result visible");
+            Check(view.LastPurchase.MergeNextPreparation && view.LastFeedback.Contains("next preparation"),"Deferred merge feedback");
+            Capture("TestResults/WBS2.11/deferred-combat-merge.png");view.Match.Pool.AssertConservation(view.Match);
+            return "Passed: bench merge visible during Combat, board Rank preserved, next-preparation merge feedback.";
         }
         // Test-only offscreen capture: temporarily route the existing canvas through its camera,
         // then restore overlay rendering. No scene, camera or model state is saved.

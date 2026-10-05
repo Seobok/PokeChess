@@ -10,9 +10,10 @@ namespace PokeChess.Core.Match
         public int RankUpCount { get; }
         public UnitRank FinalRank { get; }
         public int FinalUnitCount { get; }
+        public bool MergeNextPreparation { get; }
         internal PurchasePreview(int price,RankUpPlan plan)
         {
-            Price=price;RankUpCount=plan.Events.Count;FinalUnitCount=plan.Final.Length;
+            MergeNextPreparation=plan.PendingPreparationMerge;Price=price;RankUpCount=plan.Events.Count;FinalUnitCount=plan.Final.Length;
             FinalRank=plan.Final.Single(n=>n.Originals.Contains(plan.Added)).Rank;
         }
     }
@@ -22,12 +23,12 @@ namespace PokeChess.Core.Match
         private readonly PokemonCatalog catalog;
         public ShopTransactionSystem(PokemonCatalog catalog)
         { this.catalog = catalog ?? throw new ArgumentNullException(nameof(catalog)); }
-        private static PlayerState Player(MatchState match, string playerId)
+        private static PlayerState Player(MatchState match, string playerId, bool buying=false)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation)
+            if (match.Phase != MatchPhase.Preparation && !(buying && match.Phase == MatchPhase.Combat))
                 throw new InvalidOperationException("Trades require Preparation.");
             return player;
         }
@@ -40,7 +41,7 @@ namespace PokeChess.Core.Match
         }
         private Checkout PrepareBuy(MatchState match,string playerId,int slotIndex,long expectedRevision)
         {
-            var player = Player(match, playerId);
+            var player = Player(match, playerId, buying:true);
             var shop = player.Shop;
             if (!shop.IsInitialized || shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Refresh the shop before buying.");
@@ -57,7 +58,7 @@ namespace PokeChess.Core.Match
             string id = match.NextUnitId(out var sequence);
             var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
             var holding = match.Pool?.ValidateAcquire(unit, definition.Id);
-            var plan = RankUpPlan.Build(player,catalog,unit);
+            var plan = RankUpPlan.Build(player,catalog,unit,benchOnly:match.Phase==MatchPhase.Combat);
             RankUpSystem.Validate(match,player,plan,holding);
             return new Checkout { Player=player,Plan=plan,Holding=holding,Price=slot.Cost,ShopRevision=revision,Sequence=sequence };
         }
@@ -73,7 +74,7 @@ namespace PokeChess.Core.Match
             RankUpSystem.Commit(match,player,checkout.Plan,checkout.Holding);
             player.SetProgress(player.Gold-checkout.Price,player.XP,player.Level);
             player.Shop.ClearSlot(slotIndex,checkout.ShopRevision);match.CommitUnitSequence(checkout.Sequence);
-            return new PurchaseResult(checkout.Plan.PurchaseSurvivor,checkout.Plan.Events);
+            return new PurchaseResult(checkout.Plan.PurchaseSurvivor,checkout.Plan.Events,checkout.Plan.PendingPreparationMerge);
         }
         public int SalePrice(UnitInstance unit)
         {

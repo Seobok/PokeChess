@@ -1,0 +1,141 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.BattleSimulationTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 15,
+        "Passed": 15,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.AlliesCannotReserveSameDestination",
+          "Status": "Passed",
+          "Duration": 0.0042043,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.AttackBeforeHitCancelsWhenTargetLeavesRange",
+          "Status": "Passed",
+          "Duration": 0.0017203,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.AttackTimingOccursExactlyOnceAndDefaultPolicyDoesNotDealDamage",
+          "Status": "Passed",
+          "Duration": 0.0015072,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.BlockedUnitWaitsAndResumesWhenPassageOpens",
+          "Status": "Passed",
+          "Duration": 0.0014688,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.DeathOrRemovalCancelsMovement",
+          "Status": "Passed",
+          "Duration": 0.0013396,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.DestinationOccupiedBeforeArrivalCancelsWithoutChangingSource",
+          "Status": "Passed",
+          "Duration": 0.0013479,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.InputsRunBeforeActionsAndEnqueuedInputsWaitForNextTick",
+          "Status": "Passed",
+          "Duration": 0.0006717,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.InterruptedSkillDoesNotApplyEffect",
+          "Status": "Passed",
+          "Duration": 0.0009886,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.MovementMaintainsSourceUntilTick15ThenCommitsOneHex",
+          "Status": "Passed",
+          "Duration": 0.0009734,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.MovementPermissionCancellationReleasesReservation",
+          "Status": "Passed",
+          "Duration": 0.0010435,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.RepeatedRunsAndReversedSetupProduceIdenticalTrace",
+          "Status": "Passed",
+          "Duration": 0.0216604,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.SameTickEffectDeathReleasesEarlierMoversReservation",
+          "Status": "Passed",
+          "Duration": 0.0012956,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.SkillCastHasOneStartAndEffectThenReturnsToIdle",
+          "Status": "Passed",
+          "Duration": 0.0006402,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.TargetRemovalDuringMoveFinishesCurrentHexThenRetargets",
+          "Status": "Passed",
+          "Duration": 0.0014828,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleSimulationTests.TickConversionAndSingleOwnerAreValidated",
+          "Status": "Passed",
+          "Duration": 0.0008557,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.68,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.BattleSimulationTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
