@@ -4,6 +4,18 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
+    public sealed class PurchasePreview
+    {
+        public int Price { get; }
+        public int RankUpCount { get; }
+        public UnitRank FinalRank { get; }
+        public int FinalUnitCount { get; }
+        internal PurchasePreview(int price,RankUpPlan plan)
+        {
+            Price=price;RankUpCount=plan.Events.Count;FinalUnitCount=plan.Final.Length;
+            FinalRank=plan.Final.Single(n=>n.Originals.Contains(plan.Added)).Rank;
+        }
+    }
     // Host commands execute serially. Validate before changing owned state.
     public sealed class ShopTransactionSystem
     {
@@ -21,7 +33,12 @@ namespace PokeChess.Core.Match
         }
         public UnitInstance Buy(MatchState match, string playerId, int slotIndex, long expectedRevision)
         { return BuyWithRankUp(match,playerId,slotIndex,expectedRevision).Unit; }
-        public PurchaseResult BuyWithRankUp(MatchState match,string playerId,int slotIndex,long expectedRevision)
+        private sealed class Checkout
+        {
+            internal PlayerState Player;internal RankUpPlan Plan;internal PoolHolding Holding;
+            internal int Price;internal long ShopRevision,Sequence;
+        }
+        private Checkout PrepareBuy(MatchState match,string playerId,int slotIndex,long expectedRevision)
         {
             var player = Player(match, playerId);
             var shop = player.Shop;
@@ -41,11 +58,22 @@ namespace PokeChess.Core.Match
             var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
             var holding = match.Pool?.ValidateAcquire(unit, definition.Id);
             var plan = RankUpPlan.Build(player,catalog,unit);
-            RankUpSystem.Commit(match,player,plan,holding);
-            player.SetProgress(player.Gold - slot.Cost, player.XP, player.Level);
-            shop.ClearSlot(slotIndex, revision);
-            match.CommitUnitSequence(sequence);
-            return new PurchaseResult(plan.PurchaseSurvivor,plan.Events);
+            RankUpSystem.Validate(match,player,plan,holding);
+            return new Checkout { Player=player,Plan=plan,Holding=holding,Price=slot.Cost,ShopRevision=revision,Sequence=sequence };
+        }
+        // Read-only, with exactly the same validation and final capacity plan as commit.
+        public PurchasePreview PreviewBuy(MatchState match,string playerId,int slotIndex,long expectedRevision)
+        {
+            var checkout=PrepareBuy(match,playerId,slotIndex,expectedRevision);
+            return new PurchasePreview(checkout.Price,checkout.Plan);
+        }
+        public PurchaseResult BuyWithRankUp(MatchState match,string playerId,int slotIndex,long expectedRevision)
+        {
+            var checkout=PrepareBuy(match,playerId,slotIndex,expectedRevision);var player=checkout.Player;
+            RankUpSystem.Commit(match,player,checkout.Plan,checkout.Holding);
+            player.SetProgress(player.Gold-checkout.Price,player.XP,player.Level);
+            player.Shop.ClearSlot(slotIndex,checkout.ShopRevision);match.CommitUnitSequence(checkout.Sequence);
+            return new PurchaseResult(checkout.Plan.PurchaseSurvivor,checkout.Plan.Events);
         }
         public int SalePrice(UnitInstance unit)
         {

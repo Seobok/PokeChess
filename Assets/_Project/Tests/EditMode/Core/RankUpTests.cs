@@ -36,6 +36,33 @@ namespace PokeChess.Core.Tests
             "|"+string.Join(",",player.Shop.Slots.Select(s=>s.DefinitionId))+"|"+string.Join(",",player.ItemInventory)+"|"+
             string.Join(",",player.Units.Select(u=>u.InstanceId+":"+u.Rank+":"+u.PoolOriginDefinitionId+":"+u.Placement.Kind+":"+u.Placement.BenchSlot+":"+u.Placement.Position?.Column+":"+u.Placement.Position?.Row+":"+string.Join("/",u.ItemInstanceIds)))+
             "|"+match.Pool.GetStock("test").Available;
+        [TestCase(false)] [TestCase(true)]
+        public void PurchasePreviewIsPureAndMatchesCommitEvenAtFullBench(bool fullBench)
+        {
+            Add("a",0);Add("b",1);
+            if(fullBench) for(int i=2;i<9;i++) Add("f"+i,i,UnitRank.Three);
+            var before=Snapshot();var preview=trades.PreviewBuy(match,"p1",0,player.Shop.Revision);
+            Assert.That(preview.Price,Is.EqualTo(1));Assert.That(preview.RankUpCount,Is.EqualTo(1));Assert.That(preview.FinalRank,Is.EqualTo(UnitRank.Two));
+            Assert.That(Snapshot(),Is.EqualTo(before));Assert.That(trades.PreviewBuy(match,"p1",0,player.Shop.Revision).FinalUnitCount,Is.EqualTo(preview.FinalUnitCount));
+            var result=trades.BuyWithRankUp(match,"p1",0,player.Shop.Revision);
+            Assert.That(result.Unit.Rank,Is.EqualTo(preview.FinalRank));Assert.That(result.RankUps.Count,Is.EqualTo(preview.RankUpCount));Assert.That(player.Units.Count,Is.EqualTo(preview.FinalUnitCount));
+            match.Pool.AssertConservation(match);
+        }
+        [Test] public void RepeatedPreviewDoesNotConsumeIdRngOrRevisions()
+        {
+            var before=Snapshot();for(int i=0;i<10;i++) trades.PreviewBuy(match,"p1",0,player.Shop.Revision);
+            Assert.That(Snapshot(),Is.EqualTo(before));Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision).InstanceId,Is.EqualTo("unit-1"));
+        }
+        [TestCase("gold")] [TestCase("stale")] [TestCase("full")] [TestCase("combat")]
+        public void RejectedPreviewAndBuyUseSameValidationWithoutMutation(string reason)
+        {
+            if(reason=="gold") player.SetProgress(0,0,1);
+            if(reason=="full") for(int i=0;i<9;i++) Add("f"+i,i,UnitRank.Three);
+            if(reason=="combat") match.TransitionTo(MatchPhase.Combat);
+            long revision=player.Shop.Revision-(reason=="stale" ? 1 : 0);var before=Snapshot();
+            var preview=Assert.Throws<InvalidOperationException>(()=>trades.PreviewBuy(match,"p1",0,revision));Assert.That(Snapshot(),Is.EqualTo(before));
+            var buy=Assert.Throws<InvalidOperationException>(()=>trades.Buy(match,"p1",0,revision));Assert.That(buy.Message,Is.EqualTo(preview.Message));Assert.That(Snapshot(),Is.EqualTo(before));
+        }
         [Test] public void TwoCopiesAreNoOpAndThirdCopyUpgradesOnce()
         {
             var a=Add("a",0);Add("b",1);var before=Snapshot();Assert.That(Resolve(),Is.Empty);Assert.That(Snapshot(),Is.EqualTo(before));

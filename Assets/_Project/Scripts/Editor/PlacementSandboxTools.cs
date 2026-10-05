@@ -15,6 +15,7 @@ namespace PokeChess.Editor
     {
         public const string ScenePath="Assets/_Project/Scenes/PlacementSandbox.unity";
         [MenuItem("PokeChess/Sandbox/Open Placement Sandbox")]
+        [MenuItem("PokeChess/Sandbox/Open Minimum Match UI")]
         public static void CreateScene()
         {
             if(EditorApplication.isPlaying) throw new InvalidOperationException("Stop Play mode before opening the sandbox.");
@@ -49,17 +50,22 @@ namespace PokeChess.Editor
         {
             if(!EditorApplication.isPlaying) throw new Exception("Enter Play mode.");
             var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();view.ResetRankDemo();
-            var buy=UnityEngine.Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).Single(b=>b.name=="Buy copy");
             var data=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
-            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            Action clickBuy=()=>
+            {
+                if(view.Player.Shop.Slots.All(s=>s.IsEmpty)) { view.BuyCopy();return; }
+                int slot=Enumerable.Range(0,ShopRules.SlotCount).First(i=>!view.Player.Shop.Slots[i].IsEmpty);
+                ExecuteEvents.Execute(view.ShopButton(slot).gameObject,data,ExecuteEvents.pointerClickHandler);
+            };
+            clickBuy();
             Check(view.LastPurchase.RankUps.Count==2,"Chain events");Check(view.Player.Units.Count==1 && view.Player.GetUnit("A").Rank==PokeChess.Core.Pokemon.UnitRank.Three,"R3 survivor");
             Check(view.Player.ItemInventory.Contains("demo-item"),"Returned item");Check(view.Player.Gold==19,"Purchase cost");
             Check(view.Player.DeployedUnitCount==1 && view.TokenMatchesState("A"),"Board placement");Check(!view.Token("B").gameObject.activeSelf,"Consumed token hidden");
-            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);Check(view.Player.Units.Count==2,"Dynamic purchased token");
+            clickBuy();Check(view.Player.Units.Count==2,"Dynamic purchased token");
             foreach(var unit in view.Player.Units) Check(view.TokenMatchesState(unit.InstanceId),"Fresh rank view");
-            for(int i=0;i<3;i++) ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            for(int i=0;i<3;i++) clickBuy();
             int gold=view.Player.Gold;long revision=view.Player.PlacementRevision;var rng=view.Player.Shop.RandomState;
-            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            clickBuy();
             Check(view.LastPurchase==null && view.LastFeedback.Contains("No offers left"),"Empty offers reject");
             Check(view.Player.Gold==gold && view.Player.PlacementRevision==revision && view.Player.Shop.RandomState==rng,"No implicit reroll or charge");
             view.Match.Pool.AssertConservation(view.Match);view.ResetSandbox();

@@ -98,6 +98,11 @@ namespace PokeChess.Core.Match
             var plan=RankUpPlan.Build(player,catalog);if(!plan.Changed) return plan.Events;
             Commit(match,player,plan);return plan.Events;
         }
+        internal static void Validate(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding purchase=null)
+        {
+            player.ValidateRankUp(plan);match.Pool?.ValidateRankUp(plan,purchase);
+            if(match.Pool==null && plan.Before.Any(u=>u.PoolOriginDefinitionId!=null)) throw new InvalidOperationException("Missing owning pool.");
+        }
         internal static void Commit(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding purchase=null)
         {
             long revision=player.ValidateRankUp(plan);

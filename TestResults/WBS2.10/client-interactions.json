@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "return PokeChess.Editor.MinimumMatchUITools.Verify();"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Passed: 5 cards, starting rules, owner-only HUD, buy/sale/item return, click vs drag, XP/cap/MAX, Lock/manual reroll/round refresh, combat collapse, stale card/selection, chain rank-up, full bench merge, insufficient gold, elimination."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
