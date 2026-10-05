@@ -75,6 +75,7 @@ namespace PokeChess.Core.Pokemon
             placementValidation?.Invoke(placement);
             Placement = placement;
         }
+        internal void ApplyPlacementUnchecked(UnitPlacement placement) => Placement = placement;
         internal void ClearItems() => items.Clear();
         public void AddItem(string itemInstanceId)
         {

@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var result=PokeChess.Editor.PlacementSandboxTools.VerifyInteractions(); var cells=UnityEngine.Object.FindObjectsByType<PokeChess.Client.UI.PlacementHexGraphic>(UnityEngine.FindObjectsSortMode.None); if(cells.Length!=28 || cells.Any(c=>c.GetComponent<UnityEngine.CanvasRenderer>()==null)) throw new System.Exception(\"Missing hex renderer\"); return result;"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Passed: empty move, board swap, bench/board swap, bench swap, cap reject, outside drop, cancel, phase cancellation, combat reject, stale drag and authoritative return."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

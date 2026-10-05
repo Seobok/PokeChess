@@ -38,6 +38,41 @@ namespace PokeChess.Core.Match
         public int LoseStreak { get; private set; }
         public int LastEconomyRound { get; private set; }
         public int LastAutomaticXPRound { get; private set; }
+        public long PlacementRevision { get; private set; }
+        internal void ValidatePlacementChanges(int count) { checked { var next = PlacementRevision + count; } }
+        internal static bool SamePlacement(UnitPlacement a, UnitPlacement b) => a.Kind == b.Kind
+            && Nullable.Equals(a.Position, b.Position) && a.BenchSlot == b.BenchSlot;
+        // Validate both final placements before writing either, preserving owned references.
+        internal void ApplyPlacements(IReadOnlyDictionary<string, UnitPlacement> replacements)
+        {
+            foreach (var id in replacements.Keys) GetUnit(id);
+            var board = new HashSet<BoardPosition>();
+            var bench = new HashSet<int>();
+            bool changed = false;
+            foreach (var unit in units)
+            {
+                var final = replacements.TryGetValue(unit.InstanceId, out var requested) ? requested : unit.Placement;
+                changed |= !SamePlacement(unit.Placement, final);
+                switch (final.Kind)
+                {
+                    case PlacementKind.Board:
+                        GetBoardUnit(final.Position.Value);
+                        if (!board.Add(final.Position.Value)) throw new InvalidOperationException("Duplicate final board cell.");
+                        break;
+                    case PlacementKind.Bench:
+                        GetBenchUnit(final.BenchSlot.Value);
+                        if (!bench.Add(final.BenchSlot.Value)) throw new InvalidOperationException("Duplicate final bench slot.");
+                        break;
+                    case PlacementKind.Unplaced: break;
+                    default: throw new ArgumentOutOfRangeException(nameof(replacements));
+                }
+            }
+            if (board.Count > BoardCapacity) throw new InvalidOperationException("Board deployment limit reached.");
+            if (!changed) return;
+            long revision = checked(PlacementRevision + 1);
+            foreach (var pair in replacements) GetUnit(pair.Key).ApplyPlacementUnchecked(pair.Value);
+            PlacementRevision = revision;
+        }
         public int BoardCapacity => Level;
         public int DeployedUnitCount => units.Count(u => u.Placement.Kind == PlacementKind.Board);
         public int RemainingDeploymentCapacity => BoardCapacity - DeployedUnitCount;
@@ -156,8 +191,14 @@ namespace PokeChess.Core.Match
             var owned = new UnitInstance(source.InstanceId, source.DefinitionId, source.OwnerPlayerId,
                 source.Rank, source.EvolutionStage, source.Placement, source.ItemInstanceIds);
             owned.SetPoolOrigin(source.PoolOriginDefinitionId);
-            owned.SetPlacementValidation(placement => ValidatePlacement(owned.InstanceId, placement));
+            long revision = checked(PlacementRevision + 1);
+            owned.SetPlacementValidation(placement =>
+            {
+                ValidatePlacement(owned.InstanceId, placement);
+                if (!SamePlacement(owned.Placement, placement)) PlacementRevision = checked(PlacementRevision + 1);
+            });
             units.Add(owned);
+            PlacementRevision = revision;
             return owned;
         }
         public UnitInstance GetUnit(string instanceId)
@@ -170,9 +211,11 @@ namespace PokeChess.Core.Match
         public UnitInstance RemoveUnit(string instanceId)
         {
             var unit = GetUnit(instanceId);
+            long revision = checked(PlacementRevision + 1);
             units.Remove(unit);
             unit.SetPlacementValidation(null);
             unit.SetPlacement(UnitPlacement.Unplaced);
+            PlacementRevision = revision;
             return unit;
         }
 

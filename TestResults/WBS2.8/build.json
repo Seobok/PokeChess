@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var r=UnityEditor.Build.Reporting.BuildReport.GetLatestReport(); return new { result=r.summary.result.ToString(), errors=r.summary.totalErrors, warnings=r.summary.totalWarnings, path=r.summary.outputPath, messages=r.steps.SelectMany(s=>s.messages).Where(m=>m.type==UnityEngine.LogType.Error || m.type==UnityEngine.LogType.Exception).Select(m=>m.content).ToArray() };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "result": "Succeeded",
+        "errors": 1,
+        "warnings": 487,
+        "path": "C:/Users/user/Desktop/PokeChess/PokeChess/Builds/WBS2.8/PokeChessPlacement.exe",
+        "messages": [
+          "Failed to handle /api/exec request: Main thread operation timed out after 5000ms"
+        ]
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

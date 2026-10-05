@@ -186,6 +186,7 @@ namespace PokeChess.Core.Match
             var units = player.Units.ToArray();
             var returned = pool.ValidateRelease(units);
             long revision = checked(player.Shop.Revision + 1);
+            player.ValidatePlacementChanges(units.Length);
             foreach (var unit in units) player.RemoveUnit(unit.InstanceId);
             pool.Release(returned);
             player.Shop.ClearForElimination(revision);

@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var s=UnityEditor.Build.Reporting.BuildReport.GetLatestReport().summary; return new { result=s.result.ToString(), errors=s.totalErrors, warnings=s.totalWarnings, output=s.outputPath, finished=s.buildEndedAt.ToString(\"o\") };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "result": "Succeeded",
+        "errors": 0,
+        "warnings": 2,
+        "output": "C:/Users/user/Desktop/PokeChess/PokeChess/Builds/WBS2.8/PokeChessPlacement.exe",
+        "finished": "2026-10-05T15:31:52.3491958"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
