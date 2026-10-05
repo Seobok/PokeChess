@@ -1,0 +1,126 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "MultiPlayerRoundTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 13,
+        "Passed": 13,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.CompletedPairWaitsForLongPairWithoutEarlySettlement",
+          "Status": "Passed",
+          "Duration": 0.1063368,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.DuplicateAndStaleCommandsPreservePairingAndSnapshots",
+          "Status": "Passed",
+          "Duration": 0.0291426,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.EliminatedPlayersAreNotRefreshedOrPaidInFollowingRound",
+          "Status": "Passed",
+          "Duration": 0.0019542,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.FailedLastPairSnapshotDoesNotDeployAnyPlayer",
+          "Status": "Passed",
+          "Duration": 0.0037769,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.LatePlayerSettlementFailurePreflightsAllRecipientsAndRetriesOnce",
+          "Status": "Passed",
+          "Duration": 0.0019907,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.MixedEmptyBoardOutcomesAreMappedToCorrectPlayers",
+          "Status": "Passed",
+          "Duration": 0.0013805,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.OddSurvivorsRejectBeforeDeploymentOrRewards(3)",
+          "Status": "Passed",
+          "Duration": 0.0008218,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.OddSurvivorsRejectBeforeDeploymentOrRewards(5)",
+          "Status": "Passed",
+          "Duration": 0.0003787,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.OddSurvivorsRejectBeforeDeploymentOrRewards(7)",
+          "Status": "Passed",
+          "Duration": 0.000698,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.ShopRandomDrawsDoNotAffectPairing",
+          "Status": "Passed",
+          "Duration": 0.0017956,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.TenAutomaticRoundsRunEveryPairAndSettleEveryPlayerOnce(4)",
+          "Status": "Passed",
+          "Duration": 0.1179098,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.TenAutomaticRoundsRunEveryPairAndSettleEveryPlayerOnce(6)",
+          "Status": "Passed",
+          "Duration": 0.2499098,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MultiPlayerRoundTests.TenAutomaticRoundsRunEveryPairAndSettleEveryPlayerOnce(8)",
+          "Status": "Passed",
+          "Duration": 0.2297033,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 3.25,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: MultiPlayerRoundTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

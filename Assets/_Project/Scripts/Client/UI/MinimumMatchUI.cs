@@ -57,8 +57,8 @@ namespace PokeChess.Client.UI
         private static void ButtonText(UnityEngine.UI.Button button,string text) => button.GetComponentInChildren<UnityEngine.UI.Text>(true).text=text;
         private void BuildMinimumUI()
         {
-            Panel("PlayerSidebar",new Vector2(205,115),new Vector2(-510,180));
-            playersLabel=Label("Players",canvasRect,"",15,new Vector2(190,100),new Vector2(-510,180));
+            Panel("PlayerSidebar",new Vector2(205,160),new Vector2(-510,202));
+            playersLabel=Label("Players",canvasRect,"",13,new Vector2(190,150),new Vector2(-510,202));
             Panel("Inventory",new Vector2(205,140),new Vector2(-510,30));
             inventoryLabel=Label("InventoryText",canvasRect,"",14,new Vector2(190,125),new Vector2(-510,30));
             Label("Controls",canvasRect,"Click: select unit\nDrag: move / swap\nEsc: cancel drag",13,new Vector2(200,65),new Vector2(-510,-98));
@@ -70,7 +70,10 @@ namespace PokeChess.Client.UI
             ActionButton("Rank demo",new Vector2(110,31),new Vector2(548,-21),ResetRankDemo);
             ActionButton("Full bench",new Vector2(110,31),new Vector2(432,-60),ResetFullBenchDemo);
             ActionButton("Fixed foe",new Vector2(110,31),new Vector2(548,-60),ResetOpponent);
-            debugLabel=Label("DebugState",canvasRect,"",11,new Vector2(225,42),new Vector2(490,-110));
+            ActionButton("4 players",new Vector2(72,25),new Vector2(414,-98),()=>ResetPairingDemo(4));
+            ActionButton("6 players",new Vector2(72,25),new Vector2(490,-98),()=>ResetPairingDemo(6));
+            ActionButton("8 players",new Vector2(72,25),new Vector2(566,-98),()=>ResetPairingDemo(8));
+            debugLabel=Label("DebugState",canvasRect,"",10,new Vector2(225,24),new Vector2(490,-129));
             shopFrame=Panel("ShopFrame",new Vector2(1220,200),new Vector2(0,-240));
             status=Label("Feedback",canvasRect,"",14,new Vector2(1180,24),new Vector2(0,-152));
             resources=Label("Resources",canvasRect,"",15,new Vector2(955,30),new Vector2(-125,-183));
@@ -109,6 +112,16 @@ namespace PokeChess.Client.UI
             Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
             ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
+        }
+        public void ResetPairingDemo(int playerCount)
+        {
+            if(playerCount!=4 && playerCount!=6 && playerCount!=8)throw new ArgumentOutOfRangeException(nameof(playerCount));
+            CancelDrag("Reset pairing demo.");catalog=new PokemonCatalog(CreateSandboxDefinitions());
+            Match=MatchStateFactory.CreateWithPool("pairing-demo",Enumerable.Range(1,playerCount).Select(i=>"p"+i),catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
+            foreach(var player in Match.Players)
+                SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit("demo-"+player.PlayerId,"bulbasaur",player.PlayerId,UnitRank.One,0,UnitPlacement.OnBench(0)),"bulbasaur");
+            Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
+            Feedback(playerCount+" players: automatic deployment, pairing and parallel battles. Opponents are revealed at combat start.");Render();
         }
         public void ResetFullBenchDemo()
         {
@@ -202,9 +215,12 @@ namespace PokeChess.Client.UI
                 detailLabel.text=catalog.Get(selected.DefinitionId).DisplayName+" / R"+(int)selected.Rank+"\n"+selected.InstanceId+" / stage "+selected.EvolutionStage+"\n"+selected.Placement.Kind+"\nItems: "+selected.ItemInstanceIds.Count+"\n"+string.Join(", ",selected.ItemInstanceIds.Take(2));
                 sellButton.interactable=trade && selected.Placement.Kind!=PlacementKind.Unplaced;ButtonText(sellButton,"Sell / +"+price+"G");
             }
+
             UpdateTokenFeedback();RenderRoundUI();
         }
     }
 }
+
+
 
 

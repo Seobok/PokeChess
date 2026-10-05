@@ -1,0 +1,175 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PairingSystemTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 20,
+        "Passed": 20,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.EliminatedAndZeroHpPlayersAreExcluded",
+          "Status": "Passed",
+          "Duration": 0.0366762,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.EvenSurvivorsAppearExactlyOnce(2)",
+          "Status": "Passed",
+          "Duration": 0.0025175,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.EvenSurvivorsAppearExactlyOnce(4)",
+          "Status": "Passed",
+          "Duration": 0.0004,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.EvenSurvivorsAppearExactlyOnce(6)",
+          "Status": "Passed",
+          "Duration": 0.00025,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.EvenSurvivorsAppearExactlyOnce(8)",
+          "Status": "Passed",
+          "Duration": 0.0005998,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.FourPlayersAvoidBothPreviousRoundsWhenPossible",
+          "Status": "Passed",
+          "Duration": 0.0010786,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.HistoryKeepsOnlyCurrentAndTwoPriorRounds",
+          "Status": "Passed",
+          "Duration": 0.0028116,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.MatchingAchievesGlobalMinimumAfterRosterChanges",
+          "Status": "Passed",
+          "Duration": 0.1597591,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.OddSurvivorsHaveExplicitShadowRecipient(3)",
+          "Status": "Passed",
+          "Duration": 0.0025032,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.OddSurvivorsHaveExplicitShadowRecipient(5)",
+          "Status": "Passed",
+          "Duration": 0.000391,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.OddSurvivorsHaveExplicitShadowRecipient(7)",
+          "Status": "Passed",
+          "Duration": 0.0007738,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.SameRoundPreparationIsIdempotentAndRosterChangeReplacesHistory",
+          "Status": "Passed",
+          "Duration": 0.0011819,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.SameSeedIgnoresInputOrderAcrossRounds(2)",
+          "Status": "Passed",
+          "Duration": 0.0019333,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.SameSeedIgnoresInputOrderAcrossRounds(4)",
+          "Status": "Passed",
+          "Duration": 0.0013643,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.SameSeedIgnoresInputOrderAcrossRounds(6)",
+          "Status": "Passed",
+          "Duration": 0.005117,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.SameSeedIgnoresInputOrderAcrossRounds(8)",
+          "Status": "Passed",
+          "Duration": 0.0643269,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.StaleOrNonPreparationRequestsCannotMutateHistory",
+          "Status": "Passed",
+          "Duration": 0.0036621,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.TwoPlayersAllowUnavoidableRematches",
+          "Status": "Passed",
+          "Duration": 0.0006274,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.ZeroOrOneSurvivorRequiresNoBattle(0)",
+          "Status": "Passed",
+          "Duration": 0.0011236,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PairingSystemTests.ZeroOrOneSurvivorRequiresNoBattle(1)",
+          "Status": "Passed",
+          "Duration": 0.0002833,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 4.1,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PairingSystemTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

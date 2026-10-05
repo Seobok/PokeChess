@@ -1,0 +1,92 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nvar checks=new System.Collections.Generic.List<object>();\nforeach(int count in new[]{4,6,8})\n{\n    view.ResetPairingDemo(count);\n    for(int round=1;round<=3;round++)\n    {\n        if(view.Match.RoundNumber!=round || view.RoundTimerText.Contains(\"VS\") || view.DetailText.Contains(\"vs\"))throw new System.Exception(\"Preparation failed\");\n        var plan=view.Match.PairingPlan;\n        if(plan.PreviousRoundRematches!=0 || plan.TwoRoundsAgoRematches!=0)throw new System.Exception(\"Recent opponent not avoided\");\n        view.AdvanceRoundTime(30);\n        if(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Combat || view.RoundLoop.Battles.Count!=count/2)throw new System.Exception(\"Combat failed\");\n        int frames=0;\n        while(view.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat && frames++<1400)view.AdvanceRoundTime(1d/30);\n        if(!view.RoundLoop.IsSettled || view.RoundLoop.LastResult.XP.Count!=count || !view.RoundResultText.Contains(\"VS\"))throw new System.Exception(\"Settlement failed\");\n        checks.Add(new {players=count,round,frames,opponent=view.RoundLoop.GetBattleFor(\"p1\").Pairing.OpponentOf(\"p1\"),payouts=view.RoundLoop.LastResult.Income.Count});\n        view.AdvanceRoundTime(3);\n        if(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Preparation || view.Match.RoundNumber!=round+1)throw new System.Exception(\"Next preparation failed\");\n    }\n}\nview.ResetPairingDemo(4);view.SelectUnit(\"demo-p1\");view.SellSelected();view.AdvanceRoundTime(30);\nif(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Combat || !view.RoundLoop.GetBattleFor(\"p1\").IsComplete || !view.RoundTimerText.Contains(\"Loss / WAITING\") || !view.DetailText.Contains(\"1 / 2 completed\") || view.RoundLoop.LastResult!=null)throw new System.Exception(\"Waiting pair UI failed\");\nchecks.Add(new {check=\"empty-own-pair-waits\",timer=view.RoundTimerText,detail=view.DetailText});\nview.ResetPairingDemo(8);\nreturn checks;\n"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": [
+        {
+          "players": 4,
+          "round": 1,
+          "frames": 368,
+          "opponent": "p4",
+          "payouts": 4
+        },
+        {
+          "players": 4,
+          "round": 2,
+          "frames": 368,
+          "opponent": "p3",
+          "payouts": 4
+        },
+        {
+          "players": 4,
+          "round": 3,
+          "frames": 368,
+          "opponent": "p2",
+          "payouts": 4
+        },
+        {
+          "players": 6,
+          "round": 1,
+          "frames": 368,
+          "opponent": "p6",
+          "payouts": 6
+        },
+        {
+          "players": 6,
+          "round": 2,
+          "frames": 368,
+          "opponent": "p5",
+          "payouts": 6
+        },
+        {
+          "players": 6,
+          "round": 3,
+          "frames": 368,
+          "opponent": "p2",
+          "payouts": 6
+        },
+        {
+          "players": 8,
+          "round": 1,
+          "frames": 368,
+          "opponent": "p3",
+          "payouts": 8
+        },
+        {
+          "players": 8,
+          "round": 2,
+          "frames": 368,
+          "opponent": "p8",
+          "payouts": 8
+        },
+        {
+          "players": 8,
+          "round": 3,
+          "frames": 368,
+          "opponent": "p6",
+          "payouts": 8
+        },
+        {
+          "check": "empty-own-pair-waits",
+          "timer": "ROUND 1 / COMBAT /  / VS p4 / Loss / WAITING FOR OTHER PAIRS",
+          "detail": "DEV: ALL PAIRS\np1 vs p4 : TeamTwoWin\np2 vs p3 : RUNNING\n\n1 / 2 completed"
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

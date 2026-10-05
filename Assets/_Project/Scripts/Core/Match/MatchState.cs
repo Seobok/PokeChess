@@ -31,6 +31,16 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<PlayerState> Players => playerView;
         public int RoundNumber { get; private set; }
         public MatchPhase Phase { get; private set; } = MatchPhase.Waiting;
+        private readonly Dictionary<int,RoundPairingPlan> pairingHistory = new Dictionary<int,RoundPairingPlan>();
+        public RoundPairingPlan PairingPlan { get; private set; }
+        public IReadOnlyList<RoundPairing> Pairings => PairingPlan?.Pairs ?? Array.Empty<RoundPairing>();
+        public IReadOnlyDictionary<int,RoundPairingPlan> PairingHistory => new ReadOnlyDictionary<int,RoundPairingPlan>(pairingHistory);
+        internal void CommitPairings(RoundPairingPlan plan)
+        {
+            if (Phase != MatchPhase.Preparation || plan.Round != RoundNumber) throw new InvalidOperationException("Stale pairing plan.");
+            PairingPlan=plan;pairingHistory[plan.Round]=plan;
+            foreach(var round in pairingHistory.Keys.Where(r=>r<RoundNumber-2).ToArray())pairingHistory.Remove(round);
+        }
 
         internal MatchState(string matchId, MatchRules rules, IReadOnlyList<string> playerIds, ulong matchSeed)
         {
@@ -88,3 +98,4 @@ namespace PokeChess.Core.Match
         }
     }
 }
+

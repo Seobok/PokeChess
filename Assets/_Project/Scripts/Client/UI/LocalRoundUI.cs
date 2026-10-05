@@ -121,26 +121,31 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Result && !RoundLoop.IsSettled) clock="WAITING FOR SETTLEMENT";
             else if(Match.Phase==MatchPhase.Preparation && !RoundLoop.PreparationReady) clock="WAITING FOR PREPARATION";
             else if(RoundFlow.IsTimerRunning) clock=Math.Ceiling(RoundFlow.RemainingSeconds).ToString("0")+"s";
-            else clock=Match.Phase==MatchPhase.Combat && RoundLoop.Battle!=null ? RoundLoop.Battle.ElapsedSeconds.ToString("0.0")+"s" : "";
+            else clock=Match.Phase==MatchPhase.Combat && RoundLoop.GetBattleFor("p1")?.Battle!=null ? RoundLoop.GetBattleFor("p1").Battle.ElapsedSeconds.ToString("0.0")+"s" : Match.Phase==MatchPhase.Combat ? "WAITING" : "";
             roundTimer.text="ROUND "+Match.RoundNumber+" / "+Match.Phase.ToString().ToUpperInvariant()+" / "+clock;
             roundTimer.color=roundFault!=null ? new Color(1,.45f,.4f) : RoundFlow.IsTimerRunning && RoundFlow.RemainingSeconds<=5 ? new Color(1,.78f,.36f) : Color.white;
             roundButton.interactable=automaticRoundFlow && Player.HP>0 && !Player.IsEliminated &&
                 (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
             ButtonText(roundButton,Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
-            bool combat=Match.Phase==MatchPhase.Combat && RoundLoop.Battle!=null;
+            var ownPair=RoundLoop.GetBattleFor("p1");
+            bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
+            if(Match.Phase==MatchPhase.Combat && ownPair!=null)
+                roundTimer.text+=" / VS "+ownPair.Pairing.OpponentOf("p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
+            if(selectedUnitId==null && (Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result))
+                detailLabel.text="DEV: ALL PAIRS\n"+string.Join("\n",RoundLoop.Battles.Select(b=>b.Pairing.PlayerOneId+" vs "+b.Pairing.PlayerTwoId+" : "+(b.IsComplete ? b.Result.ToString() : "RUNNING")))+"\n\n"+RoundLoop.Battles.Count(b=>b.IsComplete)+" / "+RoundLoop.Battles.Count+" completed";
             combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
             foreach(var unit in Player.Units)if(unit.Placement.Kind==PlacementKind.Board)tokens[unit.InstanceId].gameObject.SetActive(!combat);
             if(combat)
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
-                var battle=RoundLoop.Battle;combatInfo.text="BATTLE  "+battle.ElapsedSeconds.ToString("0.0")+"s"+(battle.IsOvertime ? " / OVERTIME" : "")+"   BLUE: YOU / RED: FOE";
+                var battle=ownPair.Battle;combatInfo.text="VS "+ownPair.Pairing.OpponentOf("p1")+" / "+battle.ElapsedSeconds.ToString("0.0")+"s"+(ownPair.IsComplete ? " / WAITING FOR OTHER PAIRS" : battle.IsOvertime ? " / OVERTIME" : "");
                 foreach(var unit in battle.Units)
                 {
                     if(!combatTokens.TryGetValue(unit.UnitInstanceId,out var label))
                     {
                         var rect=Rect("Fighter_"+unit.UnitInstanceId,combatRoot,new Vector2(43,35),Vector2.zero);
-                        var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==1 ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
+                        var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2) ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
                         label=Label("HP",rect,"",10,new Vector2(43,35),Vector2.zero);combatTokens[unit.UnitInstanceId]=label;
                     }
                     label.transform.parent.gameObject.SetActive(unit.IsAlive && unit.IsOnBoard);
@@ -151,8 +156,9 @@ namespace PokeChess.Client.UI
             if(resultRoot.gameObject.activeSelf)
             {
                 var result=RoundLoop.LastResult;
-                string verdict=result.Result==BattleResult.Draw ? "DRAW" : result.Result==BattleResult.TeamOneWin ? "VICTORY" : "DEFEAT";
-                string summary="ROUND "+result.Round+" / "+verdict+"\n"+result.Reason+" / "+(result.EndTick/30d).ToString("0.0")+"s\n\n";
+                result.PlayerResults.TryGetValue("p1",out var ownResult);
+                string verdict=ownResult==null ? "SPECTATING" : ownResult.Outcome==RoundOutcome.Draw ? "DRAW" : ownResult.Outcome==RoundOutcome.Win ? "VICTORY" : "DEFEAT";
+                string summary="ROUND "+result.Round+" / "+verdict+"\n"+(ownResult==null ? "" : "VS "+ownResult.OpponentId+" / "+ownResult.Reason+" / "+(ownResult.EndTick/30d).ToString("0.0")+"s")+"\n\n";
                 if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
                 if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
                 resultInfo.text=summary+"\nPreparation board restored. Next round starts automatically."+(roundFault==null ? "" : "\nERROR: "+roundFault);
@@ -161,5 +167,8 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
+
 
 
