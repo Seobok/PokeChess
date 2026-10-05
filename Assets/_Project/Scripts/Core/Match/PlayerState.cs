@@ -18,6 +18,9 @@ namespace PokeChess.Core.Match
         // Progress within the current level; the level system consumes thresholds later.
         public int XP { get; private set; }
         public int Level { get; private set; }
+        public int WinStreak { get; private set; }
+        public int LoseStreak { get; private set; }
+        public int LastEconomyRound { get; private set; }
         public IReadOnlyList<UnitInstance> Units => unitView;
         // Derived snapshots, not a second placement store. Bench includes empty slots.
         public IReadOnlyList<UnitInstance> Board => Array.AsReadOnly(units
@@ -48,7 +51,7 @@ namespace PokeChess.Core.Match
             unitView = units.AsReadOnly();
         }
 
-        // Storage only: income, purchases, elimination and command phase checks come later.
+        // Storage only: purchase, elimination and command phase checks belong to their services.
         public void SetHP(int hp)
         {
             if (hp < 0 || hp > Rules.StartingHP) throw new ArgumentOutOfRangeException(nameof(hp));
@@ -62,6 +65,15 @@ namespace PokeChess.Core.Match
             Gold = gold;
             XP = xp;
             Level = level;
+        }
+
+        // Called only with a fully calculated, checked result by EconomySystem.
+        internal void ApplyRoundIncome(RoundIncome income)
+        {
+            Gold = income.GoldAfter;
+            WinStreak = income.WinStreak;
+            LoseStreak = income.LoseStreak;
+            LastEconomyRound = income.RoundNumber;
         }
 
         // Copy on registration prevents caller-owned or other-match aliases.

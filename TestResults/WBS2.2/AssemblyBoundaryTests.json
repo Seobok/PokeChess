@@ -1,0 +1,57 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.AssemblyBoundaryTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 3,
+        "Passed": 3,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.AssemblyBoundaryTests.CoreHasNoEngineOrOuterLayerDependencies",
+          "Status": "Passed",
+          "Duration": 0.0011853,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.AssemblyBoundaryTests.PlayerCompilationExcludesEditorAndTestAssemblies",
+          "Status": "Passed",
+          "Duration": 0.1601516,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.AssemblyBoundaryTests.RuntimeAssembliesUseTheDeclaredReferenceDirection",
+          "Status": "Passed",
+          "Duration": 0.1327641,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 3.05,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.AssemblyBoundaryTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,99 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.DataModelTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 9,
+        "Passed": 9,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.AssetConvertsToDetachedCoreDefinition",
+          "Status": "Passed",
+          "Duration": 0.0068771,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.BattleRejectsDuplicateIdsAndMissingTeam",
+          "Status": "Passed",
+          "Duration": 0.0010355,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.BattleStartsWithConsistentVitalsAndIdentity",
+          "Status": "Passed",
+          "Duration": 0.002489,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.CatalogRejectsDuplicateAndUnknownDefinitions",
+          "Status": "Passed",
+          "Duration": 0.0006112,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.CombatStateDoesNotMutateOwnedUnitOrDefinition",
+          "Status": "Passed",
+          "Duration": 0.0008435,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.DefinitionsDefensivelyCopyCollectionsAndValidateEvolutionLinks",
+          "Status": "Passed",
+          "Duration": 0.0014243,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.InvalidValuesAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0007733,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.RankStatsAreResolvedByExplicitPolicy",
+          "Status": "Passed",
+          "Duration": 0.0006147,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.DataModelTests.SameDefinitionCreatesIndependentUnits",
+          "Status": "Passed",
+          "Duration": 0.0006545,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.84,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.DataModelTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
