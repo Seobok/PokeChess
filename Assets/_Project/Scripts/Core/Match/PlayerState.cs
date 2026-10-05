@@ -23,6 +23,7 @@ namespace PokeChess.Core.Match
         public int LastEconomyRound { get; private set; }
         public int LastAutomaticXPRound { get; private set; }
         public int BoardCapacity => Level;
+        public ShopState Shop { get; }
         public IReadOnlyList<UnitInstance> Units => unitView;
         // Derived snapshots, not a second placement store. Bench includes empty slots.
         public IReadOnlyList<UnitInstance> Board => Array.AsReadOnly(units
@@ -41,11 +42,12 @@ namespace PokeChess.Core.Match
             }
         }
 
-        internal PlayerState(string playerId, MatchRules rules, Func<string, bool> matchContainsUnit)
+        internal PlayerState(string playerId, MatchRules rules, Func<string, bool> matchContainsUnit, ulong matchSeed)
         {
             PlayerId = ModelGuard.Id(playerId, nameof(playerId));
             Rules = rules ?? throw new ArgumentNullException(nameof(rules));
             this.matchContainsUnit = matchContainsUnit ?? throw new ArgumentNullException(nameof(matchContainsUnit));
+            Shop = new ShopState(matchSeed, PlayerId);
             HP = rules.StartingHP;
             Gold = rules.StartingGold;
             XP = rules.StartingXP;

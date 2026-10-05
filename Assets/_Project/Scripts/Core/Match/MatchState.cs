@@ -14,18 +14,21 @@ namespace PokeChess.Core.Match
         private readonly List<PlayerState> players = new List<PlayerState>();
         private readonly ReadOnlyCollection<PlayerState> playerView;
         public string MatchId { get; }
+        public ulong MatchSeed { get; }
         public MatchRules Rules { get; }
         public IReadOnlyList<PlayerState> Players => playerView;
         public int RoundNumber { get; private set; }
         public MatchPhase Phase { get; private set; } = MatchPhase.Waiting;
 
-        internal MatchState(string matchId, MatchRules rules, IReadOnlyList<string> playerIds)
+        internal MatchState(string matchId, MatchRules rules, IReadOnlyList<string> playerIds, ulong matchSeed)
         {
             MatchId = ModelGuard.Id(matchId, nameof(matchId));
             Rules = rules;
+            MatchSeed = matchSeed;
             playerView = players.AsReadOnly();
             foreach (var id in playerIds)
-                players.Add(new PlayerState(id, rules, unitId => players.Any(p => p.Units.Any(u => u.InstanceId == unitId))));
+                players.Add(new PlayerState(id, rules,
+                    unitId => players.Any(p => p.Units.Any(u => u.InstanceId == unitId)), matchSeed));
         }
         public PlayerState GetPlayer(string playerId)
         {
@@ -54,14 +57,14 @@ namespace PokeChess.Core.Match
 
     public static class MatchStateFactory
     {
-        public static MatchState Create(string matchId, IEnumerable<string> playerIds, MatchRules rules = null)
+        public static MatchState Create(string matchId, IEnumerable<string> playerIds, MatchRules rules = null, ulong matchSeed = 0)
         {
             ModelGuard.Id(matchId, nameof(matchId));
             if (playerIds == null) throw new ArgumentNullException(nameof(playerIds));
             var ids = ModelGuard.Ids(playerIds, nameof(playerIds));
             if (ids.Count < 2 || ids.Count > 8)
                 throw new ArgumentException("A match requires 2 to 8 players.", nameof(playerIds));
-            return new MatchState(matchId, rules ?? new MatchRules(), ids);
+            return new MatchState(matchId, rules ?? new MatchRules(), ids, matchSeed);
         }
     }
 }
