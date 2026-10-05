@@ -10,15 +10,15 @@ namespace PokeChess.Core.Tests
     {
         [TestCase(DamageType.Physical,0,999,100)]
         [TestCase(DamageType.Physical,100,0,50)]
-        [TestCase(DamageType.Physical,-50,0,133.333333)]
+        [TestCase(DamageType.Physical,-50,0,133)]
         [TestCase(DamageType.Magic,999,100,50)]
-        [TestCase(DamageType.Magic,999,-50,133.333333)]
+        [TestCase(DamageType.Magic,999,-50,133)]
         [TestCase(DamageType.True,999,999,100)]
         public void ResistanceUsesCorrectType(DamageType type,float armor,float mr,double expected)
         { Assert.That(DamageCalculator.Calculate(100,type,armor,mr),Is.EqualTo(expected).Within(.0001)); }
         [TestCase(DamageType.Physical,.1f,1)]
         [TestCase(DamageType.Magic,.1f,1)]
-        [TestCase(DamageType.True,.1f,.1f)]
+        [TestCase(DamageType.True,.1f,0)]
         [TestCase(DamageType.Physical,0,0)]
         [TestCase(DamageType.Magic,0,0)]
         [TestCase(DamageType.True,0,0)]

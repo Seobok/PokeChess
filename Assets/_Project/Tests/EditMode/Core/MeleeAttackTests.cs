@@ -107,11 +107,11 @@ namespace PokeChess.Core.Tests
             Assert.That(U(b,"a").IsOnBoard,Is.False);
 
         }
-        [Test] public void FractionalDamagePreservesEnergy()
+        [Test] public void RoundedDamagePreservesEnergy()
         {
             var b=Create(10.5f,0);U(b,"z").SetVitals(100,17);
             var sim=new BattleSimulation(b,new OneSide());sim.Step();
-            Assert.That(U(b,"z").CurrentHP,Is.EqualTo(89.5f));
+            Assert.That(U(b,"z").CurrentHP,Is.EqualTo(89));
             Assert.That(U(b,"z").CurrentEnergy,Is.EqualTo(17));
             Assert.That(b.DamageResultsThisTick.Single().Request.RawDamage,Is.EqualTo(10.5f));
         }

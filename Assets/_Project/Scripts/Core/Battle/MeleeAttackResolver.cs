@@ -11,13 +11,18 @@ namespace PokeChess.Core.Battle
         public string TargetId { get; }
         public float RawDamage { get; }
         public DamageType Type { get; }
-        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type)
+        public bool CanCrit { get; }
+        public float BonusDamage { get; }
+        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0)
         {
             if(string.IsNullOrWhiteSpace(sourceId)||string.IsNullOrWhiteSpace(targetId))
                 throw new ArgumentException("Damage requires source and target IDs.");
             if(float.IsNaN(rawDamage)||float.IsInfinity(rawDamage)||rawDamage<0)
                 throw new ArgumentOutOfRangeException(nameof(rawDamage));
             if(!Enum.IsDefined(typeof(DamageType),type))throw new ArgumentOutOfRangeException(nameof(type));
+            if(float.IsNaN(bonusDamage)||float.IsInfinity(bonusDamage)||bonusDamage<0)
+                throw new ArgumentOutOfRangeException(nameof(bonusDamage));
+            CanCrit=canCrit; BonusDamage=bonusDamage;
             SourceId=sourceId; TargetId=targetId; RawDamage=rawDamage; Type=type;
         }
     }
@@ -25,6 +30,8 @@ namespace PokeChess.Core.Battle
     {
         public long Tick { get; }
         public DamageRequest Request { get; }
+        public DamageCalculation Calculation { get; }
+        public bool IsCritical => Calculation.IsCritical;
         public float PreMitigationDamage { get; }
         public float PostMitigationDamage { get; }
         public float ShieldAbsorbed { get; }
@@ -35,8 +42,8 @@ namespace PokeChess.Core.Battle
         public DamageResult(long tick, DamageRequest request, float appliedDamage, float remainingHP, bool killed)
             : this(tick,request,request.RawDamage,request.RawDamage,0,appliedDamage,remainingHP,0,killed) { }
         public DamageResult(long tick, DamageRequest request, float pre, float post, float shield,
-            float hpDamage, float hp, float remainingShield, bool killed)
-        { Tick=tick; Request=request; PreMitigationDamage=pre; PostMitigationDamage=post;
+            float hpDamage, float hp, float remainingShield, bool killed, DamageCalculation calculation=default)
+        { Calculation=calculation; Tick=tick; Request=request; PreMitigationDamage=pre; PostMitigationDamage=post;
           ShieldAbsorbed=shield; AppliedDamage=hpDamage; RemainingHP=hp; RemainingShield=remainingShield; Killed=killed; }
     }
     public interface IDamageProcessor
@@ -73,7 +80,7 @@ namespace PokeChess.Core.Battle
                 source.TeamId==target.TeamId||!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||
                 source.Stats.AttackDelivery!=PokeChess.Core.Pokemon.AttackDeliveryType.Melee||!HexCoordinates.IsInRange(source.Position,target.Position,source.Stats.AttackRange))return false;
             result=damage.Apply(battle,new DamageRequest(source.UnitInstanceId,target.UnitInstanceId,
-                source.Stats.Attack,DamageType.Physical));
+                source.Stats.Attack,DamageType.Physical,true));
             return true;
         }
     }

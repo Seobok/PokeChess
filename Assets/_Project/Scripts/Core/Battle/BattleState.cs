@@ -23,6 +23,9 @@ namespace PokeChess.Core.Battle
         public float CurrentHP { get; private set; }
         public float CurrentEnergy { get; private set; }
         public float CurrentShield { get; private set; }
+        public DamageModifiers DamageModifiers { get; private set; } = new DamageModifiers();
+        public void SetDamageModifiers(DamageModifiers modifiers)
+        { DamageModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers)); }
         public void SetShield(float shield) { CurrentShield = ModelGuard.Number(shield, nameof(shield)); }
         public bool IsAlive => CurrentHP > 0;
         public bool IsOnBoard { get; private set; } = true;
