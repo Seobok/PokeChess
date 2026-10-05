@@ -141,6 +141,31 @@ namespace PokeChess.Core.Match
                 holding.Unit.SetPoolOrigin(null);
             }
         }
+        internal PoolHolding[] ValidateRankUp(RankUpPlan plan,PoolHolding purchase)
+        {
+            ValidateRelease(plan.Before);
+            var result=new List<PoolHolding>();
+            foreach(var node in plan.Final)
+            {
+                var sources=new List<PoolHolding>();
+                foreach(var unit in node.Originals)
+                {
+                    if(ReferenceEquals(unit,plan.Added)) { if(purchase!=null) sources.Add(purchase); }
+                    else if(holdings.TryGetValue(unit.InstanceId,out var holding)) sources.Add(holding);
+                }
+                if(sources.Count==0) continue;
+                var origins=sources.Select(h=>h.Origin).Distinct(StringComparer.Ordinal).ToArray();
+                if(origins.Length!=1) throw new InvalidOperationException("Cannot merge units from different pool origins.");
+                result.Add(new PoolHolding(origins[0],sources.Sum(h=>h.Copies)){Unit=node.Unit});
+            }
+            return result.ToArray();
+        }
+        internal void ApplyRankUp(RankUpPlan plan,PoolHolding[] result,PoolHolding purchase)
+        {
+            foreach(var unit in plan.Before) { holdings.Remove(unit.InstanceId);unit.SetPoolOrigin(null); }
+            if(purchase!=null) available[purchase.Origin]-=purchase.Copies;
+            foreach(var holding in result) { holdings.Add(holding.Unit.InstanceId,holding);holding.Unit.SetPoolOrigin(holding.Origin); }
+        }
         public void AssertConservation(MatchState match)
         {
             if (match == null || !ReferenceEquals(match.Pool, this)) throw new ArgumentException("Pool belongs to another match.");
@@ -161,7 +186,7 @@ namespace PokeChess.Core.Match
     public static class SharedPoolSystem
     {
         // Trusted host setup/import path. Unlike a reward grant, this consumes stock.
-        // Rank/evolution game commands remain in their later WBS stages.
+        // Rank commands use RankUpSystem; evolution commands are implemented separately.
         public static UnitInstance RegisterUnit(MatchState match, UnitInstance source, string originDefinitionId)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));

@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var r=UnityEditor.BuildPipeline.BuildPlayer(new UnityEditor.BuildPlayerOptions { scenes=new[]{PokeChess.Editor.PlacementSandboxTools.ScenePath}, locationPathName=\"Builds/WBS2.9/PokeChessRankUp.exe\", target=UnityEditor.BuildTarget.StandaloneWindows64, options=UnityEditor.BuildOptions.Development }); return new { result=r.summary.result.ToString(), errors=r.summary.totalErrors, warnings=r.summary.totalWarnings };",
+      "timeout": "240000"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "result": "Succeeded",
+        "errors": 0,
+        "warnings": 2
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -194,7 +194,7 @@ namespace PokeChess.Core.Battle
             var states = entries.Select(e =>
             {
                 var definition = catalog.Get(e.Unit.DefinitionId);
-                var stats = resolveStats == null ? definition.BaseStats : resolveStats(e.Unit, definition);
+                var stats = resolveStats == null ? RankRules.Default.Apply(definition.BaseStats,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
                 return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId);
             }).ToArray();

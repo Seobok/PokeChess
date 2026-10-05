@@ -55,7 +55,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void FullBenchRejectsWithoutAutoDeployAndSaleFreesSlot()
         {
-            for(int i=0;i<player.Bench.Count;i++) Add("b"+i,1,bench:i);
+            for(int i=0;i<player.Bench.Count;i++) Add("b"+i,1,rank:UnitRank.Three,bench:i);
             var before=Snapshot(); Assert.Throws<InvalidOperationException>(()=>trades.Buy(match,"p1",0,player.Shop.Revision));
             Assert.That(Snapshot(),Is.EqualTo(before)); Assert.That(player.Board,Is.Empty);
             trades.Sell(match,"p1","b3"); Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision).Placement.BenchSlot,Is.EqualTo(3));

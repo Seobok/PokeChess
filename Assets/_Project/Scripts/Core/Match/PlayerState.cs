@@ -73,6 +73,42 @@ namespace PokeChess.Core.Match
             foreach (var pair in replacements) GetUnit(pair.Key).ApplyPlacementUnchecked(pair.Value);
             PlacementRevision = revision;
         }
+        internal long ValidateRankUp(RankUpPlan plan)
+        {
+            if(!units.SequenceEqual(plan.Before)) throw new InvalidOperationException("Stale rank-up plan.");
+            if(plan.Added!=null && (plan.Added.OwnerPlayerId!=PlayerId || matchContainsUnit(plan.Added.InstanceId)))
+                throw new InvalidOperationException("Invalid acquired unit identity.");
+            var board=new HashSet<BoardPosition>();var bench=new HashSet<int>();var ids=new HashSet<string>(StringComparer.Ordinal);
+            foreach(var node in plan.Final)
+            {
+                if(!ids.Add(node.Unit.InstanceId)) throw new InvalidOperationException("Duplicate result identity.");
+                if(node.Placement.Kind==PlacementKind.Board) { GetBoardUnit(node.Placement.Position.Value);if(!board.Add(node.Placement.Position.Value)) throw new InvalidOperationException("Duplicate board cell."); }
+                else if(node.Placement.Kind==PlacementKind.Bench) { GetBenchUnit(node.Placement.BenchSlot.Value);if(!bench.Add(node.Placement.BenchSlot.Value)) throw new InvalidOperationException("Duplicate bench slot."); }
+            }
+            if(board.Count>BoardCapacity) throw new InvalidOperationException("Deployment cap exceeded.");
+            var all=plan.Before.Concat(plan.Added==null ? Array.Empty<UnitInstance>() : new[]{plan.Added});
+            var items=new HashSet<string>(inventoryItems,StringComparer.Ordinal);
+            foreach(var item in all.SelectMany(u=>u.ItemInstanceIds))
+                if(!items.Add(item)) throw new InvalidOperationException("Duplicate item ownership.");
+            return plan.Changed ? checked(PlacementRevision+1) : PlacementRevision;
+        }
+        internal void ApplyRankUp(RankUpPlan plan,long revision)
+        {
+            var survivors=new HashSet<UnitInstance>(plan.Final.Select(n=>n.Unit));
+            foreach(var unit in plan.Events.SelectMany(e=>e.ConsumedUnitIds)
+                .Select(id=>plan.Before.FirstOrDefault(u=>u.InstanceId==id)).Where(u=>u!=null))
+            {
+                units.Remove(unit);unit.SetPlacementValidation(null);unit.ApplyPlacementUnchecked(UnitPlacement.Unplaced);ReturnSoldItems(unit);
+            }
+            if(plan.Added!=null && survivors.Contains(plan.Added))
+            {
+                var owned=plan.Added;
+                owned.SetPlacementValidation(placement=> { ValidatePlacement(owned.InstanceId,placement);if(!SamePlacement(owned.Placement,placement)) PlacementRevision=checked(PlacementRevision+1); });
+                units.Add(owned);
+            }
+            foreach(var node in plan.Final) { node.Unit.ApplyRankUnchecked(node.Rank);node.Unit.ApplyPlacementUnchecked(node.Placement); }
+            PlacementRevision=revision;
+        }
         public int BoardCapacity => Level;
         public int DeployedUnitCount => units.Count(u => u.Placement.Kind == PlacementKind.Board);
         public int RemainingDeploymentCapacity => BoardCapacity - DeployedUnitCount;

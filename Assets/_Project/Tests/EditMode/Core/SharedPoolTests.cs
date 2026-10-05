@@ -144,7 +144,7 @@ namespace PokeChess.Core.Tests
             Assert.Throws<InvalidOperationException>(()=>trades.Buy(m,"p1",0,p.Shop.Revision-1));Assert.That(Snapshot(m),Is.EqualTo(before));
             Assert.Throws<ArgumentOutOfRangeException>(()=>trades.Buy(m,"p1",5,p.Shop.Revision));Assert.That(Snapshot(m),Is.EqualTo(before));
             p.SetProgress(0,0,1);before=Snapshot(m);Assert.Throws<InvalidOperationException>(()=>trades.Buy(m,"p1",0,p.Shop.Revision));Assert.That(Snapshot(m),Is.EqualTo(before));
-            p.SetProgress(5,0,1);for(int i=0;i<p.Bench.Count;i++) p.AddUnit(c.CreateUnit("gift"+i,"c1","p1",UnitRank.One,0,UnitPlacement.OnBench(i)));
+            p.SetProgress(5,0,1);for(int i=0;i<p.Bench.Count;i++) p.AddUnit(c.CreateUnit("gift"+i,"c1","p1",UnitRank.Three,0,UnitPlacement.OnBench(i)));
             before=Snapshot(m);Assert.Throws<InvalidOperationException>(()=>trades.Buy(m,"p1",0,p.Shop.Revision));Assert.That(Snapshot(m),Is.EqualTo(before));m.Pool.AssertConservation(m);
         }
         [Test] public void FailedSaleKeepsPoolAndItems()

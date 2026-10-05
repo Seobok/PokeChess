@@ -44,7 +44,8 @@ namespace PokeChess.Core.Pokemon
         public string InstanceId { get; }
         public string DefinitionId { get; }
         public string OwnerPlayerId { get; }
-        public UnitRank Rank { get; }
+        public UnitRank Rank { get; private set; }
+        internal void ApplyRankUnchecked(UnitRank rank) => Rank = rank;
         public int EvolutionStage { get; }
         public string PoolOriginDefinitionId { get; private set; }
         internal void SetPoolOrigin(string origin) => PoolOriginDefinitionId = origin;

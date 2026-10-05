@@ -20,6 +20,8 @@ namespace PokeChess.Core.Match
             return player;
         }
         public UnitInstance Buy(MatchState match, string playerId, int slotIndex, long expectedRevision)
+        { return BuyWithRankUp(match,playerId,slotIndex,expectedRevision).Unit; }
+        public PurchaseResult BuyWithRankUp(MatchState match,string playerId,int slotIndex,long expectedRevision)
         {
             var player = Player(match, playerId);
             var shop = player.Shop;
@@ -33,18 +35,17 @@ namespace PokeChess.Core.Match
             if (definition.Cost != slot.Cost || slot.Cost < 1 || slot.Cost > 5)
                 throw new InvalidOperationException("Shop cost does not match catalog.");
             if (player.Gold < slot.Cost) throw new InvalidOperationException("Insufficient gold.");
-            int benchSlot = player.FindFirstEmptyBenchSlot()
-                ?? throw new InvalidOperationException("Bench is full.");
+            int benchSlot = player.FindFirstEmptyBenchSlot() ?? player.Rules.BenchCapacity;
             long revision = checked(shop.Revision + 1);
             string id = match.NextUnitId(out var sequence);
             var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
             var holding = match.Pool?.ValidateAcquire(unit, definition.Id);
-            var owned = player.AddUnit(unit);
-            if (holding != null) match.Pool.Acquire(holding, owned);
+            var plan = RankUpPlan.Build(player,catalog,unit);
+            RankUpSystem.Commit(match,player,plan,holding);
             player.SetProgress(player.Gold - slot.Cost, player.XP, player.Level);
             shop.ClearSlot(slotIndex, revision);
             match.CommitUnitSequence(sequence);
-            return owned;
+            return new PurchaseResult(plan.PurchaseSurvivor,plan.Events);
         }
         public int SalePrice(UnitInstance unit)
         {

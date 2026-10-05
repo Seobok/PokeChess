@@ -45,6 +45,26 @@ namespace PokeChess.Editor
             foreach(var unit in view.Player.Units) Check(view.TokenMatchesState(unit.InstanceId),"Token view diverged: "+unit.InstanceId);
             view.Match.Pool.AssertConservation(view.Match);
         }
+        public static string VerifyRankInteractions()
+        {
+            if(!EditorApplication.isPlaying) throw new Exception("Enter Play mode.");
+            var view=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();view.ResetRankDemo();
+            var buy=UnityEngine.Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).Single(b=>b.name=="Buy copy");
+            var data=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
+            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            Check(view.LastPurchase.RankUps.Count==2,"Chain events");Check(view.Player.Units.Count==1 && view.Player.GetUnit("A").Rank==PokeChess.Core.Pokemon.UnitRank.Three,"R3 survivor");
+            Check(view.Player.ItemInventory.Contains("demo-item"),"Returned item");Check(view.Player.Gold==19,"Purchase cost");
+            Check(view.Player.DeployedUnitCount==1 && view.TokenMatchesState("A"),"Board placement");Check(!view.Token("B").gameObject.activeSelf,"Consumed token hidden");
+            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);Check(view.Player.Units.Count==2,"Dynamic purchased token");
+            foreach(var unit in view.Player.Units) Check(view.TokenMatchesState(unit.InstanceId),"Fresh rank view");
+            for(int i=0;i<3;i++) ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            int gold=view.Player.Gold;long revision=view.Player.PlacementRevision;var rng=view.Player.Shop.RandomState;
+            ExecuteEvents.Execute(buy.gameObject,data,ExecuteEvents.pointerClickHandler);
+            Check(view.LastPurchase==null && view.LastFeedback.Contains("No offers left"),"Empty offers reject");
+            Check(view.Player.Gold==gold && view.Player.PlacementRevision==revision && view.Player.Shop.RandomState==rng,"No implicit reroll or charge");
+            view.Match.Pool.AssertConservation(view.Match);view.ResetSandbox();
+            return "Passed: Buy button -> two rank-up events -> R3 board survivor; item return; gold; consumed token hiding; dynamic token; pool conservation.";
+        }
         public static string VerifyInteractions()
         {
             if(!EditorApplication.isPlaying) throw new Exception("Enter Play mode.");

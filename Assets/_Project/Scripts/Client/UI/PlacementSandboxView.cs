@@ -22,6 +22,9 @@ namespace PokeChess.Client.UI
         private readonly List<Slot> slots=new List<Slot>();
         private readonly Dictionary<string,RectTransform> tokens=new Dictionary<string,RectTransform>();
         private readonly Dictionary<string,CanvasGroup> groups=new Dictionary<string,CanvasGroup>();
+        private readonly Dictionary<string,UnityEngine.UI.Text> tokenLabels=new Dictionary<string,UnityEngine.UI.Text>();
+        private PokemonCatalog catalog;
+        public PurchaseResult LastPurchase { get; private set; }
         private readonly PlayerPlacementSystem placements=new PlayerPlacementSystem();
         private RectTransform canvasRect,ghost;
         private UnityEngine.UI.Text header,status,ghostLabel;
@@ -90,18 +93,13 @@ namespace PokeChess.Client.UI
                 slots.Add(new Slot{Placement=UnitPlacement.OnBench(i),Rect=rect,Graphic=graphic,Color=Navy});
                 Label("Index",rect,"B"+i,11,new Vector2(70,16),new Vector2(0,-24)).color=new Color(.55f,.65f,.74f);
             }
-            foreach(var id in new[]{"A","B","C","D"})
-            {
-                var rect=Rect("Unit_"+id,canvasRect,new Vector2(60,44),Vector2.zero);
-                rect.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.88f,.63f,.22f);
-                groups[id]=rect.gameObject.AddComponent<CanvasGroup>();tokens[id]=rect;
-                var drag=rect.gameObject.AddComponent<PlacementDragToken>();drag.View=this;drag.UnitId=id;
-                Label("Name",rect,id,20,rect.sizeDelta,Vector2.zero).color=new Color(.08f,.11f,.16f);
-            }
+            foreach(var id in new[]{"A","B","C","D"}) CreateToken(id);
             Button("Preparation / Combat",new Vector2(465,175),TogglePhase);
             Button("Level +",new Vector2(465,115),()=>ChangeLevel(1));
             Button("Level -",new Vector2(465,60),()=>ChangeLevel(-1));
             Button("Reset",new Vector2(465,0),ResetSandbox);
+            Button("Rank demo",new Vector2(465,-55),ResetRankDemo);
+            Button("Buy copy",new Vector2(465,-110),BuyCopy);
             Label("Controls",canvasRect,"Drag a token to MOVE or SWAP.   Esc: cancel   Space: phase",15,new Vector2(1100,35),new Vector2(0,-270));
             status=Label("Feedback",canvasRect,"",16,new Vector2(1120,40),new Vector2(0,-310));
             ghost=Rect("DragPreview",canvasRect,new Vector2(66,48),Vector2.zero);
@@ -119,11 +117,43 @@ namespace PokeChess.Client.UI
             CancelDrag("Reset.");
             var definitions=new[]{"bulbasaur","charmander","squirtle","pikachu"}.Select(id=>new PokemonDefinition(id,id,1,
                 new PokemonStats(100,10,0,1,0,0,1,2,0,0,.25f),"role","skill")).ToArray();
-            var catalog=new PokemonCatalog(definitions);Match=MatchStateFactory.CreateWithPool("placement",new[]{"p1","p2"},catalog,definitions.Select(d=>d.Id),matchSeed:123);
+            catalog=new PokemonCatalog(definitions);LastPurchase=null;Match=MatchStateFactory.CreateWithPool("placement",new[]{"p1","p2"},catalog,definitions.Select(d=>d.Id),matchSeed:123);
             Player.SetProgress(5,0,2); // Fixture level: demonstrate board/bench swaps at full capacity.
             var initial=new[]{UnitPlacement.OnBoard(new BoardPosition(2,0)),UnitPlacement.OnBoard(new BoardPosition(4,1)),UnitPlacement.OnBench(0),UnitPlacement.OnBench(8)};
             for(int i=0;i<4;i++) SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(((char)('A'+i)).ToString(),definitions[i].Id,"p1",UnitRank.One,0,initial[i]),definitions[i].Id);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);LastResult=null;Feedback("Ready. Board is full: swap a bench token with a board token, or move a board token to the bench.");Render();
+        }
+        private void CreateToken(string id)
+        {
+            var rect=Rect("Unit_"+id,canvasRect,new Vector2(60,44),Vector2.zero);
+            rect.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.88f,.63f,.22f);
+            groups[id]=rect.gameObject.AddComponent<CanvasGroup>();tokens[id]=rect;
+            var drag=rect.gameObject.AddComponent<PlacementDragToken>();drag.View=this;drag.UnitId=id;
+            tokenLabels[id]=Label("Name",rect,id,15,rect.sizeDelta,Vector2.zero);tokenLabels[id].color=new Color(.08f,.11f,.16f);
+        }
+        public void ResetRankDemo()
+        {
+            CancelDrag("Reset rank demo.");LastPurchase=null;
+            Match=MatchStateFactory.CreateWithPool("rank-demo",new[]{"p1","p2"},catalog,new[]{"bulbasaur"},matchSeed:123);
+            Player.SetProgress(20,0,1);
+            var initial=new[]{UnitPlacement.OnBoard(new BoardPosition(2,0)),UnitPlacement.OnBench(0),UnitPlacement.OnBench(1),UnitPlacement.OnBench(2)};
+            for(int i=0;i<4;i++) SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(((char)('A'+i)).ToString(),"bulbasaur","p1",i<2 ? UnitRank.Two : UnitRank.One,0,initial[i],i==1 ? new[]{"demo-item"} : null),"bulbasaur");
+            Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);new ShopSystem().RefreshForRound(Match,"p1");
+            Feedback("Rank demo ready. Buy copy: R1 -> R2 -> R3; board A survives and B's item returns.");Render();
+        }
+        public void BuyCopy()
+        {
+            CancelDrag("Buy copy.");
+            try
+            {
+                if(!Player.Shop.IsInitialized) new ShopSystem().RefreshForRound(Match,"p1");
+                if(Player.Shop.Slots.All(s=>s.IsEmpty)) throw new InvalidOperationException("No offers left. Reset Rank demo.");
+                int slot=Enumerable.Range(0,ShopRules.SlotCount).First(i=>!Player.Shop.Slots[i].IsEmpty);
+                LastPurchase=new ShopTransactionSystem(catalog).BuyWithRankUp(Match,"p1",slot,Player.Shop.Revision);
+                Feedback(LastPurchase.RankUps.Count==0 ? "Bought "+LastPurchase.Unit.InstanceId : "Rank up: "+string.Join(" -> ",LastPurchase.RankUps.Select(e=>"R"+(int)e.Rank))+"; survivor "+LastPurchase.Unit.InstanceId+".");
+            }
+            catch(InvalidOperationException e) { LastPurchase=null;Feedback("Rejected: "+e.Message); }
+            Render();Match.Pool.AssertConservation(Match);
         }
         public void ChangeLevel(int delta)
         {
@@ -158,13 +188,14 @@ namespace PokeChess.Client.UI
         private void Render()
         {
             foreach(var slot in slots) slot.Graphic.color=slot.Color;
+            foreach(var unit in Player.Units) if(!tokens.ContainsKey(unit.InstanceId)) CreateToken(unit.InstanceId);
             foreach(var pair in tokens)
             {
                 var unit=Player.Units.FirstOrDefault(u=>u.InstanceId==pair.Key);pair.Value.gameObject.SetActive(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced);
-                if(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced) pair.Value.anchoredPosition=FindSlot(unit.Placement).Rect.anchoredPosition;
+                if(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced) { pair.Value.anchoredPosition=FindSlot(unit.Placement).Rect.anchoredPosition;tokenLabels[pair.Key].text=pair.Key.Replace("unit-","U")+" R"+(int)unit.Rank; }
                 groups[pair.Key].alpha=pair.Key==dragged ? .3f : 1;
             }
-            header.text="BOARD  "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+Match.Phase+"    |    revision "+Player.PlacementRevision;
+            header.text="BOARD  "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+Match.Phase+"    |    revision "+Player.PlacementRevision+"    |    Gold "+Player.Gold+"    |    Items "+Player.ItemInventory.Count;
         }
         public void BeginDrag(string id,Vector2 point)
         {
