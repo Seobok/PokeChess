@@ -26,6 +26,8 @@ namespace PokeChess.Core.Match
         public string MatchId { get; }
         public ulong MatchSeed { get; }
         public MatchRules Rules { get; }
+        public SharedPokemonPool Pool { get; private set; }
+        internal void InitializePool(SharedPokemonPool pool) => Pool = pool;
         public IReadOnlyList<PlayerState> Players => playerView;
         public int RoundNumber { get; private set; }
         public MatchPhase Phase { get; private set; } = MatchPhase.Waiting;
@@ -67,6 +69,14 @@ namespace PokeChess.Core.Match
 
     public static class MatchStateFactory
     {
+        public static MatchState CreateWithPool(string matchId, IEnumerable<string> playerIds,
+            PokemonCatalog catalog, IEnumerable<string> shopDefinitionIds, PoolRules poolRules = null,
+            MatchRules rules = null, ulong matchSeed = 0)
+        {
+            var match = Create(matchId, playerIds, rules, matchSeed);
+            match.InitializePool(new SharedPokemonPool(catalog, shopDefinitionIds, poolRules));
+            return match;
+        }
         public static MatchState Create(string matchId, IEnumerable<string> playerIds, MatchRules rules = null, ulong matchSeed = 0)
         {
             ModelGuard.Id(matchId, nameof(matchId));

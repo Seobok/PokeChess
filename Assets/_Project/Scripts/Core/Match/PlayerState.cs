@@ -28,6 +28,8 @@ namespace PokeChess.Core.Match
         public string PlayerId { get; }
         public MatchRules Rules { get; }
         public int HP { get; private set; }
+        public bool IsEliminated { get; private set; }
+        internal void MarkEliminated() => IsEliminated = true;
         public int Gold { get; private set; }
         // Progress within the current level; maximum level stores zero XP.
         public int XP { get; private set; }
@@ -73,6 +75,7 @@ namespace PokeChess.Core.Match
         public void SetHP(int hp)
         {
             if (hp < 0 || hp > Rules.StartingHP) throw new ArgumentOutOfRangeException(nameof(hp));
+            if (IsEliminated && hp != 0) throw new InvalidOperationException("Elimination is terminal.");
             HP = hp;
         }
         public void SetProgress(int gold, int xp, int level)
@@ -116,6 +119,7 @@ namespace PokeChess.Core.Match
             ValidatePlacement(source.InstanceId, source.Placement);
             var owned = new UnitInstance(source.InstanceId, source.DefinitionId, source.OwnerPlayerId,
                 source.Rank, source.EvolutionStage, source.Placement, source.ItemInstanceIds);
+            owned.SetPoolOrigin(source.PoolOriginDefinitionId);
             owned.SetPlacementValidation(placement => ValidatePlacement(owned.InstanceId, placement));
             units.Add(owned);
             return owned;

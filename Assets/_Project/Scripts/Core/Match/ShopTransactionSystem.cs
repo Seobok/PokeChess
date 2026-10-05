@@ -14,6 +14,7 @@ namespace PokeChess.Core.Match
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
+            if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
             if (match.Phase != MatchPhase.Preparation)
                 throw new InvalidOperationException("Trades require Preparation.");
             return player;
@@ -39,7 +40,9 @@ namespace PokeChess.Core.Match
             long revision = checked(shop.Revision + 1);
             string id = match.NextUnitId(out var sequence);
             var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
+            var holding = match.Pool?.ValidateAcquire(unit, definition.Id);
             var owned = player.AddUnit(unit);
+            if (holding != null) match.Pool.Acquire(holding, owned);
             player.SetProgress(player.Gold - slot.Cost, player.XP, player.Level);
             shop.ClearSlot(slotIndex, revision);
             match.CommitUnitSequence(sequence);
@@ -64,7 +67,11 @@ namespace PokeChess.Core.Match
             foreach (var item in unit.ItemInstanceIds)
                 if (player.ItemInventory.Contains(item) || player.Units.Any(u => u != unit && u.ItemInstanceIds.Contains(item)))
                     throw new InvalidOperationException("Duplicate item ownership.");
+            var returned = match.Pool?.ValidateRelease(new[] { unit });
+            if (match.Pool == null && unit.PoolOriginDefinitionId != null)
+                throw new InvalidOperationException("Pool-origin unit has no owning pool.");
             player.RemoveUnit(unitId);
+            if (returned != null) match.Pool.Release(returned);
             player.ReturnSoldItems(unit);
             player.SetProgress(gold, player.XP, player.Level);
             return price;

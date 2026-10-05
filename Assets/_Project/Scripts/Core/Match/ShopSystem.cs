@@ -11,6 +11,10 @@ namespace PokeChess.Core.Match
     {
         private readonly IShopCandidateSource candidates;
         public ShopRules Rules { get; }
+        // Pool-only mode: use MatchStateFactory.CreateWithPool.
+        public ShopSystem() : this(null, true) { }
+        private ShopSystem(ShopRules rules, bool poolOnly) { Rules = rules ?? new ShopRules(); }
+        public static ShopSystem ForSharedPool(ShopRules rules = null) => new ShopSystem(rules, true);
         public ShopSystem(IShopCandidateSource candidates, ShopRules rules = null)
         {
             this.candidates = candidates ?? throw new ArgumentNullException(nameof(candidates));
@@ -20,19 +24,21 @@ namespace PokeChess.Core.Match
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
+            if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
             if (match.Phase != MatchPhase.Preparation)
                 throw new InvalidOperationException("Shop commands require Preparation.");
             return player;
         }
-        private ReadOnlyCollection<ShopSlot> Generate(PlayerState player, out ulong state, out long drawCount)
+        private ReadOnlyCollection<ShopSlot> Generate(MatchState match, PlayerState player, out ulong state, out long drawCount)
         {
             if (player.Rules.MaxLevel != Rules.MaxLevel)
                 throw new ArgumentException("Match maximum level must match the shop probability table.");
+            if (match.Pool == null && candidates == null) throw new InvalidOperationException("Match has no shared pool.");
             var probabilities = Rules.ForLevel(player.Level);
             var lists = new PokemonDefinition[5][];
             for (int cost=1;cost<=5;cost++)
             {
-                if (probabilities[cost-1] == 0) continue;
+                if (probabilities[cost-1] == 0 || match.Pool != null) continue;
                 var input = candidates.GetCandidates(cost);
                 if (input == null) throw new ArgumentException("Null candidate list.");
                 var copy = input.ToArray();
@@ -46,8 +52,18 @@ namespace PokeChess.Core.Match
             for (int i=0;i<slots.Length;i++)
             {
                 int cost = Rules.SelectCost(player.Level, random.NextInt(100));
-                var list = lists[cost-1];
-                var definition = list[random.NextInt(list.Length)];
+                PokemonDefinition definition;
+                if (match.Pool != null)
+                {
+                    int total = match.Pool.TotalAvailable(cost);
+                    if (total == 0) { slots[i] = new ShopSlot(i); continue; }
+                    definition = match.Pool.SelectDefinition(cost, random.NextInt(total));
+                }
+                else
+                {
+                    var list = lists[cost-1];
+                    definition = list[random.NextInt(list.Length)];
+                }
                 slots[i] = new ShopSlot(i, definition.Id, cost);
             }
             state = random.State;
@@ -67,7 +83,7 @@ namespace PokeChess.Core.Match
                 return false;
             }
             var revision = checked(player.Shop.Revision + 1);
-            var slots = Generate(player, out var state, out var count);
+            var slots = Generate(match, player, out var state, out var count);
             shop.Apply(slots, state, count, match.RoundNumber, revision);
             return true;
         }
@@ -78,7 +94,7 @@ namespace PokeChess.Core.Match
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
             if (player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
             var revision = checked(player.Shop.Revision + 1);
-            var slots = Generate(player, out var state, out var count);
+            var slots = Generate(match, player, out var state, out var count);
             player.SetProgress(player.Gold - Rules.RerollGoldCost, player.XP, player.Level);
             player.Shop.Apply(slots, state, count, null, revision);
             return slots;
