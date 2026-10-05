@@ -66,7 +66,13 @@ namespace PokeChess.Core.Pokemon
             itemView = items.AsReadOnly();
         }
         // Storage operations only. Command ownership/phase/capacity validation comes later.
-        public void SetPlacement(UnitPlacement placement) => Placement = placement;
+        private Action<UnitPlacement> placementValidation;
+        internal void SetPlacementValidation(Action<UnitPlacement> validation) => placementValidation = validation;
+        public void SetPlacement(UnitPlacement placement)
+        {
+            placementValidation?.Invoke(placement);
+            Placement = placement;
+        }
         public void AddItem(string itemInstanceId)
         {
             ModelGuard.Id(itemInstanceId, nameof(itemInstanceId));

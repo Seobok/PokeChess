@@ -1,0 +1,140 @@
+{
+  "success": true,
+  "command": "command test_status",
+  "data": {
+    "command": "test_status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 0.45,
+      "summary": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.BattleSnapshotDoesNotMutatePlayersOrOwnedUnits",
+          "Status": "Passed",
+          "Duration": 0.0426174,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.BoardBenchAndUnplacedViewsFollowMovesAndRemoval",
+          "Status": "Passed",
+          "Duration": 0.0100887,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.CollectionsAreReadOnlyAndUnknownIdsAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0027191,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.DefaultMatchHasIndependentInitialPlayerStates",
+          "Status": "Passed",
+          "Duration": 0.0029497,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.ExplicitRulesAndInputPlayerListAreIndependent",
+          "Status": "Passed",
+          "Duration": 0.0009764,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.FactoryRejectsNullBlankDuplicateAndInvalidParticipantCounts",
+          "Status": "Passed",
+          "Duration": 0.0025089,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.FailedResourceUpdatesLeaveAllFieldsUnchanged",
+          "Status": "Passed",
+          "Duration": 0.0009799,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.FullBenchAndBoundsAreValidated",
+          "Status": "Passed",
+          "Duration": 0.0008486,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.InvalidPhaseTransitionsAreAtomic",
+          "Status": "Passed",
+          "Duration": 0.0016163,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.OccupiedDestinationsAreRejectedWithoutMovingSource",
+          "Status": "Passed",
+          "Duration": 0.0017292,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RegistrationCopiesUnitAndItemsAndProtectsOwnedPlacement",
+          "Status": "Passed",
+          "Duration": 0.0039504,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RegistrationRejectsOutsidePlayerBoard(7,0)",
+          "Status": "Passed",
+          "Duration": 0.0009905,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RegistrationRejectsOutsidePlayerBoard(0,4)",
+          "Status": "Passed",
+          "Duration": 0.0001962,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RegistrationRejectsOwnershipAndMatchWideDuplicateIds",
+          "Status": "Passed",
+          "Duration": 0.0014589,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RoundAdvancesOnlyWhenEnteringPreparation",
+          "Status": "Passed",
+          "Duration": 0.000689,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.MatchStateTests.RulesRejectInvalidValues",
+          "Status": "Passed",
+          "Duration": 0.001214,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
