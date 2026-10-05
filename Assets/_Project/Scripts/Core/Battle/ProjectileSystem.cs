@@ -17,11 +17,12 @@ namespace PokeChess.Core.Battle
         public BoardPosition TargetPositionAtLaunch { get; }
         public long SpawnTick { get; }
         public long ArrivalTick { get; }
-        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival)
+        public DamageRequest? SkillDamage { get; }
+        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival,DamageRequest? skillDamage=null)
         {
             Id=id;SourceId=source.UnitInstanceId;TargetId=target.UnitInstanceId;
             LaunchPosition=source.Position;TargetPositionAtLaunch=target.Position;
-            SpawnTick=tick;ArrivalTick=arrival;
+            SpawnTick=tick;ArrivalTick=arrival;SkillDamage=skillDamage;
         }
     }
     public readonly struct ProjectileEvent
@@ -58,6 +59,13 @@ namespace PokeChess.Core.Battle
             events.Add(new ProjectileEvent(projectile,battle.CurrentTick,ProjectileEventKind.Spawned));
             return true;
         }
+        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request)
+        {
+            if(!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||source.TeamId==target.TeamId)return false;
+            int travel=BattleSimulation.ToTicks((double)HexCoordinates.Distance(source.Position,target.Position)/speed,battle.TickRate);
+            var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request);
+            active.Add(p);events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Spawned));return true;
+        }
         internal void Advance(IDamageProcessor damage)
         {
             foreach(var p in active.Where(p=>p.ArrivalTick<=battle.CurrentTick).OrderBy(p=>p.Id).ToArray())
@@ -71,7 +79,7 @@ namespace PokeChess.Core.Battle
                 if(reason!=ProjectileExpireReason.None)
                 { events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,reason));continue; }
                 var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);
-                damage.Apply(battle,new DamageRequest(p.SourceId,p.TargetId,source.Stats.Attack,DamageType.Physical,true,isBasicAttack:true));
+                damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.Stats.Attack,DamageType.Physical,true,isBasicAttack:true));
                 events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Hit));
             }
         }

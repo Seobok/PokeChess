@@ -57,9 +57,9 @@ namespace PokeChess.Core.Battle
             events.Add(new EnergyEvent(unit,battle.CurrentTick,EnergyChangeReason.SkillCost,EnergyBlockReason.None,before,-unit.Stats.MaxEnergy));
             return true;
         }
-        internal void EndCast(UnitCombatState unit)
+        internal void EndCast(UnitCombatState unit,int? lockTicks=null)
         {
-            int duration=BattleSimulation.ToTicks(unit.Stats.EnergyLockSeconds,battle.TickRate,false);
+            int duration=lockTicks??BattleSimulation.ToTicks(unit.Stats.EnergyLockSeconds,battle.TickRate,false);
             unit.EnergyLockUntilTick=Math.Max(unit.EnergyLockUntilTick,checked(battle.CurrentTick+duration));
             events.Add(new EnergyEvent(unit,battle.CurrentTick,EnergyChangeReason.LockStarted,
                 EnergyBlockReason.None,unit.CurrentEnergy,0));

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e661a0f32a1524a8a27213a9b0bc91, type: 3}
+  m_Name: SampleSkill
+  m_EditorClassIdentifier: PokeChess.Client::PokeChess.Client.Data.SkillDefinitionAsset
+  skillId: test-skill
+  castTime: 0.25
+  postCastTime: 0.25
+  overrideEnergyLock: 0
+  energyLock: 1
+  interruptible: 1
+  targetRule: 0
+  targetLostPolicy: 0
+  range: 3
+  effectKind: 0
+  effectValue: 40
+  damageType: 1
+  projectileSpeed: 6

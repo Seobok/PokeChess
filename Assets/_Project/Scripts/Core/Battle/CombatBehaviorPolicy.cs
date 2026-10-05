@@ -13,6 +13,10 @@ namespace PokeChess.Core.Battle
         public virtual bool IsTargetable(UnitCombatState unit) => unit.IsTargetable;
         public virtual bool CanMove(BattleState battle, UnitCombatState unit) => true;
         public virtual bool CanAttack(BattleState battle, UnitCombatState unit) => true;
+        public virtual bool CanUseSkill(BattleState battle,UnitCombatState unit) => true;
+        public virtual bool TryGetSkillDefinition(BattleState battle,UnitCombatState unit,out SkillDefinition skill)
+        { skill=null; return false; }
+        public virtual void ExecuteSkillEffect(BattleState battle,UnitCombatState unit,UnitCombatState target,SkillDefinition skill) { }
         public virtual bool TryGetSkillTiming(BattleState battle, UnitCombatState unit, UnitCombatState target,
             out CombatActionTiming timing) { timing = default; return false; }
         public virtual bool CanContinueSkill(BattleState battle, UnitCombatState unit, UnitCombatState target) =>

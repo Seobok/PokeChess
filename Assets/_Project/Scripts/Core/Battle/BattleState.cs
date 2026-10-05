@@ -14,6 +14,7 @@ namespace PokeChess.Core.Battle
     {
         public string UnitInstanceId { get; }
         public string DefinitionId { get; }
+        public string SkillId { get; }
         public string OwnerPlayerId { get; }
         public int TeamId { get; }
         public UnitRank Rank { get; }
@@ -45,10 +46,11 @@ namespace PokeChess.Core.Battle
         public CombatActionState ActionState { get; internal set; }
         public IReadOnlyList<string> ItemInstanceIds { get; }
 
-        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position)
+        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId)
         {
             UnitInstanceId = source.InstanceId;
             DefinitionId = source.DefinitionId;
+            SkillId = skillId;
             OwnerPlayerId = source.OwnerPlayerId;
             Rank = source.Rank;
             EvolutionStage = source.EvolutionStage;
@@ -97,6 +99,10 @@ namespace PokeChess.Core.Battle
         public int TickRate { get; }
         public ProjectileSystem Projectiles { get; }
         public EnergySystem Energy { get; }
+        private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
+        public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
+        internal void BeginSkillTick() => skillEvents.Clear();
+        internal void RecordSkill(SkillEvent signal) => skillEvents.Add(signal);
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
@@ -170,7 +176,7 @@ namespace PokeChess.Core.Battle
                 var definition = catalog.Get(e.Unit.DefinitionId);
                 var stats = resolveStats == null ? definition.BaseStats : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position);
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId);
             }).ToArray();
             return new BattleState(battleId, roundNumber, seed, tickRate, states, board);
         }
