@@ -101,13 +101,13 @@ namespace PokeChess.Core.Tests
             Assert.That(loop.LastResult.PlayerResults.ContainsKey("p8"),Is.False);Assert.That(dead.Gold,Is.EqualTo(gold));Assert.That(dead.LastAutomaticXPRound,Is.EqualTo(1));
         }
         [TestCase(3)][TestCase(5)][TestCase(7)]
-        public void OddSurvivorsRejectBeforeDeploymentOrRewards(int count)
+        public void OddSurvivorsRunShadowAndSettleAllRealPlayers(int count)
         {
             Setup(count);foreach(var p in match.Players)Add(p.PlayerId);
-            Assert.That(match.PairingPlan.RequiresShadow,Is.True);
-            Assert.Throws<InvalidOperationException>(()=>loop.StartCombat(1));
-            Assert.That(match.Phase,Is.EqualTo(MatchPhase.Preparation));Assert.That(loop.Battles,Is.Empty);Assert.That(loop.LastResult,Is.Null);
-            Assert.That(match.Players.All(p=>p.DeployedUnitCount==0 && p.LastEconomyRound==0),Is.True);
+            Assert.That(match.PairingPlan.RequiresShadow,Is.True);Assert.That(loop.StartCombat(1),Is.True);
+            Assert.That(loop.Battles.Count,Is.EqualTo((count+1)/2));Assert.That(loop.Battles.Count(b=>b.IsShadow),Is.EqualTo(1));
+            Complete();Assert.That(loop.LastResult.PlayerResults.Count,Is.EqualTo(count));
+            Assert.That(loop.LastResult.Income.Count,Is.EqualTo(count));Assert.That(loop.LastResult.XP.Count,Is.EqualTo(count));
         }
         [Test] public void DuplicateAndStaleCommandsPreservePairingAndSnapshots()
         {
@@ -125,6 +125,7 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+
 
 
 

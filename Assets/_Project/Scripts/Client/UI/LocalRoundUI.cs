@@ -109,6 +109,8 @@ namespace PokeChess.Client.UI
             else if (Match.Phase == MatchPhase.Result) Feedback("Round completed. Income and automatic XP applied.");
             Render();
         }
+        private static string OpponentLabel(LocalPairBattle battle,string playerId)
+            => battle.Pairing.OpponentOf(playerId)+(battle.IsShadow ? " (SHADOW)" : "");
         private void RenderRoundUI()
         {
             if(roundButton==null || RoundLoop==null)return;
@@ -130,16 +132,16 @@ namespace PokeChess.Client.UI
             var ownPair=RoundLoop.GetBattleFor("p1");
             bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
-                roundTimer.text+=" / VS "+ownPair.Pairing.OpponentOf("p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
+                roundTimer.text+=" / VS "+OpponentLabel(ownPair,"p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
             if(selectedUnitId==null && (Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result))
-                detailLabel.text="DEV: ALL PAIRS\n"+string.Join("\n",RoundLoop.Battles.Select(b=>b.Pairing.PlayerOneId+" vs "+b.Pairing.PlayerTwoId+" : "+(b.IsComplete ? b.Result.ToString() : "RUNNING")))+"\n\n"+RoundLoop.Battles.Count(b=>b.IsComplete)+" / "+RoundLoop.Battles.Count+" completed";
+                detailLabel.text="DEV: ALL PAIRS (S=SHADOW)\n"+string.Join("\n",RoundLoop.Battles.Select(b=>b.Pairing.PlayerOneId+" vs "+b.Pairing.PlayerTwoId+(b.IsShadow ? " (S)" : "")+" : "+(b.IsComplete ? b.Result.ToString() : "RUNNING")))+"\n\n"+RoundLoop.Battles.Count(b=>b.IsComplete)+" / "+RoundLoop.Battles.Count+" completed";
             combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
             foreach(var unit in Player.Units)if(unit.Placement.Kind==PlacementKind.Board)tokens[unit.InstanceId].gameObject.SetActive(!combat);
             if(combat)
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
-                var battle=ownPair.Battle;combatInfo.text="VS "+ownPair.Pairing.OpponentOf("p1")+" / "+battle.ElapsedSeconds.ToString("0.0")+"s"+(ownPair.IsComplete ? " / WAITING FOR OTHER PAIRS" : battle.IsOvertime ? " / OVERTIME" : "");
+                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,"p1")+" / "+battle.ElapsedSeconds.ToString("0.0")+"s"+(ownPair.IsComplete ? " / WAITING FOR OTHER PAIRS" : battle.IsOvertime ? " / OVERTIME" : "");
                 foreach(var unit in battle.Units)
                 {
                     if(!combatTokens.TryGetValue(unit.UnitInstanceId,out var label))
@@ -158,7 +160,7 @@ namespace PokeChess.Client.UI
                 var result=RoundLoop.LastResult;
                 result.PlayerResults.TryGetValue("p1",out var ownResult);
                 string verdict=ownResult==null ? "SPECTATING" : ownResult.Outcome==RoundOutcome.Draw ? "DRAW" : ownResult.Outcome==RoundOutcome.Win ? "VICTORY" : "DEFEAT";
-                string summary="ROUND "+result.Round+" / "+verdict+"\n"+(ownResult==null ? "" : "VS "+ownResult.OpponentId+" / "+ownResult.Reason+" / "+(ownResult.EndTick/30d).ToString("0.0")+"s")+"\n\n";
+                string summary="ROUND "+result.Round+" / "+verdict+"\n"+(ownResult==null ? "" :  "VS "+ownResult.OpponentId+(ownResult.IsShadow ? " (SHADOW)" : "")+" / "+ownResult.Reason+" / "+(ownResult.EndTick/30d).ToString("0.0")+"s")+"\n\n";
                 if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
                 if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
                 resultInfo.text=summary+"\nPreparation board restored. Next round starts automatically."+(roundFault==null ? "" : "\nERROR: "+roundFault);
@@ -167,6 +169,8 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
 
 
 

@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nint frames=0;while(view.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat && frames++<1400)view.AdvanceRoundTime(1d/30);\nif(!view.RoundLoop.IsSettled || !view.RoundLoop.LastResult.PlayerResults[\"p1\"].IsShadow || !view.RoundResultText.Contains(\"(SHADOW)\") || view.RoundLoop.LastResult.Income.Count!=3)throw new System.Exception(\"Own Shadow result failed\");\nUnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.3/3-player-shadow-result.png\");\nreturn new {phase=view.Match.Phase.ToString(),result=view.RoundResultText,sourceResult=view.RoundLoop.LastResult.PlayerResults[\"p3\"].Outcome.ToString(),sourceIsShadow=view.RoundLoop.LastResult.PlayerResults[\"p3\"].IsShadow,payouts=view.RoundLoop.LastResult.Income.Count};\n"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "phase": "Result",
+        "result": "ROUND 2 / VICTORY\nVS p3 (SHADOW) / Elimination / 12.2s\n\nIncome +7G = base 5 + interest 1 + streak 1\nAutomatic XP +2 / Level 2 -> 3\n\nPreparation board restored. Next round starts automatically.",
+        "sourceResult": "Loss",
+        "sourceIsShadow": false,
+        "payouts": 3
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

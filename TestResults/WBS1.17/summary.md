@@ -1,6 +1,6 @@
 # Combat Sandbox WBS 1.17
 
-Completed UTC: 2026-10-05T19:15:00.1973833Z
+Completed UTC: 2026-10-05T19:40:09.7911261Z
 
 Execution checks: Passed (Unity test verdict is authoritative)
 
@@ -19,6 +19,6 @@ Baseline: 100; total executions: 300
 |StatusStacks|10|7|3|0|0|627/743|
 |OvertimeDraw|10|0|0|10|10|1350/1350|
 
-Total execution milliseconds (includes validation/hashing; reference only): 184403.141
+Total execution milliseconds (includes validation/hashing; reference only): 189195.185
 
 See runs.csv for each Seed and variant. Failure diagnostics are generated only on failure; old failure files may be from earlier runs.

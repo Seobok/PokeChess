@@ -66,14 +66,17 @@ namespace PokeChess.Client.UI
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",14,new Vector2(210,145),new Vector2(490,185));
             sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
             Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
-            ActionButton("Reset match",new Vector2(110,31),new Vector2(432,-21),ResetMatchUI);
-            ActionButton("Rank demo",new Vector2(110,31),new Vector2(548,-21),ResetRankDemo);
-            ActionButton("Full bench",new Vector2(110,31),new Vector2(432,-60),ResetFullBenchDemo);
-            ActionButton("Fixed foe",new Vector2(110,31),new Vector2(548,-60),ResetOpponent);
-            ActionButton("4 players",new Vector2(72,25),new Vector2(414,-98),()=>ResetPairingDemo(4));
-            ActionButton("6 players",new Vector2(72,25),new Vector2(490,-98),()=>ResetPairingDemo(6));
-            ActionButton("8 players",new Vector2(72,25),new Vector2(566,-98),()=>ResetPairingDemo(8));
-            debugLabel=Label("DebugState",canvasRect,"",10,new Vector2(225,24),new Vector2(490,-129));
+            ActionButton("Reset match",new Vector2(110,25),new Vector2(432,-18),ResetMatchUI);
+            ActionButton("Rank demo",new Vector2(110,25),new Vector2(548,-18),ResetRankDemo);
+            ActionButton("Full bench",new Vector2(110,25),new Vector2(432,-50),ResetFullBenchDemo);
+            ActionButton("Fixed foe",new Vector2(110,25),new Vector2(548,-50),ResetOpponent);
+            ActionButton("4 players",new Vector2(72,25),new Vector2(414,-82),()=>ResetPairingDemo(4));
+            ActionButton("6 players",new Vector2(72,25),new Vector2(490,-82),()=>ResetPairingDemo(6));
+            ActionButton("8 players",new Vector2(72,25),new Vector2(566,-82),()=>ResetPairingDemo(8));
+            ActionButton("3 players",new Vector2(72,25),new Vector2(414,-112),()=>ResetPairingDemo(3));
+            ActionButton("5 players",new Vector2(72,25),new Vector2(490,-112),()=>ResetPairingDemo(5));
+            ActionButton("7 players",new Vector2(72,25),new Vector2(566,-112),()=>ResetPairingDemo(7));
+            debugLabel=Label("DebugState",canvasRect,"",8,new Vector2(225,12),new Vector2(490,-132));
             shopFrame=Panel("ShopFrame",new Vector2(1220,200),new Vector2(0,-240));
             status=Label("Feedback",canvasRect,"",14,new Vector2(1180,24),new Vector2(0,-152));
             resources=Label("Resources",canvasRect,"",15,new Vector2(955,30),new Vector2(-125,-183));
@@ -115,7 +118,7 @@ namespace PokeChess.Client.UI
         }
         public void ResetPairingDemo(int playerCount)
         {
-            if(playerCount!=4 && playerCount!=6 && playerCount!=8)throw new ArgumentOutOfRangeException(nameof(playerCount));
+            if(playerCount<3 || playerCount>8)throw new ArgumentOutOfRangeException(nameof(playerCount));
             CancelDrag("Reset pairing demo.");catalog=new PokemonCatalog(CreateSandboxDefinitions());
             Match=MatchStateFactory.CreateWithPool("pairing-demo",Enumerable.Range(1,playerCount).Select(i=>"p"+i),catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
             foreach(var player in Match.Players)
@@ -190,7 +193,7 @@ namespace PokeChess.Client.UI
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;
-            debugLabel.text=Match.Phase+" / local round sandbox\nShop rev "+Player.Shop.Revision+" / Placement rev "+Player.PlacementRevision;
+            debugLabel.text=Match.Phase+" / Shop "+Player.Shop.Revision+" / Board "+Player.PlacementRevision;
             shopFrame.GetComponent<UnityEngine.UI.Image>().color=new Color(.065f,.105f,.16f);
             shopToggle.interactable=live && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
             for(int i=0;i<shopCards.Length;i++)
@@ -220,6 +223,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

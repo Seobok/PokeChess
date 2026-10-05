@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nview.ResetPairingDemo(3);view.AdvanceRoundTime(30);int frames=0;\nwhile(view.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat && frames++<1400)view.AdvanceRoundTime(1d/30);\nview.AdvanceRoundTime(3);\nif(view.Match.PairingPlan.UnpairedPlayerId!=\"p1\")throw new System.Exception(\"Empty Shadow fixture changed\");\nview.SelectUnit(\"demo-p1\");view.SellSelected();view.AdvanceRoundTime(30);\nif(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Combat || !view.RoundLoop.GetBattleFor(\"p1\").IsShadow || !view.RoundLoop.GetBattleFor(\"p1\").IsComplete || !view.RoundTimerText.Contains(\"(SHADOW) / Loss / WAITING\") || view.RoundLoop.LastResult!=null)throw new System.Exception(\"Empty Shadow wait failed\");\nreturn new {check=\"empty-own-shadow-waits\",timer=view.RoundTimerText,detail=view.DetailText,economyRound=view.Match.GetPlayer(\"p1\").LastEconomyRound};\n"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "check": "empty-own-shadow-waits",
+        "timer": "ROUND 2 / COMBAT / WAITING / VS p3 (SHADOW) / Loss / WAITING FOR OTHER PAIRS",
+        "detail": "DEV: ALL PAIRS (S=SHADOW)\np2 vs p3 : RUNNING\np1 vs p3 (S) : TeamTwoWin\n\n1 / 2 completed",
+        "economyRound": 1
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -13,24 +13,27 @@ namespace PokeChess.Core.Match
         public string PlayerId { get; }
         public string OpponentId { get; }
         public RoundOutcome Outcome { get; }
+        public bool IsShadow { get; }
         public BattleEndReason Reason { get; }
         public long EndTick { get; }
-        internal PlayerRoundResult(string id,string opponent,RoundOutcome outcome,BattleEndReason reason,long tick)
-        { PlayerId=id;OpponentId=opponent;Outcome=outcome;Reason=reason;EndTick=tick; }
+        internal PlayerRoundResult(string id,string opponent,RoundOutcome outcome,BattleEndReason reason,long tick,bool isShadow=false)
+        { PlayerId=id;OpponentId=opponent;Outcome=outcome;Reason=reason;EndTick=tick;IsShadow=isShadow; }
     }
 
     public sealed class LocalPairBattle
     {
         private readonly BattleSimulation simulation;
         public RoundPairing Pairing { get; }
+        public bool IsShadow => Pairing.IsShadow;
+        public ShadowBoardSnapshot ShadowSnapshot { get; }
         public BattleState Battle { get; }
         public BattleResult Result => Battle?.Result ?? emptyResult;
         public BattleEndReason Reason => Battle?.EndReason ?? BattleEndReason.Elimination;
         public long EndTick => Battle?.EndTick ?? 0;
         public bool IsComplete => Result!=BattleResult.InProgress;
         private readonly BattleResult emptyResult;
-        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result)
-        { Pairing=pair;Battle=battle;emptyResult=result;if(battle!=null)simulation=new BattleSimulation(battle); }
+        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null)
+        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;if(battle!=null)simulation=new BattleSimulation(battle); }
         internal void Step() { if(!IsComplete)simulation.Step(); }
         public RoundOutcome OutcomeOf(string playerId)
         {
@@ -58,8 +61,8 @@ namespace PokeChess.Core.Match
             Round=round;Result=battles[0].Result;Reason=battles[0].Reason;EndTick=battles[0].EndTick;
             var results=new Dictionary<string,PlayerRoundResult>(StringComparer.Ordinal);
             foreach(var battle in battles)
-                foreach(var id in new[]{battle.Pairing.PlayerOneId,battle.Pairing.PlayerTwoId})
-                    results.Add(id,new PlayerRoundResult(id,battle.Pairing.OpponentOf(id),battle.OutcomeOf(id),battle.Reason,battle.EndTick));
+                foreach(var id in battle.Pairing.ParticipantIds)
+                    results.Add(id,new PlayerRoundResult(id,battle.Pairing.OpponentOf(id),battle.OutcomeOf(id),battle.Reason,battle.EndTick,battle.IsShadow));
             PlayerResults=new ReadOnlyDictionary<string,PlayerRoundResult>(results);
         }
         internal void Record(RoundIncome value) => income[value.PlayerId]=value;
@@ -102,26 +105,29 @@ namespace PokeChess.Core.Match
             if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || !PreparationReady)return false;
             var plan=PreparePairings(expectedRound);
             if(plan.NoBattleRequired)return false;
-            if(plan.RequiresShadow)throw new InvalidOperationException("Odd survivors require a Shadow battle (WBS 3.3); round remains in preparation.");
+            if(plan.RequiresShadow && plan.ShadowPair==null)throw new InvalidOperationException("Missing Shadow source.");
             var players=plan.SurvivorIds.Select(Match.GetPlayer).ToArray();
             // Validate every deployment and construct every snapshot before committing any placement.
             var deployments=players.ToDictionary(p=>p.PlayerId,PlanAutomaticDeployment,StringComparer.Ordinal);
             var nextBattles=new List<LocalPairBattle>();
-            foreach(var pair in plan.Pairs)
+            foreach(var pair in plan.Pairs.Concat(plan.ShadowPair==null ? Array.Empty<RoundPairing>() : new[]{plan.ShadowPair}))
             {
                 var one=DeployedUnits(Match.GetPlayer(pair.PlayerOneId),deployments[pair.PlayerOneId]);
                 var two=DeployedUnits(Match.GetPlayer(pair.PlayerTwoId),deployments[pair.PlayerTwoId]);
                 BattleState battle=null;
+                var shadowSnapshot=pair.IsShadow ? ShadowBoardSnapshot.Capture(Match.GetPlayer(pair.PlayerTwoId),expectedRound,catalog,deployments[pair.PlayerTwoId]) : null;
                 if(one.Length>0 && two.Length>0)
                 {
                     var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[pair.PlayerOneId])))
                         .Concat(two.Select(u=>new BattleUnitSetup(u,2,HexCoordinates.MirrorCombat(DeploymentPosition(u,deployments[pair.PlayerTwoId])))));
                     // Canonical pair order is stable; a distinct seed isolates each battle's RNG.
                     ulong seed=BattleSeed(expectedRound,pair);
-                    battle=BattleStateFactory.Create(Match.MatchId+"-round-"+expectedRound+"-pair-"+nextBattles.Count,expectedRound,seed,TickRate,catalog,setup);
+                    string battleId=Match.MatchId+"-round-"+expectedRound+"-pair-"+nextBattles.Count;
+                    battle=pair.IsShadow ? shadowSnapshot.CreateBattle(battleId,seed,TickRate,catalog,setup.Where(s=>s.TeamId==1))
+                        : BattleStateFactory.Create(battleId,expectedRound,seed,TickRate,catalog,setup);
                 }
                 var emptyResult=one.Length==0 && two.Length==0 ? BattleResult.Draw : one.Length==0 ? BattleResult.TeamTwoWin : BattleResult.TeamOneWin;
-                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult));
+                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot));
             }
             foreach(var player in players)if(deployments[player.PlayerId].Count>0)player.ApplyPlacements(deployments[player.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
@@ -134,7 +140,7 @@ namespace PokeChess.Core.Match
             foreach(char c in pair.PlayerOneId)hash=unchecked((hash^c)*1099511628211UL);
             hash=unchecked((hash^0xFFFFUL)*1099511628211UL);
             foreach(char c in pair.PlayerTwoId)hash=unchecked((hash^c)*1099511628211UL);
-            return unchecked(Match.MatchSeed ^ hash ^ 0x424154544C450001UL ^ (ulong)round*0x9E3779B97F4A7C15UL);
+            return unchecked(Match.MatchSeed ^ hash ^ (pair.IsShadow ? 0x5348424154544C45UL : 0x424154544C450001UL) ^ (ulong)round*0x9E3779B97F4A7C15UL);
         }
         private static UnitInstance[] DeployedUnits(PlayerState player,IReadOnlyDictionary<string,UnitPlacement> plan) =>
             player.Units.Where(u=>u.Placement.Kind==PlacementKind.Board || plan.ContainsKey(u.InstanceId)).ToArray();
@@ -199,4 +205,5 @@ namespace PokeChess.Core.Match
         }
     }
 }
+
 

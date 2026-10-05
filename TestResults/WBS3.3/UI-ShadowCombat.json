@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nview.AdvanceRoundTime(30);\nvar shadow=view.RoundLoop.GetBattleFor(\"p1\");\nif(!shadow.IsShadow || !view.RoundTimerText.Contains(\"(SHADOW)\") || !view.DetailText.Contains(\"S=SHADOW\"))throw new System.Exception(\"Shadow presentation failed\");\nUnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.3/3-player-shadow-combat.png\");\nreturn new {phase=view.Match.Phase.ToString(),timer=view.RoundTimerText,detail=view.DetailText,source=shadow.Pairing.ShadowSourcePlayerId};\n"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "phase": "Combat",
+        "timer": "ROUND 2 / COMBAT / 0.0s / VS p3 (SHADOW)",
+        "detail": "DEV: ALL PAIRS (S=SHADOW)\np2 vs p3 : RUNNING\np1 vs p3 (S) : RUNNING\n\n0 / 2 completed",
+        "source": "p3"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

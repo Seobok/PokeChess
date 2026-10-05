@@ -1,0 +1,101 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nif(view==null)throw new System.Exception(\"Missing sandbox\");\nUnityEditor.SessionState.SetBool(\"WBS33RunInBackground\",UnityEngine.Application.runInBackground);\nUnityEditor.SessionState.SetFloat(\"WBS33TimeScale\",UnityEngine.Time.timeScale);\nview.enabled=false;UnityEngine.Time.timeScale=0;UnityEngine.Application.runInBackground=true;\nvar checks=new System.Collections.Generic.List<object>();\nforeach(int count in new[]{3,5,7})\n{\n    var button=UnityEngine.GameObject.Find(count+\" players\").GetComponent<UnityEngine.UI.Button>();\n    if(!button.IsActive() || !button.interactable)throw new System.Exception(\"Demo button unavailable\");\n    button.onClick.Invoke();\n    if(view.Match.Players.Count!=count)throw new System.Exception(\"Demo button wiring failed\");\n    for(int round=1;round<=3;round++)\n    {\n        if(view.Match.RoundNumber!=round || view.RoundTimerText.Contains(\"VS\") || view.DetailText.Contains(\"SHADOW\"))throw new System.Exception(\"Preparation disclosure\");\n        var plan=view.Match.PairingPlan;view.AdvanceRoundTime(30);\n        var shadow=view.RoundLoop.Battles.Single(b=>b.IsShadow);\n        if(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Combat || view.RoundLoop.Battles.Count!=(count+1)/2 || !view.DetailText.Contains(\"(S)\"))throw new System.Exception(\"Shadow combat UI failed\");\n        if(view.RoundLoop.GetBattleFor(shadow.Pairing.PlayerTwoId).IsShadow)throw new System.Exception(\"Source sees ghost instead of real battle\");\n        int frames=0;while(view.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat && frames++<1400)view.AdvanceRoundTime(1d/30);\n        if(!view.RoundLoop.IsSettled || view.RoundLoop.LastResult.Income.Count!=count || view.RoundLoop.LastResult.XP.Count!=count)throw new System.Exception(\"Shadow settlement failed\");\n        checks.Add(new {players=count,round,target=shadow.Pairing.PlayerOneId,source=shadow.Pairing.PlayerTwoId,payouts=view.RoundLoop.LastResult.Income.Count,frames});\n        view.AdvanceRoundTime(3);\n        if(view.Match.Phase!=PokeChess.Core.Match.MatchPhase.Preparation || view.Match.RoundNumber!=round+1)throw new System.Exception(\"Next round failed\");\n    }\n}\nview.ResetPairingDemo(3);\nint seek=0;\nwhile(view.Match.PairingPlan.UnpairedPlayerId!=\"p1\" && seek++<20)\n{\n    view.AdvanceRoundTime(30);int frames=0;while(view.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat && frames++<1400)view.AdvanceRoundTime(1d/30);\n    view.AdvanceRoundTime(3);\n}\nif(view.Match.PairingPlan.UnpairedPlayerId!=\"p1\")throw new System.Exception(\"Shadow perspective fixture unavailable\");\nUnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.3/3-player-shadow-preparation.png\");\nchecks.Add(new {check=\"own-shadow-preparation\",round=view.Match.RoundNumber,hidden=!view.RoundTimerText.Contains(\"SHADOW\") && !view.DetailText.Contains(\"SHADOW\")});\nreturn checks;"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": [
+        {
+          "players": 3,
+          "round": 1,
+          "target": "p3",
+          "source": "p1",
+          "payouts": 3,
+          "frames": 368
+        },
+        {
+          "players": 3,
+          "round": 2,
+          "target": "p1",
+          "source": "p3",
+          "payouts": 3,
+          "frames": 368
+        },
+        {
+          "players": 3,
+          "round": 3,
+          "target": "p3",
+          "source": "p1",
+          "payouts": 3,
+          "frames": 368
+        },
+        {
+          "players": 5,
+          "round": 1,
+          "target": "p5",
+          "source": "p3",
+          "payouts": 5,
+          "frames": 368
+        },
+        {
+          "players": 5,
+          "round": 2,
+          "target": "p5",
+          "source": "p1",
+          "payouts": 5,
+          "frames": 368
+        },
+        {
+          "players": 5,
+          "round": 3,
+          "target": "p5",
+          "source": "p2",
+          "payouts": 5,
+          "frames": 368
+        },
+        {
+          "players": 7,
+          "round": 1,
+          "target": "p2",
+          "source": "p1",
+          "payouts": 7,
+          "frames": 368
+        },
+        {
+          "players": 7,
+          "round": 2,
+          "target": "p4",
+          "source": "p2",
+          "payouts": 7,
+          "frames": 368
+        },
+        {
+          "players": 7,
+          "round": 3,
+          "target": "p6",
+          "source": "p2",
+          "payouts": 7,
+          "frames": 368
+        },
+        {
+          "check": "own-shadow-preparation",
+          "round": 2,
+          "hidden": true
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

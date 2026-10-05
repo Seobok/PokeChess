@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var view=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();\nview.ResetPairingDemo(7);view.AdvanceRoundTime(30);\nif(view.RoundLoop.GetBattleFor(\"p1\").IsShadow || view.RoundTimerText.Contains(\"(SHADOW)\") || view.RoundLoop.Battles.Count!=4)throw new System.Exception(\"Source perspective failed\");\nUnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.3/7-player-combat.png\");\nreturn new {check=\"source-perspective-is-normal\",timer=view.RoundTimerText,detail=view.DetailText,source=view.Match.PairingPlan.ShadowPair.PlayerTwoId};\n"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "check": "source-perspective-is-normal",
+        "timer": "ROUND 1 / COMBAT / 0.0s / VS p7",
+        "detail": "DEV: ALL PAIRS (S=SHADOW)\np1 vs p7 : RUNNING\np3 vs p6 : RUNNING\np4 vs p5 : RUNNING\np2 vs p1 (S) : RUNNING\n\n0 / 4 completed",
+        "source": "p1"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
