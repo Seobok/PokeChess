@@ -146,7 +146,7 @@ namespace PokeChess.Core.Tests
         public void InputsRunBeforeActionsAndEnqueuedInputsWaitForNextTick()
         {
             var b=Battle(("a",1,P(0,0)),("z",2,P(6,7)));var sim=new BattleSimulation(b,new Policy());int calls=0;
-            sim.QueueInput(state=>{calls++;sim.QueueInput(s=>calls++);state.TryRemoveUnit("z");});
+            sim.QueueInput(state=>{calls++;sim.QueueInput(s=>calls++);U(state,"z").SetUntargetable(true);});
             sim.Step();Assert.That(calls,Is.EqualTo(1));Assert.That(U(b,"a").ActionState,Is.EqualTo(CombatActionState.Idle));
             sim.Step();Assert.That(calls,Is.EqualTo(2));Assert.That(b.CurrentTick,Is.EqualTo(2));
         }

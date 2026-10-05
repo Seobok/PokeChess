@@ -15,6 +15,7 @@ namespace PokeChess.Core.Battle
         private readonly Queue<Action<BattleState>> inputs = new Queue<Action<BattleState>>();
         private readonly List<CombatActionSignal> signals = new List<CombatActionSignal>();
         private bool stepping;
+        private readonly HashSet<string> reportedDeaths = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> skillInterrupts = new HashSet<string>(StringComparer.Ordinal);
         public MovementReservations Reservations { get; } = new MovementReservations();
         public BattleSimulation(BattleState battle, CombatBehaviorPolicy policy = null, SkillCatalog skillCatalog = null, ISkillEffectExecutor skillExecutor = null, StatusCatalog statusCatalog = null)
@@ -57,7 +58,11 @@ namespace PokeChess.Core.Battle
         }
         public UnitActionRuntime GetRuntime(string unitId)=>actions[unitId];
         // Host-validated simulation input hook; not a network command validation API.
-        public void QueueInput(Action<BattleState> input)=>inputs.Enqueue(input??throw new ArgumentNullException(nameof(input)));
+        public void QueueInput(Action<BattleState> input)
+        {
+            if(battle.Result!=BattleResult.InProgress)throw new InvalidOperationException("Battle has ended.");
+            inputs.Enqueue(input??throw new ArgumentNullException(nameof(input)));
+        }
         public static int ToTicks(double seconds,int tickRate,bool minimumOne=true)
         {
             if(double.IsNaN(seconds)||double.IsInfinity(seconds)||seconds<0||tickRate<1)throw new ArgumentOutOfRangeException();
@@ -71,14 +76,22 @@ namespace PokeChess.Core.Battle
             try
             {
                 signals.Clear();
+                battle.BeginLifecycleTick();
                 battle.BeginDamageTick();
                 battle.BeginSkillTick();
                 battle.StatusEffects.BeginTick();
                 battle.Energy.BeginTick();
                 battle.Projectiles.BeginTick();
+                CleanupUnavailable();
+                if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
+                if(!battle.IsOvertime&&battle.CurrentTick>=battle.OvertimeStartTick) {
+                    battle.IsOvertime=true;
+                    battle.RecordLifecycle(new BattleLifecycleEvent(BattleLifecycleEventKind.OvertimeStarted,battle.CurrentTick));
+                }
                 int count=inputs.Count;
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
                 CleanupUnavailable();
+                if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
                 foreach(var unit in ordered)
                 {
                     if(!unit.IsAlive||!unit.IsOnBoard)continue;
@@ -88,11 +101,15 @@ namespace PokeChess.Core.Battle
                 }
                 policy.OnProjectilesTiming(battle);
                 CleanupUnavailable(); // Effects may kill units already processed earlier in this tick.
+                if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
                 ReevaluateLostAttackTargets();
                 ReevaluateLostSkillTargets();
                 battle.StatusEffects.Cleanup();
                 CleanupUnavailable();
-                battle.CurrentTick=checked(battle.CurrentTick+1);
+                if(!TryEndBattle()) {
+                    battle.CurrentTick=checked(battle.CurrentTick+1);
+                    if(battle.CurrentTick>=battle.TimeLimitTick)TryEndBattle();
+                }
                 return Array.AsReadOnly(signals.ToArray());
             }
             finally {stepping=false;}
@@ -102,6 +119,10 @@ namespace PokeChess.Core.Battle
             foreach(var unit in ordered)
                 if(!unit.IsAlive||!unit.IsOnBoard)
                 {
+                    if(!unit.IsAlive&&reportedDeaths.Add(unit.UnitInstanceId)) {
+                        var reason=unit.DeathCause;
+                        battle.RecordLifecycle(new BattleLifecycleEvent(BattleLifecycleEventKind.UnitDied,battle.CurrentTick,unit.UnitInstanceId,reason));
+                    }
                     if(!unit.IsAlive&&unit.IsOnBoard)battle.TryRemoveUnit(unit.UnitInstanceId);
                     var runtime=actions[unit.UnitInstanceId];
                     if(runtime.SkillCast!=null&&!runtime.SkillCast.Finished)runtime.SkillCast.CancelReason=SkillCancelReason.CasterUnavailable;
@@ -110,6 +131,28 @@ namespace PokeChess.Core.Battle
                     runtime.IsAttackTargetLocked=false;runtime.MovementTargetId=null;
                     unit.CurrentTargetId=null;unit.ActionState=CombatActionState.Dead;
                 }
+        }
+        private bool TryEndBattle()
+        {
+            bool one=ordered.Any(u=>u.TeamId==1&&u.IsAlive&&u.IsOnBoard);
+            bool two=ordered.Any(u=>u.TeamId==2&&u.IsAlive&&u.IsOnBoard);
+            if(one&&two&&battle.CurrentTick<battle.TimeLimitTick)return false;
+            var result=one&&two?BattleResult.Draw:one?BattleResult.TeamOneWin:two?BattleResult.TeamTwoWin:BattleResult.Draw;
+            var reason=one&&two?BattleEndReason.TimeLimit:BattleEndReason.Elimination;
+            foreach(var u in ordered) {
+                var r=actions[u.UnitInstanceId];
+                if(r.IsSkillActive||r.EndTick>0||r.MoveDestination.HasValue) {
+                    if(r.SkillCast!=null)r.SkillCast.CancelReason=SkillCancelReason.BattleEnded;
+                    Finish(u,r,true);
+                }
+                Reservations.Release(u.UnitInstanceId);u.CurrentTargetId=null;
+                r.IsAttackTargetLocked=false;r.MovementTargetId=null;
+                u.ActionState=u.IsAlive&&u.IsOnBoard?CombatActionState.Idle:CombatActionState.Dead;
+            }
+            battle.StatusEffects.Cleanup();battle.Projectiles.EndBattle();inputs.Clear();skillInterrupts.Clear();
+            battle.Result=result;battle.EndReason=reason;battle.EndTick=battle.CurrentTick;
+            battle.RecordLifecycle(new BattleLifecycleEvent(BattleLifecycleEventKind.BattleEnded,battle.CurrentTick,result:result,endReason:reason));
+            return true;
         }
         private UnitCombatState Target(UnitCombatState unit)
         {

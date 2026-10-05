@@ -9,7 +9,7 @@ namespace PokeChess.Core.Battle
     public enum TargetLostPolicy { Cancel, RetargetAtEffect, ContinueWithoutTarget }
     public enum SkillEffectKind { Damage, SelfShield, ProjectileDamage }
     public enum SkillEventKind { CastStarted, EffectApplied, CastCompleted, CastCancelled }
-    public enum SkillCancelReason { None, TargetLost, Interrupted, CasterUnavailable }
+    public enum SkillCancelReason { None, TargetLost, Interrupted, CasterUnavailable, BattleEnded }
     public sealed class SkillDefinition
     {
         public string Id { get; }

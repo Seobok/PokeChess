@@ -10,7 +10,7 @@ namespace PokeChess.Core.Tests
         private static SkillDefinition Skill(TargetLostPolicy lost=TargetLostPolicy.Cancel,bool interruptible=true,
             SkillEffectKind kind=SkillEffectKind.Damage,SkillTargetRule rule=SkillTargetRule.Enemy,float cast=.125f,float post=.125f,float? energyLock=.5f) =>
             new SkillDefinition("s",cast,post,rule,lost,kind,40,3,interruptible,energyLock);
-        private static BattleState Battle(bool extra=false,bool selfOnly=false)
+        private static BattleState Battle(bool extra=false,bool selfOnly=false,bool reserve=false)
         {
             var stats=new PokemonStats(1000,10,0,1,0,0,3,2,100,0,0);
             var c=new PokemonCatalog(new[]{new PokemonDefinition("t","T",1,stats,"r","s"),
@@ -19,7 +19,8 @@ namespace PokeChess.Core.Tests
                 c.CreateUnit(id,id=="a"?"t":"none","p"+team,UnitRank.One,0,UnitPlacement.Unplaced),team,new BoardPosition(col,row));
             var setup=new[]{make("a",1,0,0),make("z",2,selfOnly?6:1,selfOnly?7:0)};
             if(extra)setup=setup.Concat(new[]{make("y",2,0,2)}).ToArray();
-            var b=BattleStateFactory.Create("b",1,123,30,c,setup);U(b,"a").SetVitals(1000,115);return b;
+            if(reserve)setup=setup.Concat(new[]{make("reserve",2,6,6)}).ToArray();
+            var b=BattleStateFactory.Create("b",1,123,30,c,setup);U(b,"a").SetVitals(1000,115);if(reserve)U(b,"reserve").SetUntargetable(true);return b;
         }
         private static UnitCombatState U(BattleState b,string id)=>b.Units.Single(u=>u.UnitInstanceId==id);
         private sealed class Policy:SkillCombatBehaviorPolicy
@@ -49,7 +50,7 @@ namespace PokeChess.Core.Tests
         [TestCase("dead")] [TestCase("removed")] [TestCase("hidden")]
         public void CancelBeforeEffectNoRefund(string reason)
         {
-            var b=Battle();var sim=new BattleSimulation(b,new Policy(Skill()));sim.Step();
+            var b=Battle(reserve:true);var sim=new BattleSimulation(b,new Policy(Skill()));sim.Step();
             sim.QueueInput(state=>{
                 if(reason=="dead")U(state,"z").SetVitals(0,0);
                 if(reason=="removed")state.TryRemoveUnit("z");
@@ -70,14 +71,14 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void NoRetargetCandidateCancelsAtEffect()
         {
-            var b=Battle();var sim=new BattleSimulation(b,new Policy(Skill(TargetLostPolicy.RetargetAtEffect)));sim.Step();
+            var b=Battle(reserve:true);var sim=new BattleSimulation(b,new Policy(Skill(TargetLostPolicy.RetargetAtEffect)));sim.Step();
             sim.QueueInput(state=>state.TryRemoveUnit("z"));for(int i=1;i<=4;i++)sim.Step();
             Assert.That(b.SkillEventsThisTick.Single().Reason,Is.EqualTo(SkillCancelReason.TargetLost));
             Assert.That(U(b,"a").EnergyLockUntilTick,Is.EqualTo(19));
         }
         [Test] public void ContinueWithoutTargetExecutesSelfShield()
         {
-            var b=Battle();var sim=new BattleSimulation(b,new Policy(Skill(TargetLostPolicy.ContinueWithoutTarget,kind:SkillEffectKind.SelfShield)));
+            var b=Battle(reserve:true);var sim=new BattleSimulation(b,new Policy(Skill(TargetLostPolicy.ContinueWithoutTarget,kind:SkillEffectKind.SelfShield)));
             sim.Step();sim.QueueInput(state=>state.TryRemoveUnit("z"));for(int i=1;i<=4;i++)sim.Step();
             Assert.That(U(b,"a").CurrentShield,Is.EqualTo(40));
             Assert.That(b.SkillEventsThisTick.Single().Kind,Is.EqualTo(SkillEventKind.EffectApplied));
@@ -118,7 +119,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void MovementAfterStartAndPostEffectTargetLossDoNotCancel()
         {
-            var b=Battle();var sim=new BattleSimulation(b,new Policy(Skill()));sim.Step();
+            var b=Battle(reserve:true);var sim=new BattleSimulation(b,new Policy(Skill()));sim.Step();
             sim.QueueInput(state=>state.TryMoveUnit("z",new BoardPosition(6,7)));
             for(int i=1;i<=4;i++)sim.Step();Assert.That(U(b,"z").CurrentHP,Is.EqualTo(960));
             sim.QueueInput(state=>state.TryRemoveUnit("z"));

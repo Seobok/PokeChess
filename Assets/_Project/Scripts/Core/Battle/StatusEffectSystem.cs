@@ -126,13 +126,13 @@ namespace PokeChess.Core.Battle
         }
         public EffectiveCombatStats Resolve(UnitCombatState u)
         {
-            var s=u.Stats;double slow=Live(u).Where(e=>e.Def.CrowdControl==CrowdControlKind.Slow)
+            var s=u.Stats;double power=battle.IsOvertime?2:1;double speed=battle.IsOvertime?3:1;double slow=Live(u).Where(e=>e.Def.CrowdControl==CrowdControlKind.Slow)
                 .Select(e=>(double)e.Def.SlowFraction).DefaultIfEmpty(0).Max();
-            return new EffectiveCombatStats(Store(Calculate(u,CombatStat.Attack,s.Attack)),
-                Store(Calculate(u,CombatStat.SpellPower,s.SpellPower)),Store(Calculate(u,CombatStat.Armor,s.Armor),-float.MaxValue),
+            return new EffectiveCombatStats(Store(Calculate(u,CombatStat.Attack,s.Attack)*power),
+                Store(Calculate(u,CombatStat.SpellPower,s.SpellPower)*power),Store(Calculate(u,CombatStat.Armor,s.Armor),-float.MaxValue),
                 Store(Calculate(u,CombatStat.MagicResistance,s.MagicResistance),-float.MaxValue),
-                Store(Calculate(u,CombatStat.AttackSpeed,s.AttackSpeed),.1,5),
-                Store(Calculate(u,CombatStat.MoveSpeed,s.MoveSpeed)*(1-slow),.1));
+                Store(Calculate(u,CombatStat.AttackSpeed,s.AttackSpeed)*speed,.1,5),
+                Store(Calculate(u,CombatStat.MoveSpeed,s.MoveSpeed)*speed*(1-slow),.1));
         }
         public DamageModifiers ResolveDamageModifiers(UnitCombatState u)=>new DamageModifiers(u.DamageModifiers.BonusAttackDamage,
             Store(Calculate(u,CombatStat.DamageAmplification,u.DamageModifiers.Amplification)),

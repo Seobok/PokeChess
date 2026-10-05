@@ -35,6 +35,7 @@ namespace PokeChess.Core.Battle
         public void SetDamageModifiers(DamageModifiers modifiers)
         { DamageModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers)); }
         public void SetShield(float shield) { CurrentShield = ModelGuard.Number(shield, nameof(shield)); }
+        internal DeathReason DeathCause { get; set; } = DeathReason.StateChange;
         public bool IsAlive => CurrentHP > 0;
         public bool IsOnBoard { get; private set; } = true;
         public bool IsUntargetable { get; private set; }
@@ -72,6 +73,7 @@ namespace PokeChess.Core.Battle
             ModelGuard.Number(hp, nameof(hp));
             ModelGuard.Number(energy, nameof(energy));
             if (hp > Stats.MaxHP) throw new ArgumentOutOfRangeException(nameof(hp));
+            if(CurrentHP>0&&hp==0)DeathCause=DeathReason.StateChange;
             CurrentHP = hp;
             CurrentEnergy = energy; // Energy overflow is supported by the combat specification.
             if (!IsAlive) ActionState = CombatActionState.Dead;
@@ -116,6 +118,13 @@ namespace PokeChess.Core.Battle
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
         public bool IsOvertime { get; internal set; }
+        public long OvertimeStartTick => checked(30L * TickRate);
+        public long TimeLimitTick => checked(45L * TickRate);
+        public long? EndTick { get; internal set; }
+        private readonly List<BattleLifecycleEvent> lifecycleEvents = new List<BattleLifecycleEvent>();
+        public IReadOnlyList<BattleLifecycleEvent> LifecycleEventsThisTick => Array.AsReadOnly(lifecycleEvents.ToArray());
+        internal void BeginLifecycleTick() => lifecycleEvents.Clear();
+        internal void RecordLifecycle(BattleLifecycleEvent value) => lifecycleEvents.Add(value);
         public BattleResult Result { get; internal set; } = BattleResult.InProgress;
         public BattleEndReason EndReason { get; internal set; } = BattleEndReason.None;
         public IReadOnlyList<UnitCombatState> Units { get; }

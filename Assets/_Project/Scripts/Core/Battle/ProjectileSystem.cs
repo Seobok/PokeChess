@@ -7,7 +7,7 @@ using PokeChess.Core.Pokemon;
 namespace PokeChess.Core.Battle
 {
     public enum ProjectileEventKind { Spawned, Hit, Expired }
-    public enum ProjectileExpireReason { None, TargetDead, TargetRemoved, TargetUntargetable }
+    public enum ProjectileExpireReason { None, TargetDead, TargetRemoved, TargetUntargetable, BattleEnded }
     public sealed class ProjectileState
     {
         public long Id { get; }
@@ -45,6 +45,12 @@ namespace PokeChess.Core.Battle
         public IReadOnlyList<ProjectileEvent> EventsThisTick => Array.AsReadOnly(events.ToArray());
         internal ProjectileSystem(BattleState battle) { this.battle=battle; }
         internal void BeginTick() => events.Clear();
+        internal void EndBattle()
+        {
+            foreach(var p in active.OrderBy(p=>p.Id))
+                events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,ProjectileExpireReason.BattleEnded));
+            active.Clear();
+        }
         internal bool TrySpawn(UnitCombatState source,UnitCombatState target)
         {
             if(source==null||target==null||!battle.Units.Contains(source)||!battle.Units.Contains(target)||

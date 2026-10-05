@@ -24,13 +24,15 @@ namespace PokeChess.Core.Tests
         [TestCase(DamageType.True,0,0)]
         public void MinimumAndZeroDamageRules(DamageType type,float raw,float expected)
         { Assert.That(DamageCalculator.Calculate(raw,type,10000,10000),Is.EqualTo(expected)); }
-        private static BattleState Create(AttackDeliveryType delivery=AttackDeliveryType.Melee,float attack=100)
+        private static BattleState Create(AttackDeliveryType delivery=AttackDeliveryType.Melee,float attack=100,bool extraAlly=false)
         {
             var stats=new PokemonStats(100,attack,0,1,100,300,3,2,100,0,0,delivery,6);
             var catalog=new PokemonCatalog(new[]{new PokemonDefinition("test","Test",1,stats,"test","s")});
-            return BattleStateFactory.Create("b",1,123,30,catalog,new[]{
+            var setup=new[]{
                 new BattleUnitSetup(catalog.CreateUnit("a","test","p1",UnitRank.One,0,UnitPlacement.Unplaced),1,new BoardPosition(0,0)),
-                new BattleUnitSetup(catalog.CreateUnit("z","test","p2",UnitRank.One,0,UnitPlacement.Unplaced),2,new BoardPosition(1,0))});
+                new BattleUnitSetup(catalog.CreateUnit("z","test","p2",UnitRank.One,0,UnitPlacement.Unplaced),2,new BoardPosition(1,0))};
+            if(extraAlly)setup=setup.Concat(new[]{new BattleUnitSetup(catalog.CreateUnit("c","test","p1",UnitRank.One,0,UnitPlacement.Unplaced),1,new BoardPosition(6,7))}).ToArray();
+            return BattleStateFactory.Create("b",1,123,30,catalog,setup);
         }
         private static UnitCombatState U(BattleState b,string id)=>b.Units.Single(u=>u.UnitInstanceId==id);
         [TestCase(DamageType.Physical,30,50,30,20,80)]
@@ -112,7 +114,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void LaunchedProjectileStillDamagesAfterSourceDeath()
         {
-            var b=Create(AttackDeliveryType.Projectile);var sim=new BattleSimulation(b,new OneSide());sim.Step();
+            var b=Create(AttackDeliveryType.Projectile,extraAlly:true);var sim=new BattleSimulation(b,new OneSide());sim.Step();
             sim.QueueInput(state=>U(state,"a").SetVitals(0,0));
             for(int i=1;i<=5;i++)sim.Step();
             Assert.That(U(b,"z").CurrentHP,Is.EqualTo(50));

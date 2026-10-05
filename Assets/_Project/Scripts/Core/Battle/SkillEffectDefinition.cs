@@ -95,7 +95,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
             float before=target.CurrentHP;
-            float after=(float)Math.Min(target.Stats.MaxHP,(double)before+value);
+            float after=(float)Math.Min(target.Stats.MaxHP,(double)before+value*(b.IsOvertime?.34:1));
             target.SetVitals(after,target.CurrentEnergy);
             return new SkillEffectApplication(after-before);
         }
@@ -105,7 +105,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectType Type => SkillEffectType.Shield;
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
-            double total=(double)target.CurrentShield+value;
+            double total=(double)target.CurrentShield+value*(b.IsOvertime?.34:1);
             if(total>float.MaxValue)throw new OverflowException();
             float before=target.CurrentShield;target.SetShield((float)total);
             return new SkillEffectApplication(target.CurrentShield-before);
