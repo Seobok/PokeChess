@@ -1,0 +1,24 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "UnityEditor.EditorApplication.isPaused = true; return PokeChess.Editor.RoundFlowVerificationTools.VerifyAutomaticDeployment();"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Passed: pointer purchases stay on bench during preparation; timer and manual starts deploy lowest bench slots up to level; drag cancels; surplus remains; snapshot and result tokens match; pool preserved."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
+

@@ -1,0 +1,229 @@
+{
+  "status": "completed",
+  "summary": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.AutomaticAndManualRequestsCannotApplyRoundWorkTwice",
+      "Status": "Passed",
+      "Duration": 0.0053913,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.CombatDebtIsRetainedUnderTickBudgetAndClearedAtResult",
+      "Status": "Passed",
+      "Duration": 0.0309738,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.DefaultAndConfiguredDurations",
+      "Status": "Passed",
+      "Duration": 0.0003127,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.DeferredBoardMergeRunsBeforeNewPreparationCountdown",
+      "Status": "Passed",
+      "Duration": 0.0050182,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.EmptyBoardAutomaticResultHasFullDisplayTime(False,False,Draw)",
+      "Status": "Passed",
+      "Duration": 0.0003648,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.EmptyBoardAutomaticResultHasFullDisplayTime(True,False,TeamOneWin)",
+      "Status": "Passed",
+      "Duration": 0.0002721,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.EmptyBoardAutomaticResultHasFullDisplayTime(False,True,TeamTwoWin)",
+      "Status": "Passed",
+      "Duration": 0.0002442,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.ExternallyObservedResultDiscardsOldFrameTime",
+      "Status": "Passed",
+      "Duration": 0.0002012,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.FailedSettlementPausesUntilExplicitRetryAndThenDisplaysFullResult",
+      "Status": "Passed",
+      "Duration": 0.0004188,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.FramePartitionsProduceSameBattleResultAndEndTick",
+      "Status": "Passed",
+      "Duration": 0.009911,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InactivePhasesDoNotRunTimersOrAcceptSkip(Waiting)",
+      "Status": "Passed",
+      "Duration": 0.000292,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InactivePhasesDoNotRunTimersOrAcceptSkip(Starting)",
+      "Status": "Passed",
+      "Duration": 0.0002188,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InactivePhasesDoNotRunTimersOrAcceptSkip(Finished)",
+      "Status": "Passed",
+      "Duration": 0.0001981,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InitialShopReadinessBlocksCountdownAndStart",
+      "Status": "Passed",
+      "Duration": 0.0002606,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidDurationsAreRejected(0)",
+      "Status": "Passed",
+      "Duration": 0.0002952,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidDurationsAreRejected(-1)",
+      "Status": "Passed",
+      "Duration": 0.000211,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidDurationsAreRejected(double.NaN)",
+      "Status": "Passed",
+      "Duration": 0.0002011,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidDurationsAreRejected(double.PositiveInfinity)",
+      "Status": "Passed",
+      "Duration": 0.0001895,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidElapsedTimeCannotChangeState(-1)",
+      "Status": "Passed",
+      "Duration": 0.0002313,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidElapsedTimeCannotChangeState(double.NaN)",
+      "Status": "Passed",
+      "Duration": 0.0002034,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidElapsedTimeCannotChangeState(double.PositiveInfinity)",
+      "Status": "Passed",
+      "Duration": 0.0001943,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidElapsedTimeCannotChangeState(double.NegativeInfinity)",
+      "Status": "Passed",
+      "Duration": 0.0001905,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.InvalidTickBudgetAndNullRuntimeAreRejected",
+      "Status": "Passed",
+      "Duration": 0.0002069,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.LargeResultFrameCannotConsumeNextPreparation",
+      "Status": "Passed",
+      "Duration": 0.0002394,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.LockedShopRetainsPurchasedHoleAndRandomStateOnAutomaticNextRound",
+      "Status": "Passed",
+      "Duration": 0.0004889,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.PartialShopRefreshPausesAndRetryPreservesCompletedPlayer",
+      "Status": "Passed",
+      "Duration": 0.0005571,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.PreparationStartsCombatAtThirtySecondsWithoutInput",
+      "Status": "Passed",
+      "Duration": 0.0004519,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.RejectedStartDoesNotRetryEveryFrameAndCanRecover",
+      "Status": "Passed",
+      "Duration": 0.0002363,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.ResetCreatesFreshClockAndFinishedMatchStopsCombat",
+      "Status": "Passed",
+      "Duration": 0.0009229,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.ResultAutomaticallyEntersFreshThirtySecondPreparation",
+      "Status": "Passed",
+      "Duration": 0.0002579,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.RoundFlowControllerTests.TenRealBattlesAdvanceWithoutManualRequestsAndPreserveState",
+      "Status": "Passed",
+      "Duration": 0.0480492,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

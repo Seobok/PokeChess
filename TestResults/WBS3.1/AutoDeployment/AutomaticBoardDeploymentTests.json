@@ -1,0 +1,83 @@
+{
+  "status": "completed",
+  "duration": 0.46,
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.AutoDeploymentPreservesOwnedReferencesItemsGoldShopAndPool",
+      "Status": "Passed",
+      "Duration": 0.0603285,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.FailedBattleCreationDoesNotCommitAnyAutomaticPlacement",
+      "Status": "Passed",
+      "Duration": 0.0042729,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.FullDeploymentCapacityLeavesBenchAndRevisionUnchanged",
+      "Status": "Passed",
+      "Duration": 0.0014585,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.InsufficientBenchUnitsLeaveRemainingCapacityEmptyAndIgnoreUnplacedUnits",
+      "Status": "Passed",
+      "Duration": 0.0010222,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.LowestBenchSlotsFillRowFirstEmptyCellsUpToLevelWithoutMovingBoardUnits",
+      "Status": "Passed",
+      "Duration": 0.0027372,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.ManualAndTimerStartDeployBothBenchOnlyTeamsBeforeSnapshot(False)",
+      "Status": "Passed",
+      "Duration": 0.0013693,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.ManualAndTimerStartDeployBothBenchOnlyTeamsBeforeSnapshot(True)",
+      "Status": "Passed",
+      "Duration": 0.0013259,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.NextRoundFillsNewLevelCapacityAndRetainsPreviouslyDeployedPosition",
+      "Status": "Passed",
+      "Duration": 0.0461157,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.SecondPlayerRevisionOverflowDoesNotPartiallyDeployFirstPlayerAndCanRetry",
+      "Status": "Passed",
+      "Duration": 0.010317,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "PokeChess.Core.Tests.AutomaticBoardDeploymentTests.StaleRejectedAndRepeatedStartRequestsDoNotDeployExtraUnits",
+      "Status": "Passed",
+      "Duration": 0.001043,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

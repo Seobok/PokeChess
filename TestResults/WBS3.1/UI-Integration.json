@@ -1,0 +1,15 @@
+{
+  "output": null,
+  "diagnostics": [],
+  "success": true,
+  "result": [
+    "Passed: combat bench merge, deferred board merge, automatic next-preparation Rank Three and matching token.",
+    "Passed: paused error HUD, settlement and partial refresh pointer retries, full resumed timers, input gating and RNG preservation.",
+    "Passed: 10 real battles through the UI Update path without Ready/Next input; rewards, refreshes, timers, tokens and pool preserved."
+  ],
+  "automaticFlow": "Passed: pointer buy/deploy, preparation countdown, automatic start and drag cancel, combat purchase/frozen snapshot, automatic Result and bench drag cancel, 3s dwell, automatic next preparation, shop/XP/income/pool.",
+  "legacy": [
+    "MinimumMatchUITools.Verify passed",
+    "PlacementSandboxTools.VerifyRankInteractions passed"
+  ]
+}

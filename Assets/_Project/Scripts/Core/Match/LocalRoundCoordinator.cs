@@ -24,7 +24,7 @@ namespace PokeChess.Core.Match
     }
 
     // Local two-player sandbox. Full-match pairing, HP damage and elimination are later work.
-    public sealed class LocalRoundCoordinator
+    public sealed class LocalRoundCoordinator : IRoundFlowRuntime
     {
         private readonly PokemonCatalog catalog;
         private readonly EconomySystem economy=new EconomySystem();
@@ -38,6 +38,9 @@ namespace PokeChess.Core.Match
         public BattleState Battle { get; private set; }
         public LocalRoundResult LastResult { get; private set; }
         public bool NextPreparationPending => refreshing;
+        public int TickRate => 30;
+        public bool PreparationReady => Match.Phase == MatchPhase.Preparation && !refreshing &&
+            Match.Players.All(p => p.Shop.IsInitialized && p.Shop.LastRefreshRound == Match.RoundNumber);
         public bool IsSettled => LastResult!=null && LastResult.Round==Match.RoundNumber &&
             Match.Players.All(p=>p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber);
         public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog)
@@ -48,19 +51,22 @@ namespace PokeChess.Core.Match
         }
         public bool StartCombat(int expectedRound)
         {
-            if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || refreshing) return false;
+            if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || !PreparationReady) return false;
             if(Match.Players.Any(p=>p.IsEliminated || p.HP<=0)) return false;
-            var one=Match.Players[0].Units.Where(u=>u.Placement.Kind==PlacementKind.Board).ToArray();
-            var two=Match.Players[1].Units.Where(u=>u.Placement.Kind==PlacementKind.Board).ToArray();
+            // Plan both players before mutating either. Battle creation must also succeed first.
+            var deployments=Match.Players.Select(PlanAutomaticDeployment).ToArray();
+            var one=Match.Players[0].Units.Where(u=>u.Placement.Kind==PlacementKind.Board || deployments[0].ContainsKey(u.InstanceId)).ToArray();
+            var two=Match.Players[1].Units.Where(u=>u.Placement.Kind==PlacementKind.Board || deployments[1].ContainsKey(u.InstanceId)).ToArray();
             BattleState battle=null;BattleSimulation nextSimulation=null;
             if(one.Length>0 && two.Length>0)
             {
-                var setup=one.Select(u=>new BattleUnitSetup(u,1,u.Placement.Position.Value))
-                    .Concat(two.Select(u=>new BattleUnitSetup(u,2,HexCoordinates.MirrorCombat(u.Placement.Position.Value))));
+                var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[0])))
+                    .Concat(two.Select(u=>new BattleUnitSetup(u,2,HexCoordinates.MirrorCombat(DeploymentPosition(u,deployments[1])))));
                 ulong seed=unchecked(Match.MatchSeed+(ulong)expectedRound*0x9E3779B97F4A7C15UL);
-                battle=BattleStateFactory.Create(Match.MatchId+"-round-"+expectedRound,expectedRound,seed,30,catalog,setup);
+                battle=BattleStateFactory.Create(Match.MatchId+"-round-"+expectedRound,expectedRound,seed,TickRate,catalog,setup);
                 nextSimulation=new BattleSimulation(battle);
             }
+            for(int i=0;i<Match.Players.Count;i++)if(deployments[i].Count>0)Match.Players[i].ApplyPlacements(deployments[i]);
             Match.TransitionTo(MatchPhase.Combat);Battle=battle;simulation=nextSimulation;LastResult=null;
             if(battle==null)
             {
@@ -69,6 +75,22 @@ namespace PokeChess.Core.Match
             }
             return true;
         }
+        private static IReadOnlyDictionary<string,UnitPlacement> PlanAutomaticDeployment(PlayerState player)
+        {
+            var plan=new Dictionary<string,UnitPlacement>(StringComparer.Ordinal);
+            int available=player.RemainingDeploymentCapacity;
+            if(available<=0)return plan;
+            var bench=player.Units.Where(u=>u.Placement.Kind==PlacementKind.Bench)
+                .OrderBy(u=>u.Placement.BenchSlot.Value).Take(available).ToArray();
+            var cells=player.BoardCells.Where(c=>c.IsEmpty).Take(bench.Length).ToArray();
+            for(int i=0;i<cells.Length;i++)plan.Add(bench[i].InstanceId,UnitPlacement.OnBoard(cells[i].Position));
+            // ApplyPlacements commits a player's batch with one revision increment.
+            if(plan.Count>0)player.ValidatePlacementChanges(1);
+            return plan;
+        }
+        private static BoardPosition DeploymentPosition(UnitInstance unit,IReadOnlyDictionary<string,UnitPlacement> plan)
+            => plan.TryGetValue(unit.InstanceId,out var placement) ? placement.Position.Value : unit.Placement.Position.Value;
+
         public void Step()
         {
             if(Match.Phase==MatchPhase.Result) { SettleResult();return; }
@@ -123,3 +145,5 @@ namespace PokeChess.Core.Match
         }
     }
 }
+
+

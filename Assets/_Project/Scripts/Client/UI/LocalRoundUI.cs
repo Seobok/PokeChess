@@ -15,16 +15,25 @@ namespace PokeChess.Client.UI
         private RectTransform combatRoot,resultRoot;
         private UnityEngine.UI.Text combatInfo,resultInfo;
         private readonly Dictionary<string,UnityEngine.UI.Text> combatTokens=new Dictionary<string,UnityEngine.UI.Text>();
-        private double combatAccumulator;
+
         private int displayedRound;
         private MatchPhase displayedPhase;
         private double lastRoundClick=-1;
-        private string roundFault;
+        public RoundFlowController RoundFlow { get; private set; }
+        [SerializeField, Min(.01f)] private float preparationSeconds = 30;
+        [SerializeField, Min(.01f)] private float resultSeconds = 3;
+        private bool automaticRoundFlow = true;
+        public bool AutomaticRoundFlowEnabled => automaticRoundFlow;
+        private UnityEngine.UI.Text roundTimer;
+        private string roundFault => RoundFlow?.Fault?.Message;
+        public string RoundTimerText => roundTimer.text;
+
         public UnityEngine.UI.Button RoundButton => roundButton;
         public string RoundResultText => resultInfo.text;
         private void BuildRoundUI()
         {
-            roundButton=ActionButton("Ready / Start battle",new Vector2(225,32),new Vector2(490,291),AdvanceRound);
+            roundTimer=Label("RoundTimer",canvasRect,"",16,new Vector2(730,24),new Vector2(0,337));
+            roundButton=ActionButton("DEV: Start battle",new Vector2(225,32),new Vector2(490,291),AdvanceRound);
             combatRoot=Rect("CombatView",canvasRect,new Vector2(600,350),Vector2.zero);
             for(int row=0;row<8;row++)for(int col=0;col<7;col++)
             {
@@ -39,7 +48,9 @@ namespace PokeChess.Client.UI
         private static Vector2 CombatPoint(BoardPosition position) => new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
         private void AttachRoundLoop()
         {
-            RoundLoop=new LocalRoundCoordinator(Match,catalog);combatAccumulator=0;roundFault=null;lastRoundClick=-1;
+            RoundLoop=new LocalRoundCoordinator(Match,catalog);
+            RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds,resultSeconds));
+            automaticRoundFlow=true;lastRoundClick=-1;
             foreach(var token in combatTokens.Values)Destroy(token.transform.parent.gameObject);
             combatTokens.Clear();
         }
@@ -52,48 +63,70 @@ namespace PokeChess.Client.UI
         }
         public void AdvanceRound()
         {
-            if(Time.realtimeSinceStartupAsDouble-lastRoundClick<.25f)return;
-            lastRoundClick=Time.realtimeSinceStartupAsDouble;
-            int round=displayedRound;var phase=displayedPhase;
+            if (!automaticRoundFlow || Time.realtimeSinceStartupAsDouble-lastRoundClick < .25f) return;
+            lastRoundClick = Time.realtimeSinceStartupAsDouble;
+            var phase = Match.Phase; int round = Match.RoundNumber;
+            bool pending = RoundLoop.NextPreparationPending; var fault = RoundFlow.Fault;
+            int expectedRound = displayedRound; var expectedPhase = displayedPhase;
             CancelDrag("Round requested.");
-            try
-            {
-                bool accepted;
-                if(RoundLoop.NextPreparationPending)accepted=RoundLoop.NextRound(RoundLoop.LastResult.Round);
-                else if(phase==MatchPhase.Result && !RoundLoop.IsSettled && Match.RoundNumber==round) { RoundLoop.SettleResult();accepted=true; }
-                else accepted=phase==MatchPhase.Preparation ? RoundLoop.StartCombat(round) : phase==MatchPhase.Result && RoundLoop.NextRound(round);
-                if(!accepted)Feedback("Round request no longer available.");
-                else { combatAccumulator=0;roundFault=null;
-                    foreach(var merge in RoundLoop.PreparationRankUps)if(Player.Units.Any(u=>u.InstanceId==merge.ResultUnitId))highlights[merge.ResultUnitId]=Time.unscaledTime+1.2f;
-                    Feedback(Match.Phase==MatchPhase.Combat ? "Battle started. Bench move / swap remains available." : Match.Phase==MatchPhase.Result ? "Empty board result settled." : "Next preparation: income / XP applied; deferred merges: "+RoundLoop.PreparationRankUps.Count+"."); }
-            }
-            catch(Exception e) { roundFault=e.Message;Feedback("Round error: "+e.Message); }
+            bool accepted = RoundFlow.RequestAdvance(expectedRound, expectedPhase);
+            RefreshRoundProgress(phase, round, pending, fault);
+            if (!accepted && RoundFlow.Fault == null) Feedback("Round request no longer available.");
             Render();
         }
-        private void UpdateRoundLoop()
+
+        private void UpdateRoundLoop() => AdvanceRoundTime(Time.unscaledDeltaTime);
+
+        // Same path used by Update and editor integration checks.
+        public void AdvanceRoundTime(double elapsedSeconds)
         {
-            if(RoundLoop==null)return;
-            if(Match.Phase==MatchPhase.Combat && RoundLoop.Battle!=null && roundFault==null)
+            if (RoundFlow == null) return;
+            if (automaticRoundFlow)
             {
-                combatAccumulator+=Time.unscaledDeltaTime;
-                int count=0;
-                try
-                {
-                    while(combatAccumulator>=1d/30 && Match.Phase==MatchPhase.Combat && count++<60)
-                    { RoundLoop.Step();combatAccumulator-=1d/30; }
-                    if(Match.Phase==MatchPhase.Result) { Feedback("Round completed. Income and automatic XP applied.");Render(); }
-                }
-                catch(Exception e) { roundFault=e.Message;Feedback("Round error: "+e.Message);Render(); }
+                var phase = Match.Phase; int round = Match.RoundNumber;
+                bool pending = RoundLoop.NextPreparationPending; var fault = RoundFlow.Fault;
+                RoundFlow.AdvanceTime(elapsedSeconds);
+                RefreshRoundProgress(phase, round, pending, fault);
             }
             RenderRoundUI();
+        }
+
+        private void RefreshRoundProgress(MatchPhase phase, int round, bool pending, Exception fault)
+        {
+            bool changed = phase != Match.Phase || round != Match.RoundNumber
+                || pending != RoundLoop.NextPreparationPending || fault != RoundFlow.Fault;
+            if (!changed) return;
+            if (IsDragging) CancelDrag("Round advanced; drag cancelled.");
+            if (RoundFlow.Fault != null) Feedback("Round error: " + roundFault);
+            else if (Match.Phase == MatchPhase.Preparation && RoundLoop.PreparationReady)
+            {
+                foreach (var merge in RoundLoop.PreparationRankUps)
+                    if (Player.Units.Any(u => u.InstanceId == merge.ResultUnitId))
+                        highlights[merge.ResultUnitId] = Time.unscaledTime + 1.2f;
+                Feedback("Next preparation: income / XP applied; deferred merges: " + RoundLoop.PreparationRankUps.Count + ".");
+            }
+            else if (Match.Phase == MatchPhase.Combat) Feedback("Battle started. Bench move / swap remains available.");
+            else if (Match.Phase == MatchPhase.Result) Feedback("Round completed. Income and automatic XP applied.");
+            Render();
         }
         private void RenderRoundUI()
         {
             if(roundButton==null || RoundLoop==null)return;
+            RoundFlow.RefreshState();
             displayedRound=Match.RoundNumber;displayedPhase=Match.Phase;
-            roundButton.interactable=Player.HP>0 && !Player.IsEliminated &&
-                (Match.Phase==MatchPhase.Preparation && (roundFault==null || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
-            ButtonText(roundButton,Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : "Ready / Start battle") : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "Next round" : "Retry settlement") : "Battle running");
+            string clock;
+            if(!automaticRoundFlow) clock="DEBUG INPUT TEST / AUTO PAUSED";
+            else if(roundFault!=null) clock="PAUSED / RETRY REQUIRED";
+            else if(RoundLoop.NextPreparationPending) clock="WAITING FOR SHOP REFRESH";
+            else if(Match.Phase==MatchPhase.Result && !RoundLoop.IsSettled) clock="WAITING FOR SETTLEMENT";
+            else if(Match.Phase==MatchPhase.Preparation && !RoundLoop.PreparationReady) clock="WAITING FOR PREPARATION";
+            else if(RoundFlow.IsTimerRunning) clock=Math.Ceiling(RoundFlow.RemainingSeconds).ToString("0")+"s";
+            else clock=Match.Phase==MatchPhase.Combat && RoundLoop.Battle!=null ? RoundLoop.Battle.ElapsedSeconds.ToString("0.0")+"s" : "";
+            roundTimer.text="ROUND "+Match.RoundNumber+" / "+Match.Phase.ToString().ToUpperInvariant()+" / "+clock;
+            roundTimer.color=roundFault!=null ? new Color(1,.45f,.4f) : RoundFlow.IsTimerRunning && RoundFlow.RemainingSeconds<=5 ? new Color(1,.78f,.36f) : Color.white;
+            roundButton.interactable=automaticRoundFlow && Player.HP>0 && !Player.IsEliminated &&
+                (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
+            ButtonText(roundButton,Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
             bool combat=Match.Phase==MatchPhase.Combat && RoundLoop.Battle!=null;
             combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
@@ -122,9 +155,11 @@ namespace PokeChess.Client.UI
                 string summary="ROUND "+result.Round+" / "+verdict+"\n"+result.Reason+" / "+(result.EndTick/30d).ToString("0.0")+"s\n\n";
                 if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
                 if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
-                resultInfo.text=summary+"\nPreparation board restored. Choose Next round."+(roundFault==null ? "" : "\nERROR: "+roundFault);
+                resultInfo.text=summary+"\nPreparation board restored. Next round starts automatically."+(roundFault==null ? "" : "\nERROR: "+roundFault);
                 resultRoot.SetAsLastSibling();
             }
         }
     }
 }
+
+

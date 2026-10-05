@@ -108,7 +108,7 @@ namespace PokeChess.Client.UI
             CancelDrag("Reset.");catalog=new PokemonCatalog(CreateSandboxDefinitions());
             Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
-            ResetOpponent();Feedback("Buy and deploy units, then choose Ready / Start battle. Drag to shop to sell.");Render();
+            ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
         }
         public void ResetFullBenchDemo()
         {
@@ -206,3 +206,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+

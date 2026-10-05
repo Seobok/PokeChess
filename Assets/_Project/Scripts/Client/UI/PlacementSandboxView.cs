@@ -146,6 +146,7 @@ namespace PokeChess.Client.UI
         }
         public void TogglePhase()
         {
+            automaticRoundFlow=false; // Placement-only fixtures deliberately have no battle simulation.
             CancelDrag("Phase changed.");
             if(Match.Phase==MatchPhase.Preparation) Match.TransitionTo(MatchPhase.Combat);
             else { Match.TransitionTo(MatchPhase.Result);Match.TransitionTo(MatchPhase.Preparation);new ShopSystem().RefreshForRound(Match,"p1"); }
@@ -181,6 +182,7 @@ namespace PokeChess.Client.UI
         }
         public void BeginDrag(string id,Vector2 point)
         {
+            if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
             if(IsDragging) CancelDrag("New drag.");
             var unit=Player.GetUnit(id);var preview=placements.Preview(Match,"p1",id,unit.Placement,Player.PlacementRevision);
             if(!preview.Accepted) { LastResult=preview;Feedback("Rejected: "+preview.Reason);Render();return; }
@@ -217,3 +219,4 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
