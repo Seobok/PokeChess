@@ -117,7 +117,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void SkillCastHasOneStartAndEffectThenReturnsToIdle()
         {
-            var b=Battle(("a",1,P(0,0)),("z",2,P(1,0)));var policy=new Policy{Skill=true};var sim=new BattleSimulation(b,policy);
+            var b=Battle(("a",1,P(0,0)),("z",2,P(1,0)));U(b,"a").SetVitals(100,100);var policy=new Policy{Skill=true};var sim=new BattleSimulation(b,policy);
             sim.Step();Assert.That(U(b,"a").ActionState,Is.EqualTo(CombatActionState.Casting));
             for(int i=0;i<6;i++)sim.Step();
             Assert.That(policy.Starts,Is.EqualTo(1));Assert.That(policy.Skills,Is.EqualTo(1));Assert.That(policy.Hits,Is.Zero);
@@ -127,7 +127,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void InterruptedSkillDoesNotApplyEffect()
         {
-            var b=Battle(("a",1,P(0,0)),("z",2,P(1,0)));var policy=new Policy{Skill=true};var sim=new BattleSimulation(b,policy);
+            var b=Battle(("a",1,P(0,0)),("z",2,P(1,0)));U(b,"a").SetVitals(100,100);var policy=new Policy{Skill=true};var sim=new BattleSimulation(b,policy);
             sim.Step();policy.ContinueSkill=false;sim.Step();
             Assert.That(policy.Skills,Is.Zero);Assert.That(U(b,"a").ActionState,Is.EqualTo(CombatActionState.Idle));
         }

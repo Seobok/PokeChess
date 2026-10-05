@@ -38,6 +38,7 @@ namespace PokeChess.Client.Data
         [SerializeField] private float projectileSpeed = 6;
         [SerializeField, Range(0,1)] private float critChance;
         [SerializeField] private float critMultiplier = 1.5f;
+        [SerializeField] private float energyLockSeconds = 1;
         [SerializeField, TextArea] private string designNotes;
 
         public PokemonDefinition ToDefinition()
@@ -46,7 +47,7 @@ namespace PokeChess.Client.Data
                 throw new ArgumentException("Null evolution entry in " + name);
             return new PokemonDefinition(definitionId, displayName, cost,
                 new PokemonStats(maxHP, attack, spellPower, attackSpeed, armor, magicResistance,
-                    attackRange, moveSpeed, maxEnergy, startingEnergy, attackHitTime, attackDelivery, projectileSpeed, critChance, critMultiplier),
+                    attackRange, moveSpeed, maxEnergy, startingEnergy, attackHitTime, attackDelivery, projectileSpeed, critChance, critMultiplier, energyLockSeconds),
                 roleId, skillId, typeIds, traitIds,
                 (evolutions ?? Array.Empty<EvolutionOptionData>()).Select(e => new EvolutionOption(e.targetDefinitionId, e.evolutionPointCost)));
         }

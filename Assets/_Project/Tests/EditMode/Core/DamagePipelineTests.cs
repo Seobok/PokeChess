@@ -48,7 +48,7 @@ namespace PokeChess.Core.Tests
             Assert.That(d.AppliedDamage,Is.EqualTo(hpDamage));
             Assert.That(d.RemainingHP,Is.EqualTo(hp));
             Assert.That(d.RemainingShield,Is.EqualTo(shield-absorbed));
-            Assert.That(target.CurrentEnergy,Is.EqualTo(17));
+            Assert.That(target.CurrentEnergy,Is.EqualTo(17+1+post*.07f).Within(.0001));
             Assert.That(d.Killed,Is.False);
             Assert.That(b.DamageResultsThisTick.Count,Is.EqualTo(1));
         }

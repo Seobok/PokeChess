@@ -22,6 +22,8 @@ namespace PokeChess.Core.Battle
         public BoardPosition Position { get; private set; }
         public float CurrentHP { get; private set; }
         public float CurrentEnergy { get; private set; }
+        public long EnergyLockUntilTick { get; internal set; }
+        internal void SetEnergy(float value) { CurrentEnergy=ModelGuard.Number(value,nameof(value)); }
         public float CurrentShield { get; private set; }
         public DamageModifiers DamageModifiers { get; private set; } = new DamageModifiers();
         public void SetDamageModifiers(DamageModifiers modifiers)
@@ -94,6 +96,7 @@ namespace PokeChess.Core.Battle
         public PokeChess.Core.Random.BattleRandomStreams RngStreams { get; }
         public int TickRate { get; }
         public ProjectileSystem Projectiles { get; }
+        public EnergySystem Energy { get; }
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
@@ -133,6 +136,7 @@ namespace PokeChess.Core.Battle
             RngStreams = new PokeChess.Core.Random.BattleRandomStreams(seed);
             TickRate = tickRate;
             Projectiles = new ProjectileSystem(this);
+            Energy = new EnergySystem(this);
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);

@@ -43,6 +43,7 @@ namespace PokeChess.Core.Battle
             {
                 signals.Clear();
                 battle.BeginDamageTick();
+                battle.Energy.BeginTick();
                 battle.Projectiles.BeginTick();
                 int count=inputs.Count;
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
@@ -96,9 +97,13 @@ namespace PokeChess.Core.Battle
                 target=Target(unit);
             }
             if(target==null){unit.CurrentTargetId=null;return;}
-            if(policy.TryGetSkillTiming(battle,unit,target,out var timing))
+            if(battle.Energy.IsSkillReady(unit)&&policy.TryGetSkillTiming(battle,unit,target,out var timing))
             {
                 if(timing.DurationTicks<1)throw new InvalidOperationException("Invalid skill timing.");
+                // Validate all scheduled ticks before consuming energy.
+                checked { var end=battle.CurrentTick+timing.DurationTicks; var effect=battle.CurrentTick+timing.EffectOffsetTicks; }
+                if(!battle.Energy.TryConsumeSkill(unit))return;
+                runtime.IsSkillActive=true;
                 Begin(unit,runtime,CombatActionState.Casting,timing);
                 policy.OnSkillStarted(battle,unit,target);
                 if(unit.IsAlive&&unit.IsOnBoard)Advance(unit,runtime);
@@ -171,6 +176,7 @@ namespace PokeChess.Core.Battle
         {
             Emit(unit,cancelled?CombatActionSignalKind.Cancelled:CombatActionSignalKind.Completed);
             Reservations.Release(unit.UnitInstanceId);
+            if(runtime.IsSkillActive) { battle.Energy.EndCast(unit); runtime.IsSkillActive=false; }
             if(unit.ActionState==CombatActionState.Moving)
             {runtime.MovementTargetId=null;unit.CurrentTargetId=null;}
             if(cancelled)runtime.IsAttackTargetLocked=false;

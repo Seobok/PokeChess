@@ -12,8 +12,9 @@ namespace PokeChess.Core.Battle
         public float RawDamage { get; }
         public DamageType Type { get; }
         public bool CanCrit { get; }
+        public bool IsBasicAttack { get; }
         public float BonusDamage { get; }
-        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0)
+        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0, bool isBasicAttack=false)
         {
             if(string.IsNullOrWhiteSpace(sourceId)||string.IsNullOrWhiteSpace(targetId))
                 throw new ArgumentException("Damage requires source and target IDs.");
@@ -22,7 +23,7 @@ namespace PokeChess.Core.Battle
             if(!Enum.IsDefined(typeof(DamageType),type))throw new ArgumentOutOfRangeException(nameof(type));
             if(float.IsNaN(bonusDamage)||float.IsInfinity(bonusDamage)||bonusDamage<0)
                 throw new ArgumentOutOfRangeException(nameof(bonusDamage));
-            CanCrit=canCrit; BonusDamage=bonusDamage;
+            IsBasicAttack=isBasicAttack; CanCrit=canCrit; BonusDamage=bonusDamage;
             SourceId=sourceId; TargetId=targetId; RawDamage=rawDamage; Type=type;
         }
     }
@@ -80,7 +81,7 @@ namespace PokeChess.Core.Battle
                 source.TeamId==target.TeamId||!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||
                 source.Stats.AttackDelivery!=PokeChess.Core.Pokemon.AttackDeliveryType.Melee||!HexCoordinates.IsInRange(source.Position,target.Position,source.Stats.AttackRange))return false;
             result=damage.Apply(battle,new DamageRequest(source.UnitInstanceId,target.UnitInstanceId,
-                source.Stats.Attack,DamageType.Physical,true));
+                source.Stats.Attack,DamageType.Physical,true,isBasicAttack:true));
             return true;
         }
     }

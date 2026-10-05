@@ -98,6 +98,7 @@ namespace PokeChess.Core.Battle
             var result=new DamageResult(battle.CurrentTick,request,calculation.AfterAmplification,post,shield,hpDamage,
                 target.CurrentHP,target.CurrentShield,!target.IsAlive,calculation);
             battle.RecordDamage(result);
+            battle.Energy.OnDamage(result);
             return result;
         }
     }

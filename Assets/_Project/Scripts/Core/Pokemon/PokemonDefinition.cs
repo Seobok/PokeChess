@@ -47,11 +47,12 @@ namespace PokeChess.Core.Pokemon
         public float ProjectileSpeed { get; }
         public float CritChance { get; }
         public float CritMultiplier { get; }
+        public float EnergyLockSeconds { get; }
 
         public PokemonStats(float maxHP, float attack, float spellPower, float attackSpeed,
             float armor, float magicResistance, int attackRange, float moveSpeed,
             float maxEnergy, float startingEnergy, float attackHitTime,
-            AttackDeliveryType attackDelivery = AttackDeliveryType.Melee, float projectileSpeed = 6, float critChance = 0, float critMultiplier = 1.5f)
+            AttackDeliveryType attackDelivery = AttackDeliveryType.Melee, float projectileSpeed = 6, float critChance = 0, float critMultiplier = 1.5f, float energyLockSeconds = 1)
         {
             MaxHP = ModelGuard.Number(maxHP, nameof(maxHP), float.Epsilon);
             Attack = ModelGuard.Number(attack, nameof(attack));
@@ -72,6 +73,7 @@ namespace PokeChess.Core.Pokemon
             CritChance = ModelGuard.Number(critChance,nameof(critChance));
             if(critChance>1)throw new ArgumentOutOfRangeException(nameof(critChance));
             CritMultiplier = ModelGuard.Number(critMultiplier,nameof(critMultiplier),1);
+            EnergyLockSeconds = ModelGuard.Number(energyLockSeconds,nameof(energyLockSeconds));
         }
     }
 
