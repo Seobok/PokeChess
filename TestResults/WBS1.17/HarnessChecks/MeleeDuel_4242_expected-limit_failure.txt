@@ -1,0 +1,8 @@
+Scenario=MeleeDuel Seed=4242 Variant=expected-limit Tick=1
+System.InvalidOperationException: Step-call limit exceeded (possible soft lock)
+  at PokeChess.Core.Tests.CombatSandboxRunner.Require (System.Boolean valid, System.String message) [0x00009] in C:\Users\user\Desktop\PokeChess\PokeChess\Assets\_Project\Tests\EditMode\Core\CombatSandboxRunner.cs:73 
+  at PokeChess.Core.Tests.CombatSandboxRunner.Run (PokeChess.Core.Tests.CombatSandboxScenario scenario, System.UInt64 seed, System.String variant, System.Nullable`1[T] maxSteps, System.String diagnosticFolder) [0x005fd] in C:\Users\user\Desktop\PokeChess\PokeChess\Assets\_Project\Tests\EditMode\Core\CombatSandboxRunner.cs:148 
+Recent steps:
+{Actions=[{Action=Moving;Kind=Started;Tick=0;UnitId=1:a;}{Action=Moving;Kind=Started;Tick=0;UnitId=1:z;}]Damage=[]Lifecycle=[]Projectiles=[]Skills=[]Status=[]Tick=0;}
+Current state:
+[1;False;InProgress;None;null;][1:a;0;0;300;0;0;0;True;True;False;Moving;1:z;null;null;40;50;20;15;1.2;2;0;0;0;0;0;0;][0;15;0;False;False;{Column=1;Row=0;}1:z;False;0;]null;[1:z;6;7;300;0;0;0;True;True;False;Moving;1:a;null;null;40;50;20;15;1.2;2;0;0;0;0;0;0;][0;15;0;False;False;{Column=6;Row=6;}1:a;False;0;]null;[8:occupant;0;0;1:a;][11:reservation;1;0;1:a;][11:reservation;6;6;1:z;][8:occupant;6;7;1:z;][][]null;[][][][][][][][{DrawCount=0;State=7822870436225678703;}{DrawCount=0;State=6484486901956530653;}{DrawCount=0;State=13682634866384125369;}{DrawCount=0;State=12032762647019461994;}]
