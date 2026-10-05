@@ -15,12 +15,14 @@ namespace PokeChess.Core.Match
         public MatchRules Rules { get; }
         public int HP { get; private set; }
         public int Gold { get; private set; }
-        // Progress within the current level; the level system consumes thresholds later.
+        // Progress within the current level; maximum level stores zero XP.
         public int XP { get; private set; }
         public int Level { get; private set; }
         public int WinStreak { get; private set; }
         public int LoseStreak { get; private set; }
         public int LastEconomyRound { get; private set; }
+        public int LastAutomaticXPRound { get; private set; }
+        public int BoardCapacity => Level;
         public IReadOnlyList<UnitInstance> Units => unitView;
         // Derived snapshots, not a second placement store. Bench includes empty slots.
         public IReadOnlyList<UnitInstance> Board => Array.AsReadOnly(units
@@ -62,9 +64,19 @@ namespace PokeChess.Core.Match
             if (gold < 0) throw new ArgumentOutOfRangeException(nameof(gold));
             if (xp < 0) throw new ArgumentOutOfRangeException(nameof(xp));
             if (level < 1 || level > Rules.MaxLevel) throw new ArgumentOutOfRangeException(nameof(level));
+            if (level == Rules.MaxLevel && xp != 0)
+                throw new ArgumentException("Maximum level must have zero XP.", nameof(xp));
+            if (units.Count(u => u.Placement.Kind == PlacementKind.Board) > level)
+                throw new InvalidOperationException("Level cannot be below the deployed unit count.");
             Gold = gold;
             XP = xp;
             Level = level;
+        }
+
+        internal void ApplyLevelProgress(LevelProgress change, int? automaticRound = null)
+        {
+            SetProgress(change.GoldAfter, change.XPAfter, change.LevelAfter);
+            if (automaticRound.HasValue) LastAutomaticXPRound = automaticRound.Value;
         }
 
         // Called only with a fully calculated, checked result by EconomySystem.
@@ -120,6 +132,8 @@ namespace PokeChess.Core.Match
                     if (units.Any(u => u.InstanceId != instanceId && u.Placement.Kind == PlacementKind.Board
                         && u.Placement.Position.Value.Equals(position)))
                         throw new InvalidOperationException("Board cell is occupied.");
+                    if (units.Count(u => u.InstanceId != instanceId && u.Placement.Kind == PlacementKind.Board) >= BoardCapacity)
+                        throw new InvalidOperationException("Board deployment limit reached.");
                     return;
                 case PlacementKind.Bench:
                     if (placement.BenchSlot.Value >= Rules.BenchCapacity)

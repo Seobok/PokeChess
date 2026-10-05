@@ -1,0 +1,183 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.EconomyTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 21,
+        "Passed": 21,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.ChangingOutcomeResetsOppositeStreak",
+          "Status": "Passed",
+          "Duration": 0.0011479,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.CustomRulesAndZeroIncomeAreSupported",
+          "Status": "Passed",
+          "Duration": 0.0005077,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.DrawResetsBothStreaksButPaysBaseAndInterest(Win)",
+          "Status": "Passed",
+          "Duration": 0.0005736,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.DrawResetsBothStreaksButPaysBaseAndInterest(Loss)",
+          "Status": "Passed",
+          "Duration": 0.0001299,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.GoldOverflowDoesNotPartiallyCommitStreakOrRound",
+          "Status": "Passed",
+          "Duration": 0.0006656,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(0,0)",
+          "Status": "Passed",
+          "Duration": 0.0003879,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(9,0)",
+          "Status": "Passed",
+          "Duration": 0.0001146,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(10,1)",
+          "Status": "Passed",
+          "Duration": 0.0000963,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(19,1)",
+          "Status": "Passed",
+          "Duration": 0.0000972,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(20,2)",
+          "Status": "Passed",
+          "Duration": 0.000092,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(49,4)",
+          "Status": "Passed",
+          "Duration": 0.0000888,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(50,5)",
+          "Status": "Passed",
+          "Duration": 0.0000967,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InterestUsesGoldBeforePayout(99,5)",
+          "Status": "Passed",
+          "Duration": 0.0000979,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InvalidInputsLeaveStateUnchanged",
+          "Status": "Passed",
+          "Duration": 0.000701,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.InvalidRulesAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0012345,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.MatchInitializationAndSettlementPreserveOtherStateAndPlayers",
+          "Status": "Passed",
+          "Duration": 0.0008956,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.PreviewIsReadOnlyAndSettlementRecalculatesFromCurrentGold",
+          "Status": "Passed",
+          "Duration": 0.0007256,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.RepeatedPastAndSkippedRoundsAreRejectedAcrossSystemInstances",
+          "Status": "Passed",
+          "Duration": 0.0007257,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.StreakThresholdsApplyToCurrentResultAndCapOnlyBonus(Win)",
+          "Status": "Passed",
+          "Duration": 0.000826,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.StreakThresholdsApplyToCurrentResultAndCapOnlyBonus(Loss)",
+          "Status": "Passed",
+          "Duration": 0.0005176,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EconomyTests.TotalIncomeOverflowDoesNotCommitAnyState",
+          "Status": "Passed",
+          "Duration": 0.0007558,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 3.16,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.EconomyTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -26,11 +26,11 @@ namespace PokeChess.Core.Tests
             Assert.That(match.Players.Count, Is.EqualTo(2));
             var a = match.GetPlayer("p1");
             var b = match.GetPlayer("p2");
-            Assert.That(new[] { a.HP,a.Gold,a.XP,a.Level }, Is.EqualTo(new[] {60,5,0,3}));
+            Assert.That(new[] { a.HP,a.Gold,a.XP,a.Level }, Is.EqualTo(new[] {60,5,0,1}));
             a.SetHP(0);
             a.SetProgress(20,7,4);
             a.AddUnit(Unit("u1"));
-            Assert.That(new[] { b.HP,b.Gold,b.XP,b.Level }, Is.EqualTo(new[] {60,5,0,3}));
+            Assert.That(new[] { b.HP,b.Gold,b.XP,b.Level }, Is.EqualTo(new[] {60,5,0,1}));
             Assert.That(b.Units, Is.Empty);
             Assert.That(a.Board, Is.Empty);
             Assert.That(a.Bench.Count, Is.EqualTo(9));
@@ -68,7 +68,7 @@ namespace PokeChess.Core.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(startingGold: -1));
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(startingXP: -1));
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(startingLevel: 0));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(startingLevel: 9));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(startingLevel: 11));
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(maxLevel: 0));
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(boardWidth: 0));
             Assert.Throws<ArgumentOutOfRangeException>(() => new MatchRules(boardHeight: 0));
@@ -82,9 +82,9 @@ namespace PokeChess.Core.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => player.SetHP(61));
             Assert.Throws<ArgumentOutOfRangeException>(() => player.SetProgress(-1,0,3));
             Assert.Throws<ArgumentOutOfRangeException>(() => player.SetProgress(10,-1,3));
-            Assert.Throws<ArgumentOutOfRangeException>(() => player.SetProgress(10,4,9));
+            Assert.Throws<ArgumentOutOfRangeException>(() => player.SetProgress(10,4,11));
             Assert.Throws<ArgumentOutOfRangeException>(() => player.SetProgress(10,4,0));
-            Assert.That(new[] {player.HP,player.Gold,player.XP,player.Level}, Is.EqualTo(new[] {60,5,0,3}));
+            Assert.That(new[] {player.HP,player.Gold,player.XP,player.Level}, Is.EqualTo(new[] {60,5,0,1}));
             player.SetProgress(int.MaxValue,int.MaxValue,8);
             Assert.That(player.XP, Is.EqualTo(int.MaxValue));
         }
@@ -144,6 +144,7 @@ namespace PokeChess.Core.Tests
         public void BoardBenchAndUnplacedViewsFollowMovesAndRemoval()
         {
             var player = Create().GetPlayer("p1");
+            player.SetProgress(5,0,2);
             var a = player.AddUnit(Unit("a", placement: UnitPlacement.OnBoard(new BoardPosition(6,3))));
             var b = player.AddUnit(Unit("b", placement: UnitPlacement.OnBench(8)));
             Assert.That(player.Board, Is.EqualTo(new[] {a}));

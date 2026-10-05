@@ -14,7 +14,7 @@ namespace PokeChess.Core.Match
         public int BenchCapacity { get; }
 
         public MatchRules(int startingHP = 60, int startingGold = 5, int startingXP = 0,
-            int startingLevel = 3, int maxLevel = 8, int boardWidth = 7,
+            int startingLevel = 1, int maxLevel = 10, int boardWidth = 7,
             int boardHeight = 4, int benchCapacity = 9)
         {
             if (startingHP <= 0) throw new ArgumentOutOfRangeException(nameof(startingHP));
@@ -25,6 +25,8 @@ namespace PokeChess.Core.Match
             if (boardWidth < 1) throw new ArgumentOutOfRangeException(nameof(boardWidth));
             if (boardHeight < 1) throw new ArgumentOutOfRangeException(nameof(boardHeight));
             if (benchCapacity < 1) throw new ArgumentOutOfRangeException(nameof(benchCapacity));
+            if (startingLevel == maxLevel && startingXP != 0)
+                throw new ArgumentException("Maximum level must have zero XP.", nameof(startingXP));
             StartingHP = startingHP;
             StartingGold = startingGold;
             StartingXP = startingXP;
