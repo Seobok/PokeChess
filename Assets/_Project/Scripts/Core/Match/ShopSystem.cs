@@ -66,8 +66,9 @@ namespace PokeChess.Core.Match
                 shop.RecordLockedRefresh(match.RoundNumber);
                 return false;
             }
+            var revision = checked(player.Shop.Revision + 1);
             var slots = Generate(player, out var state, out var count);
-            shop.Apply(slots, state, count, match.RoundNumber);
+            shop.Apply(slots, state, count, match.RoundNumber, revision);
             return true;
         }
         public IReadOnlyList<ShopSlot> Reroll(MatchState match, string playerId)
@@ -76,9 +77,10 @@ namespace PokeChess.Core.Match
             if (!player.Shop.IsInitialized || player.Shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
             if (player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
+            var revision = checked(player.Shop.Revision + 1);
             var slots = Generate(player, out var state, out var count);
             player.SetProgress(player.Gold - Rules.RerollGoldCost, player.XP, player.Level);
-            player.Shop.Apply(slots, state, count, null);
+            player.Shop.Apply(slots, state, count, null, revision);
             return slots;
         }
         public void SetLocked(MatchState match, string playerId, bool locked)

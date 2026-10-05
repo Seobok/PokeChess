@@ -11,6 +11,20 @@ namespace PokeChess.Core.Match
         private readonly List<UnitInstance> units = new List<UnitInstance>();
         private readonly ReadOnlyCollection<UnitInstance> unitView;
         private readonly Func<string, bool> matchContainsUnit;
+        private readonly List<string> inventoryItems = new List<string>();
+        public IReadOnlyList<string> ItemInventory => inventoryItems.AsReadOnly();
+        public void AddInventoryItem(string itemId)
+        {
+            ModelGuard.Id(itemId, nameof(itemId));
+            if (inventoryItems.Contains(itemId) || units.Any(u => u.ItemInstanceIds.Contains(itemId)))
+                throw new InvalidOperationException("Item is already owned.");
+            inventoryItems.Add(itemId);
+        }
+        internal void ReturnSoldItems(UnitInstance unit)
+        {
+            inventoryItems.AddRange(unit.ItemInstanceIds);
+            unit.ClearItems();
+        }
         public string PlayerId { get; }
         public MatchRules Rules { get; }
         public int HP { get; private set; }

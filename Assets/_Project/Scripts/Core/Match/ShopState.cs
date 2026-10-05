@@ -20,6 +20,7 @@ namespace PokeChess.Core.Match
     {
         private ReadOnlyCollection<ShopSlot> slots;
         public IReadOnlyList<ShopSlot> Slots => slots;
+        public long Revision { get; private set; }
         public bool IsInitialized { get; private set; }
         public bool IsLocked { get; private set; }
         public int LastRefreshRound { get; private set; }
@@ -39,11 +40,19 @@ namespace PokeChess.Core.Match
             for (int i=0;i<empty.Length;i++) empty[i] = new ShopSlot(i);
             slots = Array.AsReadOnly(empty);
         }
+        internal void ClearSlot(int index, long revision)
+        {
+            var copy = new ShopSlot[ShopRules.SlotCount];
+            for (int i = 0; i < copy.Length; i++) copy[i] = i == index ? new ShopSlot(i) : slots[i];
+            slots = Array.AsReadOnly(copy);
+            Revision = revision;
+        }
         internal void SetLocked(bool locked) => IsLocked = locked;
         internal void RecordLockedRefresh(int roundNumber) => LastRefreshRound = roundNumber;
-        internal void Apply(ReadOnlyCollection<ShopSlot> replacement, ulong randomState, long drawCount, int? roundNumber)
+        internal void Apply(ReadOnlyCollection<ShopSlot> replacement, ulong randomState, long drawCount, int? roundNumber, long revision)
         {
             slots = replacement;
+            Revision = revision;
             RandomState = randomState;
             RandomDrawCount = drawCount;
             IsInitialized = true;

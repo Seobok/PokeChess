@@ -13,6 +13,16 @@ namespace PokeChess.Core.Match
     {
         private readonly List<PlayerState> players = new List<PlayerState>();
         private readonly ReadOnlyCollection<PlayerState> playerView;
+        private long unitSequence;
+        internal string NextUnitId(out long sequence)
+        {
+            sequence = unitSequence;
+            string id;
+            do { sequence = checked(sequence + 1); id = "unit-" + sequence.ToString(System.Globalization.CultureInfo.InvariantCulture); }
+            while (players.Any(p => p.Units.Any(u => u.InstanceId == id)));
+            return id;
+        }
+        internal void CommitUnitSequence(long sequence) => unitSequence = sequence;
         public string MatchId { get; }
         public ulong MatchSeed { get; }
         public MatchRules Rules { get; }

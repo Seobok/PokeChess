@@ -136,8 +136,12 @@ namespace PokeChess.Core.Pokemon
             }
             foreach (var definition in this.definitions.Values)
                 foreach (var option in definition.Evolutions)
+                {
                     if (!this.definitions.ContainsKey(option.TargetDefinitionId))
                         throw new ArgumentException("Unknown evolution definition: " + option.TargetDefinitionId);
+                    if (this.definitions[option.TargetDefinitionId].Cost != definition.Cost)
+                        throw new ArgumentException("Evolution must preserve Cost.");
+                }
         }
         public PokemonDefinition Get(string id)
         {
