@@ -17,6 +17,7 @@ namespace PokeChess.Core.Battle
                 throw new ArgumentException("Damage requires source and target IDs.");
             if(float.IsNaN(rawDamage)||float.IsInfinity(rawDamage)||rawDamage<0)
                 throw new ArgumentOutOfRangeException(nameof(rawDamage));
+            if(!Enum.IsDefined(typeof(DamageType),type))throw new ArgumentOutOfRangeException(nameof(type));
             SourceId=sourceId; TargetId=targetId; RawDamage=rawDamage; Type=type;
         }
     }
@@ -24,11 +25,19 @@ namespace PokeChess.Core.Battle
     {
         public long Tick { get; }
         public DamageRequest Request { get; }
+        public float PreMitigationDamage { get; }
+        public float PostMitigationDamage { get; }
+        public float ShieldAbsorbed { get; }
         public float AppliedDamage { get; }
         public float RemainingHP { get; }
+        public float RemainingShield { get; }
         public bool Killed { get; }
         public DamageResult(long tick, DamageRequest request, float appliedDamage, float remainingHP, bool killed)
-        { Tick=tick; Request=request; AppliedDamage=appliedDamage; RemainingHP=remainingHP; Killed=killed; }
+            : this(tick,request,request.RawDamage,request.RawDamage,0,appliedDamage,remainingHP,0,killed) { }
+        public DamageResult(long tick, DamageRequest request, float pre, float post, float shield,
+            float hpDamage, float hp, float remainingShield, bool killed)
+        { Tick=tick; Request=request; PreMitigationDamage=pre; PostMitigationDamage=post;
+          ShieldAbsorbed=shield; AppliedDamage=hpDamage; RemainingHP=hp; RemainingShield=remainingShield; Killed=killed; }
     }
     public interface IDamageProcessor
     {
@@ -54,7 +63,7 @@ namespace PokeChess.Core.Battle
     public sealed class MeleeAttackResolver
     {
         private readonly IDamageProcessor damage;
-        public MeleeAttackResolver(IDamageProcessor damage=null) { this.damage=damage??new RawDamageProcessor(); }
+        public MeleeAttackResolver(IDamageProcessor damage=null) { this.damage=damage??new DamageProcessor(); }
         public bool TryResolve(BattleState battle, UnitCombatState source, UnitCombatState target,
             out DamageResult result)
         {

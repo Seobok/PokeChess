@@ -22,6 +22,8 @@ namespace PokeChess.Core.Battle
         public BoardPosition Position { get; private set; }
         public float CurrentHP { get; private set; }
         public float CurrentEnergy { get; private set; }
+        public float CurrentShield { get; private set; }
+        public void SetShield(float shield) { CurrentShield = ModelGuard.Number(shield, nameof(shield)); }
         public bool IsAlive => CurrentHP > 0;
         public bool IsOnBoard { get; private set; } = true;
         public bool IsUntargetable { get; private set; }

@@ -81,7 +81,7 @@ namespace PokeChess.Core.Battle
         private readonly IDamageProcessor damage;
         private readonly MeleeAttackResolver melee;
         public BasicAttackCombatBehaviorPolicy(IDamageProcessor damage=null)
-        { this.damage=damage??new RawDamageProcessor();melee=new MeleeAttackResolver(this.damage); }
+        { this.damage=damage??new DamageProcessor();melee=new MeleeAttackResolver(this.damage); }
         public override void OnAttackTiming(BattleState battle,UnitCombatState unit,UnitCombatState target)
         {
             if(unit.Stats.AttackDelivery==AttackDeliveryType.Projectile)battle.Projectiles.TrySpawn(unit,target);
