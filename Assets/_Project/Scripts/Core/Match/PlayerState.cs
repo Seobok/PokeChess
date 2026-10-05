@@ -39,6 +39,42 @@ namespace PokeChess.Core.Match
         public int LastEconomyRound { get; private set; }
         public int LastAutomaticXPRound { get; private set; }
         public int BoardCapacity => Level;
+        public int DeployedUnitCount => units.Count(u => u.Placement.Kind == PlacementKind.Board);
+        public int RemainingDeploymentCapacity => BoardCapacity - DeployedUnitCount;
+        // Includes every cell, row first, then column. Placement remains the only store.
+        public IReadOnlyList<PlayerBoardCell> BoardCells
+        {
+            get
+            {
+                var cells = new PlayerBoardCell[checked(Rules.BoardWidth * Rules.BoardHeight)];
+                for (int row = 0; row < Rules.BoardHeight; row++)
+                    for (int column = 0; column < Rules.BoardWidth; column++)
+                    {
+                        var position = new BoardPosition(column, row);
+                        cells[row * Rules.BoardWidth + column] = new PlayerBoardCell(position, GetBoardUnit(position));
+                    }
+                return Array.AsReadOnly(cells);
+            }
+        }
+        public UnitInstance GetBoardUnit(BoardPosition position)
+        {
+            if (position.Column >= Rules.BoardWidth || position.Row >= Rules.BoardHeight)
+                throw new ArgumentOutOfRangeException(nameof(position), "Outside player board.");
+            return units.FirstOrDefault(u => u.Placement.Kind == PlacementKind.Board && u.Placement.Position.Value.Equals(position));
+        }
+        public UnitInstance GetBenchUnit(int slot)
+        {
+            if (slot < 0 || slot >= Rules.BenchCapacity)
+                throw new ArgumentOutOfRangeException(nameof(slot), "Outside bench.");
+            return units.FirstOrDefault(u => u.Placement.Kind == PlacementKind.Bench && u.Placement.BenchSlot.Value == slot);
+        }
+        // null means every bench slot is occupied. The lowest free index is preferred.
+        public int? FindFirstEmptyBenchSlot()
+        {
+            for (int slot = 0; slot < Rules.BenchCapacity; slot++)
+                if (GetBenchUnit(slot) == null) return slot;
+            return null;
+        }
         public ShopState Shop { get; }
         public IReadOnlyList<UnitInstance> Units => unitView;
         // Derived snapshots, not a second placement store. Bench includes empty slots.
@@ -85,7 +121,7 @@ namespace PokeChess.Core.Match
             if (level < 1 || level > Rules.MaxLevel) throw new ArgumentOutOfRangeException(nameof(level));
             if (level == Rules.MaxLevel && xp != 0)
                 throw new ArgumentException("Maximum level must have zero XP.", nameof(xp));
-            if (units.Count(u => u.Placement.Kind == PlacementKind.Board) > level)
+            if (DeployedUnitCount > level)
                 throw new InvalidOperationException("Level cannot be below the deployed unit count.");
             Gold = gold;
             XP = xp;
@@ -147,19 +183,15 @@ namespace PokeChess.Core.Match
                 case PlacementKind.Unplaced: return;
                 case PlacementKind.Board:
                     var position = placement.Position.Value;
-                    if (position.Column >= Rules.BoardWidth || position.Row >= Rules.BoardHeight)
-                        throw new ArgumentOutOfRangeException(nameof(placement), "Outside player board.");
-                    if (units.Any(u => u.InstanceId != instanceId && u.Placement.Kind == PlacementKind.Board
-                        && u.Placement.Position.Value.Equals(position)))
+                    var boardOccupant = GetBoardUnit(position);
+                    if (boardOccupant != null && boardOccupant.InstanceId != instanceId)
                         throw new InvalidOperationException("Board cell is occupied.");
                     if (units.Count(u => u.InstanceId != instanceId && u.Placement.Kind == PlacementKind.Board) >= BoardCapacity)
                         throw new InvalidOperationException("Board deployment limit reached.");
                     return;
                 case PlacementKind.Bench:
-                    if (placement.BenchSlot.Value >= Rules.BenchCapacity)
-                        throw new ArgumentOutOfRangeException(nameof(placement), "Outside bench.");
-                    if (units.Any(u => u.InstanceId != instanceId && u.Placement.Kind == PlacementKind.Bench
-                        && u.Placement.BenchSlot == placement.BenchSlot))
+                    var benchOccupant = GetBenchUnit(placement.BenchSlot.Value);
+                    if (benchOccupant != null && benchOccupant.InstanceId != instanceId)
                         throw new InvalidOperationException("Bench slot is occupied.");
                     return;
                 default: throw new ArgumentOutOfRangeException(nameof(placement));

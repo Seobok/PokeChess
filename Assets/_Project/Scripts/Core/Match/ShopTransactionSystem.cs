@@ -33,10 +33,8 @@ namespace PokeChess.Core.Match
             if (definition.Cost != slot.Cost || slot.Cost < 1 || slot.Cost > 5)
                 throw new InvalidOperationException("Shop cost does not match catalog.");
             if (player.Gold < slot.Cost) throw new InvalidOperationException("Insufficient gold.");
-            int benchSlot = -1;
-            var bench = player.Bench;
-            for (int i = 0; i < bench.Count; i++) if (bench[i] == null) { benchSlot = i; break; }
-            if (benchSlot < 0) throw new InvalidOperationException("Bench is full.");
+            int benchSlot = player.FindFirstEmptyBenchSlot()
+                ?? throw new InvalidOperationException("Bench is full.");
             long revision = checked(shop.Revision + 1);
             string id = match.NextUnitId(out var sequence);
             var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
