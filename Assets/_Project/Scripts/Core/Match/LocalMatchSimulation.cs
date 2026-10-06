@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PokeChess.Core.Pokemon;
+using PokeChess.Core.Battle;
 using PokeChess.Core.Random;
 
 namespace PokeChess.Core.Match
@@ -138,7 +139,7 @@ namespace PokeChess.Core.Match
         public int AliveCount=>Match.Players.Count(p=>p.HP>0 && !p.IsEliminated);
         public IReadOnlyList<SimulationRoundRecord> Rounds=>records.AsReadOnly();
         public LocalMatchSimulation(LocalSimulationSettings settings=null, PokemonCatalog catalog=null,
-            IEnumerable<string> shopDefinitionIds=null, MatchRules matchRules=null)
+            IEnumerable<string> shopDefinitionIds=null, MatchRules matchRules=null,SkillCatalog skillCatalog=null,StatusCatalog statusCatalog=null)
         {
             Settings=settings??new LocalSimulationSettings();
             var definitions=CreateFixtureDefinitions();Catalog=catalog??new PokemonCatalog(definitions);
@@ -147,7 +148,7 @@ namespace PokeChess.Core.Match
             Match=MatchStateFactory.CreateWithPool("local-simulation-"+Settings.Seed,Enumerable.Range(1,Settings.PlayerCount).Select(i=>"p"+i),Catalog,ids,rules:matchRules,matchSeed:Settings.Seed);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);
             foreach(var p in Match.Players)new ShopSystem().RefreshForRound(Match,p.PlayerId);
-            Coordinator=new LocalRoundCoordinator(Match,Catalog);Flow=new RoundFlowController(Coordinator,Settings.FlowRules);
+            Coordinator=new LocalRoundCoordinator(Match,Catalog,skillCatalog:skillCatalog,statusCatalog:statusCatalog);Flow=new RoundFlowController(Coordinator,Settings.FlowRules);
             bot=new LocalSimulationBot(Catalog,Settings.Seed);BeginRecord();
         }
         // Explicit test content, not a claim about production Pokemon balance.

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using PokeChess.Core.Match;
+using PokeChess.Core.Pokemon;
+using System.Linq;
 using UnityEngine;
 
 namespace PokeChess.Client.UI
@@ -26,7 +28,8 @@ namespace PokeChess.Client.UI
         public void StartLocalSimulation(ulong seed=123,bool fast=false)
         {
             CancelDrag("Simulation started.");Simulation?.Cancel();
-            var run=new LocalMatchSimulation(new LocalSimulationSettings(seed));
+            var run=new LocalMatchSimulation(new LocalSimulationSettings(seed),PrototypeRoster.CreateCatalog(),
+                PrototypeRoster.CreateDefinitions().Select(d=>d.Id),skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
             catalog=run.Catalog;Match=run.Match;AttachMinimumMatch();
             Simulation=run;RoundLoop=run.Coordinator;RoundFlow=run.Flow;simulationFast=fast;
             savedSimulation=null;simulationSaveError=null;SimulationSaveDirectory=null;

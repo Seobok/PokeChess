@@ -17,6 +17,10 @@ namespace PokeChess.Client.UI
         private RectTransform combatRoot,resultRoot;
         private UnityEngine.UI.Text combatInfo,resultInfo;
         private readonly Dictionary<string,UnityEngine.UI.Text> combatTokens=new Dictionary<string,UnityEngine.UI.Text>();
+        private readonly Dictionary<string,float> previousCombatHP=new Dictionary<string,float>();
+        private readonly Dictionary<string,float> healFlashUntil=new Dictionary<string,float>();
+        private readonly Dictionary<long,RectTransform> combatShots=new Dictionary<long,RectTransform>();
+        private BattleState lastVisualBattle;
 
         private int displayedRound;
         private MatchPhase displayedPhase;
@@ -54,18 +58,22 @@ namespace PokeChess.Client.UI
         private void AttachRoundLoop()
         {
             Simulation?.Cancel();SaveSimulation();Simulation=null;
-            RoundLoop=new LocalRoundCoordinator(Match,catalog);
+            RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds,resultSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
             foreach(var token in combatTokens.Values)Destroy(token.transform.parent.gameObject);
             combatTokens.Clear();
+            previousCombatHP.Clear();healFlashUntil.Clear();
+            lastVisualBattle=null;
+            foreach(var shot in combatShots.Values)Destroy(shot.gameObject);combatShots.Clear();
         }
         public void ResetOpponent()
         {
             if(Match.Phase!=MatchPhase.Preparation) { Feedback("Opponent setup is available during preparation only.");return; }
             var foe=Match.GetPlayer("p2");
-            if(foe.Units.Count==0)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit("sandbox-foe","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(2,0))),"bulbasaur");
-            Feedback("Fixed opponent: one Rank One bulbasaur. Round damage applies after all battles finish.");Render();
+            string definition=catalog.TryGet("slowpoke",out _) ? "slowpoke" : "bulbasaur";
+            if(foe.Units.Count==0)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit("sandbox-foe",definition,"p2",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(2,0))),definition);
+            Feedback("Fixed opponent: one Rank One "+definition+". Round damage applies after all battles finish.");Render();
         }
         public void SurrenderLocalPlayer()
         {
@@ -169,6 +177,24 @@ namespace PokeChess.Client.UI
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
                 var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,"p1")+" / "+battle.ElapsedSeconds.ToString("0.0")+"s"+(ownPair.IsComplete ? " / WAITING FOR OTHER PAIRS" : battle.IsOvertime ? " / OVERTIME" : "");
+                if(lastVisualBattle!=battle)
+                {
+                    lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();
+                    foreach(var oldShot in combatShots.Values)Destroy(oldShot.gameObject);combatShots.Clear();
+                }
+                foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
+                foreach(var projectile in battle.Projectiles.Active)
+                {
+                    if(!combatShots.TryGetValue(projectile.Id,out var shot))
+                    {
+                        shot=Rect("Projectile_"+projectile.Id,combatRoot,new Vector2(7,7),Vector2.zero);
+                        var shotImage=shot.gameObject.AddComponent<UnityEngine.UI.Image>();shotImage.raycastTarget=false;
+                        shotImage.color=projectile.SkillDamage.HasValue?new Color(1,.8f,.15f):Color.white;combatShots[projectile.Id]=shot;
+                    }
+                    shot.gameObject.SetActive(true);
+                    float progress=(float)(battle.CurrentTick-projectile.SpawnTick)/Math.Max(1,projectile.ArrivalTick-projectile.SpawnTick);
+                    shot.anchoredPosition=Vector2.Lerp(CombatPoint(projectile.LaunchPosition),CombatPoint(projectile.TargetPositionAtLaunch),progress);
+                }
                 foreach(var unit in battle.Units)
                 {
                     if(!combatTokens.TryGetValue(unit.UnitInstanceId,out var label))
@@ -179,7 +205,16 @@ namespace PokeChess.Client.UI
                     }
                     label.transform.parent.gameObject.SetActive(unit.IsAlive && unit.IsOnBoard);
                     ((RectTransform)label.transform.parent).anchoredPosition=CombatPoint(unit.Position);
-                    label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+Mathf.CeilToInt(unit.CurrentHP)+" HP";
+                    if(previousCombatHP.TryGetValue(unit.UnitInstanceId,out var previous)&&unit.CurrentHP>previous)
+                        healFlashUntil[unit.UnitInstanceId]=Time.unscaledTime+.4f;
+                    previousCombatHP[unit.UnitInstanceId]=unit.CurrentHP;
+                    bool healing=healFlashUntil.TryGetValue(unit.UnitInstanceId,out var until)&&Time.unscaledTime<until;
+                    bool buffed=battle.StatusEffects.Active.Any(s=>s.TargetId==unit.UnitInstanceId&&s.Definition.CrowdControl==CrowdControlKind.None);
+                    var tokenImage=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
+                    tokenImage.color=healing?new Color(.15f,.65f,.3f):unit.ActionState==CombatActionState.Casting?new Color(.55f,.3f,.75f):
+                        buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
+                    label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+Mathf.CeilToInt(unit.CurrentHP)+" HP\n"+
+                        (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":Mathf.FloorToInt(unit.CurrentEnergy)+"E");
                 }
             }
             if(resultRoot.gameObject.activeSelf)

@@ -5,7 +5,7 @@ using PokeChess.Core.Board;
 
 namespace PokeChess.Core.Battle
 {
-    public enum SkillTargetRule { Enemy, Self }
+    public enum SkillTargetRule { Enemy, Self, LowestHPAlly }
     public enum TargetLostPolicy { Cancel, RetargetAtEffect, ContinueWithoutTarget }
     public enum SkillEffectKind { Damage, SelfShield, ProjectileDamage }
     public enum SkillEventKind { CastStarted, EffectApplied, CastCompleted, CastCancelled }
@@ -47,7 +47,7 @@ namespace PokeChess.Core.Battle
             if(copy.Length==0||copy.Any(e=>e==null))throw new ArgumentException("Effects cannot be empty/null.");
             foreach(var e in copy) {
                 if(e.TargetSelector==EffectTargetSelector.CastTarget &&
-                    ((e.RequiresEnemy&&targetRule!=SkillTargetRule.Enemy)||(!e.RequiresEnemy&&targetRule!=SkillTargetRule.Self)))
+                    ((e.RequiresEnemy&&targetRule!=SkillTargetRule.Enemy)||(!e.RequiresEnemy&&targetRule==SkillTargetRule.Enemy)))
                     throw new ArgumentException("Cast target team is incompatible with effect.");
                 if(e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget&&targetRule!=SkillTargetRule.Enemy)
                     throw new ArgumentException("Enemy area requires enemy cast target.");

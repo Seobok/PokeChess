@@ -149,6 +149,7 @@ namespace PokeChess.Core.Pokemon
                 throw new KeyNotFoundException("Unknown PokemonDefinition: " + id);
             return definition;
         }
+        public bool TryGet(string id,out PokemonDefinition definition) => definitions.TryGetValue(ModelGuard.Id(id,nameof(id)),out definition);
         public UnitInstance CreateUnit(string instanceId, string definitionId, string ownerPlayerId,
             UnitRank rank, int evolutionStage, UnitPlacement placement, IEnumerable<string> itemIds = null)
         {

@@ -225,12 +225,19 @@ namespace PokeChess.Core.Battle
         private UnitCombatState SkillTarget(UnitCombatState unit,SkillDefinition skill,string id)
         {
             if(skill.TargetRule==SkillTargetRule.Self)return unit.IsAlive&&unit.IsOnBoard?unit:null;
+            if(skill.TargetRule==SkillTargetRule.LowestHPAlly)
+                return id!=null&&units.TryGetValue(id,out var ally)&&ally.TeamId==unit.TeamId&&ally.IsAlive&&ally.IsOnBoard ? ally : null;
             if(id==null||!units.TryGetValue(id,out var target)||target.TeamId==unit.TeamId||!target.IsTargetable||!policy.IsTargetable(target))return null;
             return target;
         }
         private UnitCombatState SelectSkillTarget(UnitCombatState unit,SkillDefinition skill,bool checkRange)
         {
             if(skill.TargetRule==SkillTargetRule.Self)return unit;
+            if(skill.TargetRule==SkillTargetRule.LowestHPAlly)
+                return ordered.Where(t=>t.TeamId==unit.TeamId&&t.IsAlive&&t.IsOnBoard)
+                    .OrderBy(t=>(double)t.CurrentHP/t.Stats.MaxHP)
+                    .ThenByDescending(t=>(double)t.Stats.MaxHP-t.CurrentHP)
+                    .ThenBy(t=>t.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();
             // Restrict candidates before distance/center/RNG selection.
             var id=CombatTargetSelector.Select(battle,unit,
                 t=>policy.IsTargetable(t)&&(!checkRange||HexCoordinates.IsInRange(unit.Position,t.Position,skill.Range)),

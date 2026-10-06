@@ -1,0 +1,225 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PokeChess.Core.Tests.PrototypeRosterTests",
+      "filter_type": "testName"
+    },
+    "result": {
+      "Summary": {
+        "Total": 27,
+        "Passed": 27,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.ActualRosterCompletesFullMatchAndPreservesPool(2)",
+          "Status": "Passed",
+          "Duration": 0.5456978,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.ActualRosterCompletesFullMatchAndPreservesPool(3)",
+          "Status": "Passed",
+          "Duration": 0.8677486,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.ActualRosterCompletesFullMatchAndPreservesPool(8)",
+          "Status": "Passed",
+          "Duration": 2.0113127,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffRefreshDoesNotStack(\"slowpoke\")",
+          "Status": "Passed",
+          "Duration": 0.0174311,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffRefreshDoesNotStack(\"mankey\")",
+          "Status": "Passed",
+          "Duration": 0.0104424,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"slowpoke\",1,64.0f)",
+          "Status": "Passed",
+          "Duration": 0.0331248,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"slowpoke\",2,68.0f)",
+          "Status": "Passed",
+          "Duration": 0.0305228,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"slowpoke\",3,72.0f)",
+          "Status": "Passed",
+          "Duration": 0.0288383,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"mankey\",1,0.91f)",
+          "Status": "Passed",
+          "Duration": 0.0231419,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"mankey\",2,1.105f)",
+          "Status": "Passed",
+          "Duration": 0.0233912,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.BuffUsesExplicitRankValueAndExpires(\"mankey\",3,1.3f)",
+          "Status": "Passed",
+          "Duration": 0.0474584,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.ExplicitValuesCopyInputsAndRejectInvalidShape",
+          "Status": "Passed",
+          "Duration": 0.0020681,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.FullHPStillCastsWithoutOverheal",
+          "Status": "Passed",
+          "Duration": 0.0092039,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealDoesNotSwitchLivingTargetWhenAnotherAllyIsHurt",
+          "Status": "Passed",
+          "Duration": 0.0073688,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealEqualMissingHPUsesOrdinalIDAndCanHealSelf",
+          "Status": "Passed",
+          "Duration": 0.0341116,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealRetargetsDeadTargetOnlyAtEffect",
+          "Status": "Passed",
+          "Duration": 0.0035825,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealTieUsesMissingHPThenOrdinalID",
+          "Status": "Passed",
+          "Duration": 0.0010435,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealUsesExplicitRankValueAndGlobalLowestRatio(1,175.0f)",
+          "Status": "Passed",
+          "Duration": 0.0022919,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealUsesExplicitRankValueAndGlobalLowestRatio(2,200.0f)",
+          "Status": "Passed",
+          "Duration": 0.0020471,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.HealUsesExplicitRankValueAndGlobalLowestRatio(3,225.0f)",
+          "Status": "Passed",
+          "Duration": 0.0019045,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.MissileUsesRankedAttackAndExplicitCoefficient(1,130.0f)",
+          "Status": "Passed",
+          "Duration": 0.0043076,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.MissileUsesRankedAttackAndExplicitCoefficient(2,254.15f)",
+          "Status": "Passed",
+          "Duration": 0.0035623,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.MissileUsesRankedAttackAndExplicitCoefficient(3,526.5f)",
+          "Status": "Passed",
+          "Duration": 0.0025044,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.RosterTimingMatchesCeilingTicks(\"slowpoke\",15,34)",
+          "Status": "Passed",
+          "Duration": 0.0017914,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.RosterTimingMatchesCeilingTicks(\"mankey\",10,25)",
+          "Status": "Passed",
+          "Duration": 0.0006756,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.RosterTimingMatchesCeilingTicks(\"weedle\",11,28)",
+          "Status": "Passed",
+          "Duration": 0.0006048,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PrototypeRosterTests.RosterTimingMatchesCeilingTicks(\"chansey\",13,28)",
+          "Status": "Passed",
+          "Duration": 0.000552,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 8.38,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PokeChess.Core.Tests.PrototypeRosterTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

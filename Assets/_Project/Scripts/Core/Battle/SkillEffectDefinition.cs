@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Board;
+using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Battle
 {
     public enum SkillEffectType { Damage, Heal, Shield, ProjectileDamage, ApplyStatus }
+    public enum SkillValueSource { Flat, Attack }
     public enum EffectTargetSelector { CastTarget, Self, EnemiesAroundCastTarget, AlliesAroundCaster }
     public enum SkillEffectOutcome { Applied, Spawned, Skipped }
     public enum SkillEffectSkipReason { None, NoValidTarget, CasterUnavailable, StackPolicyIgnored }
@@ -20,12 +22,16 @@ namespace PokeChess.Core.Battle
         public float ProjectileSpeed { get; }
         public string StatusId { get; }
         public StatusTargetTeam StatusTargetTeam { get; }
+        public SkillValueSource ValueSource { get; }
+        public IReadOnlyList<float> RankValues { get; }
+        public IReadOnlyList<string> RankStatusIds { get; }
         public bool RequiresEnemy => IsDamage || (Type==SkillEffectType.ApplyStatus&&StatusTargetTeam==StatusTargetTeam.Enemy);
         public bool NeedsCastTarget => TargetSelector==EffectTargetSelector.CastTarget ||
             TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget;
         public bool IsDamage => Type==SkillEffectType.Damage||Type==SkillEffectType.ProjectileDamage;
         public SkillEffectDefinition(SkillEffectType type,EffectTargetSelector targetSelector,float baseValue,
-            bool spellPowerScalable=false,DamageType damageType=DamageType.Magic,int radius=1,float projectileSpeed=6,string statusId=null,StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy)
+            bool spellPowerScalable=false,DamageType damageType=DamageType.Magic,int radius=1,float projectileSpeed=6,string statusId=null,StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy,
+            IEnumerable<float> rankValues=null,SkillValueSource valueSource=SkillValueSource.Flat,IEnumerable<string> rankStatusIds=null)
         {
             DamageCalculator.Validate(baseValue,true);DamageCalculator.Validate(projectileSpeed,true);
             if(radius<0||projectileSpeed<=0||!Enum.IsDefined(typeof(SkillEffectType),type)||
@@ -38,14 +44,31 @@ namespace PokeChess.Core.Battle
                 throw new ArgumentException("Damage effects require enemy selectors.");
             if(!enemy&&targetSelector==EffectTargetSelector.EnemiesAroundCastTarget)
                 throw new ArgumentException("Support effects require ally selectors.");
+            if(!Enum.IsDefined(typeof(SkillValueSource),valueSource)||
+                (valueSource==SkillValueSource.Attack&&!IsDamageType(type)))throw new ArgumentException("Invalid value source.");
+            var values=(rankValues??new[]{baseValue,baseValue,baseValue}).ToArray();
+            if(values.Length!=3)throw new ArgumentException("Exactly three rank values are required.");
+            foreach(var v in values)DamageCalculator.Validate(v,true);
+            if(type==SkillEffectType.ApplyStatus&&values.Any(v=>v!=0))throw new ArgumentException("Status effects do not use numeric values.");
+            var ids=(rankStatusIds??new[]{statusId,statusId,statusId}).ToArray();
+            if(ids.Length!=3||(type==SkillEffectType.ApplyStatus&&ids.Any(string.IsNullOrWhiteSpace))||
+                (type!=SkillEffectType.ApplyStatus&&rankStatusIds!=null))throw new ArgumentException("Invalid ranked status IDs.");
+            RankValues=Array.AsReadOnly(values);RankStatusIds=Array.AsReadOnly(ids);ValueSource=valueSource;
             StatusId=statusId;StatusTargetTeam=statusTargetTeam;Type=type;TargetSelector=targetSelector;BaseValue=baseValue;SpellPowerScalable=spellPowerScalable;
             DamageType=damageType;Radius=radius;ProjectileSpeed=projectileSpeed;
         }
         private static bool IsDamageType(SkillEffectType type)=>type==SkillEffectType.Damage||type==SkillEffectType.ProjectileDamage;
         public float ResolveValue(float spellPower)
+            => ResolveValue(UnitRank.One,spellPower,0);
+        public string ResolveStatusId(UnitRank rank) => RankStatusIds[RankIndex(rank)];
+        private static int RankIndex(UnitRank rank)
+        { if(!Enum.IsDefined(typeof(UnitRank),rank))throw new ArgumentOutOfRangeException(nameof(rank));return (int)rank-1; }
+        public float ResolveValue(UnitRank rank,float spellPower,float attack)
         {
             DamageCalculator.Validate(spellPower,true);
-            double value=BaseValue*(SpellPowerScalable?1+(double)spellPower/100:1);
+            DamageCalculator.Validate(attack,true);
+            double value=RankValues[RankIndex(rank)]*(ValueSource==SkillValueSource.Attack?(double)attack:1)*
+                (SpellPowerScalable?1+(double)spellPower/100:1);
             if(value>float.MaxValue)throw new OverflowException("Skill effect exceeds model capacity.");
             return (float)value;
         }
@@ -126,7 +149,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectType Type=>SkillEffectType.ApplyStatus;
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
-            var applied=b.StatusEffects.Apply(e.StatusId,caster.UnitInstanceId,target.UnitInstanceId);
+            var applied=b.StatusEffects.Apply(e.ResolveStatusId(caster.Rank),caster.UnitInstanceId,target.UnitInstanceId);
             return applied==null?new SkillEffectApplication(0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.StackPolicyIgnored):
                 new SkillEffectApplication(applied.StackCount);
         }
@@ -169,10 +192,10 @@ namespace PokeChess.Core.Battle
             if(caster==null||!battle.Units.Contains(caster)||(target!=null&&!battle.Units.Contains(target)))
                 throw new ArgumentException("Effect participants must belong to battle.");
             foreach(var e in skill.Effects.Where(e=>e.Type==SkillEffectType.ApplyStatus))
-                if(battle.StatusEffects.GetDefinition(e.StatusId).TargetTeam!=e.StatusTargetTeam)
+                if(battle.StatusEffects.GetDefinition(e.ResolveStatusId(caster.Rank)).TargetTeam!=e.StatusTargetTeam)
                     throw new ArgumentException("Status target team does not match skill effect.");
             // Resolve values before applying any effect; invalid scaling cannot leave partial numeric changes.
-            var values=skill.Effects.Select(e=>e.ResolveValue(caster.EffectiveStats.SpellPower)).ToArray();
+            var values=skill.Effects.Select(e=>e.ResolveValue(caster.Rank,caster.EffectiveStats.SpellPower,caster.EffectiveStats.Attack)).ToArray();
             for(int i=0;i<skill.Effects.Count;i++) {
                 var e=skill.Effects[i];
                 if(!caster.IsAlive||!caster.IsOnBoard) {

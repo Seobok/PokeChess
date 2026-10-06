@@ -124,6 +124,7 @@ namespace PokeChess.Client.UI
         public void ResetRankDemo()
         {
             CancelDrag("Reset rank demo.");LastPurchase=null;
+            catalog=new PokemonCatalog(CreateSandboxDefinitions());
             Match=MatchStateFactory.CreateWithPool("rank-demo",new[]{"p1","p2"},catalog,new[]{"bulbasaur"},matchSeed:123);
             Player.SetProgress(20,0,1);
             var initial=new[]{UnitPlacement.OnBoard(new BoardPosition(2,0)),UnitPlacement.OnBench(0),UnitPlacement.OnBench(1),UnitPlacement.OnBench(2)};

@@ -66,6 +66,7 @@ namespace PokeChess.Client.UI
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",14,new Vector2(210,145),new Vector2(490,185));
             sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
             Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
+            ActionButton("Roster demo",new Vector2(225,25),new Vector2(490,42),()=>ResetRosterDemo());
             ActionButton("Reset match",new Vector2(110,25),new Vector2(432,-18),ResetMatchUI);
             ActionButton("Rank demo",new Vector2(110,25),new Vector2(548,-18),ResetRankDemo);
             ActionButton("Full bench",new Vector2(110,25),new Vector2(432,-50),ResetFullBenchDemo);
@@ -111,10 +112,24 @@ namespace PokeChess.Client.UI
         }
         public void ResetMatchUI()
         {
-            CancelDrag("Reset.");catalog=new PokemonCatalog(CreateSandboxDefinitions());
-            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,CreateSandboxDefinitions().Select(d=>d.Id),matchSeed:123);
+            CancelDrag("Reset.");catalog=PrototypeRoster.CreateCatalog();
+            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
             ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
+        }
+        public void ResetRosterDemo(UnitRank rank=UnitRank.One)
+        {
+            CancelDrag("Roster demo.");catalog=PrototypeRoster.CreateCatalog();var definitions=PrototypeRoster.CreateDefinitions();
+            Match=MatchStateFactory.CreateWithPool("roster-demo",new[]{"p1","p2"},catalog,definitions.Select(d=>d.Id),matchSeed:123);
+            var positions=new[]{new BoardPosition(2,3),new BoardPosition(4,3),new BoardPosition(1,1),new BoardPosition(4,0)};
+            foreach(var player in Match.Players)
+            {
+                player.SetProgress(20,0,4);
+                for(int i=0;i<4;i++)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(player.PlayerId+"-roster-"+i,
+                    definitions[i].Id,player.PlayerId,rank,0,UnitPlacement.OnBoard(positions[i])),definitions[i].Id);
+            }
+            Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
+            Feedback("P01-P04 / R"+(int)rank+": purple CAST, blue BUFF, green HEAL, gold skill projectile.");Render();
         }
         public void ResetPairingDemo(int playerCount)
         {
@@ -128,7 +143,7 @@ namespace PokeChess.Client.UI
         }
         public void ResetFullBenchDemo()
         {
-            CancelDrag("Reset full bench.");Match=MatchStateFactory.CreateWithPool("full-bench",new[]{"p1","p2"},catalog,new[]{"bulbasaur"},
+            CancelDrag("Reset full bench.");catalog=new PokemonCatalog(CreateSandboxDefinitions());Match=MatchStateFactory.CreateWithPool("full-bench",new[]{"p1","p2"},catalog,new[]{"bulbasaur"},
                 poolRules:new PoolRules(new[]{100,18,14,10,9}),matchSeed:123);Player.SetProgress(20,0,1);
             for(int i=0;i<9;i++) SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(((char)('A'+i)).ToString(),"bulbasaur","p1",i<2 ? UnitRank.One : UnitRank.Three,0,UnitPlacement.OnBench(i)),"bulbasaur");
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();
@@ -220,7 +235,8 @@ namespace PokeChess.Client.UI
             else
             {
                 int price=commands.SalePrice(selectedUnitId);
-                detailLabel.text=catalog.Get(selected.DefinitionId).DisplayName+" / R"+(int)selected.Rank+"\n"+selected.InstanceId+" / stage "+selected.EvolutionStage+"\n"+selected.Placement.Kind+"\nItems: "+selected.ItemInstanceIds.Count+"\n"+string.Join(", ",selected.ItemInstanceIds.Take(2));
+                detailLabel.text=catalog.Get(selected.DefinitionId).DisplayName+" / R"+(int)selected.Rank+"\n"+selected.InstanceId+" / stage "+selected.EvolutionStage+"\n"+selected.Placement.Kind+
+                    "\nSkill: "+catalog.Get(selected.DefinitionId).SkillId+"\nItems: "+selected.ItemInstanceIds.Count+"\n"+string.Join(", ",selected.ItemInstanceIds.Take(2));
                 sellButton.interactable=trade && selected.Placement.Kind!=PlacementKind.Unplaced;ButtonText(sellButton,"Sell / +"+price+"G");
             }
 

@@ -16,8 +16,13 @@ namespace PokeChess.Client.Data
         public float projectileSpeed=6;
         public string statusId;
         public StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy;
+        public SkillValueSource valueSource;
+        public float[] rankValues=Array.Empty<float>();
+        public string[] rankStatusIds=Array.Empty<string>();
         public SkillEffectDefinition ToDefinition() => new SkillEffectDefinition(type,targetSelector,baseValue,
-            spellPowerScalable,damageType,radius,projectileSpeed,statusId,statusTargetTeam);
+            spellPowerScalable,damageType,radius,projectileSpeed,statusId,statusTargetTeam,
+            rankValues!=null&&rankValues.Length>0?rankValues:null,valueSource,
+            rankStatusIds!=null&&rankStatusIds.Length>0?rankStatusIds:null);
     }
     [CreateAssetMenu(menuName="PokeChess/Data/Skill Definition")]
     public sealed class SkillDefinitionAsset : ScriptableObject

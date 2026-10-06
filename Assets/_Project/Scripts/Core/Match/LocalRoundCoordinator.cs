@@ -36,8 +36,9 @@ namespace PokeChess.Core.Match
         private readonly BattleResult emptyResult;
         private int oneSurvivors,twoSurvivors;
         private bool survivorCountsFrozen;
-        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0)
-        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null)simulation=new BattleSimulation(battle);FreezeSurvivors(); }
+        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0,
+            SkillCatalog skills=null,StatusCatalog statuses=null)
+        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null)simulation=new BattleSimulation(battle,skillCatalog:skills,statusCatalog:statuses);FreezeSurvivors(); }
         internal void Step() { if(!IsComplete)simulation.Step();FreezeSurvivors(); }
         internal void Surrender(string playerId)
         {
@@ -111,6 +112,8 @@ namespace PokeChess.Core.Match
     public sealed partial class LocalRoundCoordinator : IRoundFlowRuntime
     {
         private readonly PokemonCatalog catalog;
+        private readonly SkillCatalog skills;
+        private readonly StatusCatalog statuses;
         private readonly EconomySystem economy=new EconomySystem();
         private readonly LevelSystem levels=new LevelSystem();
         private readonly PlayerDamageSystem playerDamage;
@@ -133,9 +136,11 @@ namespace PokeChess.Core.Match
         public bool IsSettled => LastResult!=null && LastResult.Round==Match.RoundNumber &&
             LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.Elimination?.Reason==EliminationReason.Surrender || p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber) &&
             Match.Players.All(p=>p.HP>0 || p.IsEliminated);
-        public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog,PlayerDamageRules damageRules=null)
+        public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog,PlayerDamageRules damageRules=null,
+            SkillCatalog skillCatalog=null,StatusCatalog statusCatalog=null)
         {
             Match=match??throw new ArgumentNullException(nameof(match));this.catalog=catalog??throw new ArgumentNullException(nameof(catalog));playerDamage=new PlayerDamageSystem(damageRules);
+            skills=skillCatalog;statuses=statusCatalog;
             if(match.Rules.BoardWidth!=7 || match.Rules.BoardHeight!=4)
                 throw new ArgumentException("Local round loop requires 7x4 preparation boards.");
             if(match.Phase==MatchPhase.Preparation) {PreparePairings(match.RoundNumber);TryFinishMatch(match.RoundNumber);}
@@ -171,7 +176,7 @@ namespace PokeChess.Core.Match
                         : BattleStateFactory.Create(battleId,expectedRound,seed,TickRate,catalog,setup);
                 }
                 var emptyResult=one.Length==0 && twoCount==0 ? BattleResult.Draw : one.Length==0 ? BattleResult.TeamTwoWin : BattleResult.TeamOneWin;
-                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,twoCount));
+                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,twoCount,skills,statuses));
             }
             foreach(var player in players)if(deployments[player.PlayerId].Count>0)player.ApplyPlacements(deployments[player.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
