@@ -59,7 +59,7 @@ namespace PokeChess.Client.UI
             if(Match.Phase!=MatchPhase.Preparation) { Feedback("Opponent setup is available during preparation only.");return; }
             var foe=Match.GetPlayer("p2");
             if(foe.Units.Count==0)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit("sandbox-foe","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(2,0))),"bulbasaur");
-            Feedback("Fixed opponent: one Rank One bulbasaur. Player HP damage is not part of this sandbox.");Render();
+            Feedback("Fixed opponent: one Rank One bulbasaur. Round damage applies after all battles finish.");Render();
         }
         public void AdvanceRound()
         {
@@ -119,6 +119,7 @@ namespace PokeChess.Client.UI
             string clock;
             if(!automaticRoundFlow) clock="DEBUG INPUT TEST / AUTO PAUSED";
             else if(roundFault!=null) clock="PAUSED / RETRY REQUIRED";
+            else if(RoundFlow.AwaitingMatchEnd) clock="WAITING FOR MATCH END";
             else if(RoundLoop.NextPreparationPending) clock="WAITING FOR SHOP REFRESH";
             else if(Match.Phase==MatchPhase.Result && !RoundLoop.IsSettled) clock="WAITING FOR SETTLEMENT";
             else if(Match.Phase==MatchPhase.Preparation && !RoundLoop.PreparationReady) clock="WAITING FOR PREPARATION";
@@ -126,7 +127,7 @@ namespace PokeChess.Client.UI
             else clock=Match.Phase==MatchPhase.Combat && RoundLoop.GetBattleFor("p1")?.Battle!=null ? RoundLoop.GetBattleFor("p1").Battle.ElapsedSeconds.ToString("0.0")+"s" : Match.Phase==MatchPhase.Combat ? "WAITING" : "";
             roundTimer.text="ROUND "+Match.RoundNumber+" / "+Match.Phase.ToString().ToUpperInvariant()+" / "+clock;
             roundTimer.color=roundFault!=null ? new Color(1,.45f,.4f) : RoundFlow.IsTimerRunning && RoundFlow.RemainingSeconds<=5 ? new Color(1,.78f,.36f) : Color.white;
-            roundButton.interactable=automaticRoundFlow && Player.HP>0 && !Player.IsEliminated &&
+            roundButton.interactable=automaticRoundFlow && !RoundFlow.AwaitingMatchEnd && Player.HP>0 && !Player.IsEliminated &&
                 (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
             ButtonText(roundButton,Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
             var ownPair=RoundLoop.GetBattleFor("p1");
@@ -161,6 +162,7 @@ namespace PokeChess.Client.UI
                 result.PlayerResults.TryGetValue("p1",out var ownResult);
                 string verdict=ownResult==null ? "SPECTATING" : ownResult.Outcome==RoundOutcome.Draw ? "DRAW" : ownResult.Outcome==RoundOutcome.Win ? "VICTORY" : "DEFEAT";
                 string summary="ROUND "+result.Round+" / "+verdict+"\n"+(ownResult==null ? "" :  "VS "+ownResult.OpponentId+(ownResult.IsShadow ? " (SHADOW)" : "")+" / "+ownResult.Reason+" / "+(ownResult.EndTick/30d).ToString("0.0")+"s")+"\n\n";
+                if(result.Damage.TryGetValue("p1",out var damage))summary+="Damage "+damage.TotalDamage+" = base "+damage.BaseDamage+" + survivors "+damage.SurvivorDamage+"\nHP "+damage.HPBefore+" -> "+damage.HPAfter+"\n";
                 if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
                 if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
                 resultInfo.text=summary+"\nPreparation board restored. Next round starts automatically."+(roundFault==null ? "" : "\nERROR: "+roundFault);
@@ -169,6 +171,8 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
 
 
 

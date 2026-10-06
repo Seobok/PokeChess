@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.ResetMatchUI(); v.Player.SetHP(1); v.RefreshFromState(); v.AdvanceRoundTime(30); if(v.Player.HP!=0 || v.Player.LastDamage.RawHPAfter!=-2)throw new System.Exception(\"HP zero mismatch\"); v.AdvanceRoundTime(3); v.AdvanceRoundTime(100); if(!v.RoundFlow.AwaitingMatchEnd || v.RoundFlow.IsTimerRunning || v.RoundFlow.Fault!=null || v.RoundButton.interactable)throw new System.Exception(\"wait mismatch\"); v.RefreshFromState(); return new {hp=v.Player.HP,raw=v.Player.LastDamage.RawHPAfter,timer=v.RoundTimerText,button=v.RoundButton.interactable,fault=v.RoundFlow.Fault,round=v.Match.RoundNumber};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "hp": 0,
+        "raw": -2,
+        "timer": "ROUND 2 / PREPARATION / WAITING FOR MATCH END",
+        "button": false,
+        "fault": null,
+        "round": 2
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

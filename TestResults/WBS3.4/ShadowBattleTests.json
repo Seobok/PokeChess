@@ -1,0 +1,203 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "ShadowBattleTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 24,
+        "Passed": 24,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.EmptyShadowBoardsResolveWithoutFakeParticipants(False,False,Draw)",
+          "Status": "Passed",
+          "Duration": 0.0018847,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.EmptyShadowBoardsResolveWithoutFakeParticipants(True,False,Win)",
+          "Status": "Passed",
+          "Duration": 0.000782,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.EmptyShadowBoardsResolveWithoutFakeParticipants(False,True,Loss)",
+          "Status": "Passed",
+          "Duration": 0.0006609,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.FailedShadowBattleCreationPreservesAllPlannedDeployments",
+          "Status": "Passed",
+          "Duration": 0.0215598,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.FailedShadowCaptureLeavesAllPlacementsUnchangedAndCanRetry",
+          "Status": "Passed",
+          "Duration": 0.022747,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.FrozenSnapshotSurvivesSourceRemovalAndCanCreateIndependentBattles",
+          "Status": "Passed",
+          "Duration": 0.0022622,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.NormalPairsWaitForLongShadowBeforeAnyPayout",
+          "Status": "Passed",
+          "Duration": 0.0632208,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.PlanAndSourceAreDeterministicAcrossInputOrderAndRetries(3)",
+          "Status": "Passed",
+          "Duration": 0.0034362,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.PlanAndSourceAreDeterministicAcrossInputOrderAndRetries(5)",
+          "Status": "Passed",
+          "Duration": 0.0072307,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.PlanAndSourceAreDeterministicAcrossInputOrderAndRetries(7)",
+          "Status": "Passed",
+          "Duration": 0.0661394,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SettlementFailureIncludesShadowRecipientAndRetriesExactlyOnce",
+          "Status": "Passed",
+          "Duration": 0.0020389,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.ShadowAndNormalSnapshotsHaveIndependentVitalsItemsAndRng",
+          "Status": "Passed",
+          "Duration": 0.0055251,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.ShadowUsesAutomaticDeploymentRankItemsAndExcludesRemainingBench",
+          "Status": "Passed",
+          "Duration": 0.0017957,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.ShadowWaitsForLongNormalPairBeforeAnyPayout",
+          "Status": "Passed",
+          "Duration": 0.0613791,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceIsDifferentAlivePlayerAndHasOnlyItsNormalBattle(3)",
+          "Status": "Passed",
+          "Duration": 0.001747,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceIsDifferentAlivePlayerAndHasOnlyItsNormalBattle(5)",
+          "Status": "Passed",
+          "Duration": 0.0008856,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceIsDifferentAlivePlayerAndHasOnlyItsNormalBattle(7)",
+          "Status": "Passed",
+          "Duration": 0.0016149,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceNormalLossIsNotReplacedByShadowVictory",
+          "Status": "Passed",
+          "Duration": 0.0016365,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceNormalVictoryIsNotReplacedByShadowLoss",
+          "Status": "Passed",
+          "Duration": 0.0014739,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.SourceSelectionMinimizesTargetsActualTwoRoundHistory",
+          "Status": "Passed",
+          "Duration": 0.0753369,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.StaleAndDuplicateStartDoNotRecloneOrPayTwice",
+          "Status": "Passed",
+          "Duration": 0.0194421,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.TenAutomaticRoundsFightAndSettleEveryRealPlayerOnce(3)",
+          "Status": "Passed",
+          "Duration": 0.4119493,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.TenAutomaticRoundsFightAndSettleEveryRealPlayerOnce(5)",
+          "Status": "Passed",
+          "Duration": 0.5809263,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.ShadowBattleTests.TenAutomaticRoundsFightAndSettleEveryRealPlayerOnce(7)",
+          "Status": "Passed",
+          "Duration": 0.3842211,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 4.59,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: ShadowBattleTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

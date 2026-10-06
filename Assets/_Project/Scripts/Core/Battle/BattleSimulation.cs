@@ -14,6 +14,7 @@ namespace PokeChess.Core.Battle
         private readonly Dictionary<string,UnitActionRuntime> actions;
         private readonly Queue<Action<BattleState>> inputs = new Queue<Action<BattleState>>();
         private readonly List<CombatActionSignal> signals = new List<CombatActionSignal>();
+        private readonly List<Action> scheduledAttacks = new List<Action>();
         private bool stepping;
         private readonly HashSet<string> reportedDeaths = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> skillInterrupts = new HashSet<string>(StringComparer.Ordinal);
@@ -76,6 +77,7 @@ namespace PokeChess.Core.Battle
             try
             {
                 signals.Clear();
+                scheduledAttacks.Clear();
                 battle.BeginLifecycleTick();
                 battle.BeginDamageTick();
                 battle.BeginSkillTick();
@@ -99,7 +101,19 @@ namespace PokeChess.Core.Battle
                     if(unit.ActionState==CombatActionState.Idle) Decide(unit,runtime);
                     else Advance(unit,runtime);
                 }
-                policy.OnProjectilesTiming(battle);
+                // All attacks due this tick are selected before any basic attack can kill.
+                // Keep participants available until melee hits and arriving projectiles resolve.
+                foreach(var unit in ordered)unit.BeginSimultaneousAttacks();
+                try
+                {
+                    foreach(var attack in scheduledAttacks)attack();
+                    policy.OnProjectilesTiming(battle);
+                }
+                finally
+                {
+                    foreach(var unit in ordered)unit.EndSimultaneousAttacks();
+                    scheduledAttacks.Clear();
+                }
                 CleanupUnavailable(); // Effects may kill units already processed earlier in this tick.
                 if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
                 ReevaluateLostAttackTargets();
@@ -316,7 +330,7 @@ namespace PokeChess.Core.Battle
             {
                 runtime.EffectApplied=true;
                 Emit(unit,CombatActionSignalKind.TimingReached);
-                if(unit.ActionState==CombatActionState.Attacking)policy.OnAttackTiming(battle,unit,target);
+                if(unit.ActionState==CombatActionState.Attacking)scheduledAttacks.Add(()=>policy.OnAttackTiming(battle,unit,target));
                 else if(unit.ActionState==CombatActionState.Casting)policy.OnSkillTiming(battle,unit,target);
             }
             if(!unit.IsAlive||!unit.IsOnBoard)return;

@@ -1,0 +1,259 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "PlayerDamageTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 32,
+        "Passed": 32,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.CountsFreezeWhenEachBattleEndsAndHpWaitsForAllPairs",
+          "Status": "Passed",
+          "Duration": 0.1783843,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.DrawHasOnlySurvivorDamageAndWinHasNone(1)",
+          "Status": "Passed",
+          "Duration": 0.0004783,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.DrawHasOnlySurvivorDamageAndWinHasNone(10)",
+          "Status": "Passed",
+          "Duration": 0.0000954,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.DrawHasOnlySurvivorDamageAndWinHasNone(17)",
+          "Status": "Passed",
+          "Duration": 0.0000751,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.EconomyFailurePreventsAllHpChangesAndRetryAppliesOnce",
+          "Status": "Passed",
+          "Duration": 0.0045022,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.EmptyBoardResultsUseDeploymentSnapshotCounts(False,False,0,0)",
+          "Status": "Passed",
+          "Duration": 0.0009164,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.EmptyBoardResultsUseDeploymentSnapshotCounts(True,False,0,3)",
+          "Status": "Passed",
+          "Duration": 0.0005418,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.EmptyBoardResultsUseDeploymentSnapshotCounts(False,True,3,0)",
+          "Status": "Passed",
+          "Duration": 0.0004084,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.InvalidDamageRoundPreventsAnyPayoutOrHpMutation",
+          "Status": "Passed",
+          "Duration": 0.0012132,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.InvalidInputsAndOverflowAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0007428,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LivingUnitsRemovedFromBoardDoNotCountAsSurvivors",
+          "Status": "Passed",
+          "Duration": 0.002548,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(1,2)",
+          "Status": "Passed",
+          "Duration": 0.0007546,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(4,2)",
+          "Status": "Passed",
+          "Duration": 0.0001501,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(5,4)",
+          "Status": "Passed",
+          "Duration": 0.0001309,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(8,4)",
+          "Status": "Passed",
+          "Duration": 0.0001287,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(9,6)",
+          "Status": "Passed",
+          "Duration": 0.0001399,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(12,6)",
+          "Status": "Passed",
+          "Duration": 0.0001421,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(13,8)",
+          "Status": "Passed",
+          "Duration": 0.0001345,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(16,8)",
+          "Status": "Passed",
+          "Duration": 0.000145,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(17,10)",
+          "Status": "Passed",
+          "Duration": 0.0001454,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.LossUsesRoundBandAndSurvivors(int.MaxValue,10)",
+          "Status": "Passed",
+          "Duration": 0.0001373,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.PreviewIsPureAndOverkillPreservesRawFinalHp",
+          "Status": "Passed",
+          "Duration": 0.0010455,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.RankThreeIsOneSurvivorAndBenchDoesNotCount",
+          "Status": "Passed",
+          "Duration": 0.0008887,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ReplayIsIdempotentAndConflictingOrStaleRequestsAreRejected",
+          "Status": "Passed",
+          "Duration": 0.0008306,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ShadowDrawUsesCloneSurvivorsAndDoesNotDuplicateSourceDamage",
+          "Status": "Passed",
+          "Duration": 0.1391106,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ShadowLossDamagesOnlyTargetAndSourceUsesNormalVictory",
+          "Status": "Passed",
+          "Duration": 0.0010627,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.SimultaneousAnnihilationDrawHasZeroDamage",
+          "Status": "Passed",
+          "Duration": 0.0020067,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.TimeLimitDrawUsesOppositeTeamCountsIndependently",
+          "Status": "Passed",
+          "Duration": 0.1872074,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ZeroDamageRoundsStillRecordProcessing",
+          "Status": "Passed",
+          "Duration": 0.0006068,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ZeroHpPlayersAreExcludedFromNextPairingButResourcesRemainForEliminationWork",
+          "Status": "Passed",
+          "Duration": 0.0108061,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ZeroOrOneSurvivorPausesPreparationWithoutTimerFault(0)",
+          "Status": "Passed",
+          "Duration": 0.0639197,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.PlayerDamageTests.ZeroOrOneSurvivorPausesPreparationWithoutTimerFault(1)",
+          "Status": "Passed",
+          "Duration": 0.0007631,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 4.78,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: PlayerDamageTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

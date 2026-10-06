@@ -14,10 +14,11 @@ namespace PokeChess.Core.Match
         public string OpponentId { get; }
         public RoundOutcome Outcome { get; }
         public bool IsShadow { get; }
+        public int OpponentSurvivors { get; }
         public BattleEndReason Reason { get; }
         public long EndTick { get; }
-        internal PlayerRoundResult(string id,string opponent,RoundOutcome outcome,BattleEndReason reason,long tick,bool isShadow=false)
-        { PlayerId=id;OpponentId=opponent;Outcome=outcome;Reason=reason;EndTick=tick;IsShadow=isShadow; }
+        internal PlayerRoundResult(string id,string opponent,RoundOutcome outcome,BattleEndReason reason,long tick,bool isShadow=false,int opponentSurvivors=0)
+        { PlayerId=id;OpponentId=opponent;Outcome=outcome;Reason=reason;EndTick=tick;IsShadow=isShadow;OpponentSurvivors=opponentSurvivors; }
     }
 
     public sealed class LocalPairBattle
@@ -32,9 +33,27 @@ namespace PokeChess.Core.Match
         public long EndTick => Battle?.EndTick ?? 0;
         public bool IsComplete => Result!=BattleResult.InProgress;
         private readonly BattleResult emptyResult;
-        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null)
-        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;if(battle!=null)simulation=new BattleSimulation(battle); }
-        internal void Step() { if(!IsComplete)simulation.Step(); }
+        private int oneSurvivors,twoSurvivors;
+        private bool survivorCountsFrozen;
+        internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0)
+        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null)simulation=new BattleSimulation(battle);FreezeSurvivors(); }
+        internal void Step() { if(!IsComplete)simulation.Step();FreezeSurvivors(); }
+        private void FreezeSurvivors()
+        {
+            if(!IsComplete || survivorCountsFrozen)return;
+            if(Battle!=null)
+            {
+                oneSurvivors=Battle.Units.Count(u=>u.TeamId==1 && u.IsAlive && u.IsOnBoard);
+                twoSurvivors=Battle.Units.Count(u=>u.TeamId==2 && u.IsAlive && u.IsOnBoard);
+            }
+            survivorCountsFrozen=true;
+        }
+        public int OpponentSurvivorsOf(string playerId)
+        {
+            if(!Pairing.Contains(playerId))throw new ArgumentException("Player is not in this battle.",nameof(playerId));
+            if(!IsComplete)throw new InvalidOperationException("Battle is still running.");
+            FreezeSurvivors();return Pairing.PlayerOneId==playerId ? twoSurvivors : oneSurvivors;
+        }
         public RoundOutcome OutcomeOf(string playerId)
         {
             if(!Pairing.Contains(playerId))throw new ArgumentException("Player is not in this battle.",nameof(playerId));
@@ -53,6 +72,8 @@ namespace PokeChess.Core.Match
         public long EndTick { get; }
         public IReadOnlyDictionary<string,PlayerRoundResult> PlayerResults { get; }
         private readonly Dictionary<string,RoundIncome> income=new Dictionary<string,RoundIncome>();
+        private readonly Dictionary<string,PlayerDamageResult> damage=new Dictionary<string,PlayerDamageResult>();
+        public IReadOnlyDictionary<string,PlayerDamageResult> Damage => new ReadOnlyDictionary<string,PlayerDamageResult>(damage);
         private readonly Dictionary<string,LevelProgress> xp=new Dictionary<string,LevelProgress>();
         public IReadOnlyDictionary<string,RoundIncome> Income => new ReadOnlyDictionary<string,RoundIncome>(income);
         public IReadOnlyDictionary<string,LevelProgress> XP => new ReadOnlyDictionary<string,LevelProgress>(xp);
@@ -62,10 +83,11 @@ namespace PokeChess.Core.Match
             var results=new Dictionary<string,PlayerRoundResult>(StringComparer.Ordinal);
             foreach(var battle in battles)
                 foreach(var id in battle.Pairing.ParticipantIds)
-                    results.Add(id,new PlayerRoundResult(id,battle.Pairing.OpponentOf(id),battle.OutcomeOf(id),battle.Reason,battle.EndTick,battle.IsShadow));
+                    results.Add(id,new PlayerRoundResult(id,battle.Pairing.OpponentOf(id),battle.OutcomeOf(id),battle.Reason,battle.EndTick,battle.IsShadow,battle.OpponentSurvivorsOf(id)));
             PlayerResults=new ReadOnlyDictionary<string,PlayerRoundResult>(results);
         }
         internal void Record(RoundIncome value) => income[value.PlayerId]=value;
+        internal void Record(PlayerDamageResult value) => damage[value.PlayerId]=value;
         internal void Record(LevelProgress value) => xp[value.PlayerId]=value;
     }
 
@@ -74,6 +96,7 @@ namespace PokeChess.Core.Match
         private readonly PokemonCatalog catalog;
         private readonly EconomySystem economy=new EconomySystem();
         private readonly LevelSystem levels=new LevelSystem();
+        private readonly PlayerDamageSystem playerDamage;
         private readonly ShopSystem shops=new ShopSystem();
         private readonly PairingSystem pairing=new PairingSystem();
         private IReadOnlyList<LocalPairBattle> battles=Array.Empty<LocalPairBattle>();
@@ -90,10 +113,10 @@ namespace PokeChess.Core.Match
         public bool PreparationReady => Match.Phase==MatchPhase.Preparation && !refreshing &&
             Survivors.All(p=>p.Shop.IsInitialized && p.Shop.LastRefreshRound==Match.RoundNumber);
         public bool IsSettled => LastResult!=null && LastResult.Round==Match.RoundNumber &&
-            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber);
-        public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog)
+            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber);
+        public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog,PlayerDamageRules damageRules=null)
         {
-            Match=match??throw new ArgumentNullException(nameof(match));this.catalog=catalog??throw new ArgumentNullException(nameof(catalog));
+            Match=match??throw new ArgumentNullException(nameof(match));this.catalog=catalog??throw new ArgumentNullException(nameof(catalog));playerDamage=new PlayerDamageSystem(damageRules);
             if(match.Rules.BoardWidth!=7 || match.Rules.BoardHeight!=4)
                 throw new ArgumentException("Local round loop requires 7x4 preparation boards.");
             if(match.Phase==MatchPhase.Preparation)PreparePairings(match.RoundNumber);
@@ -127,7 +150,7 @@ namespace PokeChess.Core.Match
                         : BattleStateFactory.Create(battleId,expectedRound,seed,TickRate,catalog,setup);
                 }
                 var emptyResult=one.Length==0 && two.Length==0 ? BattleResult.Draw : one.Length==0 ? BattleResult.TeamTwoWin : BattleResult.TeamOneWin;
-                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot));
+                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,two.Length));
             }
             foreach(var player in players)if(deployments[player.PlayerId].Count>0)player.ApplyPlacements(deployments[player.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
@@ -174,6 +197,7 @@ namespace PokeChess.Core.Match
             if(Match.Phase!=MatchPhase.Result || LastResult==null || LastResult.Round!=Match.RoundNumber)
                 throw new InvalidOperationException("No current completed round.");
             var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).ToArray();
+            var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients)
             {
                 if(p.LastEconomyRound!=Match.RoundNumber)economy.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
@@ -187,6 +211,7 @@ namespace PokeChess.Core.Match
             {
                 if(p.LastEconomyRound!=Match.RoundNumber)LastResult.Record(economy.Settle(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome));
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
+                playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
             }
         }
         public bool NextRound(int completedRound)
@@ -205,5 +230,6 @@ namespace PokeChess.Core.Match
         }
     }
 }
+
 
 

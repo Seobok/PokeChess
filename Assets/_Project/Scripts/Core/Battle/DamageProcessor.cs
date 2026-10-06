@@ -92,11 +92,13 @@ namespace PokeChess.Core.Battle
             float post=calculation.FinalDamage;
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));
+            bool killed=target.CurrentHP>0 && hpDamage>=target.CurrentHP;
             target.SetShield(target.CurrentShield-shield);
             target.SetVitals(target.CurrentHP-hpDamage,target.CurrentEnergy);
-            if(!target.IsAlive) {target.DeathCause=DeathReason.Damage;battle.TryRemoveUnit(target.UnitInstanceId);}
+            if(target.CurrentHP<=0)target.DeathCause=DeathReason.Damage;
+            if(!target.IsAlive)battle.TryRemoveUnit(target.UnitInstanceId);
             var result=new DamageResult(battle.CurrentTick,request,calculation.AfterAmplification,post,shield,hpDamage,
-                target.CurrentHP,target.CurrentShield,!target.IsAlive,calculation);
+                target.CurrentHP,target.CurrentShield,killed,calculation);
             battle.RecordDamage(result);
             battle.Energy.OnDamage(result);
             return result;

@@ -1,0 +1,84 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "SimultaneousAttackTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 7,
+        "Passed": 7,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.EarlierHitStillWinsAgainstLaterHit",
+          "Status": "Passed",
+          "Duration": 0.0642675,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.EqualMeleeDuelDrawsRegardlessOfIdsAndSetupOrder(False,False,0.0f)",
+          "Status": "Passed",
+          "Duration": 0.0148125,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.EqualMeleeDuelDrawsRegardlessOfIdsAndSetupOrder(True,False,0.0f)",
+          "Status": "Passed",
+          "Duration": 0.0097201,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.EqualMeleeDuelDrawsRegardlessOfIdsAndSetupOrder(False,True,0.0f)",
+          "Status": "Passed",
+          "Duration": 0.0100489,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.EqualMeleeDuelDrawsRegardlessOfIdsAndSetupOrder(True,True,0.25f)",
+          "Status": "Passed",
+          "Duration": 0.0118492,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.MirroredDeploymentDuelDraws(False)",
+          "Status": "Passed",
+          "Duration": 0.0340514,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.SimultaneousAttackTests.MirroredDeploymentDuelDraws(True)",
+          "Status": "Passed",
+          "Duration": 0.0208883,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 4.29,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: SimultaneousAttackTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

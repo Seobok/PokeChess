@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace PokeChess.Core.Match
 {
@@ -17,6 +18,7 @@ namespace PokeChess.Core.Match
         public bool IsTimerRunning => timerStarted && Fault == null && TimedPhaseReady;
         public double RemainingSeconds => Math.Max(0, Duration - phaseElapsed);
         public double PendingCombatSeconds => combatAccumulator;
+        public bool AwaitingMatchEnd => Match.Phase==MatchPhase.Preparation && Match.Players.Count(p=>p.HP>0 && !p.IsEliminated)<2;
 
         public RoundFlowController(IRoundFlowRuntime runtime, RoundFlowRules rules = null)
         {
@@ -30,7 +32,7 @@ namespace PokeChess.Core.Match
 
         private double Duration => Match.Phase == MatchPhase.Preparation ? Rules.PreparationSeconds
             : Match.Phase == MatchPhase.Result ? Rules.ResultSeconds : 0;
-        private bool TimedPhaseReady => Match.Phase == MatchPhase.Preparation ? runtime.PreparationReady
+        private bool TimedPhaseReady => Match.Phase == MatchPhase.Preparation ? runtime.PreparationReady && !AwaitingMatchEnd
             : Match.Phase == MatchPhase.Result && runtime.IsSettled;
 
         // Also handles explicit sandbox actions performed outside this controller.
@@ -104,7 +106,7 @@ namespace PokeChess.Core.Match
             {
                 if (runtime.NextPreparationPending)
                     return Execute(() => runtime.NextRound(expectedRound - 1));
-                if (!runtime.PreparationReady) return false;
+                if (!runtime.PreparationReady || AwaitingMatchEnd) return false;
                 return Execute(() => runtime.StartCombat(expectedRound));
             }
             if (expectedPhase != MatchPhase.Result) return false;
@@ -131,3 +133,4 @@ namespace PokeChess.Core.Match
         }
     }
 }
+

@@ -36,7 +36,14 @@ namespace PokeChess.Core.Battle
         { DamageModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers)); }
         public void SetShield(float shield) { CurrentShield = ModelGuard.Number(shield, nameof(shield)); }
         internal DeathReason DeathCause { get; set; } = DeathReason.StateChange;
-        public bool IsAlive => CurrentHP > 0;
+        private bool resolvingSimultaneousAttacks;
+        public bool IsAlive => CurrentHP > 0 || resolvingSimultaneousAttacks;
+        internal void BeginSimultaneousAttacks() => resolvingSimultaneousAttacks=CurrentHP>0 && IsOnBoard;
+        internal void EndSimultaneousAttacks()
+        {
+            resolvingSimultaneousAttacks=false;
+            if(!IsAlive)ActionState=CombatActionState.Dead;
+        }
         public bool IsOnBoard { get; private set; } = true;
         public bool IsUntargetable { get; private set; }
         public string TauntSourceId { get; private set; }

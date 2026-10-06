@@ -22,9 +22,10 @@ namespace PokeChess.Core.Tests
             public override bool CanAttack(BattleState b,UnitCombatState u)=>false;
             public override bool CanMove(BattleState b,UnitCombatState u)=>false;
         }
+        private sealed class OneSide:BasicAttackCombatBehaviorPolicy { public override bool CanAttack(BattleState b,UnitCombatState u)=>u.TeamId==1; }
         [Test] public void LethalHitEndsOnceAndPreservesFinalEvents()
         {
-            var b=Battle();var sim=new BattleSimulation(b);sim.Step();
+            var b=Battle();var sim=new BattleSimulation(b,new OneSide());sim.Step();
             Assert.That(b.Result,Is.EqualTo(BattleResult.TeamOneWin));Assert.That(b.EndReason,Is.EqualTo(BattleEndReason.Elimination));
             Assert.That(b.EndTick,Is.EqualTo(0));Assert.That(U(b,"z").IsOnBoard,Is.False);
             var events=b.LifecycleEventsThisTick;Assert.That(events.Count,Is.EqualTo(2));
@@ -150,3 +151,4 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+

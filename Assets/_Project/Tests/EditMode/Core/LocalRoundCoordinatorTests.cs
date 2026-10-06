@@ -12,10 +12,11 @@ namespace PokeChess.Core.Tests
     {
         private PokemonCatalog catalog;private MatchState match;private LocalRoundCoordinator loop;
         private PlayerState One => match.GetPlayer("p1");private PlayerState Two => match.GetPlayer("p2");
-        [SetUp] public void Setup()
+        [SetUp] public void Setup() => SetupMatch(60);
+        private void SetupMatch(int startingHP)
         {
             catalog=new PokemonCatalog(new[]{new PokemonDefinition("test","Test",1,new PokemonStats(100,20,0,1,0,0,1,2,0,0,.25f),"role","skill")});
-            match=MatchStateFactory.CreateWithPool("round",new[]{"p1","p2"},catalog,new[]{"test"},matchSeed:123);
+            match=MatchStateFactory.CreateWithPool("round",new[]{"p1","p2"},catalog,new[]{"test"},rules:new MatchRules(startingHP:startingHP),matchSeed:123);
             match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);
             foreach(var p in match.Players)new ShopSystem().RefreshForRound(match,p.PlayerId);
             loop=new LocalRoundCoordinator(match,catalog);
@@ -106,6 +107,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void TenRoundsPreserveStateAndRefreshOncePerRound()
         {
+            SetupMatch(1000);
             Add("A","p1",UnitPlacement.OnBoard(new BoardPosition(2,0)));Add("B","p2",UnitPlacement.OnBoard(new BoardPosition(2,0)));
             for(int round=1;round<=10;round++)
             {
@@ -139,3 +141,4 @@ namespace PokeChess.Core.Tests
         { Assert.Throws<InvalidOperationException>(()=>loop.SettleResult());One.SetHP(0);Assert.That(loop.StartCombat(1),Is.False);Assert.That(match.Phase,Is.EqualTo(MatchPhase.Preparation)); }
     }
 }
+

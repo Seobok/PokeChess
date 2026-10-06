@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); UnityEditor.SessionState.SetFloat(\"SimAttackTime\",UnityEngine.Time.timeScale); UnityEditor.SessionState.SetBool(\"SimAttackBackground\",UnityEngine.Application.runInBackground); UnityEngine.Application.runInBackground=true;UnityEngine.Time.timeScale=0;v.enabled=false;v.ResetPairingDemo(3);v.AdvanceRoundTime(30);for(int i=0;i<1400 && v.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat;i++)v.AdvanceRoundTime(1d/30);foreach(var b in v.RoundLoop.Battles)if(b.Result!=PokeChess.Core.Battle.BattleResult.Draw || b.Reason!=PokeChess.Core.Battle.BattleEndReason.Elimination)throw new System.Exception(\"symmetry mismatch\");foreach(var p in v.Match.Players)if(p.HP!=60 || p.LastDamage.TotalDamage!=0)throw new System.Exception(\"damage mismatch\");v.RefreshFromState();return new {summary=v.RoundResultText,hp=v.Player.HP,battles=v.RoundLoop.Battles.Count};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "summary": "ROUND 1 / DRAW\nVS p2 / Elimination / 12.2s\n\nDamage 0 = base 0 + survivors 0\nHP 60 -> 60\nIncome +5G = base 5 + interest 0 + streak 0\nAutomatic XP +2 / Level 1 -> 2\n\nPreparation board restored. Next round starts automatically.",
+        "hp": 60,
+        "battles": 2
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

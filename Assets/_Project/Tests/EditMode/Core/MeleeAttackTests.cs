@@ -51,16 +51,16 @@ namespace PokeChess.Core.Tests
             for(int i=0;i<9;i++){sim.Step();Assert.That(b.DamageResultsThisTick.Count,Is.Zero);}
             Assert.That(sim.GetRuntime("a").NextAttackTick,Is.EqualTo(30));
         }
-        [Test] public void LethalHitClampsHpRemovesBoardAndCancelsVictimAttack()
+        [Test] public void SameTickLethalHitsClampHpAndRemoveBothUnits()
         {
             var b=Create(200,0);var sim=new BattleSimulation(b);sim.Step();
             Assert.That(U(b,"z").CurrentHP,Is.Zero);Assert.That(U(b,"z").IsOnBoard,Is.False);
             Assert.That(U(b,"z").ActionState,Is.EqualTo(CombatActionState.Dead));
             Assert.That(b.Board.IsOccupied(new BoardPosition(1,0)),Is.False);
             Assert.That(sim.Reservations.Count,Is.Zero);
-            Assert.That(b.DamageResultsThisTick.Single().AppliedDamage,Is.EqualTo(100));
-            Assert.That(b.DamageResultsThisTick.Single().Killed,Is.True);
-            Assert.That(U(b,"a").CurrentHP,Is.EqualTo(100));
+            Assert.That(b.DamageResultsThisTick.Count,Is.EqualTo(2));
+            Assert.That(b.DamageResultsThisTick.All(d=>d.AppliedDamage==100 && d.Killed),Is.True);
+            Assert.That(U(b,"a").CurrentHP,Is.Zero);Assert.That(b.Result,Is.EqualTo(BattleResult.Draw));
         }
         [TestCase(.01f,300)] [TestCase(20f,6)]
         public void AttackSpeedIsClamped(float speed,int expected)

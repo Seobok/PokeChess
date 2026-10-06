@@ -14,11 +14,11 @@ namespace PokeChess.Core.Tests
         private PokemonCatalog catalog;
         private MatchState match;
         private LocalRoundCoordinator loop;
-        private void Setup(int count,ulong seed=123,bool reverse=false,bool longBattle=false)
+        private void Setup(int count,ulong seed=123,bool reverse=false,bool longBattle=false,int startingHP=60)
         {
             catalog=new PokemonCatalog(new[]{new PokemonDefinition("test","Test",1,new PokemonStats(longBattle ? 100000 : 100,longBattle ? 1 : 20,0,1,0,0,1,2,0,0,.25f),"role","skill")});
             var ids=Enumerable.Range(1,count).Select(i=>"p"+i);
-            match=MatchStateFactory.CreateWithPool("shadow",reverse ? ids.Reverse() : ids,catalog,new[]{"test"},matchSeed:seed);
+            match=MatchStateFactory.CreateWithPool("shadow",reverse ? ids.Reverse() : ids,catalog,new[]{"test"},rules:new MatchRules(startingHP:startingHP),matchSeed:seed);
             match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);
             foreach(var p in match.Players)new ShopSystem().RefreshForRound(match,p.PlayerId);
             loop=new LocalRoundCoordinator(match,catalog);
@@ -39,7 +39,7 @@ namespace PokeChess.Core.Tests
         [TestCase(3)][TestCase(5)][TestCase(7)]
         public void TenAutomaticRoundsFightAndSettleEveryRealPlayerOnce(int count)
         {
-            Setup(count);foreach(var p in match.Players)Add(p.PlayerId);
+            Setup(count,startingHP:1000);foreach(var p in match.Players)Add(p.PlayerId);
             var flow=new RoundFlowController(loop,new RoundFlowRules(.1,.1));
             for(int round=1;round<=10;round++)
             {
@@ -219,6 +219,7 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+
 
 
 

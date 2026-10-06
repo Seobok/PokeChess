@@ -89,7 +89,7 @@ namespace PokeChess.Core.Tests
             Assert.That(U(b,"z").CurrentHP,Is.EqualTo(90));
             Assert.That(U(b,"y").CurrentHP,Is.EqualTo(100));
         }
-        [Test] public void SameTickLethalArrivalsResolveByIdAndLaterProjectileExpires()
+        [Test] public void SameTickArrivalsAllHitButCannotOverkillHpOrRepeatDeath()
         {
             var b=Create(attack:100,multiple:true);var sim=new BattleSimulation(b,new OneSide());sim.Step();
             for(int i=1;i<=5;i++)sim.Step();
@@ -97,9 +97,10 @@ namespace PokeChess.Core.Tests
             Assert.That(events.Count,Is.EqualTo(2));
             Assert.That(events[0].Projectile.SourceId,Is.EqualTo("a"));
             Assert.That(events[0].Kind,Is.EqualTo(ProjectileEventKind.Hit));
-            Assert.That(events[1].Kind,Is.EqualTo(ProjectileEventKind.Expired));
-            Assert.That(events[1].Reason,Is.EqualTo(ProjectileExpireReason.TargetDead));
-            Assert.That(b.DamageResultsThisTick.Count,Is.EqualTo(1));
+            Assert.That(events[1].Kind,Is.EqualTo(ProjectileEventKind.Hit));
+            Assert.That(b.DamageResultsThisTick.Count,Is.EqualTo(2));
+            Assert.That(b.DamageResultsThisTick[1].AppliedDamage,Is.Zero);
+            Assert.That(b.DamageResultsThisTick.Count(d=>d.Killed),Is.EqualTo(1));
             Assert.That(U(b,"z").IsOnBoard,Is.False);
         }
         [TestCase("dead")] [TestCase("hidden")] [TestCase("range")]

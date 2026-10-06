@@ -19,12 +19,12 @@ namespace PokeChess.Core.Tests
         [SetUp]
         public void Setup() => CreateFixture();
 
-        private void CreateFixture(bool longBattle = false, bool initializeShops = true)
+        private void CreateFixture(bool longBattle = false, bool initializeShops = true,int startingHP=60)
         {
             var stats = new PokemonStats(longBattle ? 100000 : 100, longBattle ? 1 : 20,
                 0, 1, 0, 0, 1, 2, 0, 0, .25f);
             catalog = new PokemonCatalog(new[] { new PokemonDefinition("test", "Test", 1, stats, "role", "skill") });
-            match = MatchStateFactory.CreateWithPool("clock", new[] { "p1", "p2" }, catalog, new[] { "test" }, matchSeed: 123);
+            match = MatchStateFactory.CreateWithPool("clock", new[] { "p1", "p2" }, catalog, new[] { "test" }, rules:new MatchRules(startingHP:startingHP),matchSeed: 123);
             match.TransitionTo(MatchPhase.Starting);
             match.TransitionTo(MatchPhase.Preparation);
             if (initializeShops)
@@ -255,15 +255,16 @@ namespace PokeChess.Core.Tests
         }
 
         [Test]
-        public void RejectedStartDoesNotRetryEveryFrameAndCanRecover()
+        public void InsufficientSurvivorsWaitWithoutFaultAndCanResume()
         {
             One.SetHP(0);
             flow.AdvanceTime(30);
             var fault = flow.Fault;
-            Assert.That(fault, Is.Not.Null);
+            Assert.That(fault, Is.Null);
+            Assert.That(flow.AwaitingMatchEnd, Is.True);
             Assert.That(flow.IsTimerRunning, Is.False);
             flow.AdvanceTime(100);
-            Assert.That(flow.Fault, Is.SameAs(fault));
+            Assert.That(flow.Fault, Is.Null);
             One.SetHP(60);
             Assert.That(flow.RequestAdvance(1, MatchPhase.Preparation), Is.True);
             Assert.That(flow.Fault, Is.Null);
@@ -310,6 +311,7 @@ namespace PokeChess.Core.Tests
         [Test]
         public void TenRealBattlesAdvanceWithoutManualRequestsAndPreserveState()
         {
+            CreateFixture(startingHP:1000);
             AddFighters();
             for (int round = 1; round <= 10; round++)
             {
@@ -387,4 +389,5 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+
 

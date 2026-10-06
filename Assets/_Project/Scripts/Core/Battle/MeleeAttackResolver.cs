@@ -61,9 +61,10 @@ namespace PokeChess.Core.Battle
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
             if(source==null||target==null||source.TeamId==target.TeamId||!target.IsTargetable)throw new InvalidOperationException("Invalid damage participants.");
             float applied=Math.Min(target.CurrentHP,request.RawDamage);
+            bool killed=target.CurrentHP>0 && applied>=target.CurrentHP;
             target.SetVitals(target.CurrentHP-applied,target.CurrentEnergy);
             if(!target.IsAlive)battle.TryRemoveUnit(target.UnitInstanceId);
-            var result=new DamageResult(battle.CurrentTick,request,applied,target.CurrentHP,!target.IsAlive);
+            var result=new DamageResult(battle.CurrentTick,request,applied,target.CurrentHP,killed);
             battle.RecordDamage(result);
             return result;
         }

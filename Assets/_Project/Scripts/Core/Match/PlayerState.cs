@@ -38,6 +38,19 @@ namespace PokeChess.Core.Match
         public int LoseStreak { get; private set; }
         public int LastEconomyRound { get; private set; }
         public int LastAutomaticXPRound { get; private set; }
+        public int LastDamageRound { get; private set; }
+        public PlayerDamageResult LastDamage { get; private set; }
+        internal void ApplyDamage(PlayerDamageResult plan)
+        {
+            if(plan.PlayerId!=PlayerId)throw new InvalidOperationException("Wrong damage recipient.");
+            if(LastDamageRound==plan.Round)
+            {
+                if(!ReferenceEquals(LastDamage,plan))throw new InvalidOperationException("Conflicting damage application.");
+                return;
+            }
+            if((long)LastDamageRound+1!=plan.Round || HP!=plan.HPBefore)throw new InvalidOperationException("Stale damage plan.");
+            SetHP(plan.HPAfter);LastDamage=plan;LastDamageRound=plan.Round;
+        }
         public long PlacementRevision { get; private set; }
         internal void ValidatePlacementChanges(int count) { checked { var next = PlacementRevision + count; } }
         internal static bool SamePlacement(UnitPlacement a, UnitPlacement b) => a.Kind == b.Kind
@@ -278,3 +291,4 @@ namespace PokeChess.Core.Match
         }
     }
 }
+

@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.ResetPairingDemo(3); v.AdvanceRoundTime(30); for(int i=0;i<1400 && v.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat;i++){foreach(var b in v.RoundLoop.Battles)foreach(var u in b.Battle.Units)if(u.IsAlive)u.SetShield(100000);v.AdvanceRoundTime(1d/30);} foreach(var p in v.Match.Players)if(p.HP!=59 || p.LastDamage.TotalDamage!=1 || p.LastDamage.BaseDamage!=0)throw new System.Exception(\"draw mismatch\"); v.RefreshFromState(); return new {summary=v.RoundResultText,hp=v.Player.HP,shadow=v.RoundLoop.LastResult.Damage.Count};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "summary": "ROUND 1 / DRAW\nVS p2 / TimeLimit / 45.0s\n\nDamage 1 = base 0 + survivors 1\nHP 60 -> 59\nIncome +5G = base 5 + interest 0 + streak 0\nAutomatic XP +2 / Level 1 -> 2\n\nPreparation board restored. Next round starts automatically.",
+        "hp": 59,
+        "shadow": 3
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
