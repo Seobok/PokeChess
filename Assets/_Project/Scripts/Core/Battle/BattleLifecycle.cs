@@ -2,7 +2,7 @@ using System;
 namespace PokeChess.Core.Battle
 {
     public enum BattleLifecycleEventKind { UnitDied, OvertimeStarted, BattleEnded }
-    public enum DeathReason { Damage, StateChange }
+    public enum DeathReason { Damage, StateChange, Surrender }
     public readonly struct BattleLifecycleEvent
     {
         public BattleLifecycleEventKind Kind { get; }

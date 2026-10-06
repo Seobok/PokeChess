@@ -1,0 +1,147 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "EliminationTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 16,
+        "Passed": 16,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.CombatSurrenderForcesDeathWithoutDamageAndDoesNotKillShadowClone",
+          "Status": "Passed",
+          "Duration": 0.1407371,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.DamageBatchRanksRawHpThenLowerDamageAndReleasesOnce",
+          "Status": "Passed",
+          "Duration": 0.0045587,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.EliminationPreflightFailureLeavesAllPayoutsAndHpUntouchedUntilRetry",
+          "Status": "Passed",
+          "Duration": 0.0060901,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.ExactTiesHaveStableUniquePlacements",
+          "Status": "Passed",
+          "Duration": 0.002642,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.LaterSurrenderReceivesHigherPlacementAndCannotReturnToMatch",
+          "Status": "Passed",
+          "Duration": 0.0035002,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(3)",
+          "Status": "Passed",
+          "Duration": 0.0026144,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(4)",
+          "Status": "Passed",
+          "Duration": 0.0013881,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(5)",
+          "Status": "Passed",
+          "Duration": 0.0010599,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(6)",
+          "Status": "Passed",
+          "Duration": 0.0012118,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(7)",
+          "Status": "Passed",
+          "Duration": 0.0020254,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.MultiplePreparationSurrendersKeepEverySurvivorExactlyOnce(8)",
+          "Status": "Passed",
+          "Duration": 0.0030358,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.PreparationEvenRosterUsesSurrenderBoardAndPreservesOtherPairs",
+          "Status": "Passed",
+          "Duration": 0.0353138,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.PreparationOddRosterConnectsOrphanWithShadowTarget",
+          "Status": "Passed",
+          "Duration": 0.0009973,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.ReleaseOverflowRejectsSurrenderWithoutMutation",
+          "Status": "Passed",
+          "Duration": 0.0007887,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.ResultSurrenderPreservesFinalBattleAndSettlement",
+          "Status": "Passed",
+          "Duration": 0.0010231,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.EliminationTests.SurrenderReplayIsIdempotentAndStaleCommandRejected",
+          "Status": "Passed",
+          "Duration": 0.000617,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 4.31,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: EliminationTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

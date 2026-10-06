@@ -12,6 +12,8 @@ namespace PokeChess.Client.UI
     {
         public LocalRoundCoordinator RoundLoop { get; private set; }
         private UnityEngine.UI.Button roundButton;
+        private UnityEngine.UI.Button surrenderButton;
+        public UnityEngine.UI.Button SurrenderButton => surrenderButton;
         private RectTransform combatRoot,resultRoot;
         private UnityEngine.UI.Text combatInfo,resultInfo;
         private readonly Dictionary<string,UnityEngine.UI.Text> combatTokens=new Dictionary<string,UnityEngine.UI.Text>();
@@ -34,6 +36,7 @@ namespace PokeChess.Client.UI
         {
             roundTimer=Label("RoundTimer",canvasRect,"",16,new Vector2(730,24),new Vector2(0,337));
             roundButton=ActionButton("DEV: Start battle",new Vector2(225,32),new Vector2(490,291),AdvanceRound);
+            surrenderButton=ActionButton("Surrender",new Vector2(225,24),new Vector2(490,320),SurrenderLocalPlayer);
             combatRoot=Rect("CombatView",canvasRect,new Vector2(600,350),Vector2.zero);
             for(int row=0;row<8;row++)for(int col=0;col<7;col++)
             {
@@ -60,6 +63,17 @@ namespace PokeChess.Client.UI
             var foe=Match.GetPlayer("p2");
             if(foe.Units.Count==0)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit("sandbox-foe","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(2,0))),"bulbasaur");
             Feedback("Fixed opponent: one Rank One bulbasaur. Round damage applies after all battles finish.");Render();
+        }
+        public void SurrenderLocalPlayer()
+        {
+            CancelDrag("Surrender requested.");
+            try
+            {
+                var result=RoundLoop.Surrender("p1",Match.RoundNumber,Match.Phase);
+                Feedback(result.Message+(result.Elimination==null ? "" : " Placement #"+result.Elimination.Placement));
+                RoundFlow.RefreshState();Render();
+            }
+            catch(Exception error) {Feedback("Surrender failed: "+error.Message);Render();}
         }
         public void AdvanceRound()
         {
@@ -165,7 +179,8 @@ namespace PokeChess.Client.UI
                 if(result.Damage.TryGetValue("p1",out var damage))summary+="Damage "+damage.TotalDamage+" = base "+damage.BaseDamage+" + survivors "+damage.SurvivorDamage+"\nHP "+damage.HPBefore+" -> "+damage.HPAfter+"\n";
                 if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
                 if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
-                resultInfo.text=summary+"\nPreparation board restored. Next round starts automatically."+(roundFault==null ? "" : "\nERROR: "+roundFault);
+                if(Player.Elimination!=null)summary+="Placement #"+Player.FinalPlacement+" / "+Player.Elimination.Reason+"\n";
+                resultInfo.text=summary+"\n"+(Player.IsEliminated ? "Eliminated. Spectating remaining players." : "Preparation board restored. Next round starts automatically.")+(roundFault==null ? "" : "\nERROR: "+roundFault);
                 resultRoot.SetAsLastSibling();
             }
         }

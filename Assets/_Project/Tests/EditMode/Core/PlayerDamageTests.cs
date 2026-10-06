@@ -161,14 +161,15 @@ namespace PokeChess.Core.Tests
             flow.AdvanceTime(100);Assert.That(flow.Fault,Is.Null);Assert.That(flow.RequestAdvance(2,MatchPhase.Preparation),Is.False);
             Assert.That(match.Players.Count(p=>p.HP>0),Is.EqualTo(survivors));
         }
-        [Test] public void ZeroHpPlayersAreExcludedFromNextPairingButResourcesRemainForEliminationWork()
+        [Test] public void ZeroHpPlayersAreEliminatedAndExcludedFromNextPairing()
         {
             Setup(4,hp:2);foreach(var pair in match.PairingPlan.Pairs)Add(pair.PlayerOneId);
             var losers=match.PairingPlan.Pairs.Select(p=>p.PlayerTwoId).ToArray();loop.StartCombat(1);
             Assert.That(losers.All(id=>match.GetPlayer(id).HP==0),Is.True);Assert.That(loop.NextRound(1),Is.True);
             Assert.That(match.PairingPlan.SurvivorIds.Count,Is.EqualTo(2));Assert.That(match.PairingPlan.SurvivorIds.Intersect(losers),Is.Empty);
-            Assert.That(losers.All(id=>!match.GetPlayer(id).IsEliminated),Is.True);match.Pool.AssertConservation(match);
+            Assert.That(losers.All(id=>match.GetPlayer(id).IsEliminated && match.GetPlayer(id).FinalPlacement.HasValue),Is.True);match.Pool.AssertConservation(match);
         }
     }
 }
+
 

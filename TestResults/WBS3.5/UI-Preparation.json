@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();UnityEditor.SessionState.SetFloat(\"WBS35Time\",UnityEngine.Time.timeScale);UnityEditor.SessionState.SetBool(\"WBS35Background\",UnityEngine.Application.runInBackground);UnityEngine.Application.runInBackground=true;UnityEngine.Time.timeScale=0;v.enabled=false;v.ResetPairingDemo(4);v.Player.SetPlacement(\"demo-p1\",PokeChess.Core.Pokemon.UnitPlacement.OnBoard(new PokeChess.Core.Pokemon.BoardPosition(0,0)));v.RefreshFromState();if(!v.SurrenderButton.interactable)throw new System.Exception(\"button disabled\");v.SurrenderButton.onClick.Invoke();if(!v.Player.IsEliminated || v.Player.FinalPlacement!=4 || v.SurrenderButton.interactable || v.RoundButton.interactable)throw new System.Exception(\"surrender UI mismatch\");if(v.Match.PairingPlan.FrozenShadow.Units.Count!=1)throw new System.Exception(\"ghost missing\");v.Match.Pool.AssertConservation(v.Match);return new {hp=v.Player.HP,placement=v.Player.FinalPlacement,shadow=v.Match.PairingPlan.ShadowPair.ShadowSourcePlayerId,units=v.Player.Units.Count};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "hp": 0,
+        "placement": 4,
+        "shadow": "p1",
+        "units": 0
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -29,14 +29,15 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<RoundPairing> Pairs { get; }
         public string UnpairedPlayerId { get; }
         public RoundPairing ShadowPair { get; }
+        public ShadowBoardSnapshot FrozenShadow { get; }
         public bool RequiresShadow => UnpairedPlayerId!=null && SurvivorIds.Count>1;
         public bool NoBattleRequired => SurvivorIds.Count<2;
         public int PreviousRoundRematches { get; }
         public int TwoRoundsAgoRematches { get; }
-        internal RoundPairingPlan(int round,string[] survivors,RoundPairing[] pairs,string unpaired,int recent,int older,RoundPairing shadowPair=null)
+        internal RoundPairingPlan(int round,string[] survivors,RoundPairing[] pairs,string unpaired,int recent,int older,RoundPairing shadowPair=null,ShadowBoardSnapshot frozenShadow=null)
         {
             Round=round;SurvivorIds=Array.AsReadOnly(survivors);Pairs=Array.AsReadOnly(pairs);
-            UnpairedPlayerId=unpaired;PreviousRoundRematches=recent;TwoRoundsAgoRematches=older;ShadowPair=shadowPair;
+            UnpairedPlayerId=unpaired;PreviousRoundRematches=recent;TwoRoundsAgoRematches=older;ShadowPair=shadowPair;FrozenShadow=frozenShadow;
         }
     }
 

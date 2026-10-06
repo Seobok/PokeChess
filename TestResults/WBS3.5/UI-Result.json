@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.ResetPairingDemo(3);v.AdvanceRoundTime(30);for(int i=0;i<1400 && v.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat;i++)v.AdvanceRoundTime(1d/30);string before=v.RoundResultText;var result=v.RoundLoop.LastResult;int gold=v.Player.Gold;var damage=result.Damage[\"p1\"];v.SurrenderButton.onClick.Invoke();if(v.Player.FinalPlacement!=3 || v.Player.Gold!=gold || result.Damage[\"p1\"]!=damage || result.PlayerResults[\"p1\"].Outcome!=PokeChess.Core.Match.RoundOutcome.Draw)throw new System.Exception(\"result surrender mismatch\");return new {before,after=v.RoundResultText,gold=v.Player.Gold,placement=v.Player.FinalPlacement};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "before": "ROUND 1 / DRAW\nVS p2 / Elimination / 12.2s\n\nDamage 0 = base 0 + survivors 0\nHP 60 -> 60\nIncome +5G = base 5 + interest 0 + streak 0\nAutomatic XP +2 / Level 1 -> 2\n\nPreparation board restored. Next round starts automatically.",
+        "after": "ROUND 1 / DRAW\nVS p2 / Elimination / 12.2s\n\nDamage 0 = base 0 + survivors 0\nHP 60 -> 60\nIncome +5G = base 5 + interest 0 + streak 0\nAutomatic XP +2 / Level 1 -> 2\nPlacement #3 / Surrender\n\nEliminated. Spectating remaining players.",
+        "gold": 10,
+        "placement": 3
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

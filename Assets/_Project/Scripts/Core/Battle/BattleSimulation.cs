@@ -152,7 +152,7 @@ namespace PokeChess.Core.Battle
             bool two=ordered.Any(u=>u.TeamId==2&&u.IsAlive&&u.IsOnBoard);
             if(one&&two&&battle.CurrentTick<battle.TimeLimitTick)return false;
             var result=one&&two?BattleResult.Draw:one?BattleResult.TeamOneWin:two?BattleResult.TeamTwoWin:BattleResult.Draw;
-            var reason=one&&two?BattleEndReason.TimeLimit:BattleEndReason.Elimination;
+            var reason=one&&two?BattleEndReason.TimeLimit:ordered.Any(u=>!u.IsAlive && u.DeathCause==DeathReason.Surrender) ? BattleEndReason.Surrender : BattleEndReason.Elimination;
             foreach(var u in ordered) {
                 var r=actions[u.UnitInstanceId];
                 if(r.IsSkillActive||r.EndTick>0||r.MoveDestination.HasValue) {

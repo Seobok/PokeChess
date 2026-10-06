@@ -29,6 +29,9 @@ namespace PokeChess.Core.Match
         public MatchRules Rules { get; }
         public int HP { get; private set; }
         public bool IsEliminated { get; private set; }
+        public PlayerElimination Elimination { get; private set; }
+        public int? FinalPlacement => Elimination?.Placement;
+        internal void RecordElimination(PlayerElimination record) => Elimination=record;
         internal void MarkEliminated() => IsEliminated = true;
         public int Gold { get; private set; }
         // Progress within the current level; maximum level stores zero XP.

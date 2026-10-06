@@ -94,6 +94,7 @@ namespace PokeChess.Core.Tests
         [Test] public void EliminatedPlayersAreNotRefreshedOrPaidInFollowingRound()
         {
             Setup(8);loop.StartCombat(1);match.GetPlayer("p7").SetHP(0);match.GetPlayer("p8").SetHP(0);
+            loop.SettleResult();
             var dead=match.GetPlayer("p8");int gold=dead.Gold;long shop=dead.Shop.Revision;
             Assert.That(loop.NextRound(1),Is.True);Assert.That(loop.PreparationReady,Is.True);
             Assert.That(match.PairingPlan.SurvivorIds.Count,Is.EqualTo(6));Assert.That(dead.Shop.Revision,Is.EqualTo(shop));Assert.That(dead.Shop.LastRefreshRound,Is.EqualTo(1));

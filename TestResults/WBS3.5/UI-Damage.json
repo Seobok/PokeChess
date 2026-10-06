@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.ResetMatchUI();v.Player.SetHP(1);v.RefreshFromState();v.AdvanceRoundTime(30);if(!v.Player.IsEliminated || v.Player.FinalPlacement!=2 || v.Player.LastDamage.RawHPAfter!=-2 || v.Player.Shop.Slots.Any(s=>!s.IsEmpty))throw new System.Exception(\"damage elimination mismatch\");v.RefreshFromState();return new {summary=v.RoundResultText,placement=v.Player.FinalPlacement,hp=v.Player.HP};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "summary": "ROUND 1 / DEFEAT\nVS p2 / Elimination / 0.0s\n\nDamage 3 = base 2 + survivors 1\nHP 1 -> 0\nIncome +5G = base 5 + interest 0 + streak 0\nAutomatic XP +2 / Level 1 -> 2\nPlacement #2 / Damage\n\nEliminated. Spectating remaining players.",
+        "placement": 2,
+        "hp": 0
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
