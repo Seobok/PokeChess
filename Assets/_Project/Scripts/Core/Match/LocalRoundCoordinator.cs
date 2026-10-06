@@ -28,6 +28,7 @@ namespace PokeChess.Core.Match
         public bool IsShadow => Pairing.IsShadow;
         public ShadowBoardSnapshot ShadowSnapshot { get; }
         public BattleState Battle { get; }
+        public UnitActionRuntime GetActionRuntime(string unitId) => simulation.GetRuntime(unitId);
         private BattleResult? surrenderResult;
         public BattleResult Result => surrenderResult ?? Battle?.Result ?? emptyResult;
         public BattleEndReason Reason => surrenderResult.HasValue ? BattleEndReason.Surrender : Battle?.EndReason ?? BattleEndReason.Elimination;

@@ -48,7 +48,7 @@ namespace PokeChess.Client.UI
                 var source=Player.Units.FirstOrDefault(u=>u.InstanceId==dragged);
                 if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (Match.Phase!=MatchPhase.Combat || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
             }
-            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();
+            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();AnimateRosterSprites();
         }
         private void OnApplicationFocus(bool focus) { if(!focus && canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
         private void OnDisable() { if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }

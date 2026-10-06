@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/VerifyPokemonAnimations.cs"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 243,
+      "executeMs": 1820,
+      "assemblyName": "PipelineRunScript_VerifyPokemonAnimations_62e2c2a73e9a4658ac94e718d976db91",
+      "success": true,
+      "result": "53 animations / 3760 frame references verified; 3 client rounds (ranks 1/2/3) passed; all species idle advancement / 8 directions / death fade passed; observed chansey:Attacking, chansey:Casting, chansey:Idle, chansey:Moving, mankey:Attacking, mankey:Casting, mankey:Idle, mankey:Moving, slowpoke:Attacking, slowpoke:Casting, slowpoke:Idle, slowpoke:Moving, weedle:Attacking, weedle:Casting, weedle:Idle, weedle:Moving"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

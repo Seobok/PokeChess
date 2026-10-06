@@ -47,7 +47,7 @@ namespace PokeChess.Client.UI
                 var cell=Rect("CombatCell_"+col+"_"+row,combatRoot,new Vector2(44,50),CombatPoint(new BoardPosition(col,row)));
                 var graphic=cell.gameObject.AddComponent<PlacementHexGraphic>();graphic.color=row<4 ? new Color(.09f,.19f,.25f) : new Color(.23f,.13f,.17f);graphic.raycastTarget=false;
             }
-            combatInfo=Label("CombatTime",combatRoot,"",15,new Vector2(350,24),new Vector2(0,280));
+            combatInfo=Label("CombatTime",combatRoot,"",15,new Vector2(170,24),new Vector2(-230,280));
             resultRoot=Panel("RoundResult",new Vector2(600,280),new Vector2(0,105));
             resultInfo=Label("Summary",resultRoot,"",17,new Vector2(565,260),Vector2.zero);
             combatRoot.gameObject.SetActive(false);resultRoot.gameObject.SetActive(false);
@@ -61,8 +61,9 @@ namespace PokeChess.Client.UI
             RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds,resultSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
-            foreach(var token in combatTokens.Values)Destroy(token.transform.parent.gameObject);
+            foreach(var token in combatTokens.Values){token.transform.parent.gameObject.SetActive(false);Destroy(token.transform.parent.gameObject);}
             combatTokens.Clear();
+            ClearFighterSprites();
             previousCombatHP.Clear();healFlashUntil.Clear();
             lastVisualBattle=null;
             foreach(var shot in combatShots.Values)Destroy(shot.gameObject);combatShots.Clear();
@@ -180,6 +181,7 @@ namespace PokeChess.Client.UI
                 if(lastVisualBattle!=battle)
                 {
                     lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();
+                    ClearFighterSprites();
                     foreach(var oldShot in combatShots.Values)Destroy(oldShot.gameObject);combatShots.Clear();
                 }
                 foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
@@ -215,6 +217,7 @@ namespace PokeChess.Client.UI
                         buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
                     label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+Mathf.CeilToInt(unit.CurrentHP)+" HP\n"+
                         (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":Mathf.FloorToInt(unit.CurrentEnergy)+"E");
+                    label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
                 }
             }
             if(resultRoot.gameObject.activeSelf)
