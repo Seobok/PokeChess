@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.BuySlot(4); v.Match.Pool.AssertConservation(v.Match); if(!System.Linq.Enumerable.Any(v.Player.Units,u=>u.DefinitionId==\"geodude\"&&u.Rank==PokeChess.Core.Pokemon.UnitRank.Two))throw new System.Exception(\"Cost 2 merge failed\"); return new {gold=v.Player.Gold, units=string.Join(\",\",System.Linq.Enumerable.Select(v.Player.Units,u=>u.DefinitionId+\" R\"+(int)u.Rank)),feedback=v.LastFeedback};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "gold": 15,
+        "units": "geodude R2,gastly R1,caterpie R1,bulbasaur R1,weedle R1",
+        "feedback": "Bought Geodude / rank 2."
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -34,7 +34,7 @@ public static class VerifyPokemonAnimations
             frames+=a.Frames.Length;
         }
         if(!Application.isPlaying)throw new Exception("Enter Play mode for client verification.");
-        foreach(string id in new[]{"slowpoke","mankey","weedle","chansey"})
+        foreach(string id in PrototypeRoster.CreateDefinitions().Select(d=>d.Id))
         {
             var catalog=PrototypeRoster.CreateCatalog();
             var battle=BattleStateFactory.Create("sprite-check",1,123,30,catalog,new[]{
@@ -65,8 +65,9 @@ public static class VerifyPokemonAnimations
         if(view==null)throw new Exception("Placement sandbox missing.");
         var seen=new HashSet<string>();int rounds=0;
         foreach(var rank in new[]{UnitRank.One,UnitRank.Two,UnitRank.Three})
+        foreach(bool advanced in new[]{false,true})
         {
-            view.ResetRosterDemo(rank);
+            if(advanced)view.ResetAdvancedRosterDemo(rank);else view.ResetRosterDemo(rank);
             // Start the teams apart so even the melee attacker must demonstrate walking.
             foreach(var player in view.Match.Players)
                 for(int i=0;i<player.Units.Count;i++)player.SetPlacement(player.Units[i].InstanceId,UnitPlacement.OnBoard(new BoardPosition(i,0)));
@@ -92,10 +93,10 @@ public static class VerifyPokemonAnimations
             if(view.Match.Phase!=MatchPhase.Result||view.RoundFlow.Fault!=null)throw new Exception("Client round failed.");
             view.Match.Pool.AssertConservation(view.Match);rounds++;
         }
-        foreach(string id in new[]{"slowpoke","mankey","weedle","chansey"})
+        foreach(string id in PrototypeRoster.CreateDefinitions().Select(d=>d.Id))
             foreach(string state in new[]{"Moving","Attacking","Casting"})
                 if(!seen.Contains(id+":"+state))throw new Exception("Unverified animation: "+id+":"+state);
-        view.ResetRosterDemo();view.RoundLoop.StartCombat(view.Match.RoundNumber);view.RoundFlow.RefreshState();
+        view.ResetAdvancedRosterDemo();view.RoundLoop.StartCombat(view.Match.RoundNumber);view.RoundFlow.RefreshState();
         foreach(var unit in view.RoundLoop.Battle.Units)unit.SetVitals(unit.CurrentHP,unit.Stats.MaxEnergy);
         for(int i=0;i<17;i++)view.AdvanceRoundTime(1d/30);
         EditorApplication.isPaused=true;Canvas.ForceUpdateCanvases();

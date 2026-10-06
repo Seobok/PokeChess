@@ -71,6 +71,12 @@ namespace PokeChess.Client.UI
                 label.rectTransform.anchoredPosition=new Vector2(0,-15);label.rectTransform.sizeDelta=new Vector2(46,24);
                 label.fontSize=9;label.transform.SetAsLastSibling();
                 string state=label.text.Split('\n').Last();
+                if(unit.ActionState!=CombatActionState.Casting)
+                {
+                    if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
+                    else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
+                }
+                if(unit.CurrentShield>0)state+=" S"+Mathf.CeilToInt(unit.CurrentShield);
                 label.text="R"+(int)unit.Rank+" "+Mathf.CeilToInt(unit.CurrentHP)+"HP\n"+state;
                 var background=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
                 var c=background.color;c.a=.2f;background.color=c;

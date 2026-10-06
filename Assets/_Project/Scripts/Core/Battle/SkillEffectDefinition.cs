@@ -8,7 +8,7 @@ namespace PokeChess.Core.Battle
 {
     public enum SkillEffectType { Damage, Heal, Shield, ProjectileDamage, ApplyStatus }
     public enum SkillValueSource { Flat, Attack }
-    public enum EffectTargetSelector { CastTarget, Self, EnemiesAroundCastTarget, AlliesAroundCaster }
+    public enum EffectTargetSelector { CastTarget, Self, EnemiesAroundCastTarget, AlliesAroundCaster, EnemiesAroundCaster }
     public enum SkillEffectOutcome { Applied, Spawned, Skipped }
     public enum SkillEffectSkipReason { None, NoValidTarget, CasterUnavailable, StackPolicyIgnored }
     public sealed class SkillEffectDefinition
@@ -42,7 +42,7 @@ namespace PokeChess.Core.Battle
             bool enemy=IsDamageType(type)||(type==SkillEffectType.ApplyStatus&&statusTargetTeam==StatusTargetTeam.Enemy);
             if(enemy&&(targetSelector==EffectTargetSelector.Self||targetSelector==EffectTargetSelector.AlliesAroundCaster))
                 throw new ArgumentException("Damage effects require enemy selectors.");
-            if(!enemy&&targetSelector==EffectTargetSelector.EnemiesAroundCastTarget)
+            if(!enemy&&(targetSelector==EffectTargetSelector.EnemiesAroundCastTarget||targetSelector==EffectTargetSelector.EnemiesAroundCaster))
                 throw new ArgumentException("Support effects require ally selectors.");
             if(!Enum.IsDefined(typeof(SkillValueSource),valueSource)||
                 (valueSource==SkillValueSource.Attack&&!IsDamageType(type)))throw new ArgumentException("Invalid value source.");
