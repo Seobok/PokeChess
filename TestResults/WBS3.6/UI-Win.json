@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.ResetMatchUI();v.RoundLoop.Surrender(\"p2\",1,PokeChess.Core.Match.MatchPhase.Preparation);v.RefreshFromState();if(v.Match.FinalResult.WinnerPlayerId!=\"p1\" || v.Player.FinalPlacement!=1 || v.Player.IsEliminated || !v.FinalResultText.Contains(\"VICTORY\"))throw new System.Exception(\"winner mismatch\");return new {text=v.FinalResultText,winnerHP=v.Player.HP,newMatch=v.NewMatchButton.interactable};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "text": "MATCH COMPLETE / VICTORY\nWinner: p1 / Round 1\nLAST PLAYER ALIVE\n\nFINAL STANDINGS\n#1  p1 (YOU)  | HP 60 | WINNER\n#2  p2  | HP 0 | SURRENDER / R1",
+        "winnerHP": 60,
+        "newMatch": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,140 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "BattleLifecycleTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 15,
+        "Passed": 15,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.DamageBeforeStepRetainsDeathReason",
+          "Status": "Passed",
+          "Duration": 0.0014169,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.FinalEliminationClearsFlyingProjectilesAndQueuedInputs",
+          "Status": "Passed",
+          "Duration": 0.0029498,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.LethalHitEndsOnceAndPreservesFinalEvents",
+          "Status": "Passed",
+          "Duration": 0.0019221,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimeAndLimitHaveExactTickBoundaries(20)",
+          "Status": "Passed",
+          "Duration": 0.0207393,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimeAndLimitHaveExactTickBoundaries(30)",
+          "Status": "Passed",
+          "Duration": 0.029014,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimeAndLimitHaveExactTickBoundaries(60)",
+          "Status": "Passed",
+          "Duration": 0.0567709,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimeIsGlobalAfterBuffsAndBeforeSpeedCap",
+          "Status": "Passed",
+          "Duration": 0.0290157,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimePreservesCurrentMoveAndEndReleasesReservations",
+          "Status": "Passed",
+          "Duration": 0.0516741,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.OvertimeScalesNewSupportAndCcButPreservesExistingValues",
+          "Status": "Passed",
+          "Duration": 0.0582972,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.PreStepEliminationAtThirtySecondsSkipsOvertime",
+          "Status": "Passed",
+          "Duration": 0.0194118,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.ProjectileArrivingAtLimitCannotHitAfterEnd",
+          "Status": "Passed",
+          "Duration": 0.0307217,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.RemovedAliveUnitIsNotReportedAsDeathAndHiddenUnitStillCountsAlive",
+          "Status": "Passed",
+          "Duration": 0.0003995,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.SameTickLastProjectilesProduceDrawIndependentlyOfSetupOrder(False)",
+          "Status": "Passed",
+          "Duration": 0.0016215,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.SameTickLastProjectilesProduceDrawIndependentlyOfSetupOrder(True)",
+          "Status": "Passed",
+          "Duration": 0.0005318,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.BattleLifecycleTests.TimeLimitCancelsNonInterruptibleCastWithoutRefund",
+          "Status": "Passed",
+          "Duration": 0.025041,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 2.94,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: BattleLifecycleTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

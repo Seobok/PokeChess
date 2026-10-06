@@ -30,7 +30,9 @@ namespace PokeChess.Core.Match
         public int HP { get; private set; }
         public bool IsEliminated { get; private set; }
         public PlayerElimination Elimination { get; private set; }
-        public int? FinalPlacement => Elimination?.Placement;
+        private bool isMatchWinner;
+        public int? FinalPlacement => isMatchWinner ? 1 : Elimination?.Placement;
+        internal void MarkMatchWinner() => isMatchWinner=true;
         internal void RecordElimination(PlayerElimination record) => Elimination=record;
         internal void MarkEliminated() => IsEliminated = true;
         public int Gold { get; private set; }

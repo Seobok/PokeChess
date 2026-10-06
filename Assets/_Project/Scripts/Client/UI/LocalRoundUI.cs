@@ -47,6 +47,7 @@ namespace PokeChess.Client.UI
             resultRoot=Panel("RoundResult",new Vector2(600,280),new Vector2(0,105));
             resultInfo=Label("Summary",resultRoot,"",17,new Vector2(565,260),Vector2.zero);
             combatRoot.gameObject.SetActive(false);resultRoot.gameObject.SetActive(false);
+            BuildFinalResultUI();
         }
         private static Vector2 CombatPoint(BoardPosition position) => new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
         private void AttachRoundLoop()
@@ -112,6 +113,7 @@ namespace PokeChess.Client.UI
             if (!changed) return;
             if (IsDragging) CancelDrag("Round advanced; drag cancelled.");
             if (RoundFlow.Fault != null) Feedback("Round error: " + roundFault);
+            else if(Match.Phase==MatchPhase.Finished)Feedback("Match complete. Winner: "+Match.FinalResult.WinnerPlayerId);
             else if (Match.Phase == MatchPhase.Preparation && RoundLoop.PreparationReady)
             {
                 foreach (var merge in RoundLoop.PreparationRankUps)
@@ -131,7 +133,8 @@ namespace PokeChess.Client.UI
             RoundFlow.RefreshState();
             displayedRound=Match.RoundNumber;displayedPhase=Match.Phase;
             string clock;
-            if(!automaticRoundFlow) clock="DEBUG INPUT TEST / AUTO PAUSED";
+            if(Match.Phase==MatchPhase.Finished) clock="MATCH COMPLETE";
+            else if(!automaticRoundFlow) clock="DEBUG INPUT TEST / AUTO PAUSED";
             else if(roundFault!=null) clock="PAUSED / RETRY REQUIRED";
             else if(RoundFlow.AwaitingMatchEnd) clock="WAITING FOR MATCH END";
             else if(RoundLoop.NextPreparationPending) clock="WAITING FOR SHOP REFRESH";
@@ -143,7 +146,7 @@ namespace PokeChess.Client.UI
             roundTimer.color=roundFault!=null ? new Color(1,.45f,.4f) : RoundFlow.IsTimerRunning && RoundFlow.RemainingSeconds<=5 ? new Color(1,.78f,.36f) : Color.white;
             roundButton.interactable=automaticRoundFlow && !RoundFlow.AwaitingMatchEnd && Player.HP>0 && !Player.IsEliminated &&
                 (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
-            ButtonText(roundButton,Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
+            ButtonText(roundButton,Match.Phase==MatchPhase.Finished ? "Match complete" : Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
             var ownPair=RoundLoop.GetBattleFor("p1");
             bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
@@ -183,9 +186,11 @@ namespace PokeChess.Client.UI
                 resultInfo.text=summary+"\n"+(Player.IsEliminated ? "Eliminated. Spectating remaining players." : "Preparation board restored. Next round starts automatically.")+(roundFault==null ? "" : "\nERROR: "+roundFault);
                 resultRoot.SetAsLastSibling();
             }
+            RenderFinalResultUI();
         }
     }
 }
+
 
 
 

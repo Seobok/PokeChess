@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.ResetPairingDemo(3);foreach(var p in v.Match.Players)p.SetHP(1);v.RefreshFromState();v.AdvanceRoundTime(30);for(int i=0;i<1400 && v.Match.Phase==PokeChess.Core.Match.MatchPhase.Combat;i++){foreach(var b in v.RoundLoop.Battles)foreach(var u in b.Battle.Units)if(u.IsAlive)u.SetShield(100000);v.AdvanceRoundTime(1d/30);}v.RefreshFromState();if(v.Match.FinalResult.Reason!=PokeChess.Core.Match.MatchEndReason.AllPlayersEliminated || v.Match.Players.Any(p=>p.HP!=0 || !p.IsEliminated) || !v.FinalResultText.Contains(\"ALL PLAYERS ELIMINATED\"))throw new System.Exception(\"all eliminated mismatch\");return new {text=v.FinalResultText,winner=v.Match.FinalResult.WinnerPlayerId,timer=v.RoundTimerText};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "text": "MATCH COMPLETE / VICTORY\nWinner: p1 / Round 1\nALL PLAYERS ELIMINATED / TIEBREAK WINNER\n\nFINAL STANDINGS\n#1  p1 (YOU)  | HP 0 | DAMAGE / R1\n#2  p2  | HP 0 | DAMAGE / R1\n#3  p3  | HP 0 | DAMAGE / R1",
+        "winner": "p1",
+        "timer": "ROUND 1 / FINISHED / MATCH COMPLETE"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

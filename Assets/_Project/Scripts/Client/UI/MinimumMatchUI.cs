@@ -186,11 +186,13 @@ namespace PokeChess.Client.UI
         {
             if(shopPhase!=Match.Phase) { shopCollapsed=Match.Phase!=MatchPhase.Preparation;shopPhase=Match.Phase; }
             if(commands==null) return;
+            bool finished=Match.Phase==MatchPhase.Finished;
+            shopFrame.gameObject.SetActive(!finished);resources.gameObject.SetActive(!finished);status.gameObject.SetActive(!finished);
             surrenderButton.interactable=!Player.IsEliminated && Player.HP>0 && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result);
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
             bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
             header.text="ROUND "+Match.RoundNumber+"    |    BOARD "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
-            playersLabel.text="PLAYERS\n"+string.Join("\n",Match.Players.Select(p=>(p.PlayerId=="p1" ? "YOU " : "")+p.PlayerId+" HP "+p.HP+(p.Elimination==null ? "" : " #"+p.FinalPlacement+" "+(p.Elimination.Reason==EliminationReason.Surrender ? "SURRENDER" : "OUT"))));
+            playersLabel.text="PLAYERS\n"+string.Join("\n",Match.Players.Select(p=>(p.PlayerId=="p1" ? "YOU " : "")+p.PlayerId+" HP "+p.HP+(p.Elimination==null ? (p.FinalPlacement.HasValue ? " #"+p.FinalPlacement+" WINNER" : "") : " #"+p.FinalPlacement+" "+(p.Elimination.Reason==EliminationReason.Surrender ? "SURRENDER" : "OUT"))));
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;
@@ -224,6 +226,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

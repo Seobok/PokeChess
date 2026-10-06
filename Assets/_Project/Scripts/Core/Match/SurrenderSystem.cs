@@ -17,6 +17,7 @@ namespace PokeChess.Core.Match
     {
         public SurrenderCommandResult Surrender(string playerId,int expectedRound,MatchPhase expectedPhase)
         {
+            if(Match.Phase==MatchPhase.Finished)return new SurrenderCommandResult(false,"Match is finished.");
             var player=Match.Players.FirstOrDefault(p=>p.PlayerId==playerId);
             if(player==null)return new SurrenderCommandResult(false,"Unknown player.");
             if(player.Elimination?.Reason==EliminationReason.Surrender)return new SurrenderCommandResult(true,"Already surrendered.",player.Elimination,true);
@@ -24,7 +25,7 @@ namespace PokeChess.Core.Match
                 return new SurrenderCommandResult(false,"Stale or unavailable surrender.");
             if(player.IsEliminated || player.HP==0)return new SurrenderCommandResult(false,"Player is eliminated.");
             // Result rewards/damage are immutable; a failed settlement must be retried first.
-            if(expectedPhase==MatchPhase.Result) { SettleResult();if(player.IsEliminated)return new SurrenderCommandResult(false,"Player is eliminated."); }
+            if(expectedPhase==MatchPhase.Result) { SettleResult();if(Match.Phase==MatchPhase.Finished)return new SurrenderCommandResult(false,"Match is finished.");if(player.IsEliminated)return new SurrenderCommandResult(false,"Player is eliminated."); }
             EliminationSystem.ValidateRelease(Match,player);
             var prior=Match.PairingPlan;
             var snapshot=expectedPhase==MatchPhase.Preparation ? ShadowBoardSnapshot.Capture(player,expectedRound,catalog) : null;
@@ -35,6 +36,7 @@ namespace PokeChess.Core.Match
                 var battle=GetBattleFor(playerId);battle?.Surrender(playerId);
                 if(battles.All(b=>b.IsComplete))Finish();
             }
+            if(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Result)TryFinishMatch(Match.RoundNumber);
             Match.Pool.AssertConservation(Match);
             return new SurrenderCommandResult(true,"Surrendered.",player.Elimination);
         }

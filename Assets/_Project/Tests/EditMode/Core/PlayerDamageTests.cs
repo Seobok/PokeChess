@@ -23,7 +23,7 @@ namespace PokeChess.Core.Tests
         private void Complete()
         {
             for(int i=0;i<1400 && match.Phase==MatchPhase.Combat;i++)loop.Step();
-            Assert.That(match.Phase,Is.EqualTo(MatchPhase.Result));Assert.That(loop.IsSettled,Is.True);
+            Assert.That(match.Phase,Is.EqualTo(MatchPhase.Result).Or.EqualTo(MatchPhase.Finished));Assert.That(loop.IsSettled,Is.True);
         }
         [TestCase(1,2)][TestCase(4,2)][TestCase(5,4)][TestCase(8,4)][TestCase(9,6)]
         [TestCase(12,6)][TestCase(13,8)][TestCase(16,8)][TestCase(17,10)][TestCase(int.MaxValue,10)]
@@ -143,7 +143,7 @@ namespace PokeChess.Core.Tests
             typeof(PlayerState).GetProperty("LastDamageRound").SetValue(last,0);loop.SettleResult();Assert.That(loop.IsSettled,Is.True);
         }
         [TestCase(0)][TestCase(1)]
-        public void ZeroOrOneSurvivorPausesPreparationWithoutTimerFault(int survivors)
+        public void ZeroOrOneSurvivorFinishesWithoutTimerFault(int survivors)
         {
             Setup(hp:1);if(survivors==1)Add("p2");else foreach(var p in match.Players)Add(p.PlayerId);
             var flow=new RoundFlowController(loop);flow.RequestAdvance(1,MatchPhase.Preparation);
@@ -156,8 +156,8 @@ namespace PokeChess.Core.Tests
                     loop.Step();
                 }
             }
-            Complete();Assert.That(loop.NextRound(1),Is.True);flow.RefreshState();
-            Assert.That(flow.AwaitingMatchEnd,Is.True);Assert.That(flow.IsTimerRunning,Is.False);
+            Complete();Assert.That(loop.NextRound(1),Is.False);flow.RefreshState();
+            Assert.That(match.Phase,Is.EqualTo(MatchPhase.Finished));Assert.That(flow.AwaitingMatchEnd,Is.False);Assert.That(flow.IsTimerRunning,Is.False);
             flow.AdvanceTime(100);Assert.That(flow.Fault,Is.Null);Assert.That(flow.RequestAdvance(2,MatchPhase.Preparation),Is.False);
             Assert.That(match.Players.Count(p=>p.HP>0),Is.EqualTo(survivors));
         }
@@ -171,5 +171,6 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+
 
 

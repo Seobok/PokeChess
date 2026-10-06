@@ -1,0 +1,140 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "FinalResultTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 15,
+        "Passed": 15,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.CombatLastSurvivorWaitsForIndependentShadowAndPayout",
+          "Status": "Passed",
+          "Duration": 0.099508,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.EveryoneDiesUsesEliminationPlacementOneWithoutResurrection",
+          "Status": "Passed",
+          "Duration": 0.0358494,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.FailedFinalSettlementCanRetryExactlyOnce",
+          "Status": "Passed",
+          "Duration": 0.0030097,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.FinalSnapshotDoesNotExposeMutablePlayerState",
+          "Status": "Passed",
+          "Duration": 0.0015438,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.FinishedTimersAndCommandsCannotChangeAuthoritativeState",
+          "Status": "Passed",
+          "Duration": 0.0052335,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.LastAliveDamageWinnerKeepsUnitsAndFinalRoundNeverAdvances",
+          "Status": "Passed",
+          "Duration": 0.00277,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.MultipleSurvivorsAndStaleRoundCannotFinish",
+          "Status": "Passed",
+          "Duration": 0.0008052,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(2)",
+          "Status": "Passed",
+          "Duration": 0.0008173,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(3)",
+          "Status": "Passed",
+          "Duration": 0.0009836,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(4)",
+          "Status": "Passed",
+          "Duration": 0.0005686,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(5)",
+          "Status": "Passed",
+          "Duration": 0.000517,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(6)",
+          "Status": "Passed",
+          "Duration": 0.0005814,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(7)",
+          "Status": "Passed",
+          "Duration": 0.0010142,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.PreparationSurrendersConcludeWithCompleteUniqueStandings(8)",
+          "Status": "Passed",
+          "Duration": 0.0010471,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.FinalResultTests.ResultLastSurrenderPreservesPreviousBattleAndRewards",
+          "Status": "Passed",
+          "Duration": 0.0014787,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 3.91,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: FinalResultTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

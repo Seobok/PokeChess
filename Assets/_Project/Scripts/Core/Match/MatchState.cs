@@ -31,6 +31,15 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<PlayerState> Players => playerView;
         public int RoundNumber { get; private set; }
         public MatchPhase Phase { get; private set; } = MatchPhase.Waiting;
+        public MatchFinalResult FinalResult { get; private set; }
+        internal void CommitFinalResult(MatchFinalResult result)
+        {
+            if(FinalResult!=null)throw new InvalidOperationException("Final result already committed.");
+            if(result.MatchId!=MatchId || result.EndRound!=RoundNumber || (Phase!=MatchPhase.Preparation && Phase!=MatchPhase.Result))throw new InvalidOperationException("Stale final result.");
+            TransitionTo(MatchPhase.Finished);
+            if(result.Reason==MatchEndReason.LastPlayerAlive)GetPlayer(result.WinnerPlayerId).MarkMatchWinner();
+            FinalResult=result;
+        }
         private readonly Dictionary<int,RoundPairingPlan> pairingHistory = new Dictionary<int,RoundPairingPlan>();
         public RoundPairingPlan PairingPlan { get; private set; }
         public IReadOnlyList<RoundPairing> Pairings => PairingPlan?.Pairs ?? Array.Empty<RoundPairing>();

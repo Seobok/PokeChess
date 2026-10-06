@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();UnityEditor.SessionState.SetFloat(\"WBS36Time\",UnityEngine.Time.timeScale);UnityEditor.SessionState.SetBool(\"WBS36Background\",UnityEngine.Application.runInBackground);UnityEngine.Application.runInBackground=true;UnityEngine.Time.timeScale=0;v.enabled=false;v.ResetMatchUI();v.Player.SetHP(1);v.RefreshFromState();v.AdvanceRoundTime(30);v.RefreshFromState();if(v.Match.Phase!=PokeChess.Core.Match.MatchPhase.Finished || v.Match.FinalResult.WinnerPlayerId!=\"p2\" || v.Player.FinalPlacement!=2 || v.SurrenderButton.interactable || v.RoundButton.interactable || v.RoundFlow.IsTimerRunning)throw new System.Exception(\"final loss mismatch\");return new {text=v.FinalResultText,timer=v.RoundTimerText,round=v.Match.RoundNumber,phase=v.Match.Phase.ToString()};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "text": "MATCH COMPLETE / PLACEMENT #2\nWinner: p2 / Round 1\nLAST PLAYER ALIVE\n\nFINAL STANDINGS\n#1  p2  | HP 60 | WINNER\n#2  p1 (YOU)  | HP 0 | DAMAGE / R1",
+        "timer": "ROUND 1 / FINISHED / MATCH COMPLETE",
+        "round": 1,
+        "phase": "Finished"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

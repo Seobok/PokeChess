@@ -138,13 +138,14 @@ namespace PokeChess.Core.Match
             Match=match??throw new ArgumentNullException(nameof(match));this.catalog=catalog??throw new ArgumentNullException(nameof(catalog));playerDamage=new PlayerDamageSystem(damageRules);
             if(match.Rules.BoardWidth!=7 || match.Rules.BoardHeight!=4)
                 throw new ArgumentException("Local round loop requires 7x4 preparation boards.");
-            if(match.Phase==MatchPhase.Preparation)PreparePairings(match.RoundNumber);
+            if(match.Phase==MatchPhase.Preparation) {PreparePairings(match.RoundNumber);TryFinishMatch(match.RoundNumber);}
         }
         public RoundPairingPlan PreparePairings(int expectedRound) => pairing.PrepareRound(Match,expectedRound);
         public LocalPairBattle GetBattleFor(string playerId) => battles.FirstOrDefault(b=>b.Pairing.Contains(playerId));
         public bool StartCombat(int expectedRound)
         {
             if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || !PreparationReady)return false;
+            if(TryFinishMatch(expectedRound))return false;
             var plan=PreparePairings(expectedRound);
             if(plan.NoBattleRequired)return false;
             if(plan.RequiresShadow && plan.ShadowPair==null)throw new InvalidOperationException("Missing Shadow source.");
@@ -214,6 +215,7 @@ namespace PokeChess.Core.Match
         }
         public void SettleResult()
         {
+            if(Match.Phase==MatchPhase.Finished && Match.FinalResult!=null)return;
             if(Match.Phase!=MatchPhase.Result || LastResult==null || LastResult.Round!=Match.RoundNumber)
                 throw new InvalidOperationException("No current completed round.");
             var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).Where(p=>p.Elimination?.Reason!=EliminationReason.Surrender).ToArray();
@@ -235,6 +237,7 @@ namespace PokeChess.Core.Match
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
             }
             elimination.SettleDamage(Match);
+            TryFinishMatch(Match.RoundNumber);
         }
         public bool NextRound(int completedRound)
         {
