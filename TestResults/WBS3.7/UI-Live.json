@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();UnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.7/UI-Live.png\");return new {status=v.Simulation.Status.ToString(),v.SimulationStatusText,game=v.Simulation.Flow.MatchElapsedSeconds,round=v.Match.RoundNumber,shopY=v.ShopRect.anchoredPosition.y};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "status": "Completed",
+        "SimulationStatusText": "SEED 123 / Completed\nR24 / ALIVE 1\nGAME 1192.3s / WALL 19.8s\nJSON / CSV SAVED",
+        "game": 1192.2999999999859,
+        "round": 24,
+        "shopY": -136
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

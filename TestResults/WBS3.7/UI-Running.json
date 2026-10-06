@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();UnityEditor.SessionState.SetBool(\"WBS37Background\",UnityEngine.Application.runInBackground);UnityEngine.Application.runInBackground=true;v.enabled=false;v.SimulationStartButton.onClick.Invoke();v.SimulationSpeedButton.onClick.Invoke();for(int i=0;i<5;i++)v.AdvanceRoundTime(1);if(v.Simulation==null || v.Match.Players.Count!=8 || v.SurrenderButton.interactable || v.XPButton.interactable || v.RoundButton.interactable || v.ShopExpanded)throw new System.Exception(\"Simulation UI validation failed\");UnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.7/UI-Running.png\");return new { v.SimulationStatusText, v.Match.RoundNumber, elapsed=v.Simulation.Flow.MatchElapsedSeconds, status=v.Simulation.Status.ToString() };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "SimulationStatusText": "SEED 123 / Running\nR2 / ALIVE 8\nGAME 50.0s / WALL 0.1s\nAUTO RECORDING",
+        "RoundNumber": 2,
+        "elapsed": 49.99999999999987,
+        "status": "Running"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

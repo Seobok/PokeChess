@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.Simulation.RunToEnd();v.AdvanceRoundTime(0);if(v.Simulation.Status!=PokeChess.Core.Match.SimulationStatus.Completed || v.Match.FinalResult.Standings.Count!=8 || !System.IO.File.Exists(System.IO.Path.Combine(v.SimulationSaveDirectory,\"match.json\")))throw new System.Exception(\"Final record validation failed\");System.IO.File.Copy(System.IO.Path.Combine(v.SimulationSaveDirectory,\"match.json\"),\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.7/UI-Match.json\",true);UnityEngine.ScreenCapture.CaptureScreenshot(\"C:/Users/user/Desktop/PokeChess/PokeChess/TestResults/WBS3.7/UI-Finished.png\");return new { v.SimulationStatusText,v.SimulationSaveDirectory,v.FinalResultText,status=v.Simulation.Status.ToString() };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "SimulationStatusText": "SEED 123 / Completed\nR24 / ALIVE 1\nGAME 1192.3s / WALL 16.2s\nJSON / CSV SAVED",
+        "SimulationSaveDirectory": "C:/Users/user/AppData/LocalLow/DefaultCompany/PokeChess\\MatchSimulations\\20261006-043816-667-5368b903",
+        "FinalResultText": "MATCH COMPLETE / PLACEMENT #5\nWinner: p4 / Round 24\nLAST PLAYER ALIVE\n\nFINAL STANDINGS\n#1  p4  | HP 19 | WINNER\n#2  p7  | HP 0 | DAMAGE / R24\n#3  p5  | HP 0 | DAMAGE / R18\n#4  p8  | HP 0 | DAMAGE / R15\n#5  p1 (YOU)  | HP 0 | DAMAGE / R14\n#6  p3  | HP 0 | DAMAGE / R13\n#7  p2  | HP 0 | DAMAGE / R11\n#8  p6  | HP 0 | DAMAGE / R10",
+        "status": "Completed"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

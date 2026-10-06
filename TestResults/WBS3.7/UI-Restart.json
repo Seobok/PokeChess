@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>();v.NewMatchButton.onClick.Invoke();if(v.Simulation!=null || v.Match.Phase!=PokeChess.Core.Match.MatchPhase.Preparation || v.Match.FinalResult!=null || !v.SurrenderButton.interactable)throw new System.Exception(\"Restart failed\");v.StartLocalSimulation(456);v.AdvanceRoundTime(1);var old=v.Simulation;v.ResetMatchUI();if(old.Status!=PokeChess.Core.Match.SimulationStatus.Cancelled || v.Simulation!=null)throw new System.Exception(\"Cancel failed\");v.StartLocalSimulation(123,true);v.enabled=true;return new {restart=true,cancel=true, v.SimulationStatusText};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "restart": true,
+        "cancel": true,
+        "SimulationStatusText": "SEED 123 / Running\nR1 / ALIVE 8\nGAME 0.0s / WALL 0.0s\nAUTO RECORDING"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

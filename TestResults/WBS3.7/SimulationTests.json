@@ -1,0 +1,175 @@
+{
+  "success": true,
+  "command": "command run_tests",
+  "data": {
+    "command": "run_tests",
+    "parameters": {
+      "mode": "editor",
+      "filter": "LocalMatchSimulationTests"
+    },
+    "result": {
+      "Summary": {
+        "Total": 20,
+        "Passed": 20,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      },
+      "Results": [
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(2)",
+          "Status": "Passed",
+          "Duration": 0.1937615,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(3)",
+          "Status": "Passed",
+          "Duration": 0.3064515,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(4)",
+          "Status": "Passed",
+          "Duration": 0.191741,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(5)",
+          "Status": "Passed",
+          "Duration": 0.375894,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(6)",
+          "Status": "Passed",
+          "Duration": 0.3421881,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(7)",
+          "Status": "Passed",
+          "Duration": 0.4807217,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.BotsCompleteLegalMatchesWithAllUniquePlacements(8)",
+          "Status": "Passed",
+          "Duration": 0.5681726,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.ClockClampsPreparationAndCountsOnlyProcessedCombatTicks",
+          "Status": "Passed",
+          "Duration": 0.0041395,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.CompletedRunIsFrozenAndDoesNotRestartTimeOrRewriteResults",
+          "Status": "Passed",
+          "Duration": 0.5645932,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.DifferentSeedsChangeTheMatchTrace",
+          "Status": "Passed",
+          "Duration": 1.1478848,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.FaultIsRecordedWithoutInventingWinner",
+          "Status": "Passed",
+          "Duration": 0.0040887,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.InvalidTimeCannotMutateRun(double.NaN)",
+          "Status": "Passed",
+          "Duration": 0.0029298,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.InvalidTimeCannotMutateRun(double.PositiveInfinity)",
+          "Status": "Passed",
+          "Duration": 0.0009973,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.InvalidTimeCannotMutateRun(-1)",
+          "Status": "Passed",
+          "Duration": 0.0009651,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.LargeCombatInputCountsProcessedTicksAndKeepsBacklogOutOfDuration",
+          "Status": "Passed",
+          "Duration": 0.0133879,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.LimitsAndCancellationRemainIncomplete",
+          "Status": "Passed",
+          "Duration": 0.0396802,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.OddSurvivorsProduceRecordedShadowAndEliminatedPlayersStopReceivingBattles",
+          "Status": "Passed",
+          "Duration": 0.6215905,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.ReportUsesInvariantNumbersAndProperJsonEscapes",
+          "Status": "Passed",
+          "Duration": 0.6085772,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.SameSeedAndDifferentFrameBudgetsHaveIdenticalGameTrace",
+          "Status": "Passed",
+          "Duration": 1.1133868,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PokeChess.Core.Tests.LocalMatchSimulationTests.SummaryUsesCompletedGameTimeOnly",
+          "Status": "Passed",
+          "Duration": 1.2000695,
+          "Message": null,
+          "StackTrace": null
+        }
+      ],
+      "Duration": 11.5,
+      "StatusPath": null,
+      "Mode": "EditMode",
+      "FilterApplied": "testname: LocalMatchSimulationTests",
+      "success": true,
+      "result": null
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

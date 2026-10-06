@@ -48,10 +48,12 @@ namespace PokeChess.Client.UI
             resultInfo=Label("Summary",resultRoot,"",17,new Vector2(565,260),Vector2.zero);
             combatRoot.gameObject.SetActive(false);resultRoot.gameObject.SetActive(false);
             BuildFinalResultUI();
+            BuildSimulationUI();
         }
         private static Vector2 CombatPoint(BoardPosition position) => new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
         private void AttachRoundLoop()
         {
+            Simulation?.Cancel();SaveSimulation();Simulation=null;
             RoundLoop=new LocalRoundCoordinator(Match,catalog);
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds,resultSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
@@ -67,6 +69,7 @@ namespace PokeChess.Client.UI
         }
         public void SurrenderLocalPlayer()
         {
+            if(Simulation?.Status==SimulationStatus.Running)return;
             CancelDrag("Surrender requested.");
             try
             {
@@ -78,6 +81,7 @@ namespace PokeChess.Client.UI
         }
         public void AdvanceRound()
         {
+            if(Simulation?.Status==SimulationStatus.Running)return;
             if (!automaticRoundFlow || Time.realtimeSinceStartupAsDouble-lastRoundClick < .25f) return;
             lastRoundClick = Time.realtimeSinceStartupAsDouble;
             var phase = Match.Phase; int round = Match.RoundNumber;
@@ -96,6 +100,11 @@ namespace PokeChess.Client.UI
         public void AdvanceRoundTime(double elapsedSeconds)
         {
             if (RoundFlow == null) return;
+            if(Simulation!=null)
+            {
+                Simulation.Advance(simulationFast ? elapsedSeconds*60 : elapsedSeconds,simulationFast ? 300 : 60);
+                SaveSimulation();Render();RenderSimulationUI();return;
+            }
             if (automaticRoundFlow)
             {
                 var phase = Match.Phase; int round = Match.RoundNumber;
@@ -187,6 +196,7 @@ namespace PokeChess.Client.UI
                 resultRoot.SetAsLastSibling();
             }
             RenderFinalResultUI();
+            RenderSimulationUI();
         }
     }
 }

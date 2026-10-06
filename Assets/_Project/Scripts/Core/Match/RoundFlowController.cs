@@ -15,6 +15,12 @@ namespace PokeChess.Core.Match
         public RoundFlowRules Rules { get; }
         public MatchState Match => runtime.Match;
         public Exception Fault { get; private set; }
+        // Consumed game time, independent of input frame size, speed and wall clock.
+        public double PreparationElapsedSeconds { get; private set; }
+        public double ResultElapsedSeconds { get; private set; }
+        public long CombatTicks { get; private set; }
+        public double CombatElapsedSeconds => CombatTicks / (double)runtime.TickRate;
+        public double MatchElapsedSeconds => PreparationElapsedSeconds + CombatElapsedSeconds + ResultElapsedSeconds;
         public bool IsTimerRunning => timerStarted && Fault == null && TimedPhaseReady;
         public double RemainingSeconds => Math.Max(0, Duration - phaseElapsed);
         public double PendingCombatSeconds => combatAccumulator;
@@ -78,6 +84,7 @@ namespace PokeChess.Core.Match
                         && ticks++ < Rules.MaxCombatTicksPerUpdate)
                     {
                         runtime.Step();
+                        CombatTicks++;
                         combatAccumulator = Math.Max(0, combatAccumulator - tickSeconds);
                     }
                     return true;
@@ -85,7 +92,10 @@ namespace PokeChess.Core.Match
                 return;
             }
             if (!IsTimerRunning) return;
-            phaseElapsed += Math.Min(elapsedSeconds, RemainingSeconds);
+            double consumed = Math.Min(elapsedSeconds, RemainingSeconds);
+            phaseElapsed += consumed;
+            if (Match.Phase == MatchPhase.Preparation) PreparationElapsedSeconds += consumed;
+            else ResultElapsedSeconds += consumed;
             if (RemainingSeconds > 1e-9) return;
             phaseElapsed = Duration;
             Execute(() =>

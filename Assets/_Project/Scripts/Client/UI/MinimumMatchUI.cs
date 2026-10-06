@@ -136,6 +136,7 @@ namespace PokeChess.Client.UI
         }
         private void Perform(Func<MatchCommandResult> action)
         {
+            if(Simulation?.Status==SimulationStatus.Running)return;
             if(busy) return;
             if(RoundLoop!=null && RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before sending commands.");return; }
             busy=true;CancelDrag("Action requested.");
@@ -172,7 +173,7 @@ namespace PokeChess.Client.UI
             if(selectedUnitId==null) { Feedback("Select your unit first.");return; }
             string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
         }
-        public void ToggleShop() { if(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) { shopCollapsed=!shopCollapsed;Render(); } }
+        public void ToggleShop() { if(Simulation?.Status==SimulationStatus.Running)return;if(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) { shopCollapsed=!shopCollapsed;Render(); } }
         private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board && Match.Phase!=MatchPhase.Preparation ? new Color(.12f,.12f,.18f) : slot.Color;
         private void UpdateTokenFeedback()
         {
@@ -185,6 +186,7 @@ namespace PokeChess.Client.UI
         private void RenderMinimumUI()
         {
             if(shopPhase!=Match.Phase) { shopCollapsed=Match.Phase!=MatchPhase.Preparation;shopPhase=Match.Phase; }
+            if(Simulation!=null)shopCollapsed=true;
             if(commands==null) return;
             bool finished=Match.Phase==MatchPhase.Finished;
             shopFrame.gameObject.SetActive(!finished);resources.gameObject.SetActive(!finished);status.gameObject.SetActive(!finished);

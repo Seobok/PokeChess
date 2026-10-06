@@ -182,6 +182,7 @@ namespace PokeChess.Client.UI
         }
         public void BeginDrag(string id,Vector2 point)
         {
+            if(Simulation?.Status==SimulationStatus.Running)return;
             if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
             if(IsDragging) CancelDrag("New drag.");
             var unit=Player.GetUnit(id);var preview=placements.Preview(Match,"p1",id,unit.Placement,Player.PlacementRevision);
