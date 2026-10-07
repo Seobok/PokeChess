@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.ResetPairingDemo(8); v.RoundLoop.StartCombat(v.Match.RoundNumber); v.RoundFlow.RefreshState(); foreach(var pair in v.RoundLoop.Battles){foreach(var u in pair.Battle.Units)u.SetShield(1000000); v.Match.GetPlayer(pair.Pairing.PlayerTwoId).SetHP(1);} v.AdvanceRoundTime(0); foreach(var pair in v.RoundLoop.Battles)foreach(var u in pair.Battle.Units.Where(u=>u.TeamId==2))u.SetVitals(0,0); for(int i=0;i<2;i++)v.AdvanceRoundTime(1d/30); if(v.Match.Players.Count(p=>p.IsEliminated)!=4)throw new System.Exception(\"Simultaneous elimination failed\"); if(v.HudProfileCount!=8||v.HudTimerKind!=\"Result\")throw new System.Exception(\"Result HUD failed\"); UnityEngine.Canvas.ForceUpdateCanvases(); return \"4 simultaneous eliminations / placement / result HUD passed\";"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "4 simultaneous eliminations / placement / result HUD passed"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

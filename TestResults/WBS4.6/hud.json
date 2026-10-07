@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/VerifyMatchHud.cs",
+      "timeout_ms": "60000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 1662,
+      "executeMs": 409,
+      "assemblyName": "PipelineRunScript_VerifyMatchHud_6cae3cb36d244713bd628f79de3c08bb",
+      "success": true,
+      "result": "HUD passed: 8 profiles, preparation progress / warning, combat / overtime, early battle wait, result / HP damage, next round, self surrender / continued match, final winner, reset."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,3 +1,7 @@
+# G4.6 Match HUD
+
+Round 배지·타이머 바·플레이어 HP/상태 프로필을 추가했다. Play에서 `8 players` 또는 기존 로스터 데모로 확인한다. [G4.6 구현·검증 기록](../Docs/WBS_G4/PokeChess_Match_HUD_WBS_4.6.md).
+
 # G4.3 P09~P12
 
 코일·꼬부기·캐이시·파이리 초기 수치와 구현 기준은 [G4.3 로스터](../Docs/WBS_G4/PokeChess_High_Cost_Roster_WBS_4.3.md)를 따른다. Play → `P09-P12 demo` → `DEV: Start battle`로 확인한다.

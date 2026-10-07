@@ -14,7 +14,7 @@ namespace PokeChess.Client.UI
         private readonly UnityEngine.UI.Button[] shopCards=new UnityEngine.UI.Button[ShopRules.SlotCount];
         private readonly UnityEngine.UI.Text[] cardText=new UnityEngine.UI.Text[ShopRules.SlotCount];
         private UnityEngine.UI.Button rerollButton,lockButton,xpButton,sellButton,shopToggle;
-        private UnityEngine.UI.Text resources,playersLabel,inventoryLabel,detailLabel,debugLabel;
+        private UnityEngine.UI.Text resources,inventoryLabel,detailLabel,debugLabel;
         private RectTransform shopFrame;
         private const float ShopHeight=200, ShopHandleHeight=64;
         public RectTransform ShopRect => shopFrame;
@@ -57,11 +57,8 @@ namespace PokeChess.Client.UI
         private static void ButtonText(UnityEngine.UI.Button button,string text) => button.GetComponentInChildren<UnityEngine.UI.Text>(true).text=text;
         private void BuildMinimumUI()
         {
-            Panel("PlayerSidebar",new Vector2(205,160),new Vector2(-510,202));
-            playersLabel=Label("Players",canvasRect,"",13,new Vector2(190,150),new Vector2(-510,202));
-            Panel("Inventory",new Vector2(205,140),new Vector2(-510,30));
-            inventoryLabel=Label("InventoryText",canvasRect,"",14,new Vector2(190,125),new Vector2(-510,30));
-            Label("Controls",canvasRect,"Click: select unit\nDrag: move / swap\nEsc: cancel drag",13,new Vector2(200,65),new Vector2(-510,-98));
+            Panel("Inventory",new Vector2(205,90),new Vector2(-510,-88));
+            inventoryLabel=Label("InventoryText",canvasRect,"",12,new Vector2(190,80),new Vector2(-510,-88));
             Panel("UnitDetail",new Vector2(225,215),new Vector2(490,160));
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",14,new Vector2(210,145),new Vector2(490,185));
             sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
@@ -227,8 +224,8 @@ namespace PokeChess.Client.UI
             surrenderButton.interactable=!Player.IsEliminated && Player.HP>0 && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result);
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
             bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
-            header.text="ROUND "+Match.RoundNumber+"    |    BOARD "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
-            playersLabel.text="PLAYERS\n"+string.Join("\n",Match.Players.Select(p=>(p.PlayerId=="p1" ? "YOU " : "")+p.PlayerId+" HP "+p.HP+(p.Elimination==null ? (p.FinalPlacement.HasValue ? " #"+p.FinalPlacement+" WINNER" : "") : " #"+p.FinalPlacement+" "+(p.Elimination.Reason==EliminationReason.Surrender ? "SURRENDER" : "OUT"))));
+            header.text="BOARD "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
+
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;

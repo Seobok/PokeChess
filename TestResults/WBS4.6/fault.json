@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.ResetRosterDemo(); v.AdvanceRoundTime(10); float progress=v.HudTimerProgress; typeof(PokeChess.Core.Match.RoundFlowController).GetField(\"<Fault>k__BackingField\",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(v.RoundFlow,new System.Exception(\"HUD fixture\")); v.AdvanceRoundTime(1); if(v.HudTimerProgress!=progress||!v.HudNoticeText.Contains(\"retry\"))throw new System.Exception(\"Fault freeze failed\"); v.ResetRosterDemo(); v.AdvanceRoundTime(0); if(v.HudProfileCount!=2||v.HudTimerProgress<.99f)throw new System.Exception(\"2-player reset failed\"); return \"Fault freeze / retry notice / 2-player reset passed\";"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Fault freeze / retry notice / 2-player reset passed"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

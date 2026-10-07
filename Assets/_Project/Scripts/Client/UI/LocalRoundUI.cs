@@ -39,6 +39,8 @@ namespace PokeChess.Client.UI
         private void BuildRoundUI()
         {
             roundTimer=Label("RoundTimer",canvasRect,"",16,new Vector2(730,24),new Vector2(0,337));
+            roundTimer.gameObject.SetActive(false);BuildMatchHud();
+            header.rectTransform.anchoredPosition=new Vector2(0,267);header.fontSize=14;header.rectTransform.sizeDelta=new Vector2(730,20);
             roundButton=ActionButton("DEV: Start battle",new Vector2(225,32),new Vector2(490,291),AdvanceRound);
             surrenderButton=ActionButton("Surrender",new Vector2(225,24),new Vector2(490,320),SurrenderLocalPlayer);
             combatRoot=Rect("CombatView",canvasRect,new Vector2(600,350),Vector2.zero);
@@ -149,7 +151,7 @@ namespace PokeChess.Client.UI
         {
             if(roundButton==null || RoundLoop==null)return;
             RoundFlow.RefreshState();
-            displayedRound=Match.RoundNumber;displayedPhase=Match.Phase;
+            displayedRound=Match.RoundNumber;displayedPhase=Match.Phase;RenderMatchHud();
             string clock;
             if(Match.Phase==MatchPhase.Finished) clock="MATCH COMPLETE";
             else if(!automaticRoundFlow) clock="DEBUG INPUT TEST / AUTO PAUSED";
@@ -167,6 +169,7 @@ namespace PokeChess.Client.UI
             ButtonText(roundButton,Match.Phase==MatchPhase.Finished ? "Match complete" : Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
             var ownPair=RoundLoop.GetBattleFor("p1");
             bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
+            header.gameObject.SetActive(Match.Phase!=MatchPhase.Combat&&Match.Phase!=MatchPhase.Finished);
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
                 roundTimer.text+=" / VS "+OpponentLabel(ownPair,"p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
             if(selectedUnitId==null && (Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result))
@@ -177,7 +180,7 @@ namespace PokeChess.Client.UI
             if(combat)
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
-                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,"p1")+" / "+battle.ElapsedSeconds.ToString("0.0")+"s"+(ownPair.IsComplete ? " / WAITING FOR OTHER PAIRS" : battle.IsOvertime ? " / OVERTIME" : "");
+                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,"p1");
                 if(lastVisualBattle!=battle)
                 {
                     lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();

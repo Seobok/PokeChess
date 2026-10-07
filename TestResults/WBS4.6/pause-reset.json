@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.AdvanceRoundTime(10); typeof(PokeChess.Client.UI.PlacementSandboxView).GetField(\"automaticRoundFlow\",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(v,false); v.AdvanceRoundTime(0); if(v.HudNoticeText!=\"Paused for input test\"||v.HudTimerProgress<.65f)throw new System.Exception(\"Paused HUD failed\"); v.ResetPairingDemo(3); v.AdvanceRoundTime(0); if(v.HudProfileCount!=3)throw new System.Exception(\"3-player HUD failed\"); v.ResetPairingDemo(8); v.AdvanceRoundTime(0); return \"Pause freeze / 3-player / 8-player reset passed\";"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Pause freeze / 3-player / 8-player reset passed"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
