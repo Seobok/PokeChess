@@ -60,7 +60,7 @@ namespace PokeChess.Client.UI
             Panel("Inventory",new Vector2(205,90),new Vector2(-510,-88));
             inventoryLabel=Label("InventoryText",canvasRect,"",12,new Vector2(190,80),new Vector2(-510,-88));
             Panel("UnitDetail",new Vector2(225,215),new Vector2(490,160));
-            detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",14,new Vector2(210,145),new Vector2(490,185));
+            detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",12,new Vector2(210,175),new Vector2(490,173));
             sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
             Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
             ActionButton("P01-P04 demo",new Vector2(85,25),new Vector2(397,42),()=>ResetRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
@@ -177,7 +177,7 @@ namespace PokeChess.Client.UI
                 if(!result.Accepted) Feedback(result.Message);
                 else if(result.Purchase!=null)
                 {
-                    var purchase=result.Purchase;highlights[purchase.Unit.InstanceId]=Time.unscaledTime+1.2f;
+                    var purchase=result.Purchase;RecordContextRankUps(purchase.RankUps);highlights[purchase.Unit.InstanceId]=Time.unscaledTime+1.2f;
                     string rank=purchase.RankUps.Count==0 ? "" : " / rank "+string.Join(" -> ",purchase.RankUps.Select(e=>(int)e.Rank));
                     int returned=purchase.RankUps.Sum(e=>e.ReturnedItemIds.Count);
                     Feedback("Bought "+catalog.Get(purchase.Unit.DefinitionId).DisplayName+rank+(returned==0 ? "." : "; "+returned+" item(s) returned.")+(purchase.MergeNextPreparation ? " Merge pending: next preparation (board copies required)." : "")+(Match.Phase==MatchPhase.Combat?" Current battle unchanged.":""));
@@ -255,16 +255,7 @@ namespace PokeChess.Client.UI
             lockButton.interactable=trade;ButtonText(lockButton,Player.Shop.IsLocked ? "LOCKED / Unlock" : "Lock next refresh");
             xpButton.interactable=trade && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
             ButtonText(xpButton,Player.Level==commands.LevelRules.MaxLevel ? "XP MAX" : "Buy "+commands.LevelRules.PurchaseXP+" XP / "+commands.LevelRules.PurchaseGoldCost+"G");
-            var selected=Player.Units.FirstOrDefault(u=>u.InstanceId==selectedUnitId);
-            if(selected==null) { selectedUnitId=null;detailLabel.text="SELECT YOUR UNIT\nClick board or bench\nto inspect and sell.";sellButton.interactable=false;ButtonText(sellButton,"Sell"); }
-            else
-            {
-                int price=commands.SalePrice(selectedUnitId);
-                detailLabel.text=catalog.Get(selected.DefinitionId).DisplayName+" / R"+(int)selected.Rank+"\n"+selected.InstanceId+" / stage "+selected.EvolutionStage+"\n"+selected.Placement.Kind+
-                    "\nSkill: "+catalog.Get(selected.DefinitionId).SkillId+"\nItems: "+selected.ItemInstanceIds.Count+"\n"+string.Join(", ",selected.ItemInstanceIds.Take(2));
-                sellButton.interactable=trade && selected.Placement.Kind!=PlacementKind.Unplaced;ButtonText(sellButton,"Sell / +"+price+"G");
-            }
-
+            RenderUnitContext();
             RenderShopEconomyUI();UpdateTokenFeedback();RenderRoundUI();
         }
     }

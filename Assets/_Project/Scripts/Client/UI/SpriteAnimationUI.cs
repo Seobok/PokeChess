@@ -26,7 +26,7 @@ namespace PokeChess.Client.UI
                 if(sprite.PokemonId!=unit.DefinitionId)sprite.Initialize(unit.DefinitionId);
                 if(sprite.ShowIdle(Time.unscaledTimeAsDouble))
                 {
-                    var text=tokenLabels[unit.InstanceId];text.text="R"+(int)unit.Rank;text.fontSize=11;
+                    var text=tokenLabels[unit.InstanceId];text.text=new string('★',(int)unit.Rank);text.fontSize=11;
                     text.rectTransform.anchoredPosition=new Vector2(0,25);text.color=Color.white;text.transform.SetAsLastSibling();
                 }
             }

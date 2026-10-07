@@ -136,6 +136,7 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Finished)Feedback("Match complete. Winner: "+Match.FinalResult.WinnerPlayerId);
             else if (Match.Phase == MatchPhase.Preparation && RoundLoop.PreparationReady)
             {
+                RecordContextRankUps(RoundLoop.PreparationRankUps);
                 foreach (var merge in RoundLoop.PreparationRankUps)
                     if (Player.Units.Any(u => u.InstanceId == merge.ResultUnitId))
                         highlights[merge.ResultUnitId] = Time.unscaledTime + 1.2f;
@@ -172,8 +173,6 @@ namespace PokeChess.Client.UI
             header.gameObject.SetActive(Match.Phase!=MatchPhase.Combat&&Match.Phase!=MatchPhase.Finished);
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
                 roundTimer.text+=" / VS "+OpponentLabel(ownPair,"p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
-            if(selectedUnitId==null && (Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result))
-                detailLabel.text="DEV: ALL PAIRS (S=SHADOW)\n"+string.Join("\n",RoundLoop.Battles.Select(b=>b.Pairing.PlayerOneId+" vs "+b.Pairing.PlayerTwoId+(b.IsShadow ? " (S)" : "")+" : "+(b.IsComplete ? b.Result.ToString() : "RUNNING")))+"\n\n"+RoundLoop.Battles.Count(b=>b.IsComplete)+" / "+RoundLoop.Battles.Count+" completed";
             combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
             foreach(var unit in Player.Units)if(unit.Placement.Kind==PlacementKind.Board)tokens[unit.InstanceId].gameObject.SetActive(!combat);
@@ -206,6 +205,7 @@ namespace PokeChess.Client.UI
                     {
                         var rect=Rect("Fighter_"+unit.UnitInstanceId,combatRoot,new Vector2(43,35),Vector2.zero);
                         var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2) ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
+                        if(Player.Units.Any(u=>u.InstanceId==unit.UnitInstanceId)) { image.raycastTarget=true; var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.UnitInstanceId;button.onClick.AddListener(()=>SelectUnit(id)); }
                         label=Label("HP",rect,"",10,new Vector2(43,35),Vector2.zero);combatTokens[unit.UnitInstanceId]=label;
                     }
                     label.transform.parent.gameObject.SetActive(unit.IsAlive && unit.IsOnBoard);
@@ -216,6 +216,9 @@ namespace PokeChess.Client.UI
                     bool healing=healFlashUntil.TryGetValue(unit.UnitInstanceId,out var until)&&Time.unscaledTime<until;
                     bool buffed=battle.StatusEffects.Active.Any(s=>s.TargetId==unit.UnitInstanceId&&s.Definition.CrowdControl==CrowdControlKind.None);
                     var tokenImage=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
+                    var selection=tokenImage.GetComponent<UnityEngine.UI.Outline>();
+                    if(selection==null){selection=tokenImage.gameObject.AddComponent<UnityEngine.UI.Outline>();selection.effectColor=new Color(.4f,1,1);selection.effectDistance=new Vector2(2,-2);}
+                    selection.enabled=unit.UnitInstanceId==selectedUnitId;
                     tokenImage.color=healing?new Color(.15f,.65f,.3f):unit.ActionState==CombatActionState.Casting?new Color(.55f,.3f,.75f):
                         buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
                     label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+Mathf.CeilToInt(unit.CurrentHP)+" HP\n"+
@@ -236,6 +239,7 @@ namespace PokeChess.Client.UI
                 resultInfo.text=summary+"\n"+(Player.IsEliminated ? "Eliminated. Spectating remaining players." : "Preparation board restored. Next round starts automatically.")+(roundFault==null ? "" : "\nERROR: "+roundFault);
                 resultRoot.SetAsLastSibling();
             }
+            RenderUnitContext();
             RenderFinalResultUI();
             RenderSimulationUI();
         }

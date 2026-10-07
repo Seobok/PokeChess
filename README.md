@@ -1,3 +1,7 @@
+# G4.8 Unit Context / Rank / Item UI
+
+유닛 선택 정보에 역할·타입·성급별 능력치와 실제 스킬 수치를 표시한다. 연쇄/지연 합성 선택 유지와 아이템 반환 피드백, 내 전투 유닛 클릭 선택을 추가했다. [G4.8 구현·검증 기록](../Docs/WBS_G4/PokeChess_Unit_Context_UI_WBS_4.8.md).
+
 # G4.7 Shop / Economy UI
 
 상점 카드 5개와 접힘 경제 헤더·XP 바·잠금·증감 피드백을 정리했다. 기존 Combat 구매·지연 합성 정책을 유지한다. [G4.7 구현·검증 기록](../Docs/WBS_G4/PokeChess_Shop_Economy_UI_WBS_4.7.md).
