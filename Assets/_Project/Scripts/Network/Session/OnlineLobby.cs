@@ -48,9 +48,10 @@ namespace PokeChess.Network.Session
         private static bool PlayerFlag(IReadOnlyPlayer p,string key) => p!=null&&p.Properties.TryGetValue(key,out var value)&&value.Value=="1";
         private string SessionValue(string key)=>session!=null&&session.Properties.TryGetValue(key,out var value)?value.Value:null;
         private bool TransportMembersConfirmed()=>manager!=null&&manager.IsHost&&manager.ConnectedClientsIds.Count==session.Players.Count&&
-            manager.ConnectedClientsIds.Where(id=>id!=NetworkManagerServerId).All(id=>verifiedPeers.Contains(id));
+            manager.ConnectedClientsIds.Where(id=>id!=NetworkManagerServerId).All(id=>verifiedPeers.Contains(id)&&boundPlayers.ContainsKey(id))&&
+            boundPlayers.Where(p=>manager.ConnectedClientsIds.Contains(p.Key)).Select(p=>p.Value).OrderBy(id=>id,StringComparer.Ordinal).SequenceEqual(session.Players.Where(p=>p.Id!=session.Host).Select(p=>p.Id).OrderBy(id=>id,StringComparer.Ordinal));
         private const ulong NetworkManagerServerId=0;
-        private void ResetLobby(){verifiedPeers.Clear();acknowledgedMatch=null;StartInfo=null;nextLobbyAttempt=0;connectedPublished=false;}
+        private void ResetLobby(){verifiedPeers.Clear();acknowledgedMatch=null;StartInfo=null;nextLobbyAttempt=0;connectedPublished=false;ResetGameCommands();}
 
         public Task SetReadyAsync(bool ready)=>Run(()=>SaveReadyAsync(ready));
         private async Task SaveReadyAsync(bool ready)
@@ -105,6 +106,7 @@ namespace PokeChess.Network.Session
         private void UpdateLobby()
         {
             if(session==null||State!=ConnectionState.Connected||lobbyPublishing||Time.realtimeSinceStartupAsDouble<nextLobbyAttempt)return;
+            if(!IdentityBound)return;
             if(!connectedPublished&&!IsBusy){PublishLobbyState(false);return;}
             if(!IsHost&&LobbyState!=LobbyPhase.Waiting){
 #if DEVELOPMENT_BUILD || UNITY_EDITOR

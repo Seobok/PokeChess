@@ -7,7 +7,7 @@ using PokeChess.Network.Session;
 
 namespace PokeChess.Client.UI
 {
-    public sealed class RoomFlowView : MonoBehaviour
+    public sealed partial class RoomFlowView : MonoBehaviour
     {
         public RoomBrowser Browser { get; }=new RoomBrowser();
         private GameObject panel,browse,lobby;
@@ -45,6 +45,7 @@ namespace PokeChess.Client.UI
             startButton=Button("Start",waiting,new Vector2(-200,-205),new Vector2(150,34),async()=>{await OnlineConnection.Instance.StartMatchAsync();});
             copy=Button("Copy code",waiting,new Vector2(0,-205),new Vector2(150,34),()=>{GUIUtility.systemCopyBuffer=OnlineConnection.Instance.Code??"";feedback.text="Room code copied.";});
             leave=Button("Leave room",waiting,new Vector2(200,-205),new Vector2(150,34),Leave);
+            BuildOnlineCommandUI(body);
             feedback=Label("Feedback",body,"",new Vector2(880,38),new Vector2(0,-248),13);
             lobby.SetActive(false);panel.SetActive(FindFirstObjectByType<PlacementSandboxView>()==null);
         }
@@ -76,7 +77,9 @@ namespace PokeChess.Client.UI
         {
             var s=OnlineConnection.Instance;bool ready=OnlineAuthenticationService.Instance.IsReady;
             bool inRoom=s.Room!=null;bool idle=ready&&!s.IsBusy&&!inRoom;
-            browse.SetActive(!inRoom);lobby.SetActive(inRoom);
+            bool inMatch=inRoom&&s.StartInfo!=null;onlineMatchPanel.SetActive(inMatch);
+            feedback.gameObject.SetActive(!inMatch);
+            browse.SetActive(!inRoom);lobby.SetActive(inRoom&&!inMatch);UpdateOnlineCommandUI(s);
             create.interactable=join.interactable=capacity.interactable=visibility.interactable=roomName.interactable=joinCode.interactable=idle;
             refresh.interactable=idle&&Browser.State!=RoomListState.Loading;next.interactable=refresh.interactable&&!string.IsNullOrEmpty(Browser.NextPage);
             foreach(var b in rowButtons)b.interactable=idle&&Browser.State==RoomListState.Ready;

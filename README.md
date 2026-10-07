@@ -1,3 +1,7 @@
+# G5.5 Command / Validation / Mutation / Ack
+
+Host 권한 명령 처리와 소유자 상태 응답, 중복 실행 방지 및 온라인 준비 명령 UI를 추가했다. [G5.5 구현·검증 기록](../Docs/WBS_G5/PokeChess_Command_Pipeline_WBS_5.5.md). 온라인 자동 라운드·전투 동기화는 후속 단계다.
+
 # G5.4 Lobby / Ready / Host Start
 
 참가자 Ready/취소, Host 시작 조건 검사, 방 잠금·확인 응답·시작 취소와 공통 경기 시작 정보를 추가했다. [G5.4 구현·검증 기록](../Docs/WBS_G5/PokeChess_Lobby_Ready_Start_WBS_5.4.md). 온라인 경기 동기화는 후속 단계다.

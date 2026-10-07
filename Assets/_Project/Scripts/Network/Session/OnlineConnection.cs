@@ -90,6 +90,7 @@ namespace PokeChess.Network.Session
                 State = ConnectionState.Connecting;
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(RequestMessage, OnRequest);
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(ReplyMessage, OnReply);
+                RegisterGameMessages();
                 messagesRegistered = true;
                 if(manager.IsHost) State = ConnectionState.Connected;
                 else SendProbe();
@@ -118,6 +119,7 @@ namespace PokeChess.Network.Session
                 reader.ReadValueSafe(out ushort version); reader.ReadValueSafe(out string gameVersion); reader.ReadValueSafe(out int id);
                 if(version != ProtocolVersion || gameVersion != Application.version) { manager.DisconnectClient(sender,"VersionMismatch"); return; }
                 RequestsReceived++; verifiedPeers.Add(sender);
+                IssueBindingChallenge(sender);
                 using(var writer = new FastBufferWriter(1024,Allocator.Temp))
                 {
                     writer.WriteValueSafe(version); writer.WriteValueSafe(gameVersion); writer.WriteValueSafe(id);
@@ -142,6 +144,7 @@ namespace PokeChess.Network.Session
         private void Update()
         {
             UpdateLobby();
+            UpdateGameCommands();
             if(session == null || IsBusy || State == ConnectionState.Leaving) return;
             if(!manager.IsListening) { Error="ConnectionLost"; SessionEnded(); }
             else if(State == ConnectionState.Connecting && Time.realtimeSinceStartupAsDouble-sentAt > 15) { Error="HandshakeTimeout"; SessionEnded(); }
@@ -168,6 +171,7 @@ namespace PokeChess.Network.Session
                 manager.CustomMessagingManager.UnregisterNamedMessageHandler(ReplyMessage);
             }
             messagesRegistered=false;
+            UnregisterGameMessages();
             if(manager.IsListening) manager.Shutdown();
             // NGO shutdown finishes on a subsequent frame before another connection can start.
             while(manager.ShutdownInProgress) await Task.Yield();
