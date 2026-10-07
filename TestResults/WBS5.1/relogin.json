@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "return new {state=PokeChess.Client.Services.OnlineAuthenticationService.Instance.State.ToString(),playerId=PokeChess.Client.Services.OnlineAuthenticationService.Instance.PlayerId,error=PokeChess.Client.Services.OnlineAuthenticationService.Instance.Error,ready=PokeChess.Client.Services.OnlineAuthenticationService.Instance.IsReady,ui=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.AuthenticationStatusView>()!=null};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "state": "Ready",
+        "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "error": null,
+        "ready": true,
+        "ui": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,3 +1,7 @@
+# G5.1 Anonymous Authentication
+
+Boot에서 UGS 익명 인증을 시작하고 재실행 시 저장된 세션으로 PlayerId를 복원한다. 상태·재시도 UI와 로컬 경기 독립 실행을 제공한다. [G5.1 구현·검증 기록](../Docs/WBS_G5/PokeChess_Anonymous_Authentication_WBS_5.1.md). 두 PC 최종 검증은 대기 중이다.
+
 # G4.10 Content Alpha QA
 
 12종 × 3성급 스킬 검사, 기본 경기 20회와 레벨 7 콘텐츠 보완 경기 3회, 회귀 검사 및 UI/Windows 빌드 검증을 진행했다. 결과와 재실행 방법은 [G4.10 검증 기록](../Docs/WBS_G4/PokeChess_Content_Alpha_QA_WBS_4.10.md)을 따른다.

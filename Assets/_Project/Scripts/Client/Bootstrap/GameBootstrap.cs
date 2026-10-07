@@ -1,4 +1,6 @@
 using UnityEngine;
+using PokeChess.Client.Services;
+using PokeChess.Client.UI;
 
 namespace PokeChess.Client.Bootstrap
 {
@@ -11,6 +13,14 @@ namespace PokeChess.Client.Bootstrap
         {
             IsInitialized = true;
             Debug.Log("PokeChess bootstrap initialized.", this);
+        }
+
+        private async void Start()
+        {
+            if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-pokechess-content-qa") >= 0) return;
+            if (FindFirstObjectByType<AuthenticationStatusView>() == null)
+                new GameObject("AuthenticationStatus").AddComponent<AuthenticationStatusView>();
+            await OnlineAuthenticationService.Instance.EnsureSignedInAsync();
         }
     }
 }
