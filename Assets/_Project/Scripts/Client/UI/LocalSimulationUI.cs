@@ -15,15 +15,17 @@ namespace PokeChess.Client.UI
         public UnityEngine.UI.Button SimulationStartButton { get; private set; }
         public UnityEngine.UI.Button SimulationSpeedButton { get; private set; }
         private UnityEngine.UI.Text simulationInfo;
+        private RectTransform simulationPanel;
         private bool simulationFast;
         private LocalMatchSimulation savedSimulation;
         private string simulationSaveError;
         private void BuildSimulationUI()
         {
-            Panel("SimulationPanel",new Vector2(205,135),new Vector2(-510,-210));
-            SimulationStartButton=ActionButton("Simulate 8",new Vector2(98,25),new Vector2(-561,-160),()=>StartLocalSimulation());
-            SimulationSpeedButton=ActionButton("Speed: 1x",new Vector2(98,25),new Vector2(-459,-160),ToggleSimulationSpeed);
+            simulationPanel=Panel("SimulationPanel",new Vector2(205,135),new Vector2(-510,-210));
+            SimulationStartButton=ActionButton("Simulate 8",new Vector2(98,25),new Vector2(-561,335),()=>StartLocalSimulation());
+            SimulationSpeedButton=ActionButton("Speed: 1x",new Vector2(98,25),new Vector2(-459,335),ToggleSimulationSpeed);
             simulationInfo=Label("SimulationStatus",canvasRect,"LOCAL SIMULATION\nSeed 123 / 8 players",11,new Vector2(195,90),new Vector2(-510,-222));
+            simulationPanel.gameObject.SetActive(false);simulationInfo.gameObject.SetActive(false);
         }
         public void StartLocalSimulation(ulong seed=123,bool fast=false)
         {
@@ -57,6 +59,7 @@ namespace PokeChess.Client.UI
             if(simulationInfo==null)return;
             ButtonText(SimulationSpeedButton,simulationFast ? "Speed: fast" : "Speed: 1x");
             var run=Simulation;
+            simulationPanel.gameObject.SetActive(run!=null&&!ShopExpanded);simulationInfo.gameObject.SetActive(run!=null&&!ShopExpanded);
             if(run==null) { simulationInfo.text="LOCAL SIMULATION\nSeed 123 / 8 players";return; }
             simulationInfo.text="SEED "+run.Settings.Seed+" / "+run.Status+"\nR"+Match.RoundNumber+" / ALIVE "+run.AliveCount+"\nGAME "+run.Flow.MatchElapsedSeconds.ToString("0.0")+"s / WALL "+run.ExecutionSeconds.ToString("0.0")+"s\n"+
                 (simulationSaveError!=null ? "SAVE FAILED" : savedSimulation==run ? "JSON / CSV SAVED" : "AUTO RECORDING");

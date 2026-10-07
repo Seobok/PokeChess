@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var v=UnityEngine.Object.FindFirstObjectByType<PokeChess.Client.UI.PlacementSandboxView>(); v.StartLocalSimulation(123,false); if(v.Simulation==null||v.ShopExpanded||Enumerable.Range(0,5).Any(i=>v.ShopButton(i).interactable))throw new System.Exception(\"Simulation UI lock failed\"); v.ResetMatchUI(); return \"Simulation controls retained / shop locked / reset passed\";"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Simulation controls retained / shop locked / reset passed"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

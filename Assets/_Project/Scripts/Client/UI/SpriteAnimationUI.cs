@@ -39,10 +39,7 @@ namespace PokeChess.Client.UI
                 if(sprite.PokemonId!=offer.DefinitionId)sprite.Initialize(offer.DefinitionId);
                 if(sprite.ShowIdle(Time.unscaledTimeAsDouble))
                 {
-                    // Reserve the left side for artwork; preserve the existing buy button and text.
-                    var text=shopCards[slot].GetComponentInChildren<UnityEngine.UI.Text>();
-                    text.rectTransform.sizeDelta=new Vector2(115,100);text.rectTransform.anchoredPosition=new Vector2(25,0);
-                    sprite.transform.localPosition+=new Vector3(-52,0,0);
+                    sprite.transform.localPosition+=new Vector3(-50,16,0);
                 }
             }
             foreach(var entry in shopSprites)entry.Value.gameObject.SetActive(!Player.Shop.Slots[entry.Key].IsEmpty);

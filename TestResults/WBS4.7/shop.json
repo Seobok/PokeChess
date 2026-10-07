@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/VerifyShopEconomy.cs",
+      "timeout_ms": "60000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 1807,
+      "executeMs": 178,
+      "assemblyName": "PipelineRunScript_VerifyShopEconomy_2bbfc9c646714c0f8428480f780d0949",
+      "success": true,
+      "result": "Shop passed: 5 card click / price / fixed slots, collapse toggle, gold reasons, XP / MAX, full bench / chained merges, combat buy / snapshot / deferred merge, result / settlement feedback once, lock refresh / manual reroll, stale card / elimination."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

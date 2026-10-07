@@ -1,3 +1,7 @@
+# G4.7 Shop / Economy UI
+
+상점 카드 5개와 접힘 경제 헤더·XP 바·잠금·증감 피드백을 정리했다. 기존 Combat 구매·지연 합성 정책을 유지한다. [G4.7 구현·검증 기록](../Docs/WBS_G4/PokeChess_Shop_Economy_UI_WBS_4.7.md).
+
 # G4.6 Match HUD
 
 Round 배지·타이머 바·플레이어 HP/상태 프로필을 추가했다. Play에서 `8 players` 또는 기존 로스터 데모로 확인한다. [G4.6 구현·검증 기록](../Docs/WBS_G4/PokeChess_Match_HUD_WBS_4.6.md).
