@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var a=System.Reflection.Assembly.Load(\"PokeChess.Core.Tests\");var t=a.GetType(\"PokeChess.Core.Tests.AssemblyBoundaryTests\");foreach(var n in new[]{\"CoreHasNoEngineOrOuterLayerDependencies\",\"RuntimeAssembliesUseTheDeclaredReferenceDirection\",\"PlayerCompilationExcludesEditorAndTestAssemblies\"})t.GetMethod(n).Invoke(System.Activator.CreateInstance(t),null);return \"3 assembly boundary checks passed\";"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "3 assembly boundary checks passed"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

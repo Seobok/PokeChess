@@ -20,6 +20,8 @@ namespace PokeChess.Client.Bootstrap
             if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-pokechess-content-qa") >= 0) return;
             if (FindFirstObjectByType<AuthenticationStatusView>() == null)
                 new GameObject("AuthenticationStatus").AddComponent<AuthenticationStatusView>();
+            if (FindFirstObjectByType<OnlineConnectionView>() == null)
+                new GameObject("OnlineConnectionView").AddComponent<OnlineConnectionView>();
             await OnlineAuthenticationService.Instance.EnsureSignedInAsync();
         }
     }

@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "return new {state=PokeChess.Network.Session.OnlineConnection.Instance.State.ToString(),error=PokeChess.Network.Session.OnlineConnection.Instance.Error,paused=UnityEditor.EditorApplication.isPaused};"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "state": "Idle",
+        "error": "ConnectionLost",
+        "paused": false
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

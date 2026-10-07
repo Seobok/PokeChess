@@ -2,7 +2,12 @@
   "name": "PokeChess.Network",
   "rootNamespace": "PokeChess.Network",
   "references": [
-    "PokeChess.Core"
+    "PokeChess.Core",
+    "Unity.Services.Authentication",
+    "Unity.Services.Multiplayer",
+    "Unity.Netcode.Runtime",
+    "Unity.Networking.Transport",
+    "Unity.Collections"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

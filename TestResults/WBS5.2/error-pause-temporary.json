@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command eval",
+  "data": {
+    "command": "eval",
+    "parameters": {
+      "code": "var a=typeof(UnityEditor.Editor).Assembly;var t=a.GetType(\"UnityEditor.LogEntries\");var f=a.GetType(\"UnityEditor.ConsoleWindow+ConsoleFlags\");var flag=System.Convert.ToInt32(System.Enum.Parse(f,\"ErrorPause\"));t.GetMethod(\"SetConsoleFlag\",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic).Invoke(null,new object[]{flag,false});UnityEditor.EditorApplication.isPaused=false;return flag;"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": 4
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

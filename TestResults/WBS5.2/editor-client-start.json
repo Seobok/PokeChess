@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/VerifyNetworkConnection.cs",
+      "entry": "JoinWindowsHost"
+    },
+    "result": {
+      "diagnostics": [
+        {
+          "severity": "warning",
+          "message": "Field 'VerifyNetworkConnection.HostInfo.code' is never assigned to, and will always have its default value null",
+          "line": 8,
+          "column": 65,
+          "id": "CS0649",
+          "source": "[Serializable] private sealed class HostInfo { public string code; }"
+        }
+      ],
+      "compileMs": 109,
+      "executeMs": 2,
+      "assemblyName": "PipelineRunScript_VerifyNetworkConnection_5abe65d8125546718468c5d7208d64ce",
+      "success": true,
+      "result": "Editor Client QA started"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
