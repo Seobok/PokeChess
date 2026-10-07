@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/VerifyPokemonAnimations.cs",
+      "timeout_ms": "60000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 1754,
+      "executeMs": 6811,
+      "assemblyName": "PipelineRunScript_VerifyPokemonAnimations_e40cf0504ed34691b773ee97f0d45da5",
+      "success": true,
+      "result": "247 animations / 12594 frame references verified; 9 client rounds (ranks 1/2/3) passed; all species idle advancement / 8 directions / death fade passed; observed abra:Attacking, abra:Casting, abra:Idle, abra:Moving, bulbasaur:Attacking, bulbasaur:Casting, bulbasaur:Idle, bulbasaur:Moving, caterpie:Attacking, caterpie:Casting, caterpie:Idle, caterpie:Moving, chansey:Attacking, chansey:Casting, chansey:Idle, chansey:Moving, charmander:Attacking, charmander:Casting, charmander:Idle, charmander:Moving, gastly:Attacking, gastly:Casting, gastly:Idle, gastly:Moving, geodude:Attacking, geodude:Casting, geodude:Idle, geodude:Moving, magnemite:Attacking, magnemite:Casting, magnemite:Idle, magnemite:Moving, mankey:Attacking, mankey:Casting, mankey:Idle, mankey:Moving, slowpoke:Attacking, slowpoke:Casting, slowpoke:Idle, slowpoke:Moving, squirtle:Attacking, squirtle:Casting, squirtle:Idle, squirtle:Moving, weedle:Attacking, weedle:Casting, weedle:Idle, weedle:Moving"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

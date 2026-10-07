@@ -35,7 +35,7 @@ namespace PokeChess.Client.UI
             previousHP=unit.CurrentHP;
             double elapsed=(battle.CurrentTick-action.StartTick)/(double)battle.TickRate;
             string name=unit.ActionState==CombatActionState.Moving?"Walk":unit.ActionState==CombatActionState.Attacking?
-                (pokemon=="weedle"||pokemon=="chansey"||pokemon=="gastly"||pokemon=="caterpie"?"Shoot":"Attack"):unit.ActionState==CombatActionState.Casting?
+                (pokemon=="weedle"||pokemon=="chansey"||pokemon=="gastly"||pokemon=="caterpie"||pokemon=="magnemite"||pokemon=="squirtle"||pokemon=="abra"?"Shoot":"Attack"):unit.ActionState==CombatActionState.Casting?
                 SkillAnimation():"Idle";
             if(unit.ActionState!=previousAction){idleStart=battle.CurrentTick;previousAction=unit.ActionState;}
             double time=elapsed;
@@ -77,9 +77,11 @@ namespace PokeChess.Client.UI
         {
             switch(pokemon)
             {
-                case "slowpoke":case "geodude":case "bulbasaur":return "Charge";
+                case "slowpoke":case "geodude":case "bulbasaur":case "charmander":return "Charge";
                 case "mankey":return "MultiStrike";
-                case "weedle":case "gastly":case "caterpie":return "Shoot";
+                case "weedle":case "gastly":case "caterpie":case "magnemite":return "Shoot";
+                case "squirtle":return "Withdraw";
+                case "abra":return "SpAttack";
                 default:return "SpAttack";
             }
         }

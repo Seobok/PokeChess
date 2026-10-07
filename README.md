@@ -1,3 +1,7 @@
+# G4.3 P09~P12
+
+코일·꼬부기·캐이시·파이리 초기 수치와 구현 기준은 [G4.3 로스터](../Docs/WBS_G4/PokeChess_High_Cost_Roster_WBS_4.3.md)를 따른다. Play → `P09-P12 demo` → `DEV: Start battle`로 확인한다.
+
 # PokeChess
 
 G4.2 꼬마돌·고오스·캐터피·이상해씨의 초기 수치 및 기본형 스킬 구현 기준은 [G4.2 로스터](../Docs/WBS_G4/PokeChess_Advanced_Roster_WBS_4.2.md)를 따른다. Play에서 `P01-P04 demo`와 `P05-P08 demo`를 선택해 확인한다.

@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "AgentScripts/GeneratePokemonAnimations.cs",
+      "timeout_ms": "180000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 380,
+      "executeMs": 23779,
+      "assemblyName": "PipelineRunScript_GeneratePokemonAnimations_5e0926e301e741ca843560667075fcef",
+      "success": true,
+      "result": "Generated 247 animations including aliases; 12594 frame references."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

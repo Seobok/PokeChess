@@ -66,8 +66,9 @@ namespace PokeChess.Client.UI
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",14,new Vector2(210,145),new Vector2(490,185));
             sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
             Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
-            ActionButton("P01-P04 demo",new Vector2(110,25),new Vector2(432,42),()=>ResetRosterDemo());
-            ActionButton("P05-P08 demo",new Vector2(110,25),new Vector2(548,42),()=>ResetAdvancedRosterDemo());
+            ActionButton("P01-P04 demo",new Vector2(85,25),new Vector2(397,42),()=>ResetRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
+            ActionButton("P05-P08 demo",new Vector2(85,25),new Vector2(490,42),()=>ResetAdvancedRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
+            ActionButton("P09-P12 demo",new Vector2(85,25),new Vector2(583,42),()=>ResetHighCostRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
             ActionButton("Reset match",new Vector2(110,25),new Vector2(432,-18),ResetMatchUI);
             ActionButton("Rank demo",new Vector2(110,25),new Vector2(548,-18),ResetRankDemo);
             ActionButton("Full bench",new Vector2(110,25),new Vector2(432,-50),ResetFullBenchDemo);
@@ -122,6 +123,8 @@ namespace PokeChess.Client.UI
             => ResetRosterGroup(rank,0);
         public void ResetAdvancedRosterDemo(UnitRank rank=UnitRank.One)
             => ResetRosterGroup(rank,4);
+        public void ResetHighCostRosterDemo(UnitRank rank=UnitRank.One)
+            => ResetRosterGroup(rank,8);
         private void ResetRosterGroup(UnitRank rank,int first)
         {
             CancelDrag("Roster demo.");catalog=PrototypeRoster.CreateCatalog();var all=PrototypeRoster.CreateDefinitions();
@@ -132,12 +135,19 @@ namespace PokeChess.Client.UI
             {
                 player.SetProgress(20,0,4);
                 // A Cost 3 pool has 14 copies; two Rank Three units would require 18.
-                var playerRank=first==4&&rank==UnitRank.Three&&player.PlayerId=="p2"?UnitRank.Two:rank;
-                for(int i=0;i<4;i++)SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(player.PlayerId+"-roster-"+i,
-                    definitions[i].Id,player.PlayerId,playerRank,0,UnitPlacement.OnBoard(positions[i])),definitions[i].Id);
+                for(int i=0;i<4;i++) {
+                    var playerRank=rank;
+                    if(rank==UnitRank.Three&&player.PlayerId=="p2") {
+                        if(definitions[i].Cost==5)continue; // All nine copies belong to the player's 3-star.
+                        if(definitions[i].Cost==4)playerRank=UnitRank.One;
+                        else if(definitions[i].Cost>=3)playerRank=UnitRank.Two;
+                    }
+                    SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(player.PlayerId+"-roster-"+i,
+                        definitions[i].Id,player.PlayerId,playerRank,0,UnitPlacement.OnBoard(positions[i])),definitions[i].Id);
+                }
             }
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
-            Feedback((first==0?"P01-P04":"P05-P08")+" / R"+(int)rank+(first==4&&rank==UnitRank.Three?" vs R2 (shared pool)":"")+
+            Feedback((first==0?"P01-P04":first==4?"P05-P08":"P09-P12")+" / R"+(int)rank+(first>0&&rank==UnitRank.Three?" vs pool-limited ranks":"")+
                 ": purple CAST, blue BUFF, green HEAL, gold skill projectile.");Render();
         }
         public void ResetPairingDemo(int playerCount)

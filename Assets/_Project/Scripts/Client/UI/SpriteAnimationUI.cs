@@ -73,7 +73,8 @@ namespace PokeChess.Client.UI
                 string state=label.text.Split('\n').Last();
                 if(unit.ActionState!=CombatActionState.Casting)
                 {
-                    if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
+                    if(unit.HasCrowdControl(CrowdControlKind.Stun))state="STUN";
+                    else if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
                     else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
                 }
                 if(unit.CurrentShield>0)state+=" S"+Mathf.CeilToInt(unit.CurrentShield);

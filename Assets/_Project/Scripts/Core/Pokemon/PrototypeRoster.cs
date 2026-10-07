@@ -5,7 +5,7 @@ using PokeChess.Core.Battle;
 
 namespace PokeChess.Core.Pokemon
 {
-    // G4.1/G4.2 base forms only. Rank skill values are authored independently.
+    // G4.1/G4.2/G4.3 base forms only. Rank skill values are authored independently.
     public static class PrototypeRoster
     {
         public static PokemonDefinition[] CreateDefinitions() => new[] {
@@ -16,7 +16,11 @@ namespace PokeChess.Core.Pokemon
             Pokemon("geodude","Geodude",800,45,.5f,45,1,100,30,"tank","rock-guard",2,"rock","ground"),
             Pokemon("gastly","Gastly",500,40,.6f,15,3,70,0,"caster","shadow-burst",2,"ghost","poison"),
             Pokemon("caterpie","Caterpie",550,35,.6f,20,2,60,20,"utility","string-shot",2,"bug"),
-            Pokemon("bulbasaur","Bulbasaur",750,65,.7f,30,1,60,0,"melee-dps","growth",3,"grass","poison")
+            Pokemon("bulbasaur","Bulbasaur",750,65,.7f,30,1,60,0,"melee-dps","growth",3,"grass","poison"),
+            HighPokemon("magnemite","Magnemite",650,70,.7f,25,20,4,80,0,"ranged-dps","magnet-bomb",3,"electric","steel"),
+            HighPokemon("squirtle","Squirtle",850,45,.55f,35,30,2,100,40,"support","aqua-guard",3,"water"),
+            HighPokemon("abra","Abra",650,45,.6f,20,25,3,100,20,"caster","psychic-burst",4,"psychic"),
+            HighPokemon("charmander","Charmander",1200,85,.7f,45,35,1,120,40,"tank-carry","flame-drive",5,"fire")
         };
         private static PokemonDefinition Pokemon(string id,string name,float hp,float attack,float speed,float armor,
             int range,float energy,float starting,string role,string skill,params string[] types) =>
@@ -25,6 +29,10 @@ namespace PokeChess.Core.Pokemon
         private static PokemonDefinition Pokemon(string id,string name,float hp,float attack,float speed,float armor,
             int range,float energy,float starting,string role,string skill,int cost,params string[] types) =>
             new PokemonDefinition(id,name,cost,new PokemonStats(hp,attack,0,speed,armor,20,range,2,energy,starting,.2f,
+                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types);
+        private static PokemonDefinition HighPokemon(string id,string name,float hp,float attack,float speed,float armor,float mr,
+            int range,float energy,float starting,string role,string skill,int cost,params string[] types) =>
+            new PokemonDefinition(id,name,cost,new PokemonStats(hp,attack,0,speed,armor,mr,range,2,energy,starting,.2f,
                 range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types);
         public static PokemonCatalog CreateCatalog() => new PokemonCatalog(CreateDefinitions());
         public static SkillCatalog CreateSkills() => new SkillCatalog(new[] {
@@ -48,7 +56,27 @@ namespace PokeChess.Core.Pokemon
             new SkillDefinition("string-shot",.3f,.3f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
                 new[]{new SkillEffectDefinition(SkillEffectType.ApplyStatus,EffectTargetSelector.CastTarget,0,
                     statusId:"string-shot-r1",rankStatusIds:new[]{"string-shot-r1","string-shot-r2","string-shot-r3"})},range:2,energyLock:1),
-            Buff("growth",.3f,.4f,"growth-r1","growth-r2","growth-r3")
+            Buff("growth",.3f,.4f,"growth-r1","growth-r2","growth-r3"),
+            new SkillDefinition("magnet-bomb",.4f,.4f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
+                new[]{new SkillEffectDefinition(SkillEffectType.ProjectileDamage,EffectTargetSelector.CastTarget,250,true,
+                    DamageType.Physical,projectileSpeed:10,rankValues:new[]{250f,400f,650f},impactRadius:1)},range:4,energyLock:1),
+            new SkillDefinition("aqua-guard",.4f,.5f,SkillTargetRule.Self,TargetLostPolicy.ContinueWithoutTarget,
+                new[]{new SkillEffectDefinition(SkillEffectType.Shield,EffectTargetSelector.AlliesAroundCaster,180,true,
+                    radius:2,rankValues:new[]{180f,280f,450f}),
+                    new SkillEffectDefinition(SkillEffectType.ApplyStatus,EffectTargetSelector.AlliesAroundCaster,0,radius:2,
+                        statusId:"aqua-guard-r1",statusTargetTeam:StatusTargetTeam.Ally,
+                        rankStatusIds:new[]{"aqua-guard-r1","aqua-guard-r2","aqua-guard-r3"})},energyLock:1),
+            new SkillDefinition("psychic-burst",.5f,.5f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
+                new[]{new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.EnemiesAroundCastTarget,350,true,
+                    DamageType.Magic,radius:1,rankValues:new[]{350f,550f,850f}),
+                    new SkillEffectDefinition(SkillEffectType.ApplyStatus,EffectTargetSelector.EnemiesAroundCastTarget,0,radius:1,
+                        statusId:"psychic-stun-r1",rankStatusIds:new[]{"psychic-stun-r1","psychic-stun-r2","psychic-stun-r3"})},range:3,energyLock:1),
+            new SkillDefinition("flame-drive",.5f,.5f,SkillTargetRule.Self,TargetLostPolicy.ContinueWithoutTarget,
+                new[]{new SkillEffectDefinition(SkillEffectType.Shield,EffectTargetSelector.Self,350,true,rankValues:new[]{350f,550f,900f}),
+                    new SkillEffectDefinition(SkillEffectType.ApplyStatus,EffectTargetSelector.Self,0,statusId:"flame-drive-r1",
+                        statusTargetTeam:StatusTargetTeam.Ally,rankStatusIds:new[]{"flame-drive-r1","flame-drive-r2","flame-drive-r3"}),
+                    new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.EnemiesAroundCaster,300,true,
+                        DamageType.Magic,radius:1,rankValues:new[]{300f,500f,800f})},energyLock:1)
         });
         private static SkillDefinition Buff(string id,float cast,float post,params string[] statuses) =>
             new SkillDefinition(id,cast,post,SkillTargetRule.Self,TargetLostPolicy.Cancel,
@@ -67,6 +95,18 @@ namespace PokeChess.Core.Pokemon
                 entries.Add(new StatusEffectDefinition("growth-r"+(i+1),4,StatusTargetTeam.Ally,
                     modifiers:new[]{new StatModifierDefinition(CombatStat.Attack,StatModifierType.Flat,attacks[i]),
                         new StatModifierDefinition(CombatStat.AttackSpeed,StatModifierType.Percentage,speeds[i])}));
+            }
+            var allyAttack=new[]{15f,25f,40f};var flameAttack=new[]{30f,50f,80f};var flameSpeed=new[]{.3f,.45f,.6f};
+            var stun=new[]{1f,1.25f,1.5f};
+            for(int i=0;i<3;i++)
+            {
+                entries.Add(new StatusEffectDefinition("aqua-guard-r"+(i+1),4,StatusTargetTeam.Ally,
+                    stackPolicy:StackPolicy.Strongest,sourceRule:SourceStackRule.Shared,stackGroup:"aqua-guard",
+                    modifiers:new[]{new StatModifierDefinition(CombatStat.Attack,StatModifierType.Flat,allyAttack[i])}));
+                entries.Add(new StatusEffectDefinition("psychic-stun-r"+(i+1),stun[i],crowdControl:CrowdControlKind.Stun));
+                entries.Add(new StatusEffectDefinition("flame-drive-r"+(i+1),5,StatusTargetTeam.Ally,
+                    modifiers:new[]{new StatModifierDefinition(CombatStat.Attack,StatModifierType.Flat,flameAttack[i]),
+                        new StatModifierDefinition(CombatStat.AttackSpeed,StatModifierType.Percentage,flameSpeed[i])}));
             }
             return new StatusCatalog(entries);
         }

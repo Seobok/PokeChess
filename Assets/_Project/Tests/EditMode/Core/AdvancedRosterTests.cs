@@ -139,7 +139,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void CatalogHasEightBaseFormsAndCostSpecificStocks()
         {
-            var c=PrototypeRoster.CreateCatalog();var defs=PrototypeRoster.CreateDefinitions();
+            var c=PrototypeRoster.CreateCatalog();var defs=PrototypeRoster.CreateDefinitions().Take(8).ToArray();
             Assert.That(defs.Length,Is.EqualTo(8));Assert.That(defs.Select(d=>d.Cost),Is.EqualTo(new[]{1,1,1,1,2,2,2,3}));
             var m=MatchStateFactory.CreateWithPool("pool",new[]{"p1","p2"},c,defs.Select(d=>d.Id));
             foreach(var d in defs)Assert.That(m.Pool.GetStock(d.Id).Initial,Is.EqualTo(m.Pool.Rules.SizeForCost(d.Cost)));
@@ -148,7 +148,7 @@ namespace PokeChess.Core.Tests
         [TestCase(1)][TestCase(2)][TestCase(3)]
         public void MixedEightSpeciesExecuteEverySkillAndFinishWithPoolConservation(int rank)
         {
-            var c=PrototypeRoster.CreateCatalog();var defs=PrototypeRoster.CreateDefinitions();
+            var c=PrototypeRoster.CreateCatalog();var defs=PrototypeRoster.CreateDefinitions().Take(8).ToArray();
             var match=MatchStateFactory.CreateWithPool("mixed",new[]{"p1","p2"},c,defs.Select(d=>d.Id));
             foreach(var player in match.Players)
             {

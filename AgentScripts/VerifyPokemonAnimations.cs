@@ -65,9 +65,9 @@ public static class VerifyPokemonAnimations
         if(view==null)throw new Exception("Placement sandbox missing.");
         var seen=new HashSet<string>();int rounds=0;
         foreach(var rank in new[]{UnitRank.One,UnitRank.Two,UnitRank.Three})
-        foreach(bool advanced in new[]{false,true})
+        foreach(int group in new[]{0,4,8})
         {
-            if(advanced)view.ResetAdvancedRosterDemo(rank);else view.ResetRosterDemo(rank);
+            if(group==8)view.ResetHighCostRosterDemo(rank);else if(group==4)view.ResetAdvancedRosterDemo(rank);else view.ResetRosterDemo(rank);
             // Start the teams apart so even the melee attacker must demonstrate walking.
             foreach(var player in view.Match.Players)
                 for(int i=0;i<player.Units.Count;i++)player.SetPlacement(player.Units[i].InstanceId,UnitPlacement.OnBoard(new BoardPosition(i,0)));
@@ -96,7 +96,7 @@ public static class VerifyPokemonAnimations
         foreach(string id in PrototypeRoster.CreateDefinitions().Select(d=>d.Id))
             foreach(string state in new[]{"Moving","Attacking","Casting"})
                 if(!seen.Contains(id+":"+state))throw new Exception("Unverified animation: "+id+":"+state);
-        view.ResetAdvancedRosterDemo();view.RoundLoop.StartCombat(view.Match.RoundNumber);view.RoundFlow.RefreshState();
+        view.ResetHighCostRosterDemo();view.RoundLoop.StartCombat(view.Match.RoundNumber);view.RoundFlow.RefreshState();
         foreach(var unit in view.RoundLoop.Battle.Units)unit.SetVitals(unit.CurrentHP,unit.Stats.MaxEnergy);
         for(int i=0;i<17;i++)view.AdvanceRoundTime(1d/30);
         EditorApplication.isPaused=true;Canvas.ForceUpdateCanvases();

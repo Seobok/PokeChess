@@ -20,6 +20,7 @@ namespace PokeChess.Core.Battle
         public DamageType DamageType { get; }
         public int Radius { get; }
         public float ProjectileSpeed { get; }
+        public int? ImpactRadius { get; }
         public string StatusId { get; }
         public StatusTargetTeam StatusTargetTeam { get; }
         public SkillValueSource ValueSource { get; }
@@ -31,8 +32,10 @@ namespace PokeChess.Core.Battle
         public bool IsDamage => Type==SkillEffectType.Damage||Type==SkillEffectType.ProjectileDamage;
         public SkillEffectDefinition(SkillEffectType type,EffectTargetSelector targetSelector,float baseValue,
             bool spellPowerScalable=false,DamageType damageType=DamageType.Magic,int radius=1,float projectileSpeed=6,string statusId=null,StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy,
-            IEnumerable<float> rankValues=null,SkillValueSource valueSource=SkillValueSource.Flat,IEnumerable<string> rankStatusIds=null)
+            IEnumerable<float> rankValues=null,SkillValueSource valueSource=SkillValueSource.Flat,IEnumerable<string> rankStatusIds=null,int? impactRadius=null)
         {
+            if(impactRadius.HasValue&&(impactRadius.Value<0||type!=SkillEffectType.ProjectileDamage))throw new ArgumentException("Invalid projectile impact radius.");
+            ImpactRadius=impactRadius;
             DamageCalculator.Validate(baseValue,true);DamageCalculator.Validate(projectileSpeed,true);
             if(radius<0||projectileSpeed<=0||!Enum.IsDefined(typeof(SkillEffectType),type)||
                 !Enum.IsDefined(typeof(EffectTargetSelector),targetSelector)||!Enum.IsDefined(typeof(DamageType),damageType))
@@ -140,7 +143,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
             bool spawned=b.Projectiles.TrySpawnSkill(caster,target,1,e.ProjectileSpeed,
-                new DamageRequest(caster.UnitInstanceId,target.UnitInstanceId,value,e.DamageType));
+                new DamageRequest(caster.UnitInstanceId,target.UnitInstanceId,value,e.DamageType),e.ImpactRadius);
             return new SkillEffectApplication(0,spawned?SkillEffectOutcome.Spawned:SkillEffectOutcome.Skipped);
         }
     }
@@ -196,12 +199,15 @@ namespace PokeChess.Core.Battle
                     throw new ArgumentException("Status target team does not match skill effect.");
             // Resolve values before applying any effect; invalid scaling cannot leave partial numeric changes.
             var values=skill.Effects.Select(e=>e.ResolveValue(caster.Rank,caster.EffectiveStats.SpellPower,caster.EffectiveStats.Attack)).ToArray();
+            // Freeze target lists before effects: a killed AoE center must not erase later CC targets.
+            var selections=skill.Effects.Select(e=>e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget?
+                Select(battle,caster,target,e):null).ToArray();
             for(int i=0;i<skill.Effects.Count;i++) {
                 var e=skill.Effects[i];
                 if(!caster.IsAlive||!caster.IsOnBoard) {
                     Record(battle,skill,caster,null,i,e,values[i],0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.CasterUnavailable);break;
                 }
-                var targets=Select(battle,caster,target,e);
+                var targets=selections[i]??Select(battle,caster,target,e);
                 if(targets.Length==0) {
                     Record(battle,skill,caster,null,i,e,values[i],0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.NoValidTarget);continue;
                 }

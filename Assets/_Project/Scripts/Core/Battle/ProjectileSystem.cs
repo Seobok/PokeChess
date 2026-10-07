@@ -18,11 +18,12 @@ namespace PokeChess.Core.Battle
         public long SpawnTick { get; }
         public long ArrivalTick { get; }
         public DamageRequest? SkillDamage { get; }
-        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival,DamageRequest? skillDamage=null)
+        public int? ImpactRadius { get; }
+        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival,DamageRequest? skillDamage=null,int? impactRadius=null)
         {
             Id=id;SourceId=source.UnitInstanceId;TargetId=target.UnitInstanceId;
             LaunchPosition=source.Position;TargetPositionAtLaunch=target.Position;
-            SpawnTick=tick;ArrivalTick=arrival;SkillDamage=skillDamage;
+            SpawnTick=tick;ArrivalTick=arrival;SkillDamage=skillDamage;ImpactRadius=impactRadius;
         }
     }
     public readonly struct ProjectileEvent
@@ -65,11 +66,11 @@ namespace PokeChess.Core.Battle
             events.Add(new ProjectileEvent(projectile,battle.CurrentTick,ProjectileEventKind.Spawned));
             return true;
         }
-        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request)
+        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request,int? impactRadius=null)
         {
             if(!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||source.TeamId==target.TeamId)return false;
             int travel=BattleSimulation.ToTicks((double)HexCoordinates.Distance(source.Position,target.Position)/speed,battle.TickRate);
-            var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request);
+            var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request,impactRadius);
             active.Add(p);events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Spawned));return true;
         }
         internal void Advance(IDamageProcessor damage)
@@ -85,7 +86,14 @@ namespace PokeChess.Core.Battle
                 if(reason!=ProjectileExpireReason.None)
                 { events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,reason));continue; }
                 var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);
-                damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
+                if(p.ImpactRadius.HasValue) {
+                    var request=p.SkillDamage.Value;
+                    var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsTargetable&&
+                        HexCoordinates.Distance(target.Position,u.Position)<=p.ImpactRadius.Value)
+                        .OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
+                    foreach(var victim in victims)
+                        damage.Apply(battle,new DamageRequest(p.SourceId,victim.UnitInstanceId,request.RawDamage,request.Type));
+                } else damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
                 events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Hit));
             }
         }

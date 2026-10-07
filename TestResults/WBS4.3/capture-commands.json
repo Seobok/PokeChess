@@ -1,0 +1,286 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7801,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    },
+    "server": {
+      "version": "0.0.1",
+      "port": 7801
+    },
+    "commands": [
+      {
+        "name": "capture_game_view",
+        "description": "Capture the game view as a PNG. source=screen (default) captures what the Game window shows, incl. Screen Space - Overlay UI; source=camera renders a single camera instead and misses overlay UI. Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).",
+        "tags": [
+          "capture"
+        ],
+        "package": "Unity.Pipeline.Editor",
+        "mainThreadRequired": true,
+        "parameters": [
+          {
+            "name": "width",
+            "description": "Output width in px (default 1280; capped 4096).",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 1280
+          },
+          {
+            "name": "height",
+            "description": "Output height in px (default 720; capped 4096).",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 720
+          },
+          {
+            "name": "camera",
+            "description": "Optional camera name (source=camera only); defaults to Camera.main, else the first enabled camera.",
+            "type": "String",
+            "required": false,
+            "defaultValue": null
+          },
+          {
+            "name": "save_path",
+            "description": "Optional project-relative path to write the PNG (e.g. Screenshots/foo.png). When set, the result omits the inline base64 image unless include_inline_image=true.",
+            "type": "String",
+            "required": false,
+            "defaultValue": null
+          },
+          {
+            "name": "include_inline_image",
+            "description": "Also return the image inline as base64 when save_path is set (default false: path-only result). Only meaningful together with save_path.",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": false
+          },
+          {
+            "name": "max_resolution",
+            "description": "Cap on the inline image's longest edge (e.g. 512). Only applies when an inline image is returned (no save_path, or save_path + include_inline_image=true); the save_path file keeps the requested resolution.",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 0
+          },
+          {
+            "name": "source",
+            "description": "What to capture: 'screen' (default) captures the game view's own render target — what the Game window shows, incl. Screen Space - Overlay UI (HUDs) in Play Mode; 'camera' renders a single camera off-screen instead and never sees overlay canvases. Defaults to 'camera' when a camera name is given.",
+            "type": "String",
+            "required": false,
+            "defaultValue": null
+          }
+        ],
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "title": "capture_game_view",
+          "description": "Capture the game view as a PNG. source=screen (default) captures what the Game window shows, incl. Screen Space - Overlay UI; source=camera renders a single camera instead and misses overlay UI. Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).",
+          "properties": {
+            "width": {
+              "type": "integer",
+              "description": "Output width in px (default 1280; capped 4096).",
+              "default": 1280
+            },
+            "height": {
+              "type": "integer",
+              "description": "Output height in px (default 720; capped 4096).",
+              "default": 720
+            },
+            "camera": {
+              "type": "string",
+              "description": "Optional camera name (source=camera only); defaults to Camera.main, else the first enabled camera."
+            },
+            "save_path": {
+              "type": "string",
+              "description": "Optional project-relative path to write the PNG (e.g. Screenshots/foo.png). When set, the result omits the inline base64 image unless include_inline_image=true."
+            },
+            "include_inline_image": {
+              "type": "boolean",
+              "description": "Also return the image inline as base64 when save_path is set (default false: path-only result). Only meaningful together with save_path.",
+              "default": false
+            },
+            "max_resolution": {
+              "type": "integer",
+              "description": "Cap on the inline image's longest edge (e.g. 512). Only applies when an inline image is returned (no save_path, or save_path + include_inline_image=true); the save_path file keeps the requested resolution.",
+              "default": 0
+            },
+            "source": {
+              "type": "string",
+              "description": "What to capture: 'screen' (default) captures the game view's own render target — what the Game window shows, incl. Screen Space - Overlay UI (HUDs) in Play Mode; 'camera' renders a single camera off-screen instead and never sees overlay canvases. Defaults to 'camera' when a camera name is given."
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "x-command-metadata": {
+            "mainThreadRequired": true,
+            "methodName": "Unity.Pipeline.Editor.Commands.Capture.CaptureCommands.CaptureGameView"
+          }
+        }
+      },
+      {
+        "name": "capture_scene_view",
+        "description": "Render the active Scene View to a PNG. Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).",
+        "tags": [
+          "capture"
+        ],
+        "package": "Unity.Pipeline.Editor",
+        "mainThreadRequired": true,
+        "parameters": [
+          {
+            "name": "width",
+            "description": "Output width in px (default 1280; capped 4096).",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 1280
+          },
+          {
+            "name": "height",
+            "description": "Output height in px (default 720; capped 4096).",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 720
+          },
+          {
+            "name": "save_path",
+            "description": "Optional project-relative path to write the PNG (e.g. Screenshots/foo.png). When set, the result omits the inline base64 image unless include_inline_image=true.",
+            "type": "String",
+            "required": false,
+            "defaultValue": null
+          },
+          {
+            "name": "include_inline_image",
+            "description": "Also return the image inline as base64 when save_path is set (default false: path-only result). Only meaningful together with save_path.",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": false
+          },
+          {
+            "name": "max_resolution",
+            "description": "Cap on the inline image's longest edge (e.g. 512). Only applies when an inline image is returned (no save_path, or save_path + include_inline_image=true); the save_path file keeps the requested resolution.",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 0
+          }
+        ],
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "title": "capture_scene_view",
+          "description": "Render the active Scene View to a PNG. Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).",
+          "properties": {
+            "width": {
+              "type": "integer",
+              "description": "Output width in px (default 1280; capped 4096).",
+              "default": 1280
+            },
+            "height": {
+              "type": "integer",
+              "description": "Output height in px (default 720; capped 4096).",
+              "default": 720
+            },
+            "save_path": {
+              "type": "string",
+              "description": "Optional project-relative path to write the PNG (e.g. Screenshots/foo.png). When set, the result omits the inline base64 image unless include_inline_image=true."
+            },
+            "include_inline_image": {
+              "type": "boolean",
+              "description": "Also return the image inline as base64 when save_path is set (default false: path-only result). Only meaningful together with save_path.",
+              "default": false
+            },
+            "max_resolution": {
+              "type": "integer",
+              "description": "Cap on the inline image's longest edge (e.g. 512). Only applies when an inline image is returned (no save_path, or save_path + include_inline_image=true); the save_path file keeps the requested resolution.",
+              "default": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "x-command-metadata": {
+            "mainThreadRequired": true,
+            "methodName": "Unity.Pipeline.Editor.Commands.Capture.CaptureCommands.CaptureSceneView"
+          }
+        }
+      },
+      {
+        "name": "screenshot",
+        "description": "Capture the Scene or Game view as a PNG and return its file path",
+        "tags": [
+          "capture"
+        ],
+        "package": "Unity.Pipeline.Editor",
+        "mainThreadRequired": true,
+        "parameters": [
+          {
+            "name": "view",
+            "description": "Which view to capture: 'game' (default) or 'scene'",
+            "type": "String",
+            "required": false,
+            "defaultValue": "game"
+          },
+          {
+            "name": "output",
+            "description": "Output PNG path (absolute, or relative to the project root). Defaults to a timestamped file under <project>/Temp/pipeline-screenshots/.",
+            "type": "String",
+            "required": false,
+            "defaultValue": ""
+          },
+          {
+            "name": "width",
+            "description": "Output width in pixels. 0 (default) uses the view camera's current width.",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 0
+          },
+          {
+            "name": "height",
+            "description": "Output height in pixels. 0 (default) uses the view camera's current height.",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 0
+          }
+        ],
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "title": "screenshot",
+          "description": "Capture the Scene or Game view as a PNG and return its file path",
+          "properties": {
+            "view": {
+              "type": "string",
+              "description": "Which view to capture: 'game' (default) or 'scene'",
+              "default": "game"
+            },
+            "output": {
+              "type": "string",
+              "description": "Output PNG path (absolute, or relative to the project root). Defaults to a timestamped file under <project>/Temp/pipeline-screenshots/.",
+              "default": ""
+            },
+            "width": {
+              "type": "integer",
+              "description": "Output width in pixels. 0 (default) uses the view camera's current width.",
+              "default": 0
+            },
+            "height": {
+              "type": "integer",
+              "description": "Output height in pixels. 0 (default) uses the view camera's current height.",
+              "default": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "x-command-metadata": {
+            "mainThreadRequired": true,
+            "methodName": "Unity.Pipeline.Editor.Commands.ScreenshotCommand.CaptureScreenshot"
+          }
+        }
+      }
+    ],
+    "count": 3,
+    "total": 3,
+    "offset": 0,
+    "limit": null
+  },
+  "errors": [],
+  "warnings": []
+}
