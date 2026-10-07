@@ -1,3 +1,7 @@
+# G5.3 Room List / Create / Join by Code
+
+공개 방 목록·페이지 조회, 공개/비공개 방 생성, 목록 및 코드 참가, 참가 인원·Host·코드 복사·퇴장 UI를 추가했다. [G5.3 구현·검증 기록](../Docs/WBS_G5/PokeChess_Room_Flow_WBS_5.3.md). Ready와 Host Start는 5.4 범위다.
+
 # G5.2 Online Connection
 
 Sessions와 Relay를 통한 NGO 연결, 참가 코드 UI, 버전 검사 메시지 왕복, 퇴장·재참가 및 연결 상실 처리를 추가했다. [G5.2 구현·검증 기록](../Docs/WBS_G5/PokeChess_Online_Connection_WBS_5.2.md).

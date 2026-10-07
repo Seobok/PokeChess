@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -30,6 +32,8 @@ namespace PokeChess.Network.Session
         public string Error { get; private set; }
         public string Code => session?.Code;
         public string SessionId => session?.Id;
+        public RoomSnapshot Room => session == null ? null : new RoomSnapshot(session.Name,session.MaxPlayers,session.IsPrivate,session.Code,
+            session.Players.Select(p=>new RoomMember(p.Id,p.Id==session.Host)).ToArray());
         public bool IsHost => manager != null && manager.IsHost;
         public int ConnectedPlayers => manager != null && manager.IsServer ? manager.ConnectedClientsIds.Count : (State == ConnectionState.Connected ? session?.Players.Count ?? 0 : 0);
         public int RequestsReceived { get; private set; }
@@ -53,25 +57,34 @@ namespace PokeChess.Network.Session
             if(manager != null) { if(manager.IsListening)manager.Shutdown(); if(Application.isPlaying)Destroy(manager.gameObject);else DestroyImmediate(manager.gameObject); }
         }
         public Task CreateAsync() => Run(() => ConnectAsync(null));
+        public Task CreateRoomAsync(string name,int capacity,bool isPrivate) => Run(()=>ConnectAsync(null,new RoomCreation(name,capacity,isPrivate)));
         public Task JoinAsync(string code) => Run(() => ConnectAsync((code ?? "").Trim().ToUpperInvariant()));
+        public Task JoinByIdAsync(string id) => Run(()=>ConnectAsync(id ?? "",byId:true));
         public Task LeaveAsync() => Run(() => LeaveCoreAsync());
         private Task Run(Func<Task> action)
         {
             if(IsBusy) return operation;
             operation = action(); return operation;
         }
-        private async Task ConnectAsync(string code)
+        private async Task ConnectAsync(string code,RoomCreation room=null,bool byId=false)
         {
             if(session != null || manager.IsListening) { Error = "AlreadyConnected"; return; }
             Error = null; RequestsReceived = RepliesReceived = sequence = 0;
             try
             {
                 if(!AuthenticationService.Instance.IsAuthorized) throw new InvalidOperationException("NotAuthenticated");
-                if(code != null && (code.Length == 0 || code.Length > 32)) throw new ArgumentException("InvalidJoinCode");
+                if(code != null && (code.Length == 0 || code.Length > (byId?128:32))) throw new ArgumentException(byId?"InvalidRoomId":"InvalidJoinCode");
+                if(room != null)room.Validate();
                 State = code == null ? ConnectionState.Creating : ConnectionState.Joining;
                 if(code == null)
-                    session = await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions { Name="PokeChess connection test", MaxPlayers=8, IsPrivate=true }.WithRelayNetwork());
-                else session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
+                    session = await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions {
+                        Name=room?.Name??"PokeChess connection test", MaxPlayers=room?.Capacity??8, IsPrivate=room?.IsPrivate??true,
+                        SessionProperties=new Dictionary<string,SessionProperty> {
+                            {"gameVersion",new SessionProperty(Application.version,VisibilityPropertyOptions.Public,PropertyIndex.String1)},
+                            {"roomKind",new SessionProperty(RoomBrowser.RoomKind,VisibilityPropertyOptions.Public,PropertyIndex.String2)}
+                        }
+                    }.WithRelayNetwork());
+                else session = byId ? await MultiplayerService.Instance.JoinSessionByIdAsync(code) : await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
                 session.Deleted += SessionEnded; session.RemovedFromSession += SessionEnded;
                 State = ConnectionState.Connecting;
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(RequestMessage, OnRequest);

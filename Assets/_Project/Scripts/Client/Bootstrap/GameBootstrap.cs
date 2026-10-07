@@ -22,6 +22,8 @@ namespace PokeChess.Client.Bootstrap
                 new GameObject("AuthenticationStatus").AddComponent<AuthenticationStatusView>();
             if (FindFirstObjectByType<OnlineConnectionView>() == null)
                 new GameObject("OnlineConnectionView").AddComponent<OnlineConnectionView>();
+            if (FindFirstObjectByType<RoomFlowView>() == null)
+                new GameObject("RoomFlowView").AddComponent<RoomFlowView>();
             await OnlineAuthenticationService.Instance.EnsureSignedInAsync();
         }
     }

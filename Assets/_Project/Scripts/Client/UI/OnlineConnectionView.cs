@@ -31,7 +31,7 @@ namespace PokeChess.Client.UI
             leave=Button("Leave",body,new Vector2(58,-78),Leave);
             probe=Button("Send test",body,new Vector2(175,-78),()=>OnlineConnection.Instance.SendProbe());
             Label("Hint",body,"Connection only / local match remains independent",new Vector2(450,22),new Vector2(0,-115),12);
-            panel.SetActive(FindFirstObjectByType<PlacementSandboxView>()==null);
+            panel.SetActive(false);
         }
         private static RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 position)
         { var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.sizeDelta=size;r.anchoredPosition=position;return r; }
