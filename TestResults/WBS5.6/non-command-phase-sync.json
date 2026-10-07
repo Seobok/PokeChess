@@ -1,0 +1,219 @@
+{
+  "sequence": 14,
+  "players": 2,
+  "replies": 1,
+  "state": "Connected",
+  "error": "",
+  "id": "TimSGLGvvRuBcjqM6h9Vaj",
+  "code": "9WWJJR",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Only the Host can start.",
+  "qaError": "",
+  "commandFeedback": "Accepted.",
+  "disconnectReason": "",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": true,
+  "localReady": true,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": false,
+  "synchronized": true,
+  "members": [
+    "Player eXRdWy (Host)",
+    "Player 8giaB5"
+  ],
+  "ready": [
+    false,
+    true
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "cada17af592b4753bafb9f07102292ce",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v2",
+    "players": [
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+      "smyVssvGy1jTxkc45yHLYt8giaB5"
+    ]
+  },
+  "match": {
+    "matchId": "cada17af592b4753bafb9f07102292ce",
+    "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 1,
+    "gold": 4,
+    "xp": 0,
+    "level": 1,
+    "hp": 60,
+    "phase": 3,
+    "revision": 3,
+    "playerRevision": 3,
+    "shopRevision": 2,
+    "placementRevision": 2,
+    "nextSequence": 4,
+    "locked": false,
+    "eliminated": false,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 1,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      },
+      {
+        "index": 2,
+        "cost": 1,
+        "definitionId": "mankey"
+      },
+      {
+        "index": 3,
+        "cost": 1,
+        "definitionId": "weedle"
+      },
+      {
+        "index": 4,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      }
+    ],
+    "units": [
+      {
+        "id": "unit-1",
+        "definitionId": "chansey",
+        "rank": 1,
+        "column": 1,
+        "row": 0,
+        "bench": -1,
+        "placement": 1,
+        "items": []
+      }
+    ],
+    "inventory": [],
+    "reward": {
+      "round": 0,
+      "baseIncome": 0,
+      "interest": 0,
+      "streakBonus": 0,
+      "totalIncome": 0,
+      "goldBefore": 0,
+      "goldAfter": 0
+    }
+  },
+  "publicState": {
+    "matchId": "cada17af592b4753bafb9f07102292ce",
+    "winnerPlayerId": "",
+    "round": 1,
+    "phase": 3,
+    "revision": 3,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "hp": 60,
+        "level": 1,
+        "placement": 0,
+        "eliminated": false,
+        "board": []
+      },
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "hp": 60,
+        "level": 1,
+        "placement": 0,
+        "eliminated": false,
+        "board": [
+          {
+            "id": "unit-1",
+            "definitionId": "chansey",
+            "rank": 1,
+            "column": 1,
+            "row": 0,
+            "items": []
+          }
+        ]
+      }
+    ],
+    "results": []
+  },
+  "ack": {
+    "matchId": "cada17af592b4753bafb9f07102292ce",
+    "commandId": "dcbb9b32ad7d423b809e4db942e1bf7b",
+    "code": "None",
+    "message": "Accepted.",
+    "sequence": 3,
+    "nextSequence": 4,
+    "accepted": true,
+    "state": {
+      "matchId": "cada17af592b4753bafb9f07102292ce",
+      "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "round": 1,
+      "gold": 4,
+      "xp": 0,
+      "level": 1,
+      "hp": 60,
+      "phase": 2,
+      "revision": 2,
+      "playerRevision": 2,
+      "shopRevision": 2,
+      "placementRevision": 2,
+      "nextSequence": 4,
+      "locked": false,
+      "eliminated": false,
+      "shop": [
+        {
+          "index": 0,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 1,
+          "cost": 1,
+          "definitionId": "slowpoke"
+        },
+        {
+          "index": 2,
+          "cost": 1,
+          "definitionId": "mankey"
+        },
+        {
+          "index": 3,
+          "cost": 1,
+          "definitionId": "weedle"
+        },
+        {
+          "index": 4,
+          "cost": 1,
+          "definitionId": "slowpoke"
+        }
+      ],
+      "units": [
+        {
+          "id": "unit-1",
+          "definitionId": "chansey",
+          "rank": 1,
+          "column": 1,
+          "row": 0,
+          "bench": -1,
+          "placement": 1,
+          "items": []
+        }
+      ],
+      "inventory": [],
+      "reward": {
+        "round": 0,
+        "baseIncome": 0,
+        "interest": 0,
+        "streakBonus": 0,
+        "totalIncome": 0,
+        "goldBefore": 0,
+        "goldAfter": 0
+      }
+    }
+  }
+}

@@ -42,7 +42,7 @@ namespace PokeChess.Core.Tests
         {
             var buy=Next(MatchCommandKind.Buy,"p2");processor.Process("p2",buy);var unit=match.GetPlayer("p2").Units.Single();string before=Owned();
             var move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Board;Assert.That(processor.Process("p1",move).code,Is.EqualTo("UnitNotOwned"));Assert.That(Owned(),Is.EqualTo(before));
-            var snapshot=processor.Snapshot("p1");Assert.That(snapshot.units,Is.Empty);Assert.That(snapshot.players.Select(p=>p.id),Does.Contain("p2"));Assert.That(processor.Process(null,Next(MatchCommandKind.Sync)).state,Is.Null);
+            var snapshot=processor.Snapshot("p1");Assert.That(snapshot.units,Is.Empty);Assert.That(processor.PublicSnapshot().players.Select(p=>p.id),Does.Contain("p2"));Assert.That(processor.Process(null,Next(MatchCommandKind.Sync)).state,Is.Null);
         }
         [Test] public void CombatKeepsBuyAndBenchMovesButRejectsBoardEconomyActions()
         {

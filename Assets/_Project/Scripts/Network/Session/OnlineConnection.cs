@@ -15,7 +15,7 @@ namespace PokeChess.Network.Session
 
     public sealed partial class OnlineConnection : MonoBehaviour
     {
-        private const ushort ProtocolVersion = 1;
+        private const ushort ProtocolVersion = 2;
         private const string RequestMessage = "PokeChess.Connection.Request.v1", ReplyMessage = "PokeChess.Connection.Reply.v1";
         private static OnlineConnection instance;
         public static OnlineConnection Instance

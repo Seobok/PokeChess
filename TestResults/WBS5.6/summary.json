@@ -1,0 +1,31 @@
+{
+  "onlinePassed": 19,
+  "windowsBuild": "Succeeded",
+  "coreFailed": 0,
+  "corePassed": 25,
+  "buildWarnings": 2,
+  "onlineChecks": [
+    "PASS initial-full-sync",
+    "PASS private-buy",
+    "PASS host-cannot-read-client-private",
+    "PASS own-public-board",
+    "PASS remote-public-board",
+    "PASS observe-ui",
+    "PASS public-move",
+    "PASS old-wire-state-rejected",
+    "PASS full-resync",
+    "PASS ack-awaits-state",
+    "PASS withheld-state-recovers",
+    "PASS unknown-ack",
+    "PASS duplicate-ack-no-extra-charge",
+    "PASS public-schema-filtered",
+    "PASS public-final",
+    "PASS reverse-client-board",
+    "PASS reverse-host-observes",
+    "PASS non-command-phase-sync",
+    "PASS cleanup-public-private"
+  ],
+  "scope": "Same PC Editor and Windows, both Host roles",
+  "buildErrors": 0,
+  "uiBoundsAndOverlapPassed": true
+}

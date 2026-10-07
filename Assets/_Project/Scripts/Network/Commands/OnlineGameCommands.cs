@@ -15,7 +15,7 @@ namespace PokeChess.Network.Session
 {
     public sealed partial class OnlineConnection
     {
-        private const string ChallengeMessage="PokeChess.Bind.Challenge.v1",BoundMessage="PokeChess.Bind.Accept.v1",CommandMessage="PokeChess.Command.v1",AckMessage="PokeChess.Ack.v1",OwnerStateMessage="PokeChess.OwnerState.v1";
+        private const string ChallengeMessage="PokeChess.Bind.Challenge.v1",BoundMessage="PokeChess.Bind.Accept.v1",CommandMessage="PokeChess.Command.v1",AckMessage="PokeChess.Ack.v1",OwnerStateMessage="PokeChess.StateSnapshot.v2";
         private readonly Dictionary<ulong,string> challenges=new Dictionary<ulong,string>();
         private readonly Dictionary<ulong,string> boundPlayers=new Dictionary<ulong,string>();
         private readonly Dictionary<ulong,double> bindingDeadlines=new Dictionary<ulong,double>();
@@ -25,15 +25,28 @@ namespace PokeChess.Network.Session
         private HostCommandProcessor hostCommands;
         private TaskCompletionSource<CommandAck> pendingAck;
         private long nextCommandSequence=1;
+        private long requiredStateVersion,requiredStateSequence=1;
         public bool IdentityBound=>IsHost&&session!=null||identityBound;
-        public OwnerMatchState LocalMatchState { get; private set; }
+        private ulong hostMatchSeed;
+        private readonly MatchSnapshotStore snapshots=new MatchSnapshotStore();
+        private readonly Dictionary<ulong,string> lastSnapshots=new Dictionary<ulong,string>();
+        public OwnerMatchState LocalMatchState=>snapshots.Owner;
+        public PublicMatchState PublicState=>snapshots.Public;
+        public bool StateSynchronized=>LocalMatchState!=null&&PublicState!=null&&LocalMatchState.revision==PublicState.revision&&LocalMatchState.revision>=requiredStateVersion&&LocalMatchState.nextSequence>=requiredStateSequence;
+        public string SyncFeedback {get;private set;}
         public CommandAck LastCommandAck { get; private set; }
         public MatchCommand PendingCommand { get; private set; }
         public string CommandFeedback { get; private set; }
         public event Action CommandStateChanged;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         public bool QADropNextAck {get;set;}
+        public bool QAHoldStatePublication {get;set;}
+        private readonly Dictionary<ulong,string> qaRememberedSnapshots=new Dictionary<ulong,string>();
+        public void QARememberState(){qaRememberedSnapshots.Clear();foreach(var pair in lastSnapshots)qaRememberedSnapshots[pair.Key]=pair.Value;}
+        public void QAReplayState(){foreach(var pair in qaRememberedSnapshots)if(manager.ConnectedClientsIds.Contains(pair.Key))SendText(OwnerStateMessage,pair.Key,pair.Value,65536);}
         public HostCommandProcessor QAHostCommands=>hostCommands;
+        public string QACommandTransportError {get;private set;}
+        public string QADisconnectReason=>manager?.DisconnectReason;
 #endif
         private void RegisterGameMessages()
         {
@@ -48,8 +61,11 @@ namespace PokeChess.Network.Session
         }
         private void ResetGameCommands()
         {
-            challenges.Clear();boundPlayers.Clear();bindingDeadlines.Clear();incomingTimes.Clear();identityBound=false;nextBindingRefresh=nextMatchSync=0;hostCommands=null;LocalMatchState=null;LastCommandAck=null;nextCommandSequence=1;
-            pendingAck?.TrySetResult(new CommandAck{accepted=false,code="ConnectionLost",message="Connection ended."});pendingAck=null;PendingCommand=null;CommandFeedback=null;
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            QAHoldStatePublication=false;QADropNextAck=false;QACommandTransportError=null;qaRememberedSnapshots.Clear();
+#endif
+            challenges.Clear();boundPlayers.Clear();bindingDeadlines.Clear();incomingTimes.Clear();lastSnapshots.Clear();snapshots.Clear();SyncFeedback=null;hostMatchSeed=0;identityBound=false;nextBindingRefresh=nextMatchSync=0;hostCommands=null;LastCommandAck=null;nextCommandSequence=1;
+            requiredStateVersion=0;requiredStateSequence=1;pendingAck?.TrySetResult(new CommandAck{accepted=false,code="ConnectionLost",message="Connection ended."});pendingAck=null;PendingCommand=null;CommandFeedback=null;
         }
         private static string BindingProof(string nonce,string roomId,string playerId)
         {using(var sha=SHA256.Create())return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes("PokeChess-bind-v1|"+nonce+"|"+roomId+"|"+playerId)));}
@@ -96,12 +112,20 @@ namespace PokeChess.Network.Session
                 foreach(var id in boundPlayers.Keys.Where(id=>!manager.ConnectedClientsIds.Contains(id)).ToArray())boundPlayers.Remove(id);
                 if(challenges.Count>0&&!bindingRefreshing&&!IsBusy&&!lobbyPublishing&&Time.realtimeSinceStartupAsDouble>=nextBindingRefresh)RefreshBindings();
                 if(StartInfo!=null&&LobbyState==LobbyPhase.Started&&hostCommands==null){
-                    var catalog=PrototypeRoster.CreateCatalog();var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,StartInfo.players,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:(ulong)StartInfo.seed);
+                    var catalog=PrototypeRoster.CreateCatalog();var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,StartInfo.players,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:hostMatchSeed);
                     match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);foreach(var id in StartInfo.players)new ShopSystem().RefreshForRound(match,id);
-                    hostCommands=new HostCommandProcessor(match,catalog,new LocalRoundCoordinator(match,catalog));ApplyOwnerState(hostCommands.Snapshot(session.CurrentPlayer.Id));BroadcastOwnerStates();
+                    hostCommands=new HostCommandProcessor(match,catalog,new LocalRoundCoordinator(match,catalog));BroadcastOwnerStates(true);
                 }
-            }else if(IdentityBound&&StartInfo!=null&&LocalMatchState==null&&PendingCommand==null&&Time.realtimeSinceStartupAsDouble>=nextMatchSync){nextMatchSync=Time.realtimeSinceStartupAsDouble+2;_ = SubmitCommandAsync(CreateCommand(MatchCommandKind.Sync));}
+                // Deduplicates unchanged projections; also publishes non-command Host writes.
+                if(hostCommands!=null&&Time.realtimeSinceStartupAsDouble>=nextMatchSync){nextMatchSync=Time.realtimeSinceStartupAsDouble+.5;BroadcastOwnerStates();}
+            }else if(IdentityBound&&StartInfo!=null&&!StateSynchronized&&PendingCommand==null&&Time.realtimeSinceStartupAsDouble>=nextMatchSync){nextMatchSync=Time.realtimeSinceStartupAsDouble+2;_ = RequestStateSyncAsync();}
         }
+        public Task<CommandAck> RequestStateSyncAsync()
+        {if(PendingCommand!=null)return RetryPendingCommandAsync();SyncFeedback="Synchronizing state…";return SubmitCommandAsync(CreateCommand(MatchCommandKind.Sync));}
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        public void QAClearSnapshots(){snapshots.Clear();SyncFeedback="State baseline cleared.";}
+        public bool QAApplySnapshot(MatchStateSnapshot value)=>ApplySnapshot(value);
+#endif
         public MatchCommand CreateCommand(MatchCommandKind kind)
         {
             var state=LocalMatchState;return new MatchCommand{protocol=1,matchId=StartInfo?.matchId,commandId=Guid.NewGuid().ToString("N"),playerId=session?.CurrentPlayer.Id,sequence=nextCommandSequence,kind=kind,
@@ -110,7 +134,7 @@ namespace PokeChess.Network.Session
         public async Task<CommandAck> SubmitCommandAsync(MatchCommand command)
         {
             if(PendingCommand!=null){CommandFeedback="Waiting for the previous command. Retry to confirm it.";return null;}
-            if(command==null||!IdentityBound||StartInfo==null||State!=ConnectionState.Connected){CommandFeedback="Match connection is not ready.";return null;}
+            if(command==null||!IdentityBound||StartInfo==null||State!=ConnectionState.Connected||(command.kind!=MatchCommandKind.Sync&&!StateSynchronized)){CommandFeedback="Match connection is not ready.";return null;}
             PendingCommand=command.Copy();pendingAck=new TaskCompletionSource<CommandAck>();CommandFeedback="Confirming action…";var completion=pendingAck.Task;DispatchPending();
             if(await Task.WhenAny(completion,Task.Delay(5000))==completion)return await completion;
             if(PendingCommand!=null)CommandFeedback="Confirmation delayed. Retry the same action.";return null;
@@ -130,13 +154,18 @@ namespace PokeChess.Network.Session
             if(!IsHost||session==null)return;
             if(!incomingTimes.TryGetValue(sender,out var times))incomingTimes[sender]=times=new Queue<double>();
             double now=Time.realtimeSinceStartupAsDouble;while(times.Count>0&&now-times.Peek()>1)times.Dequeue();if(times.Count>=20){manager.DisconnectClient(sender,"CommandRateLimit");return;}times.Enqueue(now);
-            try{ReceiveCommand(sender,JsonUtility.FromJson<MatchCommand>(ReadText(reader,4096)));}catch(Exception){manager.DisconnectClient(sender,"MalformedCommand");}
+            try{ReceiveCommand(sender,JsonUtility.FromJson<MatchCommand>(ReadText(reader,4096)));}catch(Exception error){
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                QACommandTransportError=error.GetType().Name;
+#endif
+                manager.DisconnectClient(sender,"MalformedCommand");
+            }
         }
         private void ReceiveCommand(ulong sender,MatchCommand command)
         {
             string player=sender==NetworkManager.ServerClientId?session?.CurrentPlayer.Id:boundPlayers.TryGetValue(sender,out var bound)?bound:null;
             if(player==null||hostCommands==null){var rejected=new CommandAck{matchId=command?.matchId,commandId=command?.commandId,sequence=command?.sequence??0,nextSequence=command?.sequence??1,accepted=false,code=player==null?"Unauthenticated":"MatchNotReady",message="Match connection is not ready."};DeliverAck(sender,rejected);return;}
-            var ack=hostCommands.Process(player,command);DeliverAck(sender,ack);BroadcastOwnerStates();
+            var ack=hostCommands.Process(player,command);DeliverAck(sender,ack);BroadcastOwnerStates(command?.kind==MatchCommandKind.Sync);
         }
         private void DeliverAck(ulong sender,CommandAck ack)
         {
@@ -145,30 +174,37 @@ namespace PokeChess.Network.Session
 #endif
             if(sender==NetworkManager.ServerClientId)ReceiveAck(ack);else SendText(AckMessage,sender,JsonUtility.ToJson(ack),32768);
         }
-        private void BroadcastOwnerStates()
+        private void BroadcastOwnerStates(bool force=false)
         {
-            if(hostCommands==null||session==null)return;ApplyOwnerState(hostCommands.Snapshot(session.CurrentPlayer.Id));
-            foreach(var pair in boundPlayers)if(manager.ConnectedClientsIds.Contains(pair.Key)&&hostCommands.Match.Players.Any(p=>p.PlayerId==pair.Value))SendText(OwnerStateMessage,pair.Key,JsonUtility.ToJson(hostCommands.Snapshot(pair.Value)),32768);
+            if(hostCommands==null||session==null)return;ApplySnapshot(hostCommands.FullSnapshot(session.CurrentPlayer.Id));
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            if(QAHoldStatePublication)return;
+#endif
+            foreach(var pair in boundPlayers)if(manager.ConnectedClientsIds.Contains(pair.Key)&&hostCommands.Match.Players.Any(p=>p.PlayerId==pair.Value)){
+                var json=JsonUtility.ToJson(hostCommands.FullSnapshot(pair.Value));if(!force&&lastSnapshots.TryGetValue(pair.Key,out var previous)&&previous==json)continue;
+                SendText(OwnerStateMessage,pair.Key,json,65536);lastSnapshots[pair.Key]=json;
+            }
         }
         private void OnCommandAck(ulong sender,FastBufferReader reader){if(IsHost||sender!=NetworkManager.ServerClientId)return;try{ReceiveAck(JsonUtility.FromJson<CommandAck>(ReadText(reader,32768)));}catch(Exception){CommandFeedback="Invalid command response.";}}
         private void ReceiveAck(CommandAck ack)
         {
             if(ack==null||StartInfo==null||ack.matchId!=StartInfo.matchId)return;
-            if(ack.state!=null)ApplyOwnerState(ack.state);
+            // Ack settles the command. Only an atomic snapshot changes the displayed state.
             if(PendingCommand==null||ack.commandId!=PendingCommand.commandId||ack.sequence!=PendingCommand.sequence)return;
+            if(ack.state!=null){requiredStateVersion=Math.Max(requiredStateVersion,ack.state.revision);requiredStateSequence=Math.Max(requiredStateSequence,ack.state.nextSequence);}
             nextCommandSequence=Math.Max(nextCommandSequence,ack.nextSequence);LastCommandAck=ack;CommandFeedback=ack.accepted?ack.message:"Rejected: "+ack.code;PendingCommand=null;var completion=pendingAck;pendingAck=null;completion?.TrySetResult(ack);CommandStateChanged?.Invoke();
         }
-        private void OnOwnerState(ulong sender,FastBufferReader reader){if(IsHost||sender!=NetworkManager.ServerClientId)return;try{ApplyOwnerState(JsonUtility.FromJson<OwnerMatchState>(ReadText(reader,32768)));}catch(Exception){}}
-        private void ApplyOwnerState(OwnerMatchState state)
+        private void OnOwnerState(ulong sender,FastBufferReader reader){if(IsHost||sender!=NetworkManager.ServerClientId)return;try{if(!ApplySnapshot(JsonUtility.FromJson<MatchStateSnapshot>(ReadText(reader,65536))))SyncFeedback="Outdated or invalid snapshot ignored.";}catch(Exception){SyncFeedback="Invalid snapshot. Request state sync.";}}
+        private bool ApplySnapshot(MatchStateSnapshot state)
         {
-            if(state==null||StartInfo==null||session==null||state.matchId!=StartInfo.matchId||state.playerId!=session.CurrentPlayer.Id)return;
-            if(LocalMatchState!=null&&(state.revision<LocalMatchState.revision||state.nextSequence<LocalMatchState.nextSequence))return;
-            LocalMatchState=state;nextCommandSequence=Math.Max(nextCommandSequence,state.nextSequence);CommandStateChanged?.Invoke();
+            if(StartInfo==null||session==null||!snapshots.Apply(state,StartInfo.matchId,session.CurrentPlayer.Id))return false;
+            nextCommandSequence=Math.Max(nextCommandSequence,state.ownerState.nextSequence);SyncFeedback="State synchronized.";CommandStateChanged?.Invoke();return true;
         }
         private void SendText(string name,ulong recipient,string text,int limit)
         {
             var bytes=Encoding.UTF8.GetBytes(text??"");if(bytes.Length>limit)throw new ArgumentException("MessageTooLarge");
-            using(var writer=new FastBufferWriter(bytes.Length+4,Allocator.Temp)){writer.WriteValueSafe(bytes.Length);writer.WriteBytesSafe(bytes);manager.CustomMessagingManager.SendNamedMessage(name,recipient,writer,NetworkDelivery.ReliableSequenced);}
+            // Full snapshots exceed a single packet as boards grow; NGO must fragment them.
+            using(var writer=new FastBufferWriter(bytes.Length+4,Allocator.Temp)){writer.WriteValueSafe(bytes.Length);writer.WriteBytesSafe(bytes);manager.CustomMessagingManager.SendNamedMessage(name,recipient,writer,NetworkDelivery.ReliableFragmentedSequenced);}
         }
         private static string ReadText(FastBufferReader reader,int limit)
         {

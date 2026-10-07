@@ -97,7 +97,7 @@ namespace PokeChess.Client.UI
             {
                 var room=s.Room;var signature=room.Name+room.Code+s.LobbyState+s.StartInfo?.matchId+string.Join("|",room.Members.Select(p=>p.Id+":"+p.IsHost+":"+p.IsReady+":"+p.IsConnected));
                 if(signature!=lastRoom){lastRoom=signature;roomTitle.text=room.Name+"\n"+(room.IsPrivate?"Private":"Public")+" / "+room.Members.Count+" / "+room.Capacity+" players / Code: "+room.Code;
-                    players.text=s.StartInfo==null?string.Join("\n",room.Members.Select(p=>p.Label+(p.Id==OnlineAuthenticationService.Instance.PlayerId?" (You)":"")+" / "+(!p.IsConnected?"Connecting":p.IsHost?"Connected":p.IsReady?"Ready":"Not ready"))):"MATCH START CONFIRMED\n"+s.StartInfo.matchId+"\n"+s.StartInfo.players.Length+" players / Seed: "+s.StartInfo.seed;}
+                    players.text=s.StartInfo==null?string.Join("\n",room.Members.Select(p=>p.Label+(p.Id==OnlineAuthenticationService.Instance.PlayerId?" (You)":"")+" / "+(!p.IsConnected?"Connecting":p.IsHost?"Connected":p.IsReady?"Ready":"Not ready"))):"MATCH START CONFIRMED\n"+s.StartInfo.matchId+"\n"+s.StartInfo.players.Length+" players";}
                 lobbyStatus.text=s.LobbyState==LobbyPhase.Starting?"Confirming match start with all players…":s.LobbyState==LobbyPhase.Started?"All players received the same match start.":s.IsHost?s.StartBlockedReason??"All players are ready. You can start.":s.LobbyBusy?"Saving lobby state…":"Ready when you are prepared to play.";
                 if(s.Error!=lastLobbyError){lastLobbyError=s.Error;feedback.text=s.Error??"";}
             }

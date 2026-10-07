@@ -1,0 +1,249 @@
+{
+  "sequence": 10,
+  "players": 2,
+  "replies": 1,
+  "state": "Connected",
+  "error": "",
+  "id": "WUXVQS6KkgC95xJY3dqqxn",
+  "code": "L6TFKK",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Only the Host can start.",
+  "qaError": "",
+  "commandFeedback": "Confirmation delayed. Retry the same action.",
+  "disconnectReason": "",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": false,
+  "localReady": true,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": true,
+  "synchronized": true,
+  "members": [
+    "Player 8giaB5 (Host)",
+    "Player eXRdWy"
+  ],
+  "ready": [
+    false,
+    true
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "98c82a2e7f7145eb80cd6866b925a356",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v2",
+    "players": [
+      "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy"
+    ]
+  },
+  "match": {
+    "matchId": "98c82a2e7f7145eb80cd6866b925a356",
+    "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+    "round": 1,
+    "gold": 2,
+    "xp": 0,
+    "level": 1,
+    "hp": 60,
+    "phase": 2,
+    "revision": 5,
+    "playerRevision": 5,
+    "shopRevision": 4,
+    "placementRevision": 5,
+    "nextSequence": 8,
+    "locked": false,
+    "eliminated": false,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 1,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 2,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 3,
+        "cost": 1,
+        "definitionId": "chansey"
+      },
+      {
+        "index": 4,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      }
+    ],
+    "units": [
+      {
+        "id": "unit-1",
+        "definitionId": "chansey",
+        "rank": 1,
+        "column": 2,
+        "row": 1,
+        "bench": -1,
+        "placement": 1,
+        "items": []
+      },
+      {
+        "id": "unit-2",
+        "definitionId": "weedle",
+        "rank": 1,
+        "column": -1,
+        "row": -1,
+        "bench": 0,
+        "placement": 2,
+        "items": []
+      },
+      {
+        "id": "unit-3",
+        "definitionId": "weedle",
+        "rank": 1,
+        "column": -1,
+        "row": -1,
+        "bench": 1,
+        "placement": 2,
+        "items": []
+      }
+    ],
+    "inventory": [],
+    "reward": {
+      "round": 0,
+      "baseIncome": 0,
+      "interest": 0,
+      "streakBonus": 0,
+      "totalIncome": 0,
+      "goldBefore": 0,
+      "goldAfter": 0
+    }
+  },
+  "publicState": {
+    "matchId": "98c82a2e7f7145eb80cd6866b925a356",
+    "winnerPlayerId": "",
+    "round": 1,
+    "phase": 2,
+    "revision": 5,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "hp": 60,
+        "level": 1,
+        "placement": 0,
+        "eliminated": false,
+        "board": []
+      },
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "hp": 60,
+        "level": 1,
+        "placement": 0,
+        "eliminated": false,
+        "board": [
+          {
+            "id": "unit-1",
+            "definitionId": "chansey",
+            "rank": 1,
+            "column": 2,
+            "row": 1,
+            "items": []
+          }
+        ]
+      }
+    ],
+    "results": []
+  },
+  "ack": {
+    "matchId": "98c82a2e7f7145eb80cd6866b925a356",
+    "commandId": "3936efd388ed49f6aa244a5ea5873932",
+    "code": "None",
+    "message": "Purchase accepted.",
+    "sequence": 6,
+    "nextSequence": 7,
+    "accepted": true,
+    "state": {
+      "matchId": "98c82a2e7f7145eb80cd6866b925a356",
+      "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+      "round": 1,
+      "gold": 3,
+      "xp": 0,
+      "level": 1,
+      "hp": 60,
+      "phase": 2,
+      "revision": 4,
+      "playerRevision": 4,
+      "shopRevision": 3,
+      "placementRevision": 4,
+      "nextSequence": 7,
+      "locked": false,
+      "eliminated": false,
+      "shop": [
+        {
+          "index": 0,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 1,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 2,
+          "cost": 1,
+          "definitionId": "weedle"
+        },
+        {
+          "index": 3,
+          "cost": 1,
+          "definitionId": "chansey"
+        },
+        {
+          "index": 4,
+          "cost": 1,
+          "definitionId": "slowpoke"
+        }
+      ],
+      "units": [
+        {
+          "id": "unit-1",
+          "definitionId": "chansey",
+          "rank": 1,
+          "column": 2,
+          "row": 1,
+          "bench": -1,
+          "placement": 1,
+          "items": []
+        },
+        {
+          "id": "unit-2",
+          "definitionId": "weedle",
+          "rank": 1,
+          "column": -1,
+          "row": -1,
+          "bench": 0,
+          "placement": 2,
+          "items": []
+        }
+      ],
+      "inventory": [],
+      "reward": {
+        "round": 0,
+        "baseIncome": 0,
+        "interest": 0,
+        "streakBonus": 0,
+        "totalIncome": 0,
+        "goldBefore": 0,
+        "goldAfter": 0
+      }
+    }
+  }
+}

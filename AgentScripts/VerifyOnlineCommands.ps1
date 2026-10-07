@@ -38,7 +38,7 @@ $s=Send-QA Windows retryCommand;Check retry-without-double-charge (!$s.pendingCo
 Check owner-filtered-state ($s.match.units.Count -eq 1 -and @($s.match.units|Where-Object id -eq $hostUnit).Count -eq 0) $s
 Write-Output 'MATCH_READY_FOR_UI_CAPTURE';Start-Sleep -Seconds 8
 $s=Send-QA Windows game @{kind='Surrender'};Check surrender ($s.ack.accepted -and $s.match.eliminated -and $s.match.phase -eq 5) $s
-$s=Wait-QA Editor {param($s) $s.match.phase -eq 5};Check public-result-updated (@($s.match.players|Where-Object eliminated).Count -eq 1) $s
+$s=Wait-QA Editor {param($s) $s.match.phase -eq 5};Check public-result-updated (@($s.publicState.players|Where-Object eliminated).Count -eq 1) $s
 $s=Send-QA Windows leave;$s=Send-QA Editor leave
 # Reverse hosting role.
 $s=Send-QA Windows create @{name='Reverse Commands';capacity=2;isPrivate=$true};$code=$s.code
@@ -48,4 +48,3 @@ Wait-QA Editor {param($s) $s.match.matchId -and !$s.pendingCommand}|Out-Null;$s=
 $s=Send-QA Windows leave;$s=Wait-QA Editor {param($s) $s.state -eq 'Idle'};Check cleanup-clears-match (!$s.match.matchId -and !$s.identityBound -and !$s.pendingCommand) $s
 $s=Send-QA Windows quit
 Write-Output 'ALL_ONLINE_COMMAND_QA_PASSED'
-

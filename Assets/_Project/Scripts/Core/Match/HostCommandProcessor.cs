@@ -20,12 +20,11 @@ namespace PokeChess.Core.Match
     }
     [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId; }
     [Serializable] public sealed class OwnerUnit { public string id,definitionId;public int rank,column,row,bench;public PlacementKind placement;public string[] items; }
-    [Serializable] public sealed class PublicPlayer { public string id;public int hp,level;public bool eliminated; }
     [Serializable] public sealed class OwnerMatchState
     {
         public string matchId,playerId;public int round,gold,xp,level,hp;public MatchPhase phase;
         public long revision,playerRevision,shopRevision,placementRevision,nextSequence;
-        public bool locked,eliminated;public OwnerShopSlot[] shop;public OwnerUnit[] units;public string[] inventory;public PublicPlayer[] players;
+        public bool locked,eliminated;public OwnerShopSlot[] shop;public OwnerUnit[] units;public string[] inventory;public OwnerRoundReward reward;
     }
     [Serializable] public sealed class CommandAck
     {
@@ -47,6 +46,15 @@ namespace PokeChess.Core.Match
         private readonly Dictionary<string,PlayerLedger> ledgers=new Dictionary<string,PlayerLedger>(StringComparer.Ordinal);
         private long revision;
         public MatchState Match=>match;
+        public long StateVersion=>revision;
+        // Future timer/settlement writers must publish through this hook after changing Core state.
+        public void NotifyHostStateChanged()
+        {
+            if(revision==long.MaxValue||ledgers.Values.Any(l=>l.revision==long.MaxValue))throw new OverflowException("State version exhausted.");
+            revision++;foreach(var ledger in ledgers.Values)ledger.revision++;
+        }
+        public PublicMatchState PublicSnapshot()=>MatchStateProjection.Public(match,rounds,revision);
+        public MatchStateSnapshot FullSnapshot(string playerId)=>new MatchStateSnapshot{protocol=2,publicState=PublicSnapshot(),ownerState=Snapshot(playerId)};
         public HostCommandProcessor(MatchState match,PokemonCatalog catalog,LocalRoundCoordinator rounds)
         {this.match=match;this.catalog=catalog;this.rounds=rounds;foreach(var p in match.Players)ledgers.Add(p.PlayerId,new PlayerLedger());}
         public OwnerMatchState Snapshot(string playerId)
@@ -56,7 +64,7 @@ namespace PokeChess.Core.Match
                 gold=p.Gold,xp=p.XP,level=p.Level,hp=p.HP,eliminated=p.IsEliminated,locked=p.Shop.IsLocked,shopRevision=p.Shop.Revision,placementRevision=p.PlacementRevision,
                 shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId}).ToArray(),
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray()}).ToArray(),
-                inventory=p.ItemInventory.ToArray(),players=match.Players.Select(other=>new PublicPlayer{id=other.PlayerId,hp=other.HP,level=other.Level,eliminated=other.IsEliminated}).ToArray()};
+                inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId)};
         }
         public CommandAck Process(string authenticatedPlayer,MatchCommand c)
         {

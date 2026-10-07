@@ -1,3 +1,7 @@
+# G5.6 Public / OwnerOnly / HostOnly State Sync
+
+공개 보드·플레이어 상태와 본인 상점·경제·벤치를 분리하고, 전체 snapshot 복구·버전 검사·상대 보드 관찰 UI를 추가했다. 경기 seed는 Host 내부에만 보관한다. [G5.6 구현·검증 기록](../Docs/WBS_G5/PokeChess_State_Sync_WBS_5.6.md). 자동 라운드·전투 스트림은 후속 단계다.
+
 # G5.5 Command / Validation / Mutation / Ack
 
 Host 권한 명령 처리와 소유자 상태 응답, 중복 실행 방지 및 온라인 준비 명령 UI를 추가했다. [G5.5 구현·검증 기록](../Docs/WBS_G5/PokeChess_Command_Pipeline_WBS_5.5.md). 온라인 자동 라운드·전투 동기화는 후속 단계다.

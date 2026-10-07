@@ -12,7 +12,7 @@ namespace PokeChess.Client.Services
     {
         [Serializable] public sealed class Command { public int sequence; public string action,name,id,code,kind,unitId,targetPlayer; public int capacity=2,slot,column,row,bench; public bool isPrivate,ready,locked,toBench,stale,wrongRound,wrongPhase,wrongMatch,badVersion; }
         [Serializable] public sealed class Listing { public string id,name; public int players,capacity; }
-        [Serializable] public sealed class Report { public int sequence,players,replies; public string state,error,id,code,listState,lobbyPhase,startBlocked,qaError,commandFeedback; public bool busy,isPrivate,localReady,connectionConfirmed,identityBound,pendingCommand; public string[] members; public bool[] ready; public Listing[] rooms; public MatchStartInfo start; public OwnerMatchState match;public CommandAck ack; }
+        [Serializable] public sealed class Report { public int sequence,players,replies; public string state,error,id,code,listState,lobbyPhase,startBlocked,qaError,commandFeedback,disconnectReason,transportError; public bool busy,isPrivate,localReady,connectionConfirmed,identityBound,pendingCommand,synchronized; public string[] members; public bool[] ready; public Listing[] rooms; public MatchStartInfo start; public OwnerMatchState match;public PublicMatchState publicState;public CommandAck ack; }
         private readonly RoomBrowser browser=new RoomBrowser();
         private string folder;
         private int sequence;
@@ -48,6 +48,12 @@ namespace PokeChess.Client.Services
                     case "startTwice":await System.Threading.Tasks.Task.WhenAll(s.StartMatchAsync(),s.StartMatchAsync());break;
                     case "holdAck":s.QAHoldStartAcknowledgement=c.ready;break;
                     case "dropAck":s.QADropNextAck=true;break;
+                    case "syncState":await s.RequestStateSyncAsync();break;
+                    case "clearState":s.QAClearSnapshots();break;
+                    case "holdState":s.QAHoldStatePublication=c.ready;break;
+                    case "rememberState":s.QARememberState();break;
+                    case "replayState":s.QAReplayState();break;
+                    case "hostPhase":s.QAHostCommands.Match.TransitionTo(MatchPhase.Combat);s.QAHostCommands.NotifyHostStateChanged();break;
                     case "game":
                         var command=s.CreateCommand((MatchCommandKind)Enum.Parse(typeof(MatchCommandKind),c.kind));command.slot=c.slot;command.unitId=c.unitId;command.destination=c.toBench?PokeChess.Core.Pokemon.PlacementKind.Bench:PokeChess.Core.Pokemon.PlacementKind.Board;command.column=c.column;command.row=c.row;command.bench=c.bench;command.locked=c.locked;
                         if(c.targetPlayer!=null)command.playerId=c.targetPlayer;if(c.stale)command.playerRevision=-1;if(c.wrongRound)command.round++;if(c.wrongPhase)command.phase=MatchPhase.Result;if(c.wrongMatch)command.matchId="other-match";if(c.badVersion)command.protocol=999;
@@ -77,7 +83,7 @@ namespace PokeChess.Client.Services
             var button=canvas.transform.Find("RoomPanel/OnlineMatch/"+name).GetComponent<UnityEngine.UI.Button>();if(!button.interactable||!button.gameObject.activeInHierarchy)throw new InvalidOperationException("Match button unavailable: "+name);
             button.onClick.Invoke();double end=Time.realtimeSinceStartupAsDouble+8;while(OnlineConnection.Instance.PendingCommand!=null&&Time.realtimeSinceStartupAsDouble<end)await System.Threading.Tasks.Task.Yield();
         }
-        private void Save(){var s=OnlineConnection.Instance;File.WriteAllText(Path.Combine(folder,"status.json"),JsonUtility.ToJson(new Report{sequence=sequence,busy=busy||s.LobbyBusy,state=s.State.ToString(),error=s.Error,id=s.SessionId,code=s.Code,players=s.Room?.Members.Count??0,replies=s.RepliesReceived,isPrivate=s.Room?.IsPrivate??false,members=s.Room?.Members.Select(m=>m.Label).ToArray(),ready=s.Room?.Members.Select(m=>m.IsReady).ToArray(),localReady=s.LocalReady,connectionConfirmed=s.LobbyConnectionConfirmed,identityBound=s.IdentityBound,lobbyPhase=s.LobbyState.ToString(),startBlocked=s.StartBlockedReason,start=s.StartInfo,qaError=qaError,match=s.LocalMatchState,ack=s.LastCommandAck,pendingCommand=s.PendingCommand!=null,commandFeedback=s.CommandFeedback,listState=browser.State.ToString(),rooms=browser.Rooms.Select(r=>new Listing{id=r.Id,name=r.Name,players=r.Players,capacity=r.Capacity}).ToArray()},true));}
+        private void Save(){var s=OnlineConnection.Instance;File.WriteAllText(Path.Combine(folder,"status.json"),JsonUtility.ToJson(new Report{sequence=sequence,disconnectReason=s.QADisconnectReason,transportError=s.QACommandTransportError,busy=busy||s.LobbyBusy,state=s.State.ToString(),error=s.Error,id=s.SessionId,code=s.Code,players=s.Room?.Members.Count??0,replies=s.RepliesReceived,isPrivate=s.Room?.IsPrivate??false,members=s.Room?.Members.Select(m=>m.Label).ToArray(),ready=s.Room?.Members.Select(m=>m.IsReady).ToArray(),localReady=s.LocalReady,connectionConfirmed=s.LobbyConnectionConfirmed,identityBound=s.IdentityBound,lobbyPhase=s.LobbyState.ToString(),startBlocked=s.StartBlockedReason,start=s.StartInfo,qaError=qaError,match=s.LocalMatchState,publicState=s.PublicState,synchronized=s.StateSynchronized,ack=s.LastCommandAck,pendingCommand=s.PendingCommand!=null,commandFeedback=s.CommandFeedback,listState=browser.State.ToString(),rooms=browser.Rooms.Select(r=>new Listing{id=r.Id,name=r.Name,players=r.Players,capacity=r.Capacity}).ToArray()},true));}
     }
 }
 #endif
