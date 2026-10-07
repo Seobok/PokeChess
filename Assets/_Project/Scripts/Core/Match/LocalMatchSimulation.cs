@@ -76,6 +76,8 @@ namespace PokeChess.Core.Match
         private readonly ShopSystem shops=new ShopSystem();
         private readonly LevelSystem levels=new LevelSystem();
         private readonly PlayerPlacementSystem placements=new PlayerPlacementSystem();
+        private readonly Dictionary<string,int> purchaseCounts=new Dictionary<string,int>(StringComparer.Ordinal);
+        public IReadOnlyDictionary<string,int> PurchaseCounts => new System.Collections.ObjectModel.ReadOnlyDictionary<string,int>(purchaseCounts);
         public LocalSimulationBot(PokemonCatalog catalog,ulong seed)
         { trades=new ShopTransactionSystem(catalog);random=new DeterministicRandom(seed ^ 0x424F54504F4C4943UL); }
         public void Prepare(MatchState match)
@@ -111,6 +113,7 @@ namespace PokeChess.Core.Match
                 try { trades.PreviewBuy(match,p.PlayerId,i,p.Shop.Revision); }
                 catch(InvalidOperationException) { continue; }
                 trades.BuyWithRankUp(match,p.PlayerId,i,p.Shop.Revision);
+                purchaseCounts.TryGetValue(slot.DefinitionId,out int count);purchaseCounts[slot.DefinitionId]=count+1;
             }
         }
     }
@@ -138,6 +141,7 @@ namespace PokeChess.Core.Match
         public double ExecutionSeconds=>clock.Elapsed.TotalSeconds;
         public int AliveCount=>Match.Players.Count(p=>p.HP>0 && !p.IsEliminated);
         public IReadOnlyList<SimulationRoundRecord> Rounds=>records.AsReadOnly();
+        public IReadOnlyDictionary<string,int> PurchaseCounts => bot.PurchaseCounts;
         public LocalMatchSimulation(LocalSimulationSettings settings=null, PokemonCatalog catalog=null,
             IEnumerable<string> shopDefinitionIds=null, MatchRules matchRules=null,SkillCatalog skillCatalog=null,StatusCatalog statusCatalog=null)
         {

@@ -1,0 +1,8 @@
+Scenario=MeleeDuel Seed=4243 Variant=expected-reuse Tick=0
+System.InvalidOperationException: Invalid final lifecycle
+   at PokeChess.Core.Tests.CombatSandboxRunner.Require(Boolean valid, String message) in C:\Users\user\Desktop\PokeChess\PokeChess\TestResults\WBS4.10\Extended\CombatSandboxRunner.cs:line 73
+   at PokeChess.Core.Tests.CombatSandboxRunner.Run(CombatSandboxScenario scenario, UInt64 seed, String variant, Nullable`1 maxSteps, String diagnosticFolder) in C:\Users\user\Desktop\PokeChess\PokeChess\TestResults\WBS4.10\Extended\CombatSandboxRunner.cs:line 149
+Recent steps:
+
+Current state:
+[0;False;TeamOneWin;Elimination;0;][1:a;0;0;300;0;0;0;True;True;False;Idle;null;null;null;40;50;20;15;1.2;2;0;0;0;0;0;0;][0;0;0;False;False;null;null;False;0;]null;[1:z;6;7;0;0;0;0;False;False;False;Dead;null;null;null;40;50;20;15;1.2;2;0;0;0;0;0;0;][0;0;0;False;False;null;null;False;0;]null;[8:occupant;0;0;1:a;][][]null;[][][][][][][{DeathReason=StateChange;EndReason=None;Kind=UnitDied;Result=InProgress;Tick=0;UnitId=1:z;}{DeathReason=StateChange;EndReason=Elimination;Kind=BattleEnded;Result=TeamOneWin;Tick=0;UnitId=null;}][{DrawCount=0;State=7238127021890359103;}{DrawCount=0;State=281793013327578312;}{DrawCount=0;State=304842243740403762;}{DrawCount=0;State=12161379898921274559;}]

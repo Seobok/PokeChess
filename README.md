@@ -1,3 +1,7 @@
+# G4.10 Content Alpha QA
+
+12종 × 3성급 스킬 검사, 기본 경기 20회와 레벨 7 콘텐츠 보완 경기 3회, 회귀 검사 및 UI/Windows 빌드 검증을 진행했다. 결과와 재실행 방법은 [G4.10 검증 기록](../Docs/WBS_G4/PokeChess_Content_Alpha_QA_WBS_4.10.md)을 따른다.
+
 # G4.9 Result / Elimination / Final Result UI
 
 라운드 승패·HP·보상 요약과 상세 펼치기, 탈락 안내/계속 보기, 최종 8인 순위표를 정리했다. 조기 전투 종료는 전체 정산을 기다리고 최종 결과는 뒤쪽 입력을 차단한다. [G4.9 구현·검증 기록](../Docs/WBS_G4/PokeChess_Result_UI_WBS_4.9.md).

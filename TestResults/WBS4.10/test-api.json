@@ -1,0 +1,238 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "C:\\Users\\user\\Desktop\\PokeChess\\PokeChess"
+    },
+    "server": {
+      "version": "0.0.1",
+      "port": 7800
+    },
+    "commands": [
+      {
+        "name": "batch",
+        "description": "Run multiple registered commands in one transactional request. Later ops can reference earlier results with \"$<id-or-index>.<jsonPath>\" (e.g. \"$0.instanceId\"; \"$$\" escapes a literal '$'). transactional=true (default) groups every op into one Undo step and reverts all applied ops if any op fails; commands that mutate outside the Undo system (asset/file/settings writes) are rejected unless transactional=false. on_error=abort|continue (continue forces transactional=false); dry_run validates without mutating; time_budget_ms (default 50000) bounds execution — when exceeded the remaining ops are skipped and a transactional batch rolls back (submit long batches with \"job\": true). Excludes build, switch_build_target, package_*, editor_play/stop/pause, recompile, eval, eval_file, run_script, menu, open_scene/create_scene, async commands (run_tests/list_tests), runtime-only commands, and nested batch.",
+        "tags": [
+          "batch"
+        ],
+        "package": "Unity.Pipeline.Editor",
+        "mainThreadRequired": true,
+        "parameters": [
+          {
+            "name": "operations",
+            "description": "Ordered operations to run; each is { id?, command, params }. Max 200.",
+            "type": "List`1",
+            "required": true,
+            "defaultValue": null
+          },
+          {
+            "name": "transactional",
+            "description": "Group all ops into one Undo step and revert every applied op if any op fails. Default true. Forced false when on_error=continue. Rejects commands whose mutations Undo cannot revert (asset/file/settings writes).",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": true
+          },
+          {
+            "name": "on_error",
+            "description": "abort (default): stop at the first failing op. continue: run every op, collecting per-op errors (forces transactional=false).",
+            "type": "String",
+            "required": false,
+            "defaultValue": "abort"
+          },
+          {
+            "name": "dry_run",
+            "description": "Validate command names, parameters, reference topology and excluded commands without mutating anything.",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": false
+          },
+          {
+            "name": "result_fields",
+            "description": "Optional per-op result projection: map of op id-or-index -> array of result field paths to keep (context economy).",
+            "type": "JObject",
+            "required": false,
+            "defaultValue": null
+          },
+          {
+            "name": "time_budget_ms",
+            "description": "Cooperative time budget for the whole batch in milliseconds (default 50000, max 3600000). Checked before each op after the first; when exhausted the remaining ops are skipped and a transactional batch rolls back. Use \"job\": true for long batches.",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 50000
+          }
+        ],
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "title": "batch",
+          "description": "Run multiple registered commands in one transactional request. Later ops can reference earlier results with \"$<id-or-index>.<jsonPath>\" (e.g. \"$0.instanceId\"; \"$$\" escapes a literal '$'). transactional=true (default) groups every op into one Undo step and reverts all applied ops if any op fails; commands that mutate outside the Undo system (asset/file/settings writes) are rejected unless transactional=false. on_error=abort|continue (continue forces transactional=false); dry_run validates without mutating; time_budget_ms (default 50000) bounds execution — when exceeded the remaining ops are skipped and a transactional batch rolls back (submit long batches with \"job\": true). Excludes build, switch_build_target, package_*, editor_play/stop/pause, recompile, eval, eval_file, run_script, menu, open_scene/create_scene, async commands (run_tests/list_tests), runtime-only commands, and nested batch.",
+          "properties": {
+            "operations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Optional id for referencing this op's result from a later op (\"$<id>.<field>\"). Unique within the batch; must match ^[A-Za-z_][A-Za-z0-9_-]*$ (not purely numeric, no dots)."
+                  },
+                  "command": {
+                    "type": "string",
+                    "description": "Name of the registered command to run."
+                  },
+                  "params": {
+                    "type": "string",
+                    "description": "Parameters for the command. String values may reference a prior op's result: \"$<id-or-index>.<jsonPath>\"."
+                  }
+                },
+                "required": [
+                  "command"
+                ],
+                "additionalProperties": false
+              },
+              "description": "Ordered operations to run; each is { id?, command, params }. Max 200."
+            },
+            "transactional": {
+              "type": "boolean",
+              "description": "Group all ops into one Undo step and revert every applied op if any op fails. Default true. Forced false when on_error=continue. Rejects commands whose mutations Undo cannot revert (asset/file/settings writes).",
+              "default": true
+            },
+            "on_error": {
+              "type": "string",
+              "description": "abort (default): stop at the first failing op. continue: run every op, collecting per-op errors (forces transactional=false).",
+              "default": "abort"
+            },
+            "dry_run": {
+              "type": "boolean",
+              "description": "Validate command names, parameters, reference topology and excluded commands without mutating anything.",
+              "default": false
+            },
+            "result_fields": {
+              "type": "string",
+              "description": "Optional per-op result projection: map of op id-or-index -> array of result field paths to keep (context economy)."
+            },
+            "time_budget_ms": {
+              "type": "integer",
+              "description": "Cooperative time budget for the whole batch in milliseconds (default 50000, max 3600000). Checked before each op after the first; when exhausted the remaining ops are skipped and a transactional batch rolls back. Use \"job\": true for long batches.",
+              "default": 50000
+            }
+          },
+          "required": [
+            "operations"
+          ],
+          "additionalProperties": false,
+          "x-command-metadata": {
+            "mainThreadRequired": true,
+            "methodName": "Unity.Pipeline.Editor.Commands.Batch.BatchCommand.Batch"
+          }
+        }
+      },
+      {
+        "name": "run_tests",
+        "description": "Execute Unity tests with filtering options",
+        "tags": [
+          "tests"
+        ],
+        "package": "Unity.Pipeline.Editor",
+        "mainThreadRequired": true,
+        "parameters": [
+          {
+            "name": "mode",
+            "description": "Test mode: all, editor, playmode (default: all)",
+            "type": "String",
+            "required": false,
+            "defaultValue": "all"
+          },
+          {
+            "name": "filter",
+            "description": "Test name filter pattern (case-insensitive partial match)",
+            "type": "String",
+            "required": false,
+            "defaultValue": ""
+          },
+          {
+            "name": "filter_type",
+            "description": "Filter type: testName, assembly, category (default: testName)",
+            "type": "String",
+            "required": false,
+            "defaultValue": "testName"
+          },
+          {
+            "name": "include_explicit",
+            "description": "Include tests marked with [Explicit] attribute",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": false
+          },
+          {
+            "name": "async_tests",
+            "description": "Run asynchronously - return immediately, poll /test-status for results",
+            "type": "Boolean",
+            "required": false,
+            "defaultValue": false
+          },
+          {
+            "name": "timeout",
+            "description": "Test execution timeout in seconds (default: 300)",
+            "type": "Int32",
+            "required": false,
+            "defaultValue": 300
+          }
+        ],
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "title": "run_tests",
+          "description": "Execute Unity tests with filtering options",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "description": "Test mode: all, editor, playmode (default: all)",
+              "default": "all"
+            },
+            "filter": {
+              "type": "string",
+              "description": "Test name filter pattern (case-insensitive partial match)",
+              "default": ""
+            },
+            "filter_type": {
+              "type": "string",
+              "description": "Filter type: testName, assembly, category (default: testName)",
+              "default": "testName"
+            },
+            "include_explicit": {
+              "type": "boolean",
+              "description": "Include tests marked with [Explicit] attribute",
+              "default": false
+            },
+            "async_tests": {
+              "type": "boolean",
+              "description": "Run asynchronously - return immediately, poll /test-status for results",
+              "default": false
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Test execution timeout in seconds (default: 300)",
+              "default": 300
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "x-command-metadata": {
+            "mainThreadRequired": true,
+            "methodName": "Unity.Pipeline.Editor.Commands.TestCommands.RunTests"
+          }
+        }
+      }
+    ],
+    "count": 2,
+    "total": 2,
+    "offset": 0,
+    "limit": null
+  },
+  "errors": [],
+  "warnings": []
+}
