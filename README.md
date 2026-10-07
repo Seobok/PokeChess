@@ -1,3 +1,7 @@
+# G5.4 Lobby / Ready / Host Start
+
+참가자 Ready/취소, Host 시작 조건 검사, 방 잠금·확인 응답·시작 취소와 공통 경기 시작 정보를 추가했다. [G5.4 구현·검증 기록](../Docs/WBS_G5/PokeChess_Lobby_Ready_Start_WBS_5.4.md). 온라인 경기 동기화는 후속 단계다.
+
 # G5.3 Room List / Create / Join by Code
 
 공개 방 목록·페이지 조회, 공개/비공개 방 생성, 목록 및 코드 참가, 참가 인원·Host·코드 복사·퇴장 UI를 추가했다. [G5.3 구현·검증 기록](../Docs/WBS_G5/PokeChess_Room_Flow_WBS_5.3.md). Ready와 Host Start는 5.4 범위다.

@@ -13,7 +13,7 @@ namespace PokeChess.Network.Session
 {
     public enum ConnectionState { Idle, Creating, Joining, Connecting, Connected, Leaving, Failed }
 
-    public sealed class OnlineConnection : MonoBehaviour
+    public sealed partial class OnlineConnection : MonoBehaviour
     {
         private const ushort ProtocolVersion = 1;
         private const string RequestMessage = "PokeChess.Connection.Request.v1", ReplyMessage = "PokeChess.Connection.Reply.v1";
@@ -33,7 +33,7 @@ namespace PokeChess.Network.Session
         public string Code => session?.Code;
         public string SessionId => session?.Id;
         public RoomSnapshot Room => session == null ? null : new RoomSnapshot(session.Name,session.MaxPlayers,session.IsPrivate,session.Code,
-            session.Players.Select(p=>new RoomMember(p.Id,p.Id==session.Host)).ToArray());
+            session.Players.Select(p=>new RoomMember(p.Id,p.Id==session.Host,PlayerFlag(p,"ready"),PlayerFlag(p,"connected"))).ToArray());
         public bool IsHost => manager != null && manager.IsHost;
         public int ConnectedPlayers => manager != null && manager.IsServer ? manager.ConnectedClientsIds.Count : (State == ConnectionState.Connected ? session?.Players.Count ?? 0 : 0);
         public int RequestsReceived { get; private set; }
@@ -86,6 +86,7 @@ namespace PokeChess.Network.Session
                     }.WithRelayNetwork());
                 else session = byId ? await MultiplayerService.Instance.JoinSessionByIdAsync(code) : await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
                 session.Deleted += SessionEnded; session.RemovedFromSession += SessionEnded;
+                ResetLobby();
                 State = ConnectionState.Connecting;
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(RequestMessage, OnRequest);
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(ReplyMessage, OnReply);
@@ -116,7 +117,7 @@ namespace PokeChess.Network.Session
             {
                 reader.ReadValueSafe(out ushort version); reader.ReadValueSafe(out string gameVersion); reader.ReadValueSafe(out int id);
                 if(version != ProtocolVersion || gameVersion != Application.version) { manager.DisconnectClient(sender,"VersionMismatch"); return; }
-                RequestsReceived++;
+                RequestsReceived++; verifiedPeers.Add(sender);
                 using(var writer = new FastBufferWriter(1024,Allocator.Temp))
                 {
                     writer.WriteValueSafe(version); writer.WriteValueSafe(gameVersion); writer.WriteValueSafe(id);
@@ -140,6 +141,7 @@ namespace PokeChess.Network.Session
         }
         private void Update()
         {
+            UpdateLobby();
             if(session == null || IsBusy || State == ConnectionState.Leaving) return;
             if(!manager.IsListening) { Error="ConnectionLost"; SessionEnded(); }
             else if(State == ConnectionState.Connecting && Time.realtimeSinceStartupAsDouble-sentAt > 15) { Error="HandshakeTimeout"; SessionEnded(); }
@@ -153,7 +155,7 @@ namespace PokeChess.Network.Session
         private async Task LeaveCoreAsync() { State=ConnectionState.Leaving; await CleanupAsync(); State=ConnectionState.Idle; }
         private async Task CleanupAsync()
         {
-            var old=session; session=null;
+            var old=session; session=null; ResetLobby();
             if(old != null)
             {
                 old.Deleted-=SessionEnded; old.RemovedFromSession-=SessionEnded;

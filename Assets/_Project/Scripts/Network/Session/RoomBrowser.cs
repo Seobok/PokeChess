@@ -24,7 +24,9 @@ namespace PokeChess.Network.Session
     {
         public string Id { get; }
         public bool IsHost { get; }
-        public RoomMember(string id,bool host){Id=id;IsHost=host;}
+        public bool IsReady { get; }
+        public bool IsConnected { get; }
+        public RoomMember(string id,bool host,bool ready=false,bool connected=false){Id=id;IsHost=host;IsReady=ready;IsConnected=connected;}
         public string Label => "Player " + Id.Substring(Math.Max(0,Id.Length-6)) + (IsHost?" (Host)":"");
     }
     public sealed class RoomSnapshot

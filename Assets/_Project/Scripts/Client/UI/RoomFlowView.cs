@@ -13,13 +13,13 @@ namespace PokeChess.Client.UI
         private GameObject panel,browse,lobby;
         private RectTransform content;
         private Font font;
-        private UnityEngine.UI.Text listStatus,feedback,roomTitle,players,visibilityLabel,capacityLabel;
+        private UnityEngine.UI.Text listStatus,feedback,roomTitle,players,visibilityLabel,capacityLabel,lobbyStatus;
         private UnityEngine.UI.InputField roomName,joinCode;
-        private UnityEngine.UI.Button create,join,refresh,next,capacity,visibility,leave,copy;
+        private UnityEngine.UI.Button create,join,refresh,next,capacity,visibility,leave,copy,readyButton,startButton;
         private readonly List<UnityEngine.UI.Button> rowButtons=new List<UnityEngine.UI.Button>();
         private int maxPlayers=8;
         private bool isPrivate,initialRefresh,hadRoom;
-        private string lastRoom;
+        private string lastRoom,lastLobbyError;
         private ConnectionState previous;
         private void Awake()
         {
@@ -39,9 +39,12 @@ namespace PokeChess.Client.UI
             BuildBrowser(browser);
             var waiting=Rect("Lobby",body,body.sizeDelta,Vector2.zero);lobby=waiting.gameObject;
             roomTitle=Label("RoomTitle",waiting,"",new Vector2(820,90),new Vector2(0,135),20);
-            players=Label("Players",waiting,"",new Vector2(820,240),new Vector2(0,-25),18);
-            copy=Button("Copy code",waiting,new Vector2(-90,-190),new Vector2(150,34),()=>{GUIUtility.systemCopyBuffer=OnlineConnection.Instance.Code??"";feedback.text="Room code copied.";});
-            leave=Button("Leave room",waiting,new Vector2(90,-190),new Vector2(150,34),Leave);
+            players=Label("Players",waiting,"",new Vector2(820,210),new Vector2(0,-15),18);
+            lobbyStatus=Label("LobbyStatus",waiting,"",new Vector2(840,40),new Vector2(0,-150),14);
+            readyButton=Button("Ready",waiting,new Vector2(-200,-205),new Vector2(150,34),async()=>{var s=OnlineConnection.Instance;await s.SetReadyAsync(!s.LocalReady);});
+            startButton=Button("Start",waiting,new Vector2(-200,-205),new Vector2(150,34),async()=>{await OnlineConnection.Instance.StartMatchAsync();});
+            copy=Button("Copy code",waiting,new Vector2(0,-205),new Vector2(150,34),()=>{GUIUtility.systemCopyBuffer=OnlineConnection.Instance.Code??"";feedback.text="Room code copied.";});
+            leave=Button("Leave room",waiting,new Vector2(200,-205),new Vector2(150,34),Leave);
             feedback=Label("Feedback",body,"",new Vector2(880,38),new Vector2(0,-248),13);
             lobby.SetActive(false);panel.SetActive(FindFirstObjectByType<PlacementSandboxView>()==null);
         }
@@ -77,15 +80,23 @@ namespace PokeChess.Client.UI
             create.interactable=join.interactable=capacity.interactable=visibility.interactable=roomName.interactable=joinCode.interactable=idle;
             refresh.interactable=idle&&Browser.State!=RoomListState.Loading;next.interactable=refresh.interactable&&!string.IsNullOrEmpty(Browser.NextPage);
             foreach(var b in rowButtons)b.interactable=idle&&Browser.State==RoomListState.Ready;
-            leave.interactable=inRoom&&!s.IsBusy;copy.interactable=inRoom&&!s.IsBusy;
+            leave.interactable=inRoom&&!s.LobbyBusy;copy.interactable=inRoom&&!s.LobbyBusy;
+            readyButton.gameObject.SetActive(inRoom&&!s.IsHost&&s.LobbyState==LobbyPhase.Waiting);
+            startButton.gameObject.SetActive(inRoom&&s.IsHost&&s.LobbyState!=LobbyPhase.Started);
+            readyButton.interactable=s.State==ConnectionState.Connected&&s.LobbyConnectionConfirmed&&!s.LobbyBusy;
+            readyButton.GetComponentInChildren<UnityEngine.UI.Text>().text=s.LobbyBusy?"Saving…":s.LocalReady?"Cancel ready":"Ready";
+            startButton.interactable=s.StartBlockedReason==null;
             if(ready&&!initialRefresh&&panel.activeSelf){initialRefresh=true;Refresh();}
             if(s.State!=previous){previous=s.State;feedback.text=Message(s.Error)??(s.IsBusy?"Connecting…":"");}
             if(inRoom)hadRoom=true;
             else if(hadRoom&&!s.IsBusy){hadRoom=false;if(ready)Refresh();}
             if(inRoom)
             {
-                var room=s.Room;var signature=room.Name+room.Code+string.Join("|",room.Members.Select(p=>p.Id+":"+p.IsHost));
-                if(signature!=lastRoom){lastRoom=signature;roomTitle.text=room.Name+"\n"+(room.IsPrivate?"Private":"Public")+" / "+room.Members.Count+" / "+room.Capacity+" players / Code: "+room.Code;players.text=string.Join("\n",room.Members.Select(p=>p.Label));}
+                var room=s.Room;var signature=room.Name+room.Code+s.LobbyState+s.StartInfo?.matchId+string.Join("|",room.Members.Select(p=>p.Id+":"+p.IsHost+":"+p.IsReady+":"+p.IsConnected));
+                if(signature!=lastRoom){lastRoom=signature;roomTitle.text=room.Name+"\n"+(room.IsPrivate?"Private":"Public")+" / "+room.Members.Count+" / "+room.Capacity+" players / Code: "+room.Code;
+                    players.text=s.StartInfo==null?string.Join("\n",room.Members.Select(p=>p.Label+(p.Id==OnlineAuthenticationService.Instance.PlayerId?" (You)":"")+" / "+(!p.IsConnected?"Connecting":p.IsHost?"Connected":p.IsReady?"Ready":"Not ready"))):"MATCH START CONFIRMED\n"+s.StartInfo.matchId+"\n"+s.StartInfo.players.Length+" players / Seed: "+s.StartInfo.seed;}
+                lobbyStatus.text=s.LobbyState==LobbyPhase.Starting?"Confirming match start with all players…":s.LobbyState==LobbyPhase.Started?"All players received the same match start.":s.IsHost?s.StartBlockedReason??"All players are ready. You can start.":s.LobbyBusy?"Saving lobby state…":"Ready when you are prepared to play.";
+                if(s.Error!=lastLobbyError){lastLobbyError=s.Error;feedback.text=s.Error??"";}
             }
             else lastRoom=null;
         }
