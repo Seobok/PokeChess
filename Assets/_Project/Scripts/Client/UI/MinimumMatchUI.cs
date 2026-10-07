@@ -36,7 +36,7 @@ namespace PokeChess.Client.UI
         private MatchPhase? shopPhase;
         private readonly Dictionary<string,float> highlights=new Dictionary<string,float>();
         public string SelectedUnitId => selectedUnitId;
-        public bool ShopExpanded => (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
+        public bool ShopExpanded => Player.HP>0 && !Player.IsEliminated && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
         public UnityEngine.UI.Button ShopButton(int slot) => shopCards[slot];
         public UnityEngine.UI.Button SellButton => sellButton;
         public UnityEngine.UI.Button XPButton => xpButton;

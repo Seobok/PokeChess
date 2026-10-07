@@ -1,3 +1,7 @@
+# G4.9 Result / Elimination / Final Result UI
+
+라운드 승패·HP·보상 요약과 상세 펼치기, 탈락 안내/계속 보기, 최종 8인 순위표를 정리했다. 조기 전투 종료는 전체 정산을 기다리고 최종 결과는 뒤쪽 입력을 차단한다. [G4.9 구현·검증 기록](../Docs/WBS_G4/PokeChess_Result_UI_WBS_4.9.md).
+
 # G4.8 Unit Context / Rank / Item UI
 
 유닛 선택 정보에 역할·타입·성급별 능력치와 실제 스킬 수치를 표시한다. 연쇄/지연 합성 선택 유지와 아이템 반환 피드백, 내 전투 유닛 클릭 선택을 추가했다. [G4.8 구현·검증 기록](../Docs/WBS_G4/PokeChess_Unit_Context_UI_WBS_4.8.md).

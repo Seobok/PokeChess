@@ -53,7 +53,7 @@ namespace PokeChess.Client.UI
             resultRoot=Panel("RoundResult",new Vector2(600,280),new Vector2(0,105));
             resultInfo=Label("Summary",resultRoot,"",17,new Vector2(565,260),Vector2.zero);
             combatRoot.gameObject.SetActive(false);resultRoot.gameObject.SetActive(false);
-            BuildFinalResultUI();
+            BuildFinalResultUI();BuildResultPresentation();
             BuildSimulationUI();
         }
         private static Vector2 CombatPoint(BoardPosition position) => new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
@@ -226,19 +226,7 @@ namespace PokeChess.Client.UI
                     label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
                 }
             }
-            if(resultRoot.gameObject.activeSelf)
-            {
-                var result=RoundLoop.LastResult;
-                result.PlayerResults.TryGetValue("p1",out var ownResult);
-                string verdict=ownResult==null ? "SPECTATING" : ownResult.Outcome==RoundOutcome.Draw ? "DRAW" : ownResult.Outcome==RoundOutcome.Win ? "VICTORY" : "DEFEAT";
-                string summary="ROUND "+result.Round+" / "+verdict+"\n"+(ownResult==null ? "" :  "VS "+ownResult.OpponentId+(ownResult.IsShadow ? " (SHADOW)" : "")+" / "+ownResult.Reason+" / "+(ownResult.EndTick/30d).ToString("0.0")+"s")+"\n\n";
-                if(result.Damage.TryGetValue("p1",out var damage))summary+="Damage "+damage.TotalDamage+" = base "+damage.BaseDamage+" + survivors "+damage.SurvivorDamage+"\nHP "+damage.HPBefore+" -> "+damage.HPAfter+"\n";
-                if(result.Income.TryGetValue("p1",out var income))summary+="Income +"+income.TotalIncome+"G = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n";
-                if(result.XP.TryGetValue("p1",out var xp))summary+="Automatic XP +"+xp.XPGranted+" / Level "+xp.LevelBefore+" -> "+xp.LevelAfter+"\n";
-                if(Player.Elimination!=null)summary+="Placement #"+Player.FinalPlacement+" / "+Player.Elimination.Reason+"\n";
-                resultInfo.text=summary+"\n"+(Player.IsEliminated ? "Eliminated. Spectating remaining players." : "Preparation board restored. Next round starts automatically.")+(roundFault==null ? "" : "\nERROR: "+roundFault);
-                resultRoot.SetAsLastSibling();
-            }
+            RenderResultPresentation();
             RenderUnitContext();
             RenderFinalResultUI();
             RenderSimulationUI();
