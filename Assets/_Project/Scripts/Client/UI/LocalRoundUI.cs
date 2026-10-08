@@ -224,8 +224,8 @@ namespace PokeChess.Client.UI
                     selection.enabled=unit.UnitInstanceId==selectedUnitId;
                     tokenImage.color=healing?new Color(.15f,.65f,.3f):unit.ActionState==CombatActionState.Casting?new Color(.55f,.3f,.75f):
                         buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
-                    label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+Mathf.CeilToInt(unit.CurrentHP)+" HP\n"+
-                        (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":Mathf.FloorToInt(unit.CurrentEnergy)+"E");
+                    label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+
+                        (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":"");
                     label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
                 }
             }

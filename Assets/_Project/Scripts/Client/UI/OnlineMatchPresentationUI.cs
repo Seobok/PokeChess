@@ -74,7 +74,9 @@ namespace PokeChess.Client.UI
                 else{var target=frame.units.FirstOrDefault(u=>u.id==unit.target);if(target!=null)facing=CombatPoint(new BoardPosition(target.column,target.row))-position;}
                 ((RectTransform)label.transform.parent).anchoredPosition=position;fighterSprites[unit.id].ShowPlayback(unit,tick,30,facing,1.5f);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
-                label.text=unit.hp<=0?"":"R"+unit.rank+" "+Math.Ceiling(unit.hp)+"HP\n"+Math.Floor(unit.energy)+"E"+(unit.shield>0?" S"+Math.Ceiling(unit.shield):"")+(unit.statuses.Length>0?" · "+unit.statuses[0]:"");
+                RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
+                RenderUnitEnergyBar(label.transform.parent, unit.energy, unit.maxEnergy, unit.hp > 0);
+                label.text=unit.hp<=0?"":"R"+unit.rank+(unit.statuses.Length>0?"\n"+unit.statuses[0]:"");
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
                 if(unit.assaultCharges>0)label.text+=" AT+"+unit.assaultCharges;
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);

@@ -8,7 +8,7 @@ namespace PokeChess.Core.Match
     [Serializable] public sealed class CombatUnitView
     {
         public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,assaultCharges;
-        public float hp,maxHP,energy,shield;public bool onBoard;public CombatActionState action;
+        public float hp,maxHP,energy,maxEnergy,shield;public bool onBoard;public CombatActionState action;
         public long startTick,effectTick,endTick;public string[] statuses;
     }
     [Serializable] public sealed class CombatProjectileView
@@ -91,7 +91,7 @@ namespace PokeChess.Core.Match
                 units=battle==null?Array.Empty<CombatUnitView>():battle.Units.Select(u=>{
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;
                     return new CombatUnitView{id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
-                        hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
+                        hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,maxEnergy=u.Stats.MaxEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
                         assaultCharges=battle.Synergies.AssaultCharges(u),
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,

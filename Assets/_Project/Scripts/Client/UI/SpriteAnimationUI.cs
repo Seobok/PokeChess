@@ -63,6 +63,9 @@ namespace PokeChess.Client.UI
                 if(other!=null && other!=unit)facing=CombatPoint(other.Position)-current;
             }
             sprite.ShowCombat(pair.Battle,unit,action,facing);
+            RenderUnitHealthBar(label.transform.parent, unit.CurrentHP, unit.Stats.MaxHP,
+                unit.TeamId == (pair.Pairing.PlayerOneId == "p1" ? 1 : 2), unit.CurrentShield);
+            RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
             if(sprite.Visible)
             {
                 label.rectTransform.anchoredPosition=new Vector2(0,-15);label.rectTransform.sizeDelta=new Vector2(46,24);
@@ -78,8 +81,7 @@ namespace PokeChess.Client.UI
                     else if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
                     else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
                 }
-                if(unit.CurrentShield>0)state+=" S"+Mathf.CeilToInt(unit.CurrentShield);
-                label.text="R"+(int)unit.Rank+" "+Mathf.CeilToInt(unit.CurrentHP)+"HP\n"+state;
+                label.text="R"+(int)unit.Rank+"\n"+state;
                 var background=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
                 var c=background.color;c.a=.2f;background.color=c;
                 if(!unit.IsAlive)label.text="";
