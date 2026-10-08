@@ -90,6 +90,7 @@ namespace PokeChess.Client.UI
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
             ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();BuildSynergyUI();
+            BuildItemWildUI();
         }
         private void ConfigureShopPanel()
         {
@@ -112,7 +113,7 @@ namespace PokeChess.Client.UI
         public void ResetMatchUI()
         {
             CancelDrag("Reset.");catalog=PrototypeRoster.CreateCatalog();
-            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:123);
+            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
             ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
         }

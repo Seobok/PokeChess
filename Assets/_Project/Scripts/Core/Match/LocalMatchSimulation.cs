@@ -99,6 +99,11 @@ namespace PokeChess.Core.Match
                     var move=placements.Move(match,p.PlayerId,best[i].InstanceId,UnitPlacement.OnBoard(cells[i].Position),p.PlacementRevision);
                     if(!move.Accepted)throw new InvalidOperationException("Bot deployment rejected: "+move.Reason);
                 }
+                foreach(var unit in best.Where(u=>u.ItemInstanceIds.Count==0)){
+                    string item=p.ItemInventory.FirstOrDefault(id=>ItemCatalog.DefinitionId(id)!=null);
+                    if(item==null)break;
+                    new ItemSystem().Equip(match,p.PlayerId,unit.InstanceId,item,p.ItemRevision);
+                }
             }
         }
         private void BuyOffers(MatchState match,PlayerState p,int reserve)

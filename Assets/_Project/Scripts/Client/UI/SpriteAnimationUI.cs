@@ -66,6 +66,7 @@ namespace PokeChess.Client.UI
             RenderUnitHealthBar(label.transform.parent, unit.CurrentHP, unit.Stats.MaxHP,
                 unit.TeamId == (pair.Pairing.PlayerOneId == "p1" ? 1 : 2), unit.CurrentShield);
             RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
+            RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
             if(sprite.Visible)
             {
                 label.rectTransform.anchoredPosition=new Vector2(0,-15);label.rectTransform.sizeDelta=new Vector2(46,24);

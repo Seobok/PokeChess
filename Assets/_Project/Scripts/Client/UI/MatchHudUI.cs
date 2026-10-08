@@ -59,7 +59,7 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Preparation) {
                 kind="Preparation";progress=RoundFlow.RemainingSeconds/RoundFlow.Rules.PreparationSeconds;
             } else if(Match.Phase==MatchPhase.Result) {
-                kind="Result";progress=RoundFlow.RemainingSeconds/RoundFlow.Rules.ResultSeconds;
+                kind="Result";progress=RoundFlow.RemainingSeconds/(WildRoundSystem.IsWild(Match)?Math.Max(12,RoundFlow.Rules.ResultSeconds):RoundFlow.Rules.ResultSeconds);
             } else if(Match.Phase==MatchPhase.Combat) {
                 if(own==null||own.IsComplete)notice="Waiting for other battles";
                 else if(own.Battle!=null) {

@@ -5,6 +5,7 @@ using PokeChess.Core.Board;
 namespace PokeChess.Core.Battle
 {
     public enum DamageType { Physical, Magic, True }
+    public enum DamageOrigin { Direct, Periodic, Reflection }
     public readonly struct DamageRequest
     {
         public string SourceId { get; }
@@ -13,8 +14,9 @@ namespace PokeChess.Core.Battle
         public DamageType Type { get; }
         public bool CanCrit { get; }
         public bool IsBasicAttack { get; }
+        public DamageOrigin Origin { get; }
         public float BonusDamage { get; }
-        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0, bool isBasicAttack=false)
+        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0, bool isBasicAttack=false, DamageOrigin origin=DamageOrigin.Direct)
         {
             if(string.IsNullOrWhiteSpace(sourceId)||string.IsNullOrWhiteSpace(targetId))
                 throw new ArgumentException("Damage requires source and target IDs.");
@@ -24,6 +26,8 @@ namespace PokeChess.Core.Battle
             if(float.IsNaN(bonusDamage)||float.IsInfinity(bonusDamage)||bonusDamage<0)
                 throw new ArgumentOutOfRangeException(nameof(bonusDamage));
             IsBasicAttack=isBasicAttack; CanCrit=canCrit; BonusDamage=bonusDamage;
+            if(!Enum.IsDefined(typeof(DamageOrigin),origin))throw new ArgumentOutOfRangeException(nameof(origin));
+            Origin=origin;
             SourceId=sourceId; TargetId=targetId; RawDamage=rawDamage; Type=type;
         }
     }

@@ -117,6 +117,7 @@ namespace PokeChess.Core.Battle
         public EnergySystem Energy { get; }
         public StatusEffectSystem StatusEffects { get; }
         public SynergySystem Synergies { get; internal set; }
+        public ItemCombatSystem Items { get; }
         private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
         public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
         private readonly List<SkillEffectEvent> skillEffectEvents = new List<SkillEffectEvent>();
@@ -176,6 +177,7 @@ namespace PokeChess.Core.Battle
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);
+            Items = new ItemCombatSystem(this);
         }
     }
 
@@ -206,6 +208,7 @@ namespace PokeChess.Core.Battle
                 var definition = catalog.Get(e.Unit.DefinitionId);
                 var stats = resolveStats == null ? RankRules.Default.Apply(definition.BaseStats,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
+                stats = ItemCombatSystem.ApplyStats(e.Unit,stats);
                 return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, definition.TraitIds);
             }).ToArray();
             var battle = new BattleState(battleId, roundNumber, seed, tickRate, states, board);

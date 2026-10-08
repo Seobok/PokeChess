@@ -85,6 +85,7 @@ namespace PokeChess.Core.Battle
                 battle.Synergies.BeginTick();
                 battle.StatusEffects.BeginTick();
                 battle.Energy.BeginTick();
+                battle.Items.BeginTick();
                 battle.Projectiles.BeginTick();
                 CleanupUnavailable();
                 if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
@@ -280,6 +281,7 @@ namespace PokeChess.Core.Battle
                 Emit(unit,CombatActionSignalKind.TimingReached);
                 policy.ExecuteSkillEffect(battle,unit,target,skill);
                 battle.Synergies.OnSkillEffect(unit);
+                battle.Items.OnSkillEffect(unit);
                 battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.EffectApplied,SkillCancelReason.None));
             }
             if(unit.IsAlive&&unit.IsOnBoard&&battle.CurrentTick>=cast.EndTick)Finish(unit,runtime,false);

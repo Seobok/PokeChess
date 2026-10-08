@@ -37,7 +37,7 @@ namespace PokeChess.Core.Match
         }
 
         private double Duration => Match.Phase == MatchPhase.Preparation ? Rules.PreparationSeconds
-            : Match.Phase == MatchPhase.Result ? Rules.ResultSeconds : 0;
+            : Match.Phase == MatchPhase.Result ? WildRoundSystem.IsWild(Match)?Math.Max(12,Rules.ResultSeconds):Rules.ResultSeconds : 0;
         private bool TimedPhaseReady => Match.Phase == MatchPhase.Preparation ? runtime.PreparationReady && !AwaitingMatchEnd
             : Match.Phase == MatchPhase.Result && runtime.IsSettled;
 

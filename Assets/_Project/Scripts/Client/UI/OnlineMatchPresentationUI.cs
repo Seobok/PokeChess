@@ -23,7 +23,7 @@ namespace PokeChess.Client.UI
         {
             hudRound.text="ROUND "+pub.round;
             HudTimerKind=pub.phase.ToString();double remaining=onlineService.PhaseRemainingSeconds;
-            double duration=pub.phase==MatchPhase.Preparation?30:3;
+            double duration=pub.phase==MatchPhase.Preparation?30:pub.wildRound?12:3;
             var frame=onlineService.Combat.Current;
             bool overtime=frame!=null&&frame.overtimeTick>0&&frame.tick>=frame.overtimeTick;
             if(pub.phase==MatchPhase.Combat&&frame!=null)HudTimerKind=overtime?"Overtime":"Combat";
@@ -67,7 +67,7 @@ namespace PokeChess.Client.UI
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
                     var button=node.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.id;button.onClick.AddListener(()=>SelectOnlineUnit(id));
                     combatTokens[unit.id]=label=Label("HP",node,"",9,new Vector2(60,26),new Vector2(0,-15));fighterSprites[unit.id]=AddSprite(node,unit.definitionId);
-                    onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,25));
+                    onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,50));
                 }
                 Vector2 position=CombatPoint(new BoardPosition(unit.column,unit.row)),facing=Vector2.zero;
                 if(unit.action==CombatActionState.Moving){var destination=CombatPoint(new BoardPosition(unit.moveColumn,unit.moveRow));facing=destination-position;position=Vector2.Lerp(position,destination,(float)((tick-unit.startTick)/Math.Max(1,unit.endTick-unit.startTick)));}
@@ -76,6 +76,7 @@ namespace PokeChess.Client.UI
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
                 RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
                 RenderUnitEnergyBar(label.transform.parent, unit.energy, unit.maxEnergy, unit.hp > 0);
+                RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
                 label.text=unit.hp<=0?"":"R"+unit.rank+(unit.statuses.Length>0?"\n"+unit.statuses[0]:"");
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
                 if(unit.assaultCharges>0)label.text+=" AT+"+unit.assaultCharges;
@@ -90,6 +91,7 @@ namespace PokeChess.Client.UI
         private void ShowOnlineEffect(CombatEventView effect)
         {
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;
+            if(effect.kind=="Item") { label.font=itemFont;label.text=ItemCatalog.Get(effect.detail).Name;label.color=new Color(.5f,1,.7f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
             if(effect.kind=="Synergy") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
             else if(effect.kind=="Damage"||effect.kind=="EffectHeal"||effect.kind.StartsWith("Status")){
                 label.text=effect.kind=="Damage"?"-"+Math.Ceiling(effect.value):effect.kind=="EffectHeal"?"+"+Math.Ceiling(effect.value):effect.detail;
@@ -116,7 +118,7 @@ namespace PokeChess.Client.UI
                 resultRewards.text=reward?.round==pub.round?"+"+reward.totalIncome+"G · +"+reward.xpGranted+" XP":"Rewards pending";
                 resultNext.text=(result==null?"":"VS "+PlayerLabel(result.opponentId,owner.playerId)+(result.shadow?" / SHADOW":"")+"\n")+"Next preparation starts automatically.";
                 resultDetailsButton.gameObject.SetActive(true);resultDetails.gameObject.SetActive(resultExpanded);ButtonText(resultDetailsButton,resultExpanded?"Hide details":"Show details");
-                resultDetails.text=reward==null?"":"Damage "+reward.damage+" = base "+reward.baseDamage+" + survivors "+reward.survivorDamage+"\nIncome "+reward.totalIncome+" = base "+reward.baseIncome+" + interest "+reward.interest+" + streak "+reward.streakBonus+"\nXP +"+reward.xpGranted+" · Level "+reward.levelBefore+" → "+reward.levelAfter;
+                resultDetails.text=reward==null?"":"Damage "+reward.damage+" = base "+reward.baseDamage+" + survivors "+reward.survivorDamage+"\nIncome "+reward.totalIncome+" = base "+reward.baseIncome+" + interest "+reward.interest+" + streak "+reward.streakBonus+(reward.wildClearBonus>0?" + wild clear "+reward.wildClearBonus:"")+"\nXP +"+reward.xpGranted+" · Level "+reward.levelBefore+" → "+reward.levelAfter;
                 resultRoot.SetAsLastSibling();
             }
             if(final){

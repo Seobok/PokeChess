@@ -31,7 +31,7 @@ namespace PokeChess.Client.UI
         {
             CancelDrag("Simulation started.");Simulation?.Cancel();
             var run=new LocalMatchSimulation(new LocalSimulationSettings(seed),PrototypeRoster.CreateCatalog(),
-                PrototypeRoster.CreateDefinitions().Select(d=>d.Id),skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
+                PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchRules:new MatchRules(enableWildRounds:true),skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
             catalog=run.Catalog;Match=run.Match;AttachMinimumMatch();
             Simulation=run;RoundLoop=run.Coordinator;RoundFlow=run.Flow;simulationFast=fast;
             savedSimulation=null;simulationSaveError=null;SimulationSaveDirectory=null;

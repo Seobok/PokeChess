@@ -130,7 +130,7 @@ namespace PokeChess.Network.Session
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                     if(QAExtraPlayers>0)roster=roster.Concat(Enumerable.Range(1,Math.Min(6,QAExtraPlayers)).Select(i=>"qa-bot-"+i)).ToArray();
 #endif
-                    var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,roster,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:hostMatchSeed);
+                    var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,roster,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:hostMatchSeed);
                     match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);foreach(var id in roster)new ShopSystem().RefreshForRound(match,id);
                     var rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
                     hostCommands=new HostCommandProcessor(match,catalog,rounds);CreateCombatRuntime(rounds);BroadcastOwnerStates(true);
@@ -149,7 +149,7 @@ namespace PokeChess.Network.Session
         public MatchCommand CreateCommand(MatchCommandKind kind)
         {
             var state=LocalMatchState;return new MatchCommand{protocol=1,matchId=StartInfo?.matchId,commandId=Guid.NewGuid().ToString("N"),playerId=session?.CurrentPlayer.Id,sequence=nextCommandSequence,kind=kind,
-                round=state?.round??1,phase=state?.phase??MatchPhase.Preparation,playerRevision=state?.playerRevision??0,shopRevision=state?.shopRevision??0,placementRevision=state?.placementRevision??0};
+                round=state?.round??1,phase=state?.phase??MatchPhase.Preparation,playerRevision=state?.playerRevision??0,shopRevision=state?.shopRevision??0,placementRevision=state?.placementRevision??0,itemRevision=state?.itemRevision??0};
         }
         public async Task<CommandAck> SubmitCommandAsync(MatchCommand command)
         {

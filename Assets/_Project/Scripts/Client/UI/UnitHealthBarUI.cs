@@ -1,9 +1,24 @@
 using UnityEngine;
+using System.Collections.Generic;
+using PokeChess.Core.Match;
 
 namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
+        private void RenderEquippedItemIcon(Transform unit, IEnumerable<string> items, bool visible=true, float height=33)
+        {
+            Sprite sprite=null;
+            if(items!=null)foreach(var item in items){sprite=itemIcons?.Get(ItemCatalog.DefinitionId(item));if(sprite!=null)break;}
+            var icon=unit.Find("EquippedItemIcon")?.GetComponent<UnityEngine.UI.Image>();
+            if(icon==null&&sprite==null)return;
+            if(icon==null){
+                icon=HudImage("EquippedItemIcon",unit,new Vector2(16,16),new Vector2(0,height),Color.white);
+                icon.preserveAspect=true;icon.raycastTarget=false;
+            }
+            icon.sprite=sprite;icon.rectTransform.anchoredPosition=new Vector2(0,height);
+            icon.gameObject.SetActive(visible&&sprite!=null);icon.transform.SetAsLastSibling();
+        }
         private void RenderUnitEnergyBar(Transform fighter, double energy, double maxEnergy, bool alive)
         {
             var track = fighter.Find("EnergyBar") as RectTransform;

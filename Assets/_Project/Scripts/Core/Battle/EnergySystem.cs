@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PokeChess.Core.Battle
 {
-    public enum EnergyChangeReason { BasicAttackHit, DamageReceived, SkillCost, LockStarted }
+    public enum EnergyChangeReason { BasicAttackHit, DamageReceived, SkillCost, LockStarted, Item }
     public enum EnergyBlockReason { None, Unavailable, Casting, Locked, Insufficient }
     public readonly struct EnergyEvent
     {
@@ -37,7 +37,7 @@ namespace PokeChess.Core.Battle
         public bool Gain(UnitCombatState unit,float amount,EnergyChangeReason reason)
         {
             Validate(unit);DamageCalculator.Validate(amount,true);
-            if(reason!=EnergyChangeReason.BasicAttackHit&&reason!=EnergyChangeReason.DamageReceived)
+            if(reason!=EnergyChangeReason.BasicAttackHit&&reason!=EnergyChangeReason.DamageReceived&&reason!=EnergyChangeReason.Item)
                 throw new ArgumentOutOfRangeException(nameof(reason));
             if(amount==0)return false;
             var block=!unit.IsAlive||!unit.IsOnBoard?EnergyBlockReason.Unavailable:
@@ -66,6 +66,7 @@ namespace PokeChess.Core.Battle
         }
         internal void OnDamage(DamageResult result)
         {
+            if(result.Request.Origin==DamageOrigin.Reflection)return;
             if(result.PostMitigationDamage<=0)return;
             var source=battle.Units.Single(u=>u.UnitInstanceId==result.Request.SourceId);
             var target=battle.Units.Single(u=>u.UnitInstanceId==result.Request.TargetId);

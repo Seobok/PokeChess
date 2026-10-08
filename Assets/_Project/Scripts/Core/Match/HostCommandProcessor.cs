@@ -5,18 +5,20 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
-    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender }
+    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, UnequipItem }
     [Serializable] public sealed class MatchCommand
     {
         public int protocol=1,round,slot,column,row,bench;
         public long sequence,playerRevision,shopRevision,placementRevision;
         public string matchId,commandId,playerId,unitId;
+        public string itemId;
+        public long itemRevision;
         public MatchPhase phase;
         public MatchCommandKind kind;
         public PlacementKind destination;
         public bool locked;
         public MatchCommand Copy()=>(MatchCommand)MemberwiseClone();
-        public bool SamePayload(MatchCommand b)=>b!=null&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
+        public bool SamePayload(MatchCommand b)=>b!=null&&itemId==b.itemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
     }
     [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId; }
     [Serializable] public sealed class OwnerUnit { public string id,definitionId;public int rank,column,row,bench,saleGold;public PlacementKind placement;public string[] items; }
@@ -25,6 +27,7 @@ namespace PokeChess.Core.Match
         public string matchId,playerId;public int round,gold,xp,level,hp,winStreak,loseStreak;public MatchPhase phase;
         public long revision,playerRevision,shopRevision,placementRevision,nextSequence;
         public bool locked,eliminated;public OwnerShopSlot[] shop;public OwnerUnit[] units;public string[] inventory;public OwnerRoundReward reward;
+        public long itemRevision;public int itemRewardRound;public string[] itemCandidates;
     }
     [Serializable] public sealed class CommandAck
     {
@@ -67,13 +70,14 @@ namespace PokeChess.Core.Match
                 gold=p.Gold,xp=p.XP,level=p.Level,hp=p.HP,winStreak=p.WinStreak,loseStreak=p.LoseStreak,eliminated=p.IsEliminated,locked=p.Shop.IsLocked,shopRevision=p.Shop.Revision,placementRevision=p.PlacementRevision,
                 shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId}).ToArray(),
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
-                inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId)};
+                inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
+                itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>()};
         }
         public CommandAck Process(string authenticatedPlayer,MatchCommand c)
         {
             if(authenticatedPlayer==null||!ledgers.TryGetValue(authenticatedPlayer,out var ledger))return Reject(c,"Unauthenticated",null);
             if(c==null||c.protocol!=1||string.IsNullOrEmpty(c.commandId)||c.commandId.Length>64||c.sequence<1||!Enum.IsDefined(typeof(MatchCommandKind),c.kind)||!Enum.IsDefined(typeof(MatchPhase),c.phase)||
-                (c.unitId?.Length??0)>64||(c.playerId?.Length??0)>64||(c.matchId?.Length??0)>64)return Reject(c,"InvalidRequest",authenticatedPlayer);
+                (c.unitId?.Length??0)>64||(c.itemId?.Length??0)>160||(c.playerId?.Length??0)>64||(c.matchId?.Length??0)>64)return Reject(c,"InvalidRequest",authenticatedPlayer);
             if(c.matchId!=match.MatchId)return Reject(c,"WrongMatch",authenticatedPlayer);
             if(ledger.cache.TryGetValue(c.commandId,out var cached))return cached.command.SamePayload(c)?cached.ack:Reject(c,"DuplicateConflict",authenticatedPlayer);
             if(c.sequence!=ledger.sequence+1)return Reject(c,c.sequence<=ledger.sequence?"ExpiredCommand":"SequenceGap",authenticatedPlayer);
@@ -100,6 +104,9 @@ namespace PokeChess.Core.Match
                             case MatchCommandKind.Reroll:result=executor.Reroll(c.shopRevision);break;
                             case MatchCommandKind.Lock:changed=p.Shop.IsLocked!=c.locked;result=executor.Lock(c.locked,c.shopRevision);break;
                             case MatchCommandKind.BuyXP:result=executor.BuyXP();break;
+                            case MatchCommandKind.ChooseItem:result=executor.ChooseItem(c.slot,c.itemRevision);break;
+                            case MatchCommandKind.EquipItem:result=executor.EquipItem(c.unitId,c.itemId,c.itemRevision);break;
+                            case MatchCommandKind.UnequipItem:result=executor.UnequipItem(c.unitId,c.itemRevision);break;
                             case MatchCommandKind.Move:
                                 if(c.destination!=PlacementKind.Board&&c.destination!=PlacementKind.Bench){code="InvalidDestination";break;}
                                 var destination=c.destination==PlacementKind.Board?UnitPlacement.OnBoard(new BoardPosition(c.column,c.row)):UnitPlacement.OnBench(c.bench);

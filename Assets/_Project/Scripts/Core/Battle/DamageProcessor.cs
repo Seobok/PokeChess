@@ -74,25 +74,29 @@ namespace PokeChess.Core.Battle
             if(battle==null)throw new ArgumentNullException(nameof(battle));
             var source=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.SourceId);
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
-            if(source==null||target==null||source.TeamId==target.TeamId||!target.IsTargetable)
+            if(source==null||target==null||source.TeamId==target.TeamId||
+                (request.Origin==DamageOrigin.Reflection?target.CurrentHP<=0||!target.IsOnBoard:!target.IsTargetable))
                 throw new InvalidOperationException("Invalid damage participants.");
             float synergyBonus = request.IsBasicAttack ? battle.Synergies.AttackBonus(source) : 0;
             bool canCrit=request.CanCrit&&request.Type!=DamageType.True&&
                 ((double)request.RawDamage+request.BonusDamage+source.EffectiveDamageModifiers.BonusAttackDamage)>0;
             float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0)+synergyBonus;
+            float raw=request.RawDamage*battle.Items.Outgoing(source,request);
+            float reduction=battle.Items.IncomingReduction(target,request,target.EffectiveDamageModifiers.Reduction);
             // Validate arithmetic before consuming RNG or changing state.
-            DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.EffectiveStats.Armor,
+            DamageCalculator.CalculateDetailed(raw,bonus,request.Type,target.EffectiveStats.Armor,
                 target.EffectiveStats.MagicResistance,canCrit,source.Stats.CritMultiplier,
-                source.EffectiveDamageModifiers.Amplification,target.EffectiveDamageModifiers.Reduction);
+                source.EffectiveDamageModifiers.Amplification,reduction);
             bool critical=canCrit&&(source.Stats.CritChance>=1 ||
                 (source.Stats.CritChance>0 &&
                  (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<source.Stats.CritChance));
-            var calculation=DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.EffectiveStats.Armor,
+            var calculation=DamageCalculator.CalculateDetailed(raw,bonus,request.Type,target.EffectiveStats.Armor,
                 target.EffectiveStats.MagicResistance,critical,source.Stats.CritMultiplier,
-                source.EffectiveDamageModifiers.Amplification,target.EffectiveDamageModifiers.Reduction);
+                source.EffectiveDamageModifiers.Amplification,reduction);
             float post=calculation.FinalDamage;
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));
+            hpDamage=battle.Items.AdjustHPDamage(target,hpDamage);
             bool killed=target.CurrentHP>0 && hpDamage>=target.CurrentHP;
             target.SetShield(target.CurrentShield-shield);
             target.SetVitals(target.CurrentHP-hpDamage,target.CurrentEnergy);
@@ -102,8 +106,11 @@ namespace PokeChess.Core.Battle
                 target.CurrentHP,target.CurrentShield,killed,calculation);
             battle.RecordDamage(result);
             battle.Energy.OnDamage(result);
-            if(request.IsBasicAttack)battle.Synergies.OnBasicAttack(source, synergyBonus);
-            battle.Synergies.OnDamage(target, shield);
+            if(request.Origin!=DamageOrigin.Reflection){
+                if(request.IsBasicAttack)battle.Synergies.OnBasicAttack(source, synergyBonus);
+                battle.Synergies.OnDamage(target, shield);
+            }
+            battle.Items.AfterDamage(source,target,result,this);
             return result;
         }
     }

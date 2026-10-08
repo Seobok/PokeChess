@@ -12,13 +12,14 @@ namespace PokeChess.Core.Match
         public int BaseIncome { get; }
         public int Interest { get; }
         public int StreakBonus { get; }
+        public int WildClearBonus { get; }
         public int TotalIncome { get; }
         public int GoldAfter { get; }
         public int WinStreak { get; }
         public int LoseStreak { get; }
 
         internal RoundIncome(string playerId, int roundNumber, RoundOutcome outcome, int goldBefore,
-            int baseIncome, int interest, int streakBonus, int winStreak, int loseStreak)
+            int baseIncome, int interest, int streakBonus, int winStreak, int loseStreak, int wildClearBonus=0)
         {
             PlayerId = playerId;
             RoundNumber = roundNumber;
@@ -27,7 +28,8 @@ namespace PokeChess.Core.Match
             BaseIncome = baseIncome;
             Interest = interest;
             StreakBonus = streakBonus;
-            TotalIncome = checked(baseIncome + interest + streakBonus);
+            WildClearBonus=wildClearBonus;
+            TotalIncome = checked(baseIncome + interest + streakBonus + wildClearBonus);
             GoldAfter = checked(goldBefore + TotalIncome);
             WinStreak = winStreak;
             LoseStreak = loseStreak;

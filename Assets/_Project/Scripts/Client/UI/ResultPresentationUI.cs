@@ -91,7 +91,7 @@ namespace PokeChess.Client.UI
                 resultRewards.text=(income==null?"":"+"+income.TotalIncome+"G")+(xp==null?"":"   +"+xp.XPGranted+" XP")+(xp!=null&&xp.LevelAfter!=xp.LevelBefore?" · LEVEL "+xp.LevelAfter:"");
                 resultNext.text=(pair==null?"":"VS "+OpponentLabel(pair,"p1")+"\n")+(roundFault!=null?"Settlement paused · retry required":RoundLoop.IsSettled?"Next preparation starts automatically.":"Settlement pending.");
                 resultDetails.text=(damage==null?"":"Damage "+damage.TotalDamage+" = base "+damage.BaseDamage+" + survivors "+damage.SurvivorDamage+"\n")+
-                    (income==null?"":"Income "+income.TotalIncome+" = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+"\n")+
+                    (income==null?"":"Income "+income.TotalIncome+" = base "+income.BaseIncome+" + interest "+income.Interest+" + streak "+income.StreakBonus+(income.WildClearBonus>0?" + wild clear "+income.WildClearBonus:"")+"\n")+
                     (xp==null?"":"Automatic XP +"+xp.XPGranted+" · Level "+xp.LevelBefore+" → "+xp.LevelAfter+"\n")+
                     (pair==null?"":"Battle: "+pair.Reason+" · "+(pair.EndTick/30d).ToString("0.0")+"s");
                 ButtonText(resultDetailsButton,resultExpanded?"Hide details":"Show details");

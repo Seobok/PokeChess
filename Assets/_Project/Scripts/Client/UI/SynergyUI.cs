@@ -86,6 +86,7 @@ namespace PokeChess.Client.UI
             {
                 synergyVisualTick = battle.CurrentTick;
                 foreach (var e in battle.Synergies.EventsThisTick) synergyFlashes[e.TargetId] = (e.Detail, Time.unscaledTime + .65f);
+                foreach (var e in battle.Items.EventsThisTick) synergyFlashes[e.TargetId] = (e.ItemId==ItemCatalog.RockyHelmet?"REFLECT":"ITEM",Time.unscaledTime+.65f);
             }
             var own = battle?.Units.FirstOrDefault(u => u.OwnerPlayerId == "p1");
             var counts = own == null ? SynergySystem.Count(Player.Units.Where(u => u.Placement.Kind == PlacementKind.Board).Select(u => catalog.Get(u.DefinitionId))) : battle.Synergies.TeamCounts(own.TeamId);

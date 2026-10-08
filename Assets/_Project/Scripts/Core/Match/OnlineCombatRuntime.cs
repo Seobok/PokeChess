@@ -9,6 +9,7 @@ namespace PokeChess.Core.Match
     {
         public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,assaultCharges;
         public float hp,maxHP,energy,maxEnergy,shield;public bool onBoard;public CombatActionState action;
+        public string[] items;
         public long startTick,effectTick,endTick;public string[] statuses;
     }
     [Serializable] public sealed class CombatProjectileView
@@ -22,7 +23,7 @@ namespace PokeChess.Core.Match
     [Serializable] public sealed class CombatFrame
     {
         public string matchId,battleId,one,two;public int round,tickRate=30;public long sequence,tick;
-        public bool shadow,complete,baseline;public string result,reason;public long overtimeTick,timeLimitTick;
+        public bool shadow,wild,complete,baseline;public string result,reason;public long overtimeTick,timeLimitTick;
         public CombatUnitView[] units;public CombatProjectileView[] projectiles;public CombatEventView[] events;
     }
     [Serializable] public sealed class CombatBatch {public int protocol=1;public CombatFrame[] frames;}
@@ -77,6 +78,7 @@ namespace PokeChess.Core.Match
             }
             else if(battle!=null&&(!lastTicks.TryGetValue(pair,out var old)||tick!=old)){
                 foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+                foreach(var e in battle.Items.EventsThisTick)add("Item",e.SourceId,e.TargetId,e.ItemId,e.Value,0,0);
                 foreach(var d in battle.DamageResultsThisTick)add("Damage",d.Request.SourceId,d.Request.TargetId,d.IsCritical?"Critical":d.Request.Type.ToString(),d.AppliedDamage,d.RemainingHP,d.RemainingShield);
                 foreach(var e in battle.SkillEventsThisTick)add("Skill"+e.Kind,e.UnitId,e.TargetId,e.SkillId,0,0,0);
                 foreach(var e in battle.SkillEffectEventsThisTick)add("Effect"+e.Type,e.CasterId,e.TargetId,e.Outcome.ToString(),e.ActualValue,0,0);
@@ -86,7 +88,7 @@ namespace PokeChess.Core.Match
             }
             sequences.TryGetValue(pair,out var frameSequence);sequences[pair]=++frameSequence;lastTicks[pair]=tick;
             var frame=new CombatFrame{matchId=Match.MatchId,battleId=battle?.BattleId??Match.MatchId+"-empty-"+Match.RoundNumber+"-"+pair.Pairing.PlayerOneId,
-                round=Match.RoundNumber,sequence=frameSequence,tick=tick,tickRate=TickRate,baseline=baseline,one=pair.Pairing.PlayerOneId,two=pair.Pairing.PlayerTwoId,shadow=pair.IsShadow,
+                round=Match.RoundNumber,sequence=frameSequence,tick=tick,tickRate=TickRate,baseline=baseline,one=pair.Pairing.PlayerOneId,two=pair.Pairing.PlayerTwoId,shadow=pair.IsShadow,wild=pair.IsWild,
                 complete=pair.IsComplete,result=pair.Result.ToString(),reason=pair.Reason.ToString(),overtimeTick=battle?.OvertimeStartTick??0,timeLimitTick=battle?.TimeLimitTick??0,events=events.ToArray(),
                 units=battle==null?Array.Empty<CombatUnitView>():battle.Units.Select(u=>{
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;
@@ -95,7 +97,7 @@ namespace PokeChess.Core.Match
                         assaultCharges=battle.Synergies.AssaultCharges(u),
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
-                        statuses=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>s.Definition.Id).ToArray()};}).ToArray(),
+                        items=u.ItemInstanceIds.ToArray(),statuses=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>s.Definition.Id).ToArray()};}).ToArray(),
                 projectiles=battle?.Projectiles.Active.Select(p=>new CombatProjectileView{id=p.Id,source=p.SourceId,target=p.TargetId,spawnTick=p.SpawnTick,arrivalTick=p.ArrivalTick,
                     column=p.LaunchPosition.Column,row=p.LaunchPosition.Row,targetColumn=p.TargetPositionAtLaunch.Column,targetRow=p.TargetPositionAtLaunch.Row}).ToArray()??Array.Empty<CombatProjectileView>()};
             previousFrames.TryGetValue(pair,out var prior);

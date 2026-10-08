@@ -20,7 +20,7 @@ namespace PokeChess.Client.UI
         public string OnlineObservedPlayerId=>onlineService?.WatchingPlayerId;
         private bool OnlineInputReady=>IsOnlineMatch&&onlineService.State==ConnectionState.Connected&&onlineService.StateSynchronized&&onlineService.PendingCommand==null&&onlineService.LocalMatchState?.eliminated==false&&onlineService.PublicState?.phase!=MatchPhase.Finished;
         private bool OnlineShopExpanded=>onlineService?.LocalMatchState!=null&&!onlineService.LocalMatchState.eliminated&&(onlineService.PublicState.phase==MatchPhase.Preparation||onlineService.PublicState.phase==MatchPhase.Combat)&&!shopCollapsed;
-        private static string PlayerLabel(string id,string own)=>id==own?"YOU":"Player "+(id??"").Substring(Math.Max(0,(id?.Length??0)-6));
+        private static string PlayerLabel(string id,string own)=>id==own?"YOU":id?.StartsWith("wild-")==true?"WILD / "+id.Substring(5):"Player "+(id??"").Substring(Math.Max(0,(id?.Length??0)-6));
 
         public void EnterOnlineMatch(OnlineConnection connection)
         {
@@ -125,7 +125,7 @@ namespace PokeChess.Client.UI
                 var old=previousOwner.units.FirstOrDefault(u=>u.id==selectedUnitId);
                 if(old!=null&&!owner.units.Any(u=>u.id==old.id))selectedUnitId=owner.units.FirstOrDefault(u=>u.definitionId==old.definitionId&&u.rank>old.rank)?.id;
                 foreach(var unit in owner.units){var before=previousOwner.units.FirstOrDefault(u=>u.id==unit.id);if(before!=null&&before.rank<unit.rank){rankNotice="RANK UP R"+unit.rank;rankNoticeUntil=Time.unscaledTime+2;highlights[unit.id]=Time.unscaledTime+1.5f;}}
-                if(owner.inventory.Length>previousOwner.inventory.Length){itemNotice="+"+(owner.inventory.Length-previousOwner.inventory.Length)+" item(s) returned";itemNoticeUntil=Time.unscaledTime+2;}
+                if(owner.inventory.Length>previousOwner.inventory.Length){itemNotice="+"+(owner.inventory.Length-previousOwner.inventory.Length)+" 도구 획득 / 회수";itemNoticeUntil=Time.unscaledTime+2;}
             }
             previousOwner=owner;
             if(shopPhase!=pub.phase){shopCollapsed=pub.phase!=MatchPhase.Preparation;shopPhase=pub.phase;}
@@ -140,6 +140,7 @@ namespace PokeChess.Client.UI
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
             RenderOnlineSynergies(pub);
+            RenderItemWildUI();
             UpdateTokenFeedback();
         }
         private void RenderOnlineShop(OwnerMatchState owner)
@@ -167,8 +168,8 @@ namespace PokeChess.Client.UI
             bool combat=pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying&&onlineService.Combat.Current?.round==pub.round;
             var observed=pub.players.FirstOrDefault(p=>p.id==onlineService.WatchingPlayerId);
             foreach(var slot in slots){slot.Graphic.color=slot.Color;if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat&&pub.phase==MatchPhase.Preparation);}
-            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board)ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));
-            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench))ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));
+            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderEquippedItemIcon(tokens[unit.id],unit.items,true,44);}
+            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderEquippedItemIcon(tokens[unit.id],unit.items,true,44);}
         }
         private void ShowOnlineToken(string id,string definition,int rank,UnitPlacement placement)
         {
@@ -178,13 +179,15 @@ namespace PokeChess.Client.UI
         }
         private void RenderOnlineContext(OwnerMatchState owner,PublicMatchState pub)
         {
-            inventoryLabel.text="ITEMS ("+owner.inventory.Length+")\n"+(owner.inventory.Length==0?"No items":string.Join("\n",owner.inventory.Take(3)))+"\n"+ItemFeedbackText;
+            inventoryLabel.font=itemFont;
+            inventoryLabel.text="ITEMS ("+owner.inventory.Length+")\n"+(owner.inventory.Length==0?"No items":string.Join("\n",owner.inventory.Take(3).Select(ItemCatalog.DisplayName)))+"\n"+ItemFeedbackText;
             var unit=owner.units.FirstOrDefault(u=>u.id==selectedUnitId);var board=pub.players.SelectMany(p=>p.board).FirstOrDefault(u=>u.id==selectedUnitId);var fighter=onlineService.Combat.Current?.units.FirstOrDefault(u=>u.id==selectedUnitId);
             string definition=unit?.definitionId??board?.definitionId??fighter?.definitionId;int rank=unit?.rank??board?.rank??fighter?.rank??1;
             if(definition==null){detailLabel.text="SELECT A UNIT\nInspect board, bench or combat.\n"+RankFeedbackText;sellButton.interactable=false;ButtonText(sellButton,"Sell");return;}
-            var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d.BaseStats,(UnitRank)rank);var items=unit?.items??board?.items??Array.Empty<string>();
+            var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d.BaseStats,(UnitRank)rank);var items=unit?.items??board?.items??fighter?.items??Array.Empty<string>();
+            detailLabel.font=itemFont;
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+
-                (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items))+"\n"+RankFeedbackText;
+                (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items.Select(ItemCatalog.DisplayName)))+"\n"+RankFeedbackText;
             sellButton.interactable=unit!=null&&OnlineInputReady&&pub.phase==MatchPhase.Preparation;ButtonText(sellButton,sellButton.interactable?"Sell / +"+unit.saleGold+"G":"Sell unavailable");
         }
     }

@@ -12,10 +12,11 @@ namespace PokeChess.Core.Match
         public int BoardWidth { get; }
         public int BoardHeight { get; }
         public int BenchCapacity { get; }
+        public bool EnableWildRounds { get; }
 
         public MatchRules(int startingHP = 60, int startingGold = 5, int startingXP = 0,
             int startingLevel = 1, int maxLevel = 10, int boardWidth = 7,
-            int boardHeight = 4, int benchCapacity = 9)
+            int boardHeight = 4, int benchCapacity = 9, bool enableWildRounds = false)
         {
             if (startingHP <= 0) throw new ArgumentOutOfRangeException(nameof(startingHP));
             if (startingGold < 0) throw new ArgumentOutOfRangeException(nameof(startingGold));
@@ -35,6 +36,7 @@ namespace PokeChess.Core.Match
             BoardWidth = boardWidth;
             BoardHeight = boardHeight;
             BenchCapacity = benchCapacity;
+            EnableWildRounds = enableWildRounds;
         }
     }
 }

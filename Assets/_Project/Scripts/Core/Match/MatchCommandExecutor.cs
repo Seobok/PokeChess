@@ -65,6 +65,18 @@ namespace PokeChess.Core.Match
         public MatchCommandResult Lock(bool locked,long revision) => Run(()=> { CheckShopRevision(revision);shops.SetLocked(match,playerId,locked);return new MatchCommandResult(locked ? "Shop locked for the next round." : "Shop unlocked."); });
         public MatchCommandResult BuyXP() => Run(()=> { if(Player.HP==0 || Player.IsEliminated) throw new InvalidOperationException("Player is eliminated.");levels.BuyXP(match,playerId);return new MatchCommandResult("XP purchased."); });
         public int SalePrice(string id) => trades.SalePrice(Player.GetUnit(id));
+        public MatchCommandResult ChooseItem(int slot,long revision)=>Run(()=>{
+            var id=new ItemSystem().Choose(match,playerId,slot,revision);
+            return new MatchCommandResult(ItemCatalog.DisplayName(id)+" 획득");
+        });
+        public MatchCommandResult EquipItem(string unitId,string itemId,long revision)=>Run(()=>{
+            new ItemSystem().Equip(match,playerId,unitId,itemId,revision);
+            return new MatchCommandResult(ItemCatalog.DisplayName(itemId)+" 장착");
+        });
+        public MatchCommandResult UnequipItem(string unitId,long revision)=>Run(()=>{
+            new ItemSystem().Unequip(match,playerId,unitId,revision);
+            return new MatchCommandResult("도구를 보관함으로 회수했습니다.");
+        });
         public MatchCommandResult Sell(string id,long revision) => Run(()=>
         {
             if(!CanTrade) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");

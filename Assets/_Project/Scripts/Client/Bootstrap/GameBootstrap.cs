@@ -18,6 +18,7 @@ namespace PokeChess.Client.Bootstrap
         private async void Start()
         {
             if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-pokechess-content-qa") >= 0) return;
+            if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-pokechess-items-qa") >= 0) return;
             if (FindFirstObjectByType<AuthenticationStatusView>() == null)
                 new GameObject("AuthenticationStatus").AddComponent<AuthenticationStatusView>();
             if (FindFirstObjectByType<OnlineConnectionView>() == null)

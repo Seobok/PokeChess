@@ -10,15 +10,16 @@ namespace PokeChess.Core.Match
         public string PlayerOneId { get; }
         public string PlayerTwoId { get; }
         public bool IsShadow { get; }
+        public bool IsWild { get; }
         public string ShadowSourcePlayerId => IsShadow ? PlayerTwoId : null;
         public IReadOnlyList<string> ParticipantIds { get; }
-        internal RoundPairing(string one, string two, bool isShadow=false)
+        internal RoundPairing(string one, string two, bool isShadow=false, bool isWild=false)
         {
-            PlayerOneId=one;PlayerTwoId=two;IsShadow=isShadow;
-            ParticipantIds=Array.AsReadOnly(isShadow ? new[]{one} : new[]{one,two});
+            PlayerOneId=one;PlayerTwoId=two;IsShadow=isShadow;IsWild=isWild;
+            ParticipantIds=Array.AsReadOnly(isShadow||isWild ? new[]{one} : new[]{one,two});
         }
-        public bool Contains(string id) => PlayerOneId==id || !IsShadow && PlayerTwoId==id;
-        public string OpponentOf(string id) => PlayerOneId==id ? PlayerTwoId : !IsShadow && PlayerTwoId==id ? PlayerOneId : throw new ArgumentException("Player is not in this pair.",nameof(id));
+        public bool Contains(string id) => PlayerOneId==id || !IsShadow && !IsWild && PlayerTwoId==id;
+        public string OpponentOf(string id) => PlayerOneId==id ? PlayerTwoId : !IsShadow && !IsWild && PlayerTwoId==id ? PlayerOneId : throw new ArgumentException("Player is not in this pair.",nameof(id));
     }
 
     // Host-internal. Preparation pairings must not be included in public client projections.

@@ -46,6 +46,7 @@ namespace PokeChess.Core.Match
         }
         private void RepairSurrenderPairings(RoundPairingPlan prior,ShadowBoardSnapshot snapshot)
         {
+            if(IsWildRound){PreparePairings(Match.RoundNumber);return;}
             var ids=Survivors.Select(p=>p.PlayerId).OrderBy(id=>id,StringComparer.Ordinal).ToArray();
             if(ids.Length<2) {Match.CommitPairings(new RoundPairingPlan(Match.RoundNumber,ids,Array.Empty<RoundPairing>(),ids.FirstOrDefault(),0,0));return;}
             var live=new HashSet<string>(ids,StringComparer.Ordinal);

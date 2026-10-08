@@ -40,6 +40,7 @@ namespace PokeChess.Client.UI
         private void Awake() { BuildUI();ResetMatchUI(); }
         private void Update()
         {
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelItemDrag();HideItemHint();}
             if(IsOnlineMatch){UpdateOnlineMatch();return;}
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");
@@ -51,8 +52,8 @@ namespace PokeChess.Client.UI
             }
             UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();AnimateRosterSprites();
         }
-        private void OnApplicationFocus(bool focus) { if(!focus && canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
-        private void OnDisable() { if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
+        private void OnApplicationFocus(bool focus) { if(!focus){CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled.");} }
+        private void OnDisable() { CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
         private RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 position)
         {
             var obj=new GameObject(name,typeof(RectTransform));var rect=obj.GetComponent<RectTransform>();
@@ -180,11 +181,13 @@ namespace PokeChess.Client.UI
                 var unit=Player.Units.FirstOrDefault(u=>u.InstanceId==pair.Key);pair.Value.gameObject.SetActive(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced);
                 if(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced) { pair.Value.anchoredPosition=FindSlot(unit.Placement).Rect.anchoredPosition;tokenLabels[pair.Key].text=(unit.DefinitionId.StartsWith("sample-c",StringComparison.Ordinal) ? "C"+catalog.Get(unit.DefinitionId).Cost : unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant())+" R"+(int)unit.Rank; }
                 groups[pair.Key].alpha=pair.Key==dragged ? .3f : 1;
+                if(unit!=null)RenderEquippedItemIcon(pair.Value,unit.ItemInstanceIds,true,44);
             }
             RenderMinimumUI();
         }
         public void BeginDrag(string id,Vector2 point)
         {
+            if(IsItemDragging)return;
             if(IsOnlineMatch){BeginOnlineDrag(id,point);return;}
             if(Simulation?.Status==SimulationStatus.Running)return;
             if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
@@ -221,6 +224,7 @@ namespace PokeChess.Client.UI
         }
         public void CancelDrag(string message)
         {
+            CancelItemDrag();HideItemHint();
             dragged=null;if(ghost!=null) ghost.gameObject.SetActive(false);
             if(Match!=null) Render();Feedback(message);
         }

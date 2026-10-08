@@ -13,6 +13,20 @@ namespace PokeChess.Core.Match
         private readonly Func<string, bool> matchContainsUnit;
         private readonly List<string> inventoryItems = new List<string>();
         public IReadOnlyList<string> ItemInventory => inventoryItems.AsReadOnly();
+        public long ItemRevision { get; private set; }
+        public int LastItemRewardRound { get; private set; }
+        public ItemRewardOffer PendingItemReward { get; private set; }
+        internal void SetItemReward(ItemRewardOffer offer)
+        { long next=checked(ItemRevision+1);PendingItemReward=offer;LastItemRewardRound=offer.Round;ItemRevision=next; }
+        internal void ClaimItemReward(string id)
+        { long next=checked(ItemRevision+1);AddInventoryItem(id);PendingItemReward=null;ItemRevision=next; }
+        internal void EquipInventoryItem(UnitInstance unit,string id)
+        {
+            long next=checked(ItemRevision+1);
+            ReturnSoldItems(unit);inventoryItems.Remove(id);unit.AddItem(id);ItemRevision=next;
+        }
+        internal void UnequipItem(UnitInstance unit)
+        { long next=checked(ItemRevision+1);ReturnSoldItems(unit);ItemRevision=next; }
         public void AddInventoryItem(string itemId)
         {
             ModelGuard.Id(itemId, nameof(itemId));
@@ -22,6 +36,7 @@ namespace PokeChess.Core.Match
         }
         internal void ReturnSoldItems(UnitInstance unit)
         {
+            if(unit.ItemInstanceIds.Count>0)ItemRevision=checked(ItemRevision+1);
             inventoryItems.AddRange(unit.ItemInstanceIds);
             unit.ClearItems();
         }

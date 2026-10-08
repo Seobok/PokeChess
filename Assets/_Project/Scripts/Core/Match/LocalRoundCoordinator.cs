@@ -26,6 +26,7 @@ namespace PokeChess.Core.Match
         private readonly BattleSimulation simulation;
         public RoundPairing Pairing { get; }
         public bool IsShadow => Pairing.IsShadow;
+        public bool IsWild => Pairing.IsWild;
         public ShadowBoardSnapshot ShadowSnapshot { get; }
         public BattleState Battle { get; }
         public UnitActionRuntime GetActionRuntime(string unitId) => simulation.GetRuntime(unitId);
@@ -126,6 +127,7 @@ namespace PokeChess.Core.Match
         private readonly List<UnitRankedUp> preparationRankUps=new List<UnitRankedUp>();
         public IReadOnlyList<UnitRankedUp> PreparationRankUps => preparationRankUps.AsReadOnly();
         public MatchState Match { get; }
+        public bool IsWildRound => WildRoundSystem.IsWild(Match);
         public IReadOnlyList<LocalPairBattle> Battles => battles;
         public BattleState Battle => battles.FirstOrDefault()?.Battle;
         public LocalRoundResult LastResult { get; private set; }
@@ -146,12 +148,21 @@ namespace PokeChess.Core.Match
                 throw new ArgumentException("Local round loop requires 7x4 preparation boards.");
             if(match.Phase==MatchPhase.Preparation) {PreparePairings(match.RoundNumber);TryFinishMatch(match.RoundNumber);}
         }
-        public RoundPairingPlan PreparePairings(int expectedRound) => pairing.PrepareRound(Match,expectedRound);
+        public RoundPairingPlan PreparePairings(int expectedRound)
+        {
+            if(!IsWildRound)return pairing.PrepareRound(Match,expectedRound);
+            if(Match.Phase!=MatchPhase.Preparation||Match.RoundNumber!=expectedRound)throw new InvalidOperationException("Wild pairing requires current preparation.");
+            var ids=Survivors.Select(p=>p.PlayerId).OrderBy(id=>id,StringComparer.Ordinal).ToArray();
+            var pairs=ids.Length<2?Array.Empty<RoundPairing>():ids.Select(id=>new RoundPairing(id,"wild-"+WildRoundSystem.Pattern(expectedRound),isWild:true)).ToArray();
+            var plan=new RoundPairingPlan(expectedRound,ids,pairs,null,0,0);Match.CommitPairings(plan);return plan;
+        }
         public LocalPairBattle GetBattleFor(string playerId) => battles.FirstOrDefault(b=>b.Pairing.Contains(playerId));
         public bool StartCombat(int expectedRound)
         {
             if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || !PreparationReady)return false;
             if(TryFinishMatch(expectedRound))return false;
+            foreach(var player in Survivors)new ItemSystem().AutoChoose(Match,player);
+            if(IsWildRound)return StartWildCombat(expectedRound);
             var plan=PreparePairings(expectedRound);
             if(plan.NoBattleRequired)return false;
             if(plan.RequiresShadow && plan.ShadowPair==null)throw new InvalidOperationException("Missing Shadow source.");
@@ -183,6 +194,22 @@ namespace PokeChess.Core.Match
             Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
             if(battles.All(b=>b.IsComplete))Finish();
             return true;
+        }
+        private bool StartWildCombat(int round)
+        {
+            var players=Survivors.ToArray();
+            var deployments=players.ToDictionary(p=>p.PlayerId,PlanAutomaticDeployment,StringComparer.Ordinal);
+            var next=new List<LocalPairBattle>();
+            foreach(var p in players){
+                var one=DeployedUnits(p,deployments[p.PlayerId]);
+                var pair=new RoundPairing(p.PlayerId,"wild-"+WildRoundSystem.Pattern(round),isWild:true);
+                var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[p.PlayerId])));
+                var battle=one.Length==0?null:WildRoundSystem.CreateBattle(Match,catalog,p,setup,TickRate);
+                next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:round==1?1:3,skills:skills,statuses:statuses));
+            }
+            foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);
+            Match.TransitionTo(MatchPhase.Combat);battles=next.AsReadOnly();LastResult=null;
+            if(battles.All(b=>b.IsComplete))Finish();return true;
         }
         private ulong BattleSeed(int round,RoundPairing pair)
         {
@@ -225,6 +252,7 @@ namespace PokeChess.Core.Match
             if(Match.Phase!=MatchPhase.Result || LastResult==null || LastResult.Round!=Match.RoundNumber)
                 throw new InvalidOperationException("No current completed round.");
             var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).Where(p=>p.Elimination?.Reason!=EliminationReason.Surrender&&p.Elimination?.Reason!=EliminationReason.DisconnectTimeout).ToArray();
+            if(IsWildRound){SettleWildResult(recipients);return;}
             var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients)
             {
@@ -245,11 +273,32 @@ namespace PokeChess.Core.Match
             elimination.SettleDamage(Match);
             TryFinishMatch(Match.RoundNumber);
         }
+        private void SettleWildResult(PlayerState[] recipients)
+        {
+            foreach(var p in recipients){
+                var outcome=LastResult.PlayerResults[p.PlayerId].Outcome;
+                if(p.LastEconomyRound!=Match.RoundNumber){
+                    var income=new RoundIncome(p.PlayerId,Match.RoundNumber,outcome,p.Gold,economy.Rules.BaseIncome,
+                        Math.Min(p.Gold/economy.Rules.GoldPerInterest,economy.Rules.MaxInterest),0,p.WinStreak,p.LoseStreak,outcome==RoundOutcome.Win?2:0);
+                    LastResult.Record(income);
+                    levels.PreviewXP(p,levels.Rules.AutomaticXP);
+                }
+            }
+            foreach(var p in recipients){
+                if(p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
+                if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
+                // Advance the settlement ledger without player HP loss, retaining the PvE outcome in PlayerResults.
+                LastResult.Record(playerDamage.Apply(p,Match.RoundNumber,RoundOutcome.Win,0));
+                new ItemSystem().Offer(Match,p);
+            }
+            TryFinishMatch(Match.RoundNumber);
+        }
         public bool NextRound(int completedRound)
         {
             if(!refreshing)
             {
                 if(Match.Phase!=MatchPhase.Result || completedRound!=Match.RoundNumber || !IsSettled)return false;
+                foreach(var p in Survivors)new ItemSystem().AutoChoose(Match,p);
                 Match.TransitionTo(MatchPhase.Preparation);refreshing=true;preparationRankUps.Clear();
                 PreparePairings(Match.RoundNumber);
             }

@@ -1,3 +1,7 @@
+# 아이템 및 야생 포켓몬 라운드
+
+일반 로컬·온라인 경기와 8인 시뮬레이션에 야생 라운드 및 도구 8종을 추가했다. 야생 전투 후 도구를 선택하고, 준비 단계에서 포켓몬을 선택한 뒤 `도구 보관함`으로 장착·교체·회수한다. 울퉁불퉁멧은 실제 받은 직접 피해의 20%를 반사한다. [구현·검증 기록](../Docs/PokeChess_Item_Wild_Round_Implementation_2026-10-08.md).
+
 # G6.1 Disconnect / Reconnect
 
 non-Host 단절 시 기존 경기 참가 상태를 120초 유지하며, 같은 인증 PlayerId로 전체 Snapshot과 현재 전투를 복구한다. 복구 중 입력 차단, 미확인 명령 재확인, 유예 만료 탈락, Host 상실 종료를 지원한다. [G6.1 구현·검증 기록](../Docs/WBS_G6/PokeChess_Reconnect_WBS_6.1.md).

@@ -234,6 +234,7 @@ namespace PokeChess.Client.UI
             RenderLocalSynergies();
             RenderFinalResultUI();
             RenderSimulationUI();
+            RenderItemWildUI();
         }
     }
 }
