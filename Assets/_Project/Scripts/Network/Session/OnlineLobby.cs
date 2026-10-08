@@ -78,7 +78,7 @@ namespace PokeChess.Network.Session
                 var roster=current.Players.OrderBy(p=>p.Id==current.Host?0:1).ThenBy(p=>p.Id,StringComparer.Ordinal).Select(p=>p.Id).ToArray();
                 ValidateStartRoster(current,roster);
                 hostMatchSeed=(ulong)(Guid.NewGuid().GetHashCode()&int.MaxValue);
-                var info=new MatchStartInfo{matchId=Guid.NewGuid().ToString("N"),gameVersion=Application.version,ruleVersion="pokechess-alpha-v2",players=roster};
+                var info=new MatchStartInfo{matchId=Guid.NewGuid().ToString("N"),gameVersion=Application.version,ruleVersion="pokechess-alpha-v4",players=roster};
                 host.SetProperty("matchStart",new SessionProperty(JsonUtility.ToJson(info),VisibilityPropertyOptions.Member));await host.SavePropertiesAsync();
                 var deadline=Time.realtimeSinceStartupAsDouble+20;
                 while(true){
@@ -115,7 +115,7 @@ namespace PokeChess.Network.Session
                 try {
                     var info=JsonUtility.FromJson<MatchStartInfo>(SessionValue("matchStart")??"");
                     if(info==null)return;
-                    if(string.IsNullOrEmpty(info.matchId)||info.gameVersion!=Application.version||info.ruleVersion!="pokechess-alpha-v2"||info.players==null||info.players.Length<2||info.players.Length>8||info.players.Distinct().Count()!=info.players.Length||!info.players.Contains(session.CurrentPlayer.Id))throw new InvalidOperationException("InvalidMatchStart");
+                    if(string.IsNullOrEmpty(info.matchId)||info.gameVersion!=Application.version||info.ruleVersion!="pokechess-alpha-v4"||info.players==null||info.players.Length<2||info.players.Length>8||info.players.Distinct().Count()!=info.players.Length||!info.players.Contains(session.CurrentPlayer.Id))throw new InvalidOperationException("InvalidMatchStart");
                     if(LobbyState==LobbyPhase.Starting&&acknowledgedMatch!=info.matchId&&!IsBusy){PublishLobbyState(true,info.matchId);return;}
                     if(LobbyState==LobbyPhase.Started&&acknowledgedMatch==info.matchId)StartInfo=info;
                 }catch(Exception e){Error=e.Message;nextLobbyAttempt=Time.realtimeSinceStartupAsDouble+2;}

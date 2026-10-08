@@ -21,6 +21,7 @@ namespace PokeChess.Client.UI
         private bool isPrivate,initialRefresh,hadRoom;
         private string lastRoom,lastLobbyError;
         private ConnectionState previous;
+        private PlacementSandboxView matchClient;
         private void Awake()
         {
             font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -33,7 +34,7 @@ namespace PokeChess.Client.UI
             body.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
             Label("Title",body,"POKECHESS / ONLINE ROOMS",new Vector2(640,35),new Vector2(-90,245),22);
             Button("Local play",body,new Vector2(400,245),new Vector2(125,30),()=>{
-                panel.SetActive(false);if(FindFirstObjectByType<PlacementSandboxView>()==null)new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();
+                panel.SetActive(false);var view=FindFirstObjectByType<PlacementSandboxView>();if(view==null)view=new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();view.ShowLocalMatch();
             });
             var browser=Rect("Browse",body,body.sizeDelta,Vector2.zero);browse=browser.gameObject;
             BuildBrowser(browser);
@@ -77,7 +78,11 @@ namespace PokeChess.Client.UI
         {
             var s=OnlineConnection.Instance;bool ready=OnlineAuthenticationService.Instance.IsReady;
             bool inRoom=s.Room!=null;bool idle=ready&&!s.IsBusy&&!inRoom;
-            bool inMatch=inRoom&&s.StartInfo!=null;onlineMatchPanel.SetActive(inMatch);
+            bool inMatch=inRoom&&s.StartInfo!=null;onlineMatchPanel.SetActive(false);
+            transform.Find("RoomCanvas/Online rooms").gameObject.SetActive(!inMatch);
+            if(inMatch){if(matchClient==null)matchClient=FindFirstObjectByType<PlacementSandboxView>();if(matchClient==null)matchClient=new GameObject("MatchClient").AddComponent<PlacementSandboxView>();matchClient.EnterOnlineMatch(s);panel.SetActive(false);}
+            else if(matchClient!=null&&matchClient.IsOnlineMatch){matchClient.ExitOnlineMatch();panel.SetActive(true);}
+            var connectionTest=FindFirstObjectByType<OnlineConnectionView>();if(connectionTest!=null)connectionTest.transform.Find("OnlineCanvas").gameObject.SetActive(!inMatch);
             feedback.gameObject.SetActive(!inMatch);
             browse.SetActive(!inRoom);lobby.SetActive(inRoom&&!inMatch);UpdateOnlineCommandUI(s);
             create.interactable=join.interactable=capacity.interactable=visibility.interactable=roomName.interactable=joinCode.interactable=idle;

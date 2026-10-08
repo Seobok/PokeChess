@@ -41,6 +41,7 @@ namespace PokeChess.Network.Session
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         public bool QADropNextAck {get;set;}
         public bool QAHoldStatePublication {get;set;}
+        public int QAExtraPlayers {get;set;}
         private readonly Dictionary<ulong,string> qaRememberedSnapshots=new Dictionary<ulong,string>();
         public void QARememberState(){qaRememberedSnapshots.Clear();foreach(var pair in lastSnapshots)qaRememberedSnapshots[pair.Key]=pair.Value;}
         public void QAReplayState(){foreach(var pair in qaRememberedSnapshots)if(manager.ConnectedClientsIds.Contains(pair.Key))SendText(OwnerStateMessage,pair.Key,pair.Value,65536);}
@@ -53,19 +54,23 @@ namespace PokeChess.Network.Session
             var messages=manager.CustomMessagingManager;
             messages.RegisterNamedMessageHandler(ChallengeMessage,OnBindingChallenge);messages.RegisterNamedMessageHandler(BoundMessage,OnBound);
             messages.RegisterNamedMessageHandler(CommandMessage,OnGameCommand);messages.RegisterNamedMessageHandler(AckMessage,OnCommandAck);messages.RegisterNamedMessageHandler(OwnerStateMessage,OnOwnerState);
+            RegisterCombatMessages();
         }
         private void UnregisterGameMessages()
         {
             if(manager.CustomMessagingManager==null)return;
             foreach(var name in new[]{ChallengeMessage,BoundMessage,CommandMessage,AckMessage,OwnerStateMessage})manager.CustomMessagingManager.UnregisterNamedMessageHandler(name);
+            manager.CustomMessagingManager.UnregisterNamedMessageHandler(CombatMessage);
+            manager.CustomMessagingManager.UnregisterNamedMessageHandler(WatchMessage);
         }
         private void ResetGameCommands()
         {
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-            QAHoldStatePublication=false;QADropNextAck=false;QACommandTransportError=null;qaRememberedSnapshots.Clear();
+            QAHoldStatePublication=false;QADropNextAck=false;QAExtraPlayers=0;QACommandTransportError=null;qaRememberedSnapshots.Clear();
 #endif
             challenges.Clear();boundPlayers.Clear();bindingDeadlines.Clear();incomingTimes.Clear();lastSnapshots.Clear();snapshots.Clear();SyncFeedback=null;hostMatchSeed=0;identityBound=false;nextBindingRefresh=nextMatchSync=0;hostCommands=null;LastCommandAck=null;nextCommandSequence=1;
             requiredStateVersion=0;requiredStateSequence=1;pendingAck?.TrySetResult(new CommandAck{accepted=false,code="ConnectionLost",message="Connection ended."});pendingAck=null;PendingCommand=null;CommandFeedback=null;
+            ResetCombat();
         }
         private static string BindingProof(string nonce,string roomId,string playerId)
         {using(var sha=SHA256.Create())return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes("PokeChess-bind-v1|"+nonce+"|"+roomId+"|"+playerId)));}
@@ -112,11 +117,17 @@ namespace PokeChess.Network.Session
                 foreach(var id in boundPlayers.Keys.Where(id=>!manager.ConnectedClientsIds.Contains(id)).ToArray())boundPlayers.Remove(id);
                 if(challenges.Count>0&&!bindingRefreshing&&!IsBusy&&!lobbyPublishing&&Time.realtimeSinceStartupAsDouble>=nextBindingRefresh)RefreshBindings();
                 if(StartInfo!=null&&LobbyState==LobbyPhase.Started&&hostCommands==null){
-                    var catalog=PrototypeRoster.CreateCatalog();var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,StartInfo.players,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:hostMatchSeed);
-                    match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);foreach(var id in StartInfo.players)new ShopSystem().RefreshForRound(match,id);
-                    hostCommands=new HostCommandProcessor(match,catalog,new LocalRoundCoordinator(match,catalog));BroadcastOwnerStates(true);
+                    var catalog=PrototypeRoster.CreateCatalog();var roster=StartInfo.players;
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    if(QAExtraPlayers>0)roster=roster.Concat(Enumerable.Range(1,Math.Min(6,QAExtraPlayers)).Select(i=>"qa-bot-"+i)).ToArray();
+#endif
+                    var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,roster,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),matchSeed:hostMatchSeed);
+                    match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);foreach(var id in roster)new ShopSystem().RefreshForRound(match,id);
+                    var rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
+                    hostCommands=new HostCommandProcessor(match,catalog,rounds);CreateCombatRuntime(rounds);BroadcastOwnerStates(true);
                 }
                 // Deduplicates unchanged projections; also publishes non-command Host writes.
+                AdvanceCombat();
                 if(hostCommands!=null&&Time.realtimeSinceStartupAsDouble>=nextMatchSync){nextMatchSync=Time.realtimeSinceStartupAsDouble+.5;BroadcastOwnerStates();}
             }else if(IdentityBound&&StartInfo!=null&&!StateSynchronized&&PendingCommand==null&&Time.realtimeSinceStartupAsDouble>=nextMatchSync){nextMatchSync=Time.realtimeSinceStartupAsDouble+2;_ = RequestStateSyncAsync();}
         }
@@ -165,7 +176,8 @@ namespace PokeChess.Network.Session
         {
             string player=sender==NetworkManager.ServerClientId?session?.CurrentPlayer.Id:boundPlayers.TryGetValue(sender,out var bound)?bound:null;
             if(player==null||hostCommands==null){var rejected=new CommandAck{matchId=command?.matchId,commandId=command?.commandId,sequence=command?.sequence??0,nextSequence=command?.sequence??1,accepted=false,code=player==null?"Unauthenticated":"MatchNotReady",message="Match connection is not ready."};DeliverAck(sender,rejected);return;}
-            var ack=hostCommands.Process(player,command);DeliverAck(sender,ack);BroadcastOwnerStates(command?.kind==MatchCommandKind.Sync);
+            var ack=hostCommands.Process(player,command);DeliverAck(sender,ack);combatRuntime?.CaptureCommandEffects();BroadcastOwnerStates(command?.kind==MatchCommandKind.Sync);
+            if(command?.kind==MatchCommandKind.Sync)SendCombatBaseline(sender,player);
         }
         private void DeliverAck(ulong sender,CommandAck ack)
         {

@@ -40,6 +40,7 @@ namespace PokeChess.Client.UI
         private void Awake() { BuildUI();ResetMatchUI(); }
         private void Update()
         {
+            if(IsOnlineMatch){UpdateOnlineMatch();return;}
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");
             if(keyboard!=null && keyboard.spaceKey.wasPressedThisFrame) AdvanceRound();
@@ -171,6 +172,7 @@ namespace PokeChess.Client.UI
         private void Feedback(string message) { LastFeedback=message;if(status!=null) status.text=message; }
         private void Render()
         {
+            if(IsOnlineMatch){RenderOnlineMatch();return;}
             foreach(var slot in slots) slot.Graphic.color=BaseSlotColor(slot);
             foreach(var unit in Player.Units) if(!tokens.ContainsKey(unit.InstanceId)) CreateToken(unit.InstanceId);
             foreach(var pair in tokens)
@@ -183,6 +185,7 @@ namespace PokeChess.Client.UI
         }
         public void BeginDrag(string id,Vector2 point)
         {
+            if(IsOnlineMatch){BeginOnlineDrag(id,point);return;}
             if(Simulation?.Status==SimulationStatus.Running)return;
             if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
             if(IsDragging) CancelDrag("New drag.");
@@ -192,6 +195,7 @@ namespace PokeChess.Client.UI
         }
         public void Drag(Vector2 point)
         {
+            if(IsOnlineMatch){DragOnline(point);return;}
             if(!IsDragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
             foreach(var slot in slots) slot.Graphic.color=BaseSlotColor(slot);var destination=Hit(point);
@@ -204,6 +208,7 @@ namespace PokeChess.Client.UI
         }
         public void EndDrag(Vector2 point)
         {
+            if(IsOnlineMatch){EndOnlineDrag(point);return;}
             if(!IsDragging) return;
             if(HitShop(point))
             {

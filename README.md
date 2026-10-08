@@ -1,10 +1,18 @@
+# 기존 클라이언트 온라인 통합
+
+기존 상점·드래그 배치·유닛 정보·HUD·전투·결과 화면을 온라인 Host 상태 및 Command/Ack에 연결했다. 상대 보드와 다른 대진 관전, 탈락 후 관전, 최종 결과에서 방 복귀를 지원한다. [구현·검증 기록](../Docs/WBS_G5/PokeChess_Online_Client_Integration_2026-10-08.md).
+
+# G5.7 Server Combat / Combat Event Playback
+
+Host가 자동 라운드와 30 tick/s 전투를 실행하고, 각 참가자는 본인 전투 이벤트·유닛 애니메이션·투사체·결과를 재생한다. 재동기화와 누락 복구, Editor/Windows 양방향 전체 경기를 검증했다. [G5.7 구현·검증 기록](../Docs/WBS_G5/PokeChess_Server_Combat_WBS_5.7.md).
+
 # G5.6 Public / OwnerOnly / HostOnly State Sync
 
-공개 보드·플레이어 상태와 본인 상점·경제·벤치를 분리하고, 전체 snapshot 복구·버전 검사·상대 보드 관찰 UI를 추가했다. 경기 seed는 Host 내부에만 보관한다. [G5.6 구현·검증 기록](../Docs/WBS_G5/PokeChess_State_Sync_WBS_5.6.md). 자동 라운드·전투 스트림은 후속 단계다.
+공개 보드·플레이어 상태와 본인 상점·경제·벤치를 분리하고, 전체 snapshot 복구·버전 검사·상대 보드 관찰 UI를 추가했다. 경기 seed는 Host 내부에만 보관한다. [G5.6 구현·검증 기록](../Docs/WBS_G5/PokeChess_State_Sync_WBS_5.6.md). 자동 라운드·전투 스트림은 G5.7에서 연결했다.
 
 # G5.5 Command / Validation / Mutation / Ack
 
-Host 권한 명령 처리와 소유자 상태 응답, 중복 실행 방지 및 온라인 준비 명령 UI를 추가했다. [G5.5 구현·검증 기록](../Docs/WBS_G5/PokeChess_Command_Pipeline_WBS_5.5.md). 온라인 자동 라운드·전투 동기화는 후속 단계다.
+Host 권한 명령 처리와 소유자 상태 응답, 중복 실행 방지 및 온라인 준비 명령 UI를 추가했다. [G5.5 구현·검증 기록](../Docs/WBS_G5/PokeChess_Command_Pipeline_WBS_5.5.md). 온라인 자동 라운드·전투 동기화는 G5.7에서 연결했다.
 
 # G5.4 Lobby / Ready / Host Start
 

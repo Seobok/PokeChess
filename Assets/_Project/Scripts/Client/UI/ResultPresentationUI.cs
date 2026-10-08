@@ -30,12 +30,12 @@ namespace PokeChess.Client.UI
             resultVitals=Label("ResultHP",resultRoot,"",22,new Vector2(560,32),new Vector2(0,44));
             resultRewards=Label("ResultRewards",resultRoot,"",17,new Vector2(560,28),new Vector2(0,6));
             resultNext=Label("ResultNext",resultRoot,"",13,new Vector2(560,40),new Vector2(0,-34));
-            resultDetailsButton=ActionButton("ResultDetails",new Vector2(180,28),new Vector2(0,-76),()=>{resultExpanded=!resultExpanded;RenderRoundUI();});
+            resultDetailsButton=ActionButton("ResultDetails",new Vector2(180,28),new Vector2(0,-76),()=>{resultExpanded=!resultExpanded;if(IsOnlineMatch)RenderOnlineMatch();else RenderRoundUI();});
             resultDetailsButton.transform.SetParent(resultRoot,false);
             resultDetails=Label("ResultBreakdown",resultRoot,"",13,new Vector2(560,110),new Vector2(0,-150));
             eliminationRoot=Panel("EliminationNotice",new Vector2(550,235),new Vector2(0,110));
             eliminationInfo=Label("EliminationText",eliminationRoot,"",22,new Vector2(510,160),new Vector2(0,25));
-            continueWatchingButton=ActionButton("Continue watching",new Vector2(230,32),new Vector2(0,-82),()=>{eliminationDismissed=true;RenderRoundUI();});
+            continueWatchingButton=ActionButton("Continue watching",new Vector2(230,32),new Vector2(0,-82),()=>{eliminationDismissed=true;if(IsOnlineMatch)RenderOnlineMatch();else RenderRoundUI();});
             continueWatchingButton.transform.SetParent(eliminationRoot,false);eliminationRoot.gameObject.SetActive(false);
         }
         private void RenderResultPresentation()

@@ -15,7 +15,7 @@ namespace PokeChess.Network.Session
 
     public sealed partial class OnlineConnection : MonoBehaviour
     {
-        private const ushort ProtocolVersion = 2;
+        private const ushort ProtocolVersion = 4;
         private const string RequestMessage = "PokeChess.Connection.Request.v1", ReplyMessage = "PokeChess.Connection.Reply.v1";
         private static OnlineConnection instance;
         public static OnlineConnection Instance
@@ -145,6 +145,7 @@ namespace PokeChess.Network.Session
         {
             UpdateLobby();
             UpdateGameCommands();
+            Combat.Advance(Time.unscaledDeltaTime);
             if(session == null || IsBusy || State == ConnectionState.Leaving) return;
             if(!manager.IsListening) { Error="ConnectionLost"; SessionEnded(); }
             else if(State == ConnectionState.Connecting && Time.realtimeSinceStartupAsDouble-sentAt > 15) { Error="HandshakeTimeout"; SessionEnded(); }

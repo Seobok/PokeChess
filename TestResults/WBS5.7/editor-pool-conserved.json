@@ -1,0 +1,197 @@
+{
+  "sequence": 12,
+  "players": 2,
+  "replies": 0,
+  "state": "Connected",
+  "error": "",
+  "id": "DgD4D6KYYDsQw99iEChHJc",
+  "code": "Q9DMMB",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Match start is already in progress.",
+  "qaError": "",
+  "commandFeedback": "",
+  "disconnectReason": "",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": true,
+  "localReady": false,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": false,
+  "synchronized": true,
+  "members": [
+    "Player 8giaB5 (Host)",
+    "Player eXRdWy"
+  ],
+  "ready": [
+    false,
+    true
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "f93e35d4d6f0465b948996de525bd182",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v3",
+    "players": [
+      "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy"
+    ]
+  },
+  "match": {
+    "matchId": "f93e35d4d6f0465b948996de525bd182",
+    "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 12,
+    "gold": 133,
+    "xp": 4,
+    "level": 5,
+    "hp": 60,
+    "phase": 5,
+    "revision": 37,
+    "playerRevision": 36,
+    "shopRevision": 12,
+    "placementRevision": 2,
+    "nextSequence": 1,
+    "locked": false,
+    "eliminated": false,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 2,
+        "definitionId": "gastly"
+      },
+      {
+        "index": 1,
+        "cost": 1,
+        "definitionId": "weedle"
+      },
+      {
+        "index": 2,
+        "cost": 2,
+        "definitionId": "geodude"
+      },
+      {
+        "index": 3,
+        "cost": 1,
+        "definitionId": "chansey"
+      },
+      {
+        "index": 4,
+        "cost": 2,
+        "definitionId": "caterpie"
+      }
+    ],
+    "units": [
+      {
+        "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+        "definitionId": "mankey",
+        "rank": 3,
+        "column": 0,
+        "row": 0,
+        "bench": -1,
+        "placement": 1,
+        "items": []
+      }
+    ],
+    "inventory": [],
+    "reward": {
+      "round": 12,
+      "baseIncome": 5,
+      "interest": 5,
+      "streakBonus": 3,
+      "totalIncome": 13,
+      "goldBefore": 120,
+      "goldAfter": 133
+    }
+  },
+  "publicState": {
+    "matchId": "f93e35d4d6f0465b948996de525bd182",
+    "winnerPlayerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 12,
+    "phase": 5,
+    "revision": 37,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "hp": 60,
+        "level": 5,
+        "placement": 1,
+        "eliminated": false,
+        "board": [
+          {
+            "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+            "definitionId": "mankey",
+            "rank": 3,
+            "column": 0,
+            "row": 0,
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "hp": 0,
+        "level": 5,
+        "placement": 2,
+        "eliminated": true,
+        "board": []
+      }
+    ],
+    "results": [
+      {
+        "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "opponentId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "outcome": "Loss",
+        "shadow": false,
+        "opponentSurvivors": 1
+      },
+      {
+        "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "opponentId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "outcome": "Win",
+        "shadow": false,
+        "opponentSurvivors": 0
+      }
+    ]
+  },
+  "ack": {
+    "matchId": "",
+    "commandId": "",
+    "code": "",
+    "message": "",
+    "sequence": 0,
+    "nextSequence": 0,
+    "accepted": false,
+    "state": {
+      "matchId": "",
+      "playerId": "",
+      "round": 0,
+      "gold": 0,
+      "xp": 0,
+      "level": 0,
+      "hp": 0,
+      "phase": 0,
+      "revision": 0,
+      "playerRevision": 0,
+      "shopRevision": 0,
+      "placementRevision": 0,
+      "nextSequence": 0,
+      "locked": false,
+      "eliminated": false,
+      "shop": [],
+      "units": [],
+      "inventory": [],
+      "reward": {
+        "round": 0,
+        "baseIncome": 0,
+        "interest": 0,
+        "streakBonus": 0,
+        "totalIncome": 0,
+        "goldBefore": 0,
+        "goldAfter": 0
+      }
+    }
+  }
+}

@@ -64,13 +64,30 @@ namespace PokeChess.Client.UI
             Draw(name,time,loop,alpha);
         }
         private bool Draw(string name,double seconds,bool loop,float alpha)
+            =>DrawScaled(name,seconds,loop,alpha,PixelScale);
+        public void ShowPlayback(PokeChess.Core.Match.CombatUnitView unit,double tick,int tickRate,Vector2 facing,float pixelScale=1f)
+        {
+            if(facing.sqrMagnitude>.001f)direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
+            if(previousHP>=0&&unit.hp<previousHP&&unit.hp>0)hurtStart=(long)tick;previousHP=unit.hp;
+            string name=unit.action==CombatActionState.Moving?"Walk":unit.action==CombatActionState.Attacking?
+                (pokemon=="weedle"||pokemon=="chansey"||pokemon=="gastly"||pokemon=="caterpie"||pokemon=="magnemite"||pokemon=="squirtle"||pokemon=="abra"?"Shoot":"Attack"):
+                unit.action==CombatActionState.Casting?SkillAnimation():"Idle";
+            if(previousAction!=unit.action){idleStart=(long)tick;previousAction=unit.action;}
+            double seconds=(tick-unit.startTick)/tickRate;var animation=library?.Find(pokemon,name);
+            if(animation!=null&&(unit.action==CombatActionState.Attacking||unit.action==CombatActionState.Casting))seconds=animation.ActionTime(seconds,(unit.effectTick-unit.startTick)/(double)tickRate,(unit.endTick-unit.startTick)/(double)tickRate);
+            if(name=="Idle")seconds=(tick-idleStart)/tickRate;
+            float alpha=1;if(unit.hp<=0){if(deathStart<0)deathStart=(long)tick;name="Hurt";seconds=(tick-deathStart)/tickRate;alpha=Mathf.Clamp01(1-(float)seconds/.45f);}
+            else if(name=="Idle"&&tick-hurtStart<tickRate/6d){name="Hurt";seconds=(tick-hurtStart)/tickRate;}
+            DrawScaled(name,Math.Max(0,seconds),name=="Idle"||name=="Walk",alpha,pixelScale);
+        }
+        private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
             var anim=library==null?null:library.Find(pokemon,name);
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);
             image.enabled=true;image.sprite=anim.Frames[index];image.color=new Color(1,1,1,alpha);
-            image.rectTransform.sizeDelta=anim.Frames[index].rect.size*PixelScale;
-            image.rectTransform.anchoredPosition=anim.GroundOffsets[index]*PixelScale;
+            image.rectTransform.sizeDelta=anim.Frames[index].rect.size*scale;
+            image.rectTransform.anchoredPosition=anim.GroundOffsets[index]*scale;
             return true;
         }
         private string SkillAnimation()

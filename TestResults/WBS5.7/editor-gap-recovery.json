@@ -1,0 +1,162 @@
+{
+  "latest": {
+    "matchId": "f93e35d4d6f0465b948996de525bd182",
+    "battleId": "f93e35d4d6f0465b948996de525bd182-round-1-pair-0",
+    "one": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+    "two": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 1,
+    "tickRate": 30,
+    "sequence": 273,
+    "tick": 272,
+    "shadow": false,
+    "complete": false,
+    "baseline": false,
+    "result": "InProgress",
+    "reason": "None",
+    "units": [
+      {
+        "id": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "definitionId": "squirtle",
+        "owner": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "target": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "team": 1,
+        "rank": 1,
+        "column": 3,
+        "row": 1,
+        "moveColumn": 3,
+        "moveRow": 1,
+        "hp": 420.0,
+        "maxHP": 850.0,
+        "energy": 5.904991149902344,
+        "shield": 180.0,
+        "onBoard": true,
+        "action": 2,
+        "startTick": 232,
+        "effectTick": 245,
+        "endTick": 260,
+        "statuses": [
+          "aqua-guard-r1"
+        ]
+      },
+      {
+        "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+        "definitionId": "mankey",
+        "owner": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "target": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "team": 2,
+        "rank": 3,
+        "column": 4,
+        "row": 2,
+        "moveColumn": 4,
+        "moveRow": 2,
+        "hp": 1225.0,
+        "maxHP": 1350.0,
+        "energy": 50.23500061035156,
+        "shield": 0.0,
+        "onBoard": true,
+        "action": 0,
+        "startTick": 224,
+        "effectTick": 231,
+        "endTick": 0,
+        "statuses": []
+      }
+    ],
+    "projectiles": [
+      {
+        "id": 4,
+        "spawnTick": 268,
+        "arrivalTick": 272,
+        "source": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "target": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+        "column": 3,
+        "row": 1,
+        "targetColumn": 4,
+        "targetRow": 2
+      }
+    ],
+    "events": [
+      {
+        "sequence": 80,
+        "tick": 272,
+        "kind": "ActionChanged",
+        "source": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+        "target": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "detail": "Idle",
+        "value": 0.0,
+        "hpAfter": 1225.0,
+        "shieldAfter": 0.0
+      }
+    ]
+  },
+  "current": {
+    "matchId": "f93e35d4d6f0465b948996de525bd182",
+    "battleId": "f93e35d4d6f0465b948996de525bd182-round-1-pair-0",
+    "one": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+    "two": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 1,
+    "tickRate": 30,
+    "sequence": 267,
+    "tick": 266,
+    "shadow": false,
+    "complete": false,
+    "baseline": false,
+    "result": "InProgress",
+    "reason": "None",
+    "units": [
+      {
+        "id": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "definitionId": "squirtle",
+        "owner": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "target": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "team": 1,
+        "rank": 1,
+        "column": 3,
+        "row": 1,
+        "moveColumn": 3,
+        "moveRow": 1,
+        "hp": 420.0,
+        "maxHP": 850.0,
+        "energy": 5.904991149902344,
+        "shield": 180.0,
+        "onBoard": true,
+        "action": 2,
+        "startTick": 232,
+        "effectTick": 245,
+        "endTick": 260,
+        "statuses": [
+          "aqua-guard-r1"
+        ]
+      },
+      {
+        "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+        "definitionId": "mankey",
+        "owner": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "target": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "team": 2,
+        "rank": 3,
+        "column": 4,
+        "row": 2,
+        "moveColumn": 4,
+        "moveRow": 2,
+        "hp": 1225.0,
+        "maxHP": 1350.0,
+        "energy": 50.23500061035156,
+        "shield": 0.0,
+        "onBoard": true,
+        "action": 2,
+        "startTick": 224,
+        "effectTick": 231,
+        "endTick": 271,
+        "statuses": []
+      }
+    ],
+    "projectiles": [],
+    "events": []
+  },
+  "tick": 266.0,
+  "remaining": 0.0,
+  "events": 28,
+  "gaps": 1,
+  "playing": true,
+  "error": ""
+}

@@ -80,6 +80,7 @@ namespace PokeChess.Client.UI
         }
         public void SurrenderLocalPlayer()
         {
+            if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Surrender);return;}
             if(Simulation?.Status==SimulationStatus.Running)return;
             CancelDrag("Surrender requested.");
             try
@@ -92,6 +93,7 @@ namespace PokeChess.Client.UI
         }
         public void AdvanceRound()
         {
+            if(IsOnlineMatch)return;
             if(Simulation?.Status==SimulationStatus.Running)return;
             if (!automaticRoundFlow || Time.realtimeSinceStartupAsDouble-lastRoundClick < .25f) return;
             lastRoundClick = Time.realtimeSinceStartupAsDouble;
@@ -110,6 +112,7 @@ namespace PokeChess.Client.UI
         // Same path used by Update and editor integration checks.
         public void AdvanceRoundTime(double elapsedSeconds)
         {
+            if(IsOnlineMatch)return;
             if (RoundFlow == null) return;
             if(Simulation!=null)
             {

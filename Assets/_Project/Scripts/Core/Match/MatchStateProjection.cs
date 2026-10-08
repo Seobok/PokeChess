@@ -10,7 +10,7 @@ namespace PokeChess.Core.Match
     }
     [Serializable] public sealed class PublicPlayer
     {
-        public string id;public int hp,level,placement;public bool eliminated;public PublicBoardUnit[] board;
+        public string id,eliminationReason;public int hp,maxHP,level,placement,eliminationRound;public bool eliminated;public PublicBoardUnit[] board;
     }
     [Serializable] public sealed class PublicRoundResult
     {
@@ -19,12 +19,13 @@ namespace PokeChess.Core.Match
     [Serializable] public sealed class PublicMatchState
     {
         public string matchId,winnerPlayerId;public int round;public MatchPhase phase;public long revision;
-        // No deadline is invented while the automatic online round driver is not connected.
+        // Deadline uses the Host network clock; absent outside timed phases.
         public bool hasPhaseDeadline;public double phaseEndsAt;public PublicPlayer[] players;public PublicRoundResult[] results;
     }
     [Serializable] public sealed class OwnerRoundReward
     {
         public int round,baseIncome,interest,streakBonus,totalIncome,goldBefore,goldAfter;
+        public int hpBefore,hpAfter,damage,baseDamage,survivorDamage,xpGranted,levelBefore,levelAfter;
     }
     [Serializable] public sealed class MatchStateSnapshot
     {
@@ -35,14 +36,17 @@ namespace PokeChess.Core.Match
         public static OwnerRoundReward Reward(LocalRoundCoordinator rounds,string playerId)
         {
             if(rounds.LastResult==null||!rounds.LastResult.Income.TryGetValue(playerId,out var value))return null;
-            return new OwnerRoundReward{round=value.RoundNumber,baseIncome=value.BaseIncome,interest=value.Interest,streakBonus=value.StreakBonus,totalIncome=value.TotalIncome,goldBefore=value.GoldBefore,goldAfter=value.GoldAfter};
+            rounds.LastResult.Damage.TryGetValue(playerId,out var damage);rounds.LastResult.XP.TryGetValue(playerId,out var xp);
+            return new OwnerRoundReward{round=value.RoundNumber,baseIncome=value.BaseIncome,interest=value.Interest,streakBonus=value.StreakBonus,totalIncome=value.TotalIncome,goldBefore=value.GoldBefore,goldAfter=value.GoldAfter,
+                hpBefore=damage?.HPBefore??0,hpAfter=damage?.HPAfter??0,damage=damage?.AppliedDamage??0,baseDamage=damage?.BaseDamage??0,survivorDamage=damage?.SurvivorDamage??0,
+                xpGranted=xp?.XPGranted??0,levelBefore=xp?.LevelBefore??0,levelAfter=xp?.LevelAfter??0};
         }
         public static PublicMatchState Public(MatchState match,LocalRoundCoordinator rounds,long version)
         {
             return new PublicMatchState{matchId=match.MatchId,round=match.RoundNumber,phase=match.Phase,revision=version,
                 winnerPlayerId=match.FinalResult?.WinnerPlayerId,
-                players=match.Players.Select(p=>new PublicPlayer{id=p.PlayerId,hp=p.HP,level=p.Level,eliminated=p.IsEliminated,
-                    placement=match.FinalResult?.Standings.FirstOrDefault(r=>r.PlayerId==p.PlayerId)?.Placement??p.FinalPlacement??0,
+                players=match.Players.Select(p=>new PublicPlayer{id=p.PlayerId,hp=p.HP,maxHP=p.Rules.StartingHP,level=p.Level,eliminated=p.IsEliminated,
+                    placement=match.FinalResult?.Standings.FirstOrDefault(r=>r.PlayerId==p.PlayerId)?.Placement??p.FinalPlacement??0,eliminationReason=p.Elimination?.Reason.ToString(),eliminationRound=p.Elimination?.Round??0,
                     board=p.Units.Where(u=>u.Placement.Kind==PlacementKind.Board).Select(u=>new PublicBoardUnit{id=u.InstanceId,definitionId=u.DefinitionId,
                         rank=(int)u.Rank,column=u.Placement.Position.Value.Column,row=u.Placement.Position.Value.Row,items=u.ItemInstanceIds.ToArray()}).ToArray()}).ToArray(),
                 results=rounds.LastResult?.PlayerResults.Values.Select(r=>new PublicRoundResult{playerId=r.PlayerId,opponentId=r.OpponentId,outcome=r.Outcome.ToString(),shadow=r.IsShadow,opponentSurvivors=r.OpponentSurvivors}).ToArray()??Array.Empty<PublicRoundResult>()};

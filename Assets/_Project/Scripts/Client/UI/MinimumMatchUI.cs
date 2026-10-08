@@ -36,7 +36,7 @@ namespace PokeChess.Client.UI
         private MatchPhase? shopPhase;
         private readonly Dictionary<string,float> highlights=new Dictionary<string,float>();
         public string SelectedUnitId => selectedUnitId;
-        public bool ShopExpanded => Player.HP>0 && !Player.IsEliminated && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
+        public bool ShopExpanded => IsOnlineMatch?OnlineShopExpanded:Player.HP>0 && !Player.IsEliminated && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
         public UnityEngine.UI.Button ShopButton(int slot) => shopCards[slot];
         public UnityEngine.UI.Button SellButton => sellButton;
         public UnityEngine.UI.Button XPButton => xpButton;
@@ -191,29 +191,31 @@ namespace PokeChess.Client.UI
             if(IsDragging && Player.PlacementRevision!=dragRevision) CancelDrag("Placement changed.");
             Render();
         }
-        public void BuySlot(int slot) { long revision=displayedShopRevision;Perform(()=> {
+        public void BuySlot(int slot) { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Buy,c=>c.slot=slot);return;}long revision=displayedShopRevision;Perform(()=> {
             var result=commands.Buy(slot,revision);if(slot>=0&&slot<shopViews.Length)RecordShopPurchase(slot,result);return result;
         }); }
-        private void RequestReroll() { long revision=displayedShopRevision;Perform(()=> {
+        private void RequestReroll() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Reroll);return;}long revision=displayedShopRevision;Perform(()=> {
             var result=commands.Reroll(revision);if(result.Accepted)foreach(var card in shopViews){card.Purchased=false;card.Flash=null;card.FlashUntil=0;}return result;
         }); }
-        private void RequestBuyXP() { Perform(()=> {
+        private void RequestBuyXP() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.BuyXP);return;}Perform(()=> {
             int gold=Player.Gold;var result=commands.BuyXP();
             if(result.Accepted){ShowEconomyChange((Player.Gold-gold)+"G · +"+commands.LevelRules.PurchaseXP+"XP");economyPreviousGold=Player.Gold;}
             return result;
         }); }
-        private void RequestLock() { long revision=displayedShopRevision;bool locked=!displayedLocked;Perform(()=>commands.Lock(locked,revision)); }
+        private void RequestLock() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Lock,c=>c.locked=!onlineService.LocalMatchState.locked);return;}long revision=displayedShopRevision;bool locked=!displayedLocked;Perform(()=>commands.Lock(locked,revision)); }
         public void SelectUnit(string id)
         {
+            if(IsOnlineMatch){SelectOnlineUnit(id);return;}
             if(IsDragging) return;
             selectedUnitId=Player.Units.Any(u=>u.InstanceId==id) ? id : null;Render();
         }
         public void SellSelected()
         {
+            if(IsOnlineMatch){if(selectedUnitId!=null)SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=selectedUnitId);return;}
             if(selectedUnitId==null) { Feedback("Select your unit first.");return; }
             string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
         }
-        public void ToggleShop() { if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
+        public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
         private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board && Match.Phase!=MatchPhase.Preparation ? new Color(.12f,.12f,.18f) : slot.Color;
         private void UpdateTokenFeedback()
         {

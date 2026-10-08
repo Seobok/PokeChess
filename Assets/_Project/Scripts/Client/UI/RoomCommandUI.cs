@@ -41,6 +41,7 @@ namespace PokeChess.Client.UI
             Button("My board",group,new Vector2(355,-65),new Vector2(150,30),()=>{observedOnlinePlayer=null;selectedOnlineUnit=null;});
             Button("Sync state",group,new Vector2(430,-110),new Vector2(90,30),async()=>{await OnlineConnection.Instance.RequestStateSyncAsync();});
             onlineMatchPanel.SetActive(false);
+            BuildOnlineCombatUI(group);
         }
         private async void SendOnline(MatchCommandKind kind,Action<MatchCommand> configure=null)
         {
@@ -76,6 +77,7 @@ namespace PokeChess.Client.UI
             onlineSelection.text=selectedOnlineUnit==null?"Select a unit, then a destination to move or swap.":"Selected: "+selectedOnlineUnit+" / Select destination or sell.";
             onlineSell.interactable=preparation&&selectedOnlineUnit!=null;
             onlineActionStatus.text=service.StateSynchronized?(service.CommandFeedback??service.SyncFeedback):service.SyncFeedback??"Synchronizing state…";onlineRetry.gameObject.SetActive(pending);
+            UpdateOnlineCombatUI(service);
         }
     }
 }
