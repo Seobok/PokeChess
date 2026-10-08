@@ -68,6 +68,10 @@ namespace PokeChess.Client.UI
                 label.rectTransform.anchoredPosition=new Vector2(0,-15);label.rectTransform.sizeDelta=new Vector2(46,24);
                 label.fontSize=9;label.transform.SetAsLastSibling();
                 string state=label.text.Split('\n').Last();
+                int charges = pair.Battle.Synergies.AssaultCharges(unit);
+                if (charges > 0) state = "AT+ " + charges;
+                string synergyFlash = LocalSynergyFlash(unit);
+                if (synergyFlash.Length > 0) state = synergyFlash;
                 if(unit.ActionState!=CombatActionState.Casting)
                 {
                     if(unit.HasCrowdControl(CrowdControlKind.Stun))state="STUN";

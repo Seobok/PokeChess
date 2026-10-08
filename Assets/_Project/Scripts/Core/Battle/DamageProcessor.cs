@@ -76,9 +76,10 @@ namespace PokeChess.Core.Battle
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
             if(source==null||target==null||source.TeamId==target.TeamId||!target.IsTargetable)
                 throw new InvalidOperationException("Invalid damage participants.");
+            float synergyBonus = request.IsBasicAttack ? battle.Synergies.AttackBonus(source) : 0;
             bool canCrit=request.CanCrit&&request.Type!=DamageType.True&&
                 ((double)request.RawDamage+request.BonusDamage+source.EffectiveDamageModifiers.BonusAttackDamage)>0;
-            float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0);
+            float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0)+synergyBonus;
             // Validate arithmetic before consuming RNG or changing state.
             DamageCalculator.CalculateDetailed(request.RawDamage,bonus,request.Type,target.EffectiveStats.Armor,
                 target.EffectiveStats.MagicResistance,canCrit,source.Stats.CritMultiplier,
@@ -101,6 +102,8 @@ namespace PokeChess.Core.Battle
                 target.CurrentHP,target.CurrentShield,killed,calculation);
             battle.RecordDamage(result);
             battle.Energy.OnDamage(result);
+            if(request.IsBasicAttack)battle.Synergies.OnBasicAttack(source, synergyBonus);
+            battle.Synergies.OnDamage(target, shield);
             return result;
         }
     }

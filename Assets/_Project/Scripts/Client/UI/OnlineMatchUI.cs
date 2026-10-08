@@ -139,6 +139,7 @@ namespace PokeChess.Client.UI
             surrenderButton.interactable=OnlineInputReady;
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
+            RenderOnlineSynergies(pub);
             UpdateTokenFeedback();
         }
         private void RenderOnlineShop(OwnerMatchState owner)
@@ -151,7 +152,7 @@ namespace PokeChess.Client.UI
             for(int i=0;i<shopCards.Length;i++){
                 var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].interactable=OnlineInputReady&&available&&owner.gold>=offer.cost;
                 if(!available){card.Name.text="NO OFFER";card.Price.text=card.Types.text=card.Owned.text="";card.Action.text="Wait for refresh";}
-                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=offer.cost+"G · C"+offer.cost;card.Types.text=string.Join(" / ",d.TypeIds);
+                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=offer.cost+"G · C"+offer.cost;card.Types.text=TraitList(d);
                     card.Owned.text=string.Join(" · ",Enumerable.Range(1,3).Select(r=>"R"+r+" "+owner.units.Count(u=>u.definitionId==d.Id&&u.rank==r)));
                     card.Action.text=owner.eliminated?"ELIMINATED":!onlineService.StateSynchronized||onlineService.PendingCommand!=null?"WAITING":owner.gold<offer.cost?"NOT ENOUGH GOLD":"BUY";
                     if(!shopSprites.TryGetValue(i,out var sprite)||sprite==null)shopSprites[i]=sprite=AddSprite(shopCards[i].transform,d.Id);if(sprite.PokemonId!=d.Id)sprite.Initialize(d.Id);sprite.ShowIdle(Time.unscaledTimeAsDouble);sprite.transform.localPosition+=new Vector3(-50,16,0);

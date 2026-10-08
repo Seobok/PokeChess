@@ -7,7 +7,7 @@ namespace PokeChess.Core.Match
 {
     [Serializable] public sealed class CombatUnitView
     {
-        public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow;
+        public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,assaultCharges;
         public float hp,maxHP,energy,shield;public bool onBoard;public CombatActionState action;
         public long startTick,effectTick,endTick;public string[] statuses;
     }
@@ -71,8 +71,12 @@ namespace PokeChess.Core.Match
             Action<string,string,string,string,float,float,float> add=(kind,source,target,detail,value,hp,shield)=>{
                 eventSequences.TryGetValue(pair,out var sequence);eventSequences[pair]=++sequence;
                 events.Add(new CombatEventView{sequence=sequence,tick=tick,kind=kind,source=source,target=target,detail=detail,value=value,hpAfter=hp,shieldAfter=shield});};
-            if(baseline)add("BattleStarted",null,null,null,0,0,0);
+            if(baseline) {
+                add("BattleStarted",null,null,null,0,0,0);
+                if(battle!=null)foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+            }
             else if(battle!=null&&(!lastTicks.TryGetValue(pair,out var old)||tick!=old)){
+                foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
                 foreach(var d in battle.DamageResultsThisTick)add("Damage",d.Request.SourceId,d.Request.TargetId,d.IsCritical?"Critical":d.Request.Type.ToString(),d.AppliedDamage,d.RemainingHP,d.RemainingShield);
                 foreach(var e in battle.SkillEventsThisTick)add("Skill"+e.Kind,e.UnitId,e.TargetId,e.SkillId,0,0,0);
                 foreach(var e in battle.SkillEffectEventsThisTick)add("Effect"+e.Type,e.CasterId,e.TargetId,e.Outcome.ToString(),e.ActualValue,0,0);
@@ -88,6 +92,7 @@ namespace PokeChess.Core.Match
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;
                     return new CombatUnitView{id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
                         hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
+                        assaultCharges=battle.Synergies.AssaultCharges(u),
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
                         statuses=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>s.Definition.Id).ToArray()};}).ToArray(),

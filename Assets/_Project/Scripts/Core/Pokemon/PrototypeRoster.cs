@@ -25,15 +25,15 @@ namespace PokeChess.Core.Pokemon
         private static PokemonDefinition Pokemon(string id,string name,float hp,float attack,float speed,float armor,
             int range,float energy,float starting,string role,string skill,params string[] types) =>
             new PokemonDefinition(id,name,1,new PokemonStats(hp,attack,0,speed,armor,20,range,2,energy,starting,.2f,
-                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types);
+                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types,SynergyTraits.ForPokemon(id));
         private static PokemonDefinition Pokemon(string id,string name,float hp,float attack,float speed,float armor,
             int range,float energy,float starting,string role,string skill,int cost,params string[] types) =>
             new PokemonDefinition(id,name,cost,new PokemonStats(hp,attack,0,speed,armor,20,range,2,energy,starting,.2f,
-                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types);
+                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types,SynergyTraits.ForPokemon(id));
         private static PokemonDefinition HighPokemon(string id,string name,float hp,float attack,float speed,float armor,float mr,
             int range,float energy,float starting,string role,string skill,int cost,params string[] types) =>
             new PokemonDefinition(id,name,cost,new PokemonStats(hp,attack,0,speed,armor,mr,range,2,energy,starting,.2f,
-                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types);
+                range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types,SynergyTraits.ForPokemon(id));
         public static PokemonCatalog CreateCatalog() => new PokemonCatalog(CreateDefinitions());
         public static SkillCatalog CreateSkills() => new SkillCatalog(new[] {
             Buff("harden",.5f,.6f,"harden-r1","harden-r2","harden-r3"),

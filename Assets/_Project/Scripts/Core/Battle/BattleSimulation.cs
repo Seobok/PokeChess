@@ -31,6 +31,7 @@ namespace PokeChess.Core.Battle
             if(statusCatalog!=null)battle.StatusEffects.UseCatalog(statusCatalog);
             battle.StatusEffects.Changed += OnStatusChanged;
             battle.HasSimulation=true;
+            battle.Synergies.Initialize();
         }
         private bool CanMove(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Root)&&policy.CanMove(battle,u);
@@ -81,6 +82,7 @@ namespace PokeChess.Core.Battle
                 battle.BeginLifecycleTick();
                 battle.BeginDamageTick();
                 battle.BeginSkillTick();
+                battle.Synergies.BeginTick();
                 battle.StatusEffects.BeginTick();
                 battle.Energy.BeginTick();
                 battle.Projectiles.BeginTick();
@@ -277,6 +279,7 @@ namespace PokeChess.Core.Battle
                 cast.EffectApplied=true;runtime.EffectApplied=true;
                 Emit(unit,CombatActionSignalKind.TimingReached);
                 policy.ExecuteSkillEffect(battle,unit,target,skill);
+                battle.Synergies.OnSkillEffect(unit);
                 battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.EffectApplied,SkillCancelReason.None));
             }
             if(unit.IsAlive&&unit.IsOnBoard&&battle.CurrentTick>=cast.EndTick)Finish(unit,runtime,false);

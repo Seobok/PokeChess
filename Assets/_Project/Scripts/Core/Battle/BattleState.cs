@@ -15,6 +15,7 @@ namespace PokeChess.Core.Battle
         public string UnitInstanceId { get; }
         public string DefinitionId { get; }
         public string SkillId { get; }
+        public IReadOnlyList<string> TraitIds { get; }
         public string OwnerPlayerId { get; }
         public int TeamId { get; }
         public UnitRank Rank { get; }
@@ -59,11 +60,12 @@ namespace PokeChess.Core.Battle
         public CombatActionState ActionState { get; internal set; }
         public IReadOnlyList<string> ItemInstanceIds { get; }
 
-        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId)
+        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId, IReadOnlyList<string> traits)
         {
             UnitInstanceId = source.InstanceId;
             DefinitionId = source.DefinitionId;
             SkillId = skillId;
+            TraitIds = Array.AsReadOnly(traits.ToArray());
             OwnerPlayerId = source.OwnerPlayerId;
             Rank = source.Rank;
             EvolutionStage = source.EvolutionStage;
@@ -114,6 +116,7 @@ namespace PokeChess.Core.Battle
         public ProjectileSystem Projectiles { get; }
         public EnergySystem Energy { get; }
         public StatusEffectSystem StatusEffects { get; }
+        public SynergySystem Synergies { get; internal set; }
         private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
         public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
         private readonly List<SkillEffectEvent> skillEffectEvents = new List<SkillEffectEvent>();
@@ -180,7 +183,7 @@ namespace PokeChess.Core.Battle
     {
         public static BattleState Create(string battleId, int roundNumber, ulong seed, int tickRate,
             PokemonCatalog catalog, IEnumerable<BattleUnitSetup> setup,
-            Func<UnitInstance, PokemonDefinition, PokemonStats> resolveStats = null)
+            Func<UnitInstance, PokemonDefinition, PokemonStats> resolveStats = null, SynergyRules synergyRules = null)
         {
             if (catalog == null) throw new ArgumentNullException(nameof(catalog));
             if (setup == null) throw new ArgumentNullException(nameof(setup));
@@ -203,9 +206,11 @@ namespace PokeChess.Core.Battle
                 var definition = catalog.Get(e.Unit.DefinitionId);
                 var stats = resolveStats == null ? RankRules.Default.Apply(definition.BaseStats,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId);
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, definition.TraitIds);
             }).ToArray();
-            return new BattleState(battleId, roundNumber, seed, tickRate, states, board);
+            var battle = new BattleState(battleId, roundNumber, seed, tickRate, states, board);
+            battle.Synergies = new SynergySystem(battle, synergyRules);
+            return battle;
         }
     }
 }

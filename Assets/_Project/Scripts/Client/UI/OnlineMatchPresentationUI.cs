@@ -76,6 +76,7 @@ namespace PokeChess.Client.UI
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
                 label.text=unit.hp<=0?"":"R"+unit.rank+" "+Math.Ceiling(unit.hp)+"HP\n"+Math.Floor(unit.energy)+"E"+(unit.shield>0?" S"+Math.Ceiling(unit.shield):"")+(unit.statuses.Length>0?" · "+unit.statuses[0]:"");
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
+                if(unit.assaultCharges>0)label.text+=" AT+"+unit.assaultCharges;
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);
             }
             foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
@@ -87,7 +88,8 @@ namespace PokeChess.Client.UI
         private void ShowOnlineEffect(CombatEventView effect)
         {
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;
-            if(effect.kind=="Damage"||effect.kind=="EffectHeal"||effect.kind.StartsWith("Status")){
+            if(effect.kind=="Synergy") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
+            else if(effect.kind=="Damage"||effect.kind=="EffectHeal"||effect.kind.StartsWith("Status")){
                 label.text=effect.kind=="Damage"?"-"+Math.Ceiling(effect.value):effect.kind=="EffectHeal"?"+"+Math.Ceiling(effect.value):effect.detail;
                 label.color=effect.kind=="Damage"?Color.red:Color.green;onlineEffectUntil[effect.target]=Time.unscaledTime+.45f;
             }

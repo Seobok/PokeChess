@@ -17,7 +17,7 @@ namespace PokeChess.Core.Tests
                 new BattleUnitSetup(c.CreateUnit(id,pokemon,"p"+team,r,0,UnitPlacement.Unplaced),team,new BoardPosition(x,y));
             return BattleStateFactory.Create("advanced",1,123,30,c,new[]{Setup("caster",species,1,3,3,rank),
                 Setup("ally","slowpoke",1,0,0),Setup("near","slowpoke",2,4,3),Setup("second","slowpoke",2,3,4),
-                Setup("hidden","slowpoke",2,3,2),Setup("far","slowpoke",2,6,7)});
+                Setup("hidden","slowpoke",2,3,2),Setup("far","slowpoke",2,6,7)}, synergyRules: SynergyRules.Disabled);
         }
         private sealed class Policy:SkillCombatBehaviorPolicy
         {

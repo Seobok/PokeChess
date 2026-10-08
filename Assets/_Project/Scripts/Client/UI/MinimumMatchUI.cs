@@ -89,7 +89,7 @@ namespace PokeChess.Client.UI
             rerollButton=ActionButton("Reroll",new Vector2(170,32),new Vector2(490,-224),RequestReroll);
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
-            ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();
+            ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();BuildSynergyUI();
         }
         private void ConfigureShopPanel()
         {

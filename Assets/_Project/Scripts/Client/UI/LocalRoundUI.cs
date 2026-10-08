@@ -231,6 +231,7 @@ namespace PokeChess.Client.UI
             }
             RenderResultPresentation();
             RenderUnitContext();
+            RenderLocalSynergies();
             RenderFinalResultUI();
             RenderSimulationUI();
         }

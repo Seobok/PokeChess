@@ -22,7 +22,7 @@ namespace PokeChess.Core.Tests
             return BattleStateFactory.Create("high",1,123,30,c,new[]{Setup("caster",species,1,3,3,rank),
                 Setup("ally","slowpoke",1,2,3),Setup("outside","slowpoke",1,0,0),
                 Setup("center","slowpoke",2,4,3),Setup("near","slowpoke",2,4,4),
-                Setup("hidden","slowpoke",2,5,3),Setup("far","slowpoke",2,6,7)});
+                Setup("hidden","slowpoke",2,5,3),Setup("far","slowpoke",2,6,7)}, synergyRules: SynergyRules.Disabled);
         }
         private static BattleSimulation Sim(BattleState b)=>new BattleSimulation(b,new Policy(),statusCatalog:PrototypeRoster.CreateStatuses());
         private static void Step(BattleSimulation s,int n){for(int i=0;i<n;i++)s.Step();}
