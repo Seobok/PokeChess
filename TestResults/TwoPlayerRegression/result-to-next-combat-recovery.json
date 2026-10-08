@@ -1,0 +1,253 @@
+{
+  "reconnectRemaining": 0.0,
+  "networkClientId": 12,
+  "recovering": false,
+  "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+  "recoveryFeedback": "Match restored.",
+  "sequence": 53,
+  "players": 2,
+  "replies": 2,
+  "state": "Connected",
+  "error": "",
+  "id": "h8m59v3aRaFDJhjLjAvvfE",
+  "code": "CRMQCT",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Only the Host can start.",
+  "qaError": "",
+  "commandFeedback": "Accepted.",
+  "disconnectReason": "",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": true,
+  "localReady": true,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": false,
+  "synchronized": true,
+  "members": [
+    "Player 8giaB5 (Host)",
+    "Player eXRdWy"
+  ],
+  "ready": [
+    false,
+    true
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "d99d7f8c442c4179ad4adc0bb655126c",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v5",
+    "players": [
+      "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy"
+    ]
+  },
+  "match": {
+    "matchId": "d99d7f8c442c4179ad4adc0bb655126c",
+    "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+    "round": 3,
+    "gold": 17,
+    "xp": 0,
+    "level": 3,
+    "hp": 54,
+    "winStreak": 0,
+    "loseStreak": 2,
+    "phase": 3,
+    "revision": 10,
+    "playerRevision": 10,
+    "shopRevision": 3,
+    "placementRevision": 2,
+    "nextSequence": 2,
+    "locked": false,
+    "eliminated": false,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 1,
+        "definitionId": "weedle"
+      },
+      {
+        "index": 1,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      },
+      {
+        "index": 2,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      },
+      {
+        "index": 3,
+        "cost": 1,
+        "definitionId": "weedle"
+      },
+      {
+        "index": 4,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      }
+    ],
+    "units": [
+      {
+        "id": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "definitionId": "squirtle",
+        "rank": 1,
+        "column": 0,
+        "row": 0,
+        "bench": -1,
+        "saleGold": 3,
+        "placement": 1,
+        "items": []
+      }
+    ],
+    "inventory": [],
+    "reward": {
+      "round": 0,
+      "baseIncome": 0,
+      "interest": 0,
+      "streakBonus": 0,
+      "totalIncome": 0,
+      "goldBefore": 0,
+      "goldAfter": 0,
+      "hpBefore": 0,
+      "hpAfter": 0,
+      "damage": 0,
+      "baseDamage": 0,
+      "survivorDamage": 0,
+      "xpGranted": 0,
+      "levelBefore": 0,
+      "levelAfter": 0
+    }
+  },
+  "publicState": {
+    "matchId": "d99d7f8c442c4179ad4adc0bb655126c",
+    "winnerPlayerId": "",
+    "round": 3,
+    "phase": 3,
+    "revision": 10,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "eliminationReason": "",
+        "hp": 60,
+        "maxHP": 60,
+        "level": 3,
+        "placement": 0,
+        "eliminationRound": 0,
+        "eliminated": false,
+        "disconnected": false,
+        "reconnectDeadline": 0.0,
+        "board": [
+          {
+            "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+            "definitionId": "mankey",
+            "rank": 3,
+            "column": 0,
+            "row": 0,
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "eliminationReason": "",
+        "hp": 54,
+        "maxHP": 60,
+        "level": 3,
+        "placement": 0,
+        "eliminationRound": 0,
+        "eliminated": false,
+        "disconnected": false,
+        "reconnectDeadline": 0.0,
+        "board": [
+          {
+            "id": "qa-TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+            "definitionId": "squirtle",
+            "rank": 1,
+            "column": 0,
+            "row": 0,
+            "items": []
+          }
+        ]
+      }
+    ],
+    "results": []
+  },
+  "ack": {
+    "matchId": "d99d7f8c442c4179ad4adc0bb655126c",
+    "commandId": "e6793d6b54e040ceacfc8fe885564dce",
+    "code": "None",
+    "message": "Accepted.",
+    "sequence": 1,
+    "nextSequence": 2,
+    "accepted": true,
+    "state": {
+      "matchId": "d99d7f8c442c4179ad4adc0bb655126c",
+      "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+      "round": 1,
+      "gold": 5,
+      "xp": 0,
+      "level": 1,
+      "hp": 60,
+      "winStreak": 0,
+      "loseStreak": 0,
+      "phase": 2,
+      "revision": 0,
+      "playerRevision": 0,
+      "shopRevision": 1,
+      "placementRevision": 0,
+      "nextSequence": 2,
+      "locked": false,
+      "eliminated": false,
+      "shop": [
+        {
+          "index": 0,
+          "cost": 1,
+          "definitionId": "slowpoke"
+        },
+        {
+          "index": 1,
+          "cost": 1,
+          "definitionId": "weedle"
+        },
+        {
+          "index": 2,
+          "cost": 1,
+          "definitionId": "mankey"
+        },
+        {
+          "index": 3,
+          "cost": 1,
+          "definitionId": "slowpoke"
+        },
+        {
+          "index": 4,
+          "cost": 1,
+          "definitionId": "chansey"
+        }
+      ],
+      "units": [],
+      "inventory": [],
+      "reward": {
+        "round": 0,
+        "baseIncome": 0,
+        "interest": 0,
+        "streakBonus": 0,
+        "totalIncome": 0,
+        "goldBefore": 0,
+        "goldAfter": 0,
+        "hpBefore": 0,
+        "hpAfter": 0,
+        "damage": 0,
+        "baseDamage": 0,
+        "survivorDamage": 0,
+        "xpGranted": 0,
+        "levelBefore": 0,
+        "levelAfter": 0
+      }
+    }
+  }
+}

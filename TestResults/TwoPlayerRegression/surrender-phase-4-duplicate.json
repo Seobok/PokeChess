@@ -1,0 +1,247 @@
+{
+  "reconnectRemaining": 0.0,
+  "networkClientId": 5,
+  "recovering": false,
+  "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+  "recoveryFeedback": "",
+  "sequence": 23,
+  "players": 2,
+  "replies": 1,
+  "state": "Connected",
+  "error": "",
+  "id": "XUTWJ4VVJGvNZPiE3vPk4",
+  "code": "DJLCLH",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Only the Host can start.",
+  "qaError": "",
+  "commandFeedback": "Surrendered.",
+  "disconnectReason": "",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": true,
+  "localReady": true,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": false,
+  "synchronized": true,
+  "members": [
+    "Player 8giaB5 (Host)",
+    "Player eXRdWy"
+  ],
+  "ready": [
+    false,
+    true
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "31d1477250e24fa4b204f7384bd8a8b0",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v5",
+    "players": [
+      "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy"
+    ]
+  },
+  "match": {
+    "matchId": "31d1477250e24fa4b204f7384bd8a8b0",
+    "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+    "round": 2,
+    "gold": 17,
+    "xp": 0,
+    "level": 3,
+    "hp": 0,
+    "winStreak": 0,
+    "loseStreak": 2,
+    "phase": 5,
+    "revision": 7,
+    "playerRevision": 7,
+    "shopRevision": 3,
+    "placementRevision": 3,
+    "nextSequence": 3,
+    "locked": false,
+    "eliminated": true,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 1,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 2,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 3,
+        "cost": 0,
+        "definitionId": ""
+      },
+      {
+        "index": 4,
+        "cost": 0,
+        "definitionId": ""
+      }
+    ],
+    "units": [],
+    "inventory": [],
+    "reward": {
+      "round": 2,
+      "baseIncome": 5,
+      "interest": 1,
+      "streakBonus": 1,
+      "totalIncome": 7,
+      "goldBefore": 10,
+      "goldAfter": 17,
+      "hpBefore": 57,
+      "hpAfter": 54,
+      "damage": 3,
+      "baseDamage": 2,
+      "survivorDamage": 1,
+      "xpGranted": 2,
+      "levelBefore": 2,
+      "levelAfter": 3
+    }
+  },
+  "publicState": {
+    "matchId": "31d1477250e24fa4b204f7384bd8a8b0",
+    "winnerPlayerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 2,
+    "phase": 5,
+    "revision": 7,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "eliminationReason": "",
+        "hp": 60,
+        "maxHP": 60,
+        "level": 3,
+        "placement": 1,
+        "eliminationRound": 0,
+        "eliminated": false,
+        "disconnected": false,
+        "reconnectDeadline": 0.0,
+        "board": [
+          {
+            "id": "qa-smyVssvGy1jTxkc45yHLYt8giaB5",
+            "definitionId": "mankey",
+            "rank": 3,
+            "column": 0,
+            "row": 0,
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "eliminationReason": "Surrender",
+        "hp": 0,
+        "maxHP": 60,
+        "level": 3,
+        "placement": 2,
+        "eliminationRound": 2,
+        "eliminated": true,
+        "disconnected": false,
+        "reconnectDeadline": 0.0,
+        "board": []
+      }
+    ],
+    "results": [
+      {
+        "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "opponentId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "outcome": "Loss",
+        "shadow": false,
+        "opponentSurvivors": 1
+      },
+      {
+        "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "opponentId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "outcome": "Win",
+        "shadow": false,
+        "opponentSurvivors": 0
+      }
+    ]
+  },
+  "ack": {
+    "matchId": "31d1477250e24fa4b204f7384bd8a8b0",
+    "commandId": "a49d3946d21d4a22aa0394567349180d",
+    "code": "None",
+    "message": "Surrendered.",
+    "sequence": 2,
+    "nextSequence": 3,
+    "accepted": true,
+    "state": {
+      "matchId": "31d1477250e24fa4b204f7384bd8a8b0",
+      "playerId": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+      "round": 2,
+      "gold": 17,
+      "xp": 0,
+      "level": 3,
+      "hp": 0,
+      "winStreak": 0,
+      "loseStreak": 2,
+      "phase": 5,
+      "revision": 7,
+      "playerRevision": 7,
+      "shopRevision": 3,
+      "placementRevision": 3,
+      "nextSequence": 3,
+      "locked": false,
+      "eliminated": true,
+      "shop": [
+        {
+          "index": 0,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 1,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 2,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 3,
+          "cost": 0,
+          "definitionId": ""
+        },
+        {
+          "index": 4,
+          "cost": 0,
+          "definitionId": ""
+        }
+      ],
+      "units": [],
+      "inventory": [],
+      "reward": {
+        "round": 2,
+        "baseIncome": 5,
+        "interest": 1,
+        "streakBonus": 1,
+        "totalIncome": 7,
+        "goldBefore": 10,
+        "goldAfter": 17,
+        "hpBefore": 57,
+        "hpAfter": 54,
+        "damage": 3,
+        "baseDamage": 2,
+        "survivorDamage": 1,
+        "xpGranted": 2,
+        "levelBefore": 2,
+        "levelAfter": 3
+      }
+    }
+  }
+}
