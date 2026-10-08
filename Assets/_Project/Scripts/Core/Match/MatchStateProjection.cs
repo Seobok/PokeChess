@@ -10,7 +10,7 @@ namespace PokeChess.Core.Match
     }
     [Serializable] public sealed class PublicPlayer
     {
-        public string id,eliminationReason;public int hp,maxHP,level,placement,eliminationRound;public bool eliminated;public PublicBoardUnit[] board;
+        public string id,eliminationReason;public int hp,maxHP,level,placement,eliminationRound;public bool eliminated,disconnected;public double reconnectDeadline;public PublicBoardUnit[] board;
     }
     [Serializable] public sealed class PublicRoundResult
     {

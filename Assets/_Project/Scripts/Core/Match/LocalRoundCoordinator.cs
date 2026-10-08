@@ -135,7 +135,7 @@ namespace PokeChess.Core.Match
         public bool PreparationReady => Match.Phase==MatchPhase.Preparation && !refreshing &&
             Survivors.All(p=>p.Shop.IsInitialized && p.Shop.LastRefreshRound==Match.RoundNumber);
         public bool IsSettled => LastResult!=null && LastResult.Round==Match.RoundNumber &&
-            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.Elimination?.Reason==EliminationReason.Surrender || p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber) &&
+            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.Elimination?.Reason==EliminationReason.Surrender || p.Elimination?.Reason==EliminationReason.DisconnectTimeout || p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber) &&
             Match.Players.All(p=>p.HP>0 || p.IsEliminated);
         public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog,PlayerDamageRules damageRules=null,
             SkillCatalog skillCatalog=null,StatusCatalog statusCatalog=null)
@@ -224,7 +224,7 @@ namespace PokeChess.Core.Match
             if(Match.Phase==MatchPhase.Finished && Match.FinalResult!=null)return;
             if(Match.Phase!=MatchPhase.Result || LastResult==null || LastResult.Round!=Match.RoundNumber)
                 throw new InvalidOperationException("No current completed round.");
-            var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).Where(p=>p.Elimination?.Reason!=EliminationReason.Surrender).ToArray();
+            var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).Where(p=>p.Elimination?.Reason!=EliminationReason.Surrender&&p.Elimination?.Reason!=EliminationReason.DisconnectTimeout).ToArray();
             var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients)
             {

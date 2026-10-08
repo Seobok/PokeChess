@@ -1,0 +1,195 @@
+{
+  "reconnectRemaining": 0.0,
+  "networkClientId": 0,
+  "recovering": false,
+  "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+  "recoveryFeedback": "",
+  "sequence": 34,
+  "players": 1,
+  "replies": 0,
+  "state": "Connected",
+  "error": "",
+  "id": "WBcXBrCxbPZAAybtbu3JFi",
+  "code": "T7PLDW",
+  "listState": "Idle",
+  "lobbyPhase": "Started",
+  "startBlocked": "Match start is already in progress.",
+  "qaError": "",
+  "commandFeedback": "",
+  "disconnectReason": "[Disconnect Event][Client-7][TransportClientId-4294967296][ClosedByRemote] Connection was closed by remote endpoint.",
+  "transportError": "",
+  "busy": false,
+  "isPrivate": true,
+  "localReady": false,
+  "connectionConfirmed": true,
+  "identityBound": true,
+  "pendingCommand": false,
+  "synchronized": true,
+  "members": [
+    "Player 8giaB5 (Host)"
+  ],
+  "ready": [
+    false
+  ],
+  "rooms": [],
+  "start": {
+    "matchId": "59e26a226790476c82c6baaf9c93ad98",
+    "gameVersion": "1.0",
+    "ruleVersion": "pokechess-alpha-v5",
+    "players": [
+      "smyVssvGy1jTxkc45yHLYt8giaB5",
+      "TIn9EdHEkb8QkMS8i6olv0eXRdWy"
+    ]
+  },
+  "match": {
+    "matchId": "59e26a226790476c82c6baaf9c93ad98",
+    "playerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 1,
+    "gold": 5,
+    "xp": 0,
+    "level": 1,
+    "hp": 60,
+    "winStreak": 0,
+    "loseStreak": 0,
+    "phase": 5,
+    "revision": 2,
+    "playerRevision": 2,
+    "shopRevision": 1,
+    "placementRevision": 0,
+    "nextSequence": 1,
+    "locked": false,
+    "eliminated": false,
+    "shop": [
+      {
+        "index": 0,
+        "cost": 1,
+        "definitionId": "weedle"
+      },
+      {
+        "index": 1,
+        "cost": 1,
+        "definitionId": "chansey"
+      },
+      {
+        "index": 2,
+        "cost": 1,
+        "definitionId": "mankey"
+      },
+      {
+        "index": 3,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      },
+      {
+        "index": 4,
+        "cost": 1,
+        "definitionId": "slowpoke"
+      }
+    ],
+    "units": [],
+    "inventory": [],
+    "reward": {
+      "round": 0,
+      "baseIncome": 0,
+      "interest": 0,
+      "streakBonus": 0,
+      "totalIncome": 0,
+      "goldBefore": 0,
+      "goldAfter": 0,
+      "hpBefore": 0,
+      "hpAfter": 0,
+      "damage": 0,
+      "baseDamage": 0,
+      "survivorDamage": 0,
+      "xpGranted": 0,
+      "levelBefore": 0,
+      "levelAfter": 0
+    }
+  },
+  "publicState": {
+    "matchId": "59e26a226790476c82c6baaf9c93ad98",
+    "winnerPlayerId": "smyVssvGy1jTxkc45yHLYt8giaB5",
+    "round": 1,
+    "phase": 5,
+    "revision": 2,
+    "hasPhaseDeadline": false,
+    "phaseEndsAt": 0.0,
+    "players": [
+      {
+        "id": "smyVssvGy1jTxkc45yHLYt8giaB5",
+        "eliminationReason": "",
+        "hp": 60,
+        "maxHP": 60,
+        "level": 1,
+        "placement": 1,
+        "eliminationRound": 0,
+        "eliminated": false,
+        "disconnected": false,
+        "reconnectDeadline": 0.0,
+        "board": []
+      },
+      {
+        "id": "TIn9EdHEkb8QkMS8i6olv0eXRdWy",
+        "eliminationReason": "DisconnectTimeout",
+        "hp": 0,
+        "maxHP": 60,
+        "level": 1,
+        "placement": 2,
+        "eliminationRound": 1,
+        "eliminated": true,
+        "disconnected": true,
+        "reconnectDeadline": 129.33711696806364,
+        "board": []
+      }
+    ],
+    "results": []
+  },
+  "ack": {
+    "matchId": "",
+    "commandId": "",
+    "code": "",
+    "message": "",
+    "sequence": 0,
+    "nextSequence": 0,
+    "accepted": false,
+    "state": {
+      "matchId": "",
+      "playerId": "",
+      "round": 0,
+      "gold": 0,
+      "xp": 0,
+      "level": 0,
+      "hp": 0,
+      "winStreak": 0,
+      "loseStreak": 0,
+      "phase": 0,
+      "revision": 0,
+      "playerRevision": 0,
+      "shopRevision": 0,
+      "placementRevision": 0,
+      "nextSequence": 0,
+      "locked": false,
+      "eliminated": false,
+      "shop": [],
+      "units": [],
+      "inventory": [],
+      "reward": {
+        "round": 0,
+        "baseIncome": 0,
+        "interest": 0,
+        "streakBonus": 0,
+        "totalIncome": 0,
+        "goldBefore": 0,
+        "goldAfter": 0,
+        "hpBefore": 0,
+        "hpAfter": 0,
+        "damage": 0,
+        "baseDamage": 0,
+        "survivorDamage": 0,
+        "xpGranted": 0,
+        "levelBefore": 0,
+        "levelAfter": 0
+      }
+    }
+  }
+}

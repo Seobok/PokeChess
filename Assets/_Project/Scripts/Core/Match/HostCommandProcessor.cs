@@ -55,10 +55,11 @@ namespace PokeChess.Core.Match
             revision++;foreach(var ledger in ledgers.Values)ledger.revision++;
         }
         public void SetPhaseDeadline(double? value){phaseEndsAt=value;}
-        public PublicMatchState PublicSnapshot(){var value=MatchStateProjection.Public(match,rounds,revision);value.hasPhaseDeadline=phaseEndsAt.HasValue;value.phaseEndsAt=phaseEndsAt??0;return value;}
+        public MatchReconnectSystem Reconnect {get;private set;}
+        public PublicMatchState PublicSnapshot(){var value=MatchStateProjection.Public(match,rounds,revision);value.hasPhaseDeadline=phaseEndsAt.HasValue;value.phaseEndsAt=phaseEndsAt??0;foreach(var p in value.players){p.disconnected=Reconnect.IsDisconnected(p.id);p.reconnectDeadline=Reconnect.Deadline(p.id);}return value;}
         public MatchStateSnapshot FullSnapshot(string playerId)=>new MatchStateSnapshot{protocol=2,publicState=PublicSnapshot(),ownerState=Snapshot(playerId)};
         public HostCommandProcessor(MatchState match,PokemonCatalog catalog,LocalRoundCoordinator rounds)
-        {this.match=match;this.catalog=catalog;this.rounds=rounds;foreach(var p in match.Players)ledgers.Add(p.PlayerId,new PlayerLedger());}
+        {this.match=match;this.catalog=catalog;this.rounds=rounds;Reconnect=new MatchReconnectSystem(match,rounds);foreach(var p in match.Players)ledgers.Add(p.PlayerId,new PlayerLedger());}
         public OwnerMatchState Snapshot(string playerId)
         {
             var p=match.GetPlayer(playerId);var ledger=ledgers[playerId];

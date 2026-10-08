@@ -3,7 +3,7 @@ using System.Linq;
 using PokeChess.Core.Random;
 namespace PokeChess.Core.Match
 {
-    public enum EliminationReason { Damage, Surrender }
+    public enum EliminationReason { Damage, Surrender, DisconnectTimeout }
     public sealed class PlayerElimination
     {
         public string PlayerId { get; }

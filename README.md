@@ -1,3 +1,7 @@
+# G6.1 Disconnect / Reconnect
+
+non-Host 단절 시 기존 경기 참가 상태를 120초 유지하며, 같은 인증 PlayerId로 전체 Snapshot과 현재 전투를 복구한다. 복구 중 입력 차단, 미확인 명령 재확인, 유예 만료 탈락, Host 상실 종료를 지원한다. [G6.1 구현·검증 기록](../Docs/WBS_G6/PokeChess_Reconnect_WBS_6.1.md).
+
 # 기존 클라이언트 온라인 통합
 
 기존 상점·드래그 배치·유닛 정보·HUD·전투·결과 화면을 온라인 Host 상태 및 Command/Ack에 연결했다. 상대 보드와 다른 대진 관전, 탈락 후 관전, 최종 결과에서 방 복귀를 지원한다. [구현·검증 기록](../Docs/WBS_G5/PokeChess_Online_Client_Integration_2026-10-08.md).

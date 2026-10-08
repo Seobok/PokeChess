@@ -1,0 +1,22 @@
+{
+  "buildWarnings": 1,
+  "integrationFailed": 0,
+  "omitted": "Automatic surrender on leave: auto-review rejected; existing leave and disconnect timeout used",
+  "coreFailed": 0,
+  "ui": "recovery-ui.png / 1280x720 / bounds and text verified",
+  "integrationRuns": [
+    "grace-integration-transcript.txt",
+    "edge-integration-transcript.txt"
+  ],
+  "integrationPassed": 13,
+  "limitations": [
+    "Other PC / external network / 4-8 real peers pending",
+    "Host migration unsupported",
+    "Normal SDK application exit may leave session"
+  ],
+  "work": "G6.1 Disconnect/Reconnect 120s + Snapshot",
+  "corePassed": 41,
+  "build": "Succeeded",
+  "buildErrors": 0,
+  "date": "2026-10-08"
+}

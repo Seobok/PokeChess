@@ -67,6 +67,7 @@ namespace PokeChess.Client.UI
         private async void LeaveOnlineMatch(){await onlineService.LeaveAsync();}
         public void WatchOnlinePlayer(string id)
         {
+            if(onlineService?.IsRecovering==true)return;
             if(!IsOnlineMatch)return;dragged=null;ghost.gameObject.SetActive(false);selectedUnitId=null;
             if(onlineService.WatchPlayer(id)){ClearOnlineFighters();Feedback(id==onlineService.LocalMatchState.playerId?"Your board":"Observing public board / combat");}
         }
@@ -131,8 +132,8 @@ namespace PokeChess.Client.UI
             bool finished=pub.phase==MatchPhase.Finished;
             shopFrame.gameObject.SetActive(!finished);header.gameObject.SetActive(!finished&&pub.phase!=MatchPhase.Combat);resources.gameObject.SetActive(false);
             header.text="ONLINE / "+PlayerLabel(onlineService.WatchingPlayerId,owner.playerId)+" / BOARD "+owner.units.Count(u=>u.placement==PlacementKind.Board)+" / "+owner.level;
-            status.text=onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
-            onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineSync.interactable=onlineService.PendingCommand==null;
+            status.text=onlineService.IsRecovering?onlineService.RecoveryFeedback:onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
+            onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineRetry.interactable=!onlineService.IsRecovering;onlineSync.interactable=!onlineService.IsRecovering&&onlineService.PendingCommand==null;
             bool trade=OnlineInputReady&&pub.phase==MatchPhase.Preparation;
             rerollButton.interactable=trade&&owner.gold>=2;xpButton.interactable=trade&&owner.gold>=4&&owner.level<onlineLevelRules.MaxLevel;lockButton.interactable=trade;ButtonText(rerollButton,"Reroll / 2G");ButtonText(xpButton,"Buy XP / 4G");ButtonText(lockButton,owner.locked?"Unlock shop":"Lock shop");
             surrenderButton.interactable=OnlineInputReady;

@@ -22,6 +22,9 @@ namespace PokeChess.Client.UI
         private string lastRoom,lastLobbyError;
         private ConnectionState previous;
         private PlacementSandboxView matchClient;
+        private GameObject recoveryPanel;
+        private UnityEngine.UI.Text recoveryText;
+        private UnityEngine.UI.Button recoveryRetry;
         private void Awake()
         {
             font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -29,6 +32,11 @@ namespace PokeChess.Client.UI
             var canvas=root.gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=30;
             var scaler=root.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);
             root.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            var recovery=Rect("ReconnectPanel",root,new Vector2(610,200),new Vector2(0,50));recoveryPanel=recovery.gameObject;
+            recovery.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
+            recoveryText=Label("ReconnectStatus",recovery,"",new Vector2(560,105),new Vector2(0,28),18);
+            recoveryRetry=Button("Reconnect now",recovery,new Vector2(-120,-62),new Vector2(190,34),async()=>await OnlineConnection.Instance.ReconnectAsync());
+            Button("Leave match",recovery,new Vector2(120,-62),new Vector2(190,34),async()=>await OnlineConnection.Instance.LeaveAsync());recoveryPanel.SetActive(false);
             Button("Online rooms",root,new Vector2(420,-335),new Vector2(135,30),()=>panel.SetActive(!panel.activeSelf));
             var body=Rect("RoomPanel",root,new Vector2(960,570),Vector2.zero);panel=body.gameObject;
             body.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
@@ -78,7 +86,8 @@ namespace PokeChess.Client.UI
         {
             var s=OnlineConnection.Instance;bool ready=OnlineAuthenticationService.Instance.IsReady;
             bool inRoom=s.Room!=null;bool idle=ready&&!s.IsBusy&&!inRoom;
-            bool inMatch=inRoom&&s.StartInfo!=null;onlineMatchPanel.SetActive(false);
+            bool inMatch=(inRoom||s.IsRecovering)&&s.StartInfo!=null;onlineMatchPanel.SetActive(false);
+            recoveryPanel.SetActive(s.IsRecovering);if(s.IsRecovering){recoveryPanel.transform.SetAsLastSibling();recoveryText.text=s.RecoveryFeedback+"\n"+Math.Ceiling(s.ReconnectRemainingSeconds)+"s remaining\nThe match continues. Input resumes after state recovery.";recoveryRetry.interactable=!s.IsBusy&&s.State==ConnectionState.DisconnectedGrace;}
             transform.Find("RoomCanvas/Online rooms").gameObject.SetActive(!inMatch);
             if(inMatch){if(matchClient==null)matchClient=FindFirstObjectByType<PlacementSandboxView>();if(matchClient==null)matchClient=new GameObject("MatchClient").AddComponent<PlacementSandboxView>();matchClient.EnterOnlineMatch(s);panel.SetActive(false);}
             else if(matchClient!=null&&matchClient.IsOnlineMatch){matchClient.ExitOnlineMatch();panel.SetActive(true);}
@@ -121,6 +130,9 @@ namespace PokeChess.Client.UI
         private static string Message(string error)
         {
             if(error==null)return null;
+            if(error=="HostLost")return "Host connection ended. The match is closed.";
+            if(error=="ReconnectExpired")return "Reconnect time expired. The previous match cannot be resumed.";
+            if(error=="PlayerAlreadyEliminated"||error=="MatchFinished")return "The previous match cannot be resumed ("+error+").";
             if(error=="InvalidRoomName")return "Enter a room name (1–32 characters).";
             if(error=="InvalidRoomCapacity")return "Choose 2–8 players.";
             if(error=="ConnectionLost"||error=="SessionEnded")return "The room connection ended. You can join another room.";

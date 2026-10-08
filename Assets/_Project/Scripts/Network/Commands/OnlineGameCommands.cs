@@ -32,7 +32,8 @@ namespace PokeChess.Network.Session
         private readonly Dictionary<ulong,string> lastSnapshots=new Dictionary<ulong,string>();
         public OwnerMatchState LocalMatchState=>snapshots.Owner;
         public PublicMatchState PublicState=>snapshots.Public;
-        public bool StateSynchronized=>LocalMatchState!=null&&PublicState!=null&&LocalMatchState.revision==PublicState.revision&&LocalMatchState.revision>=requiredStateVersion&&LocalMatchState.nextSequence>=requiredStateSequence;
+        private bool RawStateSynchronized=>LocalMatchState!=null&&PublicState!=null&&LocalMatchState.revision==PublicState.revision&&LocalMatchState.revision>=requiredStateVersion&&LocalMatchState.nextSequence>=requiredStateSequence;
+        public bool StateSynchronized=>!recoveryActive&&RawStateSynchronized;
         public string SyncFeedback {get;private set;}
         public CommandAck LastCommandAck { get; private set; }
         public MatchCommand PendingCommand { get; private set; }
@@ -93,7 +94,12 @@ namespace PokeChess.Network.Session
         private void OnBound(ulong sender,FastBufferReader reader)
         {
             if(IsHost||sender!=NetworkManager.ServerClientId||session==null)return;
-            try{if(ReadText(reader,512)==session.CurrentPlayer.Id)identityBound=true;}catch(Exception){}
+            try{if(ReadText(reader,512)==session.CurrentPlayer.Id){
+                identityBound=true;
+                if(recoveryActive){
+                    if(PendingCommand!=null)DispatchPending();
+                }
+            }}catch(Exception){}
         }
         private async void RefreshBindings()
         {
@@ -104,7 +110,10 @@ namespace PokeChess.Network.Session
                     if(!manager.ConnectedClientsIds.Contains(pair.Key)){challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);continue;}
                     var matches=current.Players.Where(p=>p.Id!=current.Host&&p.Properties.TryGetValue("bindingProof",out var proof)&&proof.Value==BindingProof(pair.Value,current.Id,p.Id)).ToArray();
                     if(matches.Length==1&&!boundPlayers.Values.Contains(matches[0].Id)){
+                        var reason=ValidateRecoveredBinding(matches[0].Id);
+                        if(reason!=null){manager.DisconnectClient(pair.Key,reason);challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);continue;}
                         boundPlayers[pair.Key]=matches[0].Id;challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);SendText(BoundMessage,pair.Key,matches[0].Id,512);
+                        if(hostCommands!=null){SendText(OwnerStateMessage,pair.Key,JsonUtility.ToJson(hostCommands.FullSnapshot(matches[0].Id)),65536);SendCombatBaseline(pair.Key,matches[0].Id);}
                     }else if(Time.realtimeSinceStartupAsDouble>bindingDeadlines[pair.Key]){manager.DisconnectClient(pair.Key,"IdentityBindingTimeout");challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);}
                 }
             }catch(Exception){if(session==current)Error="IdentityBindingRetry";}
@@ -114,7 +123,7 @@ namespace PokeChess.Network.Session
         {
             if(session==null||State!=ConnectionState.Connected)return;
             if(IsHost){
-                foreach(var id in boundPlayers.Keys.Where(id=>!manager.ConnectedClientsIds.Contains(id)).ToArray())boundPlayers.Remove(id);
+                foreach(var id in boundPlayers.Keys.Where(id=>!manager.ConnectedClientsIds.Contains(id)).ToArray())HostPlayerDisconnected(id);
                 if(challenges.Count>0&&!bindingRefreshing&&!IsBusy&&!lobbyPublishing&&Time.realtimeSinceStartupAsDouble>=nextBindingRefresh)RefreshBindings();
                 if(StartInfo!=null&&LobbyState==LobbyPhase.Started&&hostCommands==null){
                     var catalog=PrototypeRoster.CreateCatalog();var roster=StartInfo.players;
@@ -146,13 +155,13 @@ namespace PokeChess.Network.Session
         {
             if(PendingCommand!=null){CommandFeedback="Waiting for the previous command. Retry to confirm it.";return null;}
             if(command==null||!IdentityBound||StartInfo==null||State!=ConnectionState.Connected||(command.kind!=MatchCommandKind.Sync&&!StateSynchronized)){CommandFeedback="Match connection is not ready.";return null;}
-            PendingCommand=command.Copy();pendingAck=new TaskCompletionSource<CommandAck>();CommandFeedback="Confirming action…";var completion=pendingAck.Task;DispatchPending();
+            PendingCommand=command.Copy();pendingAck=new TaskCompletionSource<CommandAck>();CommandFeedback="Confirming action…";SaveRecoveryTicket();var completion=pendingAck.Task;DispatchPending();
             if(await Task.WhenAny(completion,Task.Delay(5000))==completion)return await completion;
             if(PendingCommand!=null)CommandFeedback="Confirmation delayed. Retry the same action.";return null;
         }
         public async Task<CommandAck> RetryPendingCommandAsync()
         {
-            if(PendingCommand==null)return LastCommandAck;var completion=pendingAck.Task;DispatchPending();
+            if(PendingCommand==null)return LastCommandAck;if(!IdentityBound||(State!=ConnectionState.Connected&&State!=ConnectionState.Recovering))return null;var completion=pendingAck.Task;DispatchPending();
             return await Task.WhenAny(completion,Task.Delay(5000))==completion?await completion:null;
         }
         private void DispatchPending()
@@ -204,13 +213,21 @@ namespace PokeChess.Network.Session
             // Ack settles the command. Only an atomic snapshot changes the displayed state.
             if(PendingCommand==null||ack.commandId!=PendingCommand.commandId||ack.sequence!=PendingCommand.sequence)return;
             if(ack.state!=null){requiredStateVersion=Math.Max(requiredStateVersion,ack.state.revision);requiredStateSequence=Math.Max(requiredStateSequence,ack.state.nextSequence);}
-            nextCommandSequence=Math.Max(nextCommandSequence,ack.nextSequence);LastCommandAck=ack;CommandFeedback=ack.accepted?ack.message:"Rejected: "+ack.code;PendingCommand=null;var completion=pendingAck;pendingAck=null;completion?.TrySetResult(ack);CommandStateChanged?.Invoke();
+            nextCommandSequence=Math.Max(nextCommandSequence,ack.nextSequence);LastCommandAck=ack;CommandFeedback=ack.accepted?ack.message:"Rejected: "+ack.code;PendingCommand=null;var completion=pendingAck;pendingAck=null;completion?.TrySetResult(ack);SaveRecoveryTicket();CommandStateChanged?.Invoke();
         }
         private void OnOwnerState(ulong sender,FastBufferReader reader){if(IsHost||sender!=NetworkManager.ServerClientId)return;try{if(!ApplySnapshot(JsonUtility.FromJson<MatchStateSnapshot>(ReadText(reader,65536))))SyncFeedback="Outdated or invalid snapshot ignored.";}catch(Exception){SyncFeedback="Invalid snapshot. Request state sync.";}}
         private bool ApplySnapshot(MatchStateSnapshot state)
         {
             if(StartInfo==null||session==null||!snapshots.Apply(state,StartInfo.matchId,session.CurrentPlayer.Id))return false;
-            nextCommandSequence=Math.Max(nextCommandSequence,state.ownerState.nextSequence);SyncFeedback="State synchronized.";CommandStateChanged?.Invoke();return true;
+            nextCommandSequence=Math.Max(nextCommandSequence,state.ownerState.nextSequence);
+            if(recoveryActive&&!recoverySnapshotReceived){
+                recoverySnapshotReceived=true;
+                // Validate the saved spectator target against the fresh public state,
+                // then restore the subscription on this new NGO connection.
+                watchingPlayer=PublicState.players.Any(p=>p.id==WatchingPlayerId)?WatchingPlayerId:session.CurrentPlayer.Id;
+                SendText(WatchMessage,NetworkManager.ServerClientId,JsonUtility.ToJson(new WatchRequest{matchId=StartInfo.matchId,playerId=watchingPlayer}),512);
+            }
+            SyncFeedback="State synchronized.";CommandStateChanged?.Invoke();return true;
         }
         private void SendText(string name,ulong recipient,string text,int limit)
         {

@@ -16,6 +16,10 @@ namespace PokeChess.Core.Match
     public sealed partial class LocalRoundCoordinator
     {
         public SurrenderCommandResult Surrender(string playerId,int expectedRound,MatchPhase expectedPhase)
+            => RemovePlayer(playerId,expectedRound,expectedPhase,EliminationReason.Surrender);
+        public SurrenderCommandResult RemoveDisconnectedPlayer(string playerId)
+            => RemovePlayer(playerId,Match.RoundNumber,Match.Phase,EliminationReason.DisconnectTimeout);
+        private SurrenderCommandResult RemovePlayer(string playerId,int expectedRound,MatchPhase expectedPhase,EliminationReason reason)
         {
             if(Match.Phase==MatchPhase.Finished)return new SurrenderCommandResult(false,"Match is finished.");
             var player=Match.Players.FirstOrDefault(p=>p.PlayerId==playerId);
@@ -29,7 +33,7 @@ namespace PokeChess.Core.Match
             EliminationSystem.ValidateRelease(Match,player);
             var prior=Match.PairingPlan;
             var snapshot=expectedPhase==MatchPhase.Preparation ? ShadowBoardSnapshot.Capture(player,expectedRound,catalog) : null;
-            elimination.Commit(Match,player,EliminationReason.Surrender,0,0);
+            elimination.Commit(Match,player,reason,0,0);
             if(expectedPhase==MatchPhase.Preparation)RepairSurrenderPairings(prior,snapshot);
             else if(expectedPhase==MatchPhase.Combat)
             {

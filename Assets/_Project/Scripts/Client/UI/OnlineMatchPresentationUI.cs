@@ -49,7 +49,7 @@ namespace PokeChess.Client.UI
                 if(player.hp<row.PreviousHP){row.DamageValue=row.PreviousHP-player.hp;row.DamageUntil=Time.unscaledTime+1.5f;}
                 row.PreviousHP=player.hp;row.Damage.text=Time.unscaledTime<row.DamageUntil?"-"+row.DamageValue:"";
                 row.Name.text=PlayerLabel(player.id,owner.playerId)+" · "+player.hp+" HP";
-                row.State.text=player.eliminated?"#"+player.placement+" OUT":player.placement==1?"#1 WINNER":"Lv "+player.level+" · "+(pub.phase==MatchPhase.Combat?"IN BATTLE":"IN MATCH");
+                row.State.text=player.eliminated?"#"+player.placement+" OUT":player.disconnected?"DISCONNECTED · "+Math.Ceiling(Math.Max(0,player.reconnectDeadline-onlineService.NetworkServerTime))+"s":player.placement==1?"#1 WINNER":"Lv "+player.level+" · "+(pub.phase==MatchPhase.Combat?"IN BATTLE":"IN MATCH");
                 row.Background.color=player.id==onlineService.WatchingPlayerId?new Color(.1f,.27f,.36f):player.eliminated?new Color(.09f,.12f,.16f):new Color(.12f,.18f,.25f);
                 row.HP.rectTransform.sizeDelta=new Vector2(160*Mathf.Clamp01(player.hp/(float)Math.Max(1,player.maxHP)),3);
             }

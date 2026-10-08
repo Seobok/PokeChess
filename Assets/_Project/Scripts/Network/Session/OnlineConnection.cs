@@ -11,11 +11,11 @@ using Unity.Services.Multiplayer;
 
 namespace PokeChess.Network.Session
 {
-    public enum ConnectionState { Idle, Creating, Joining, Connecting, Connected, Leaving, Failed }
+    public enum ConnectionState { Idle, Creating, Joining, Connecting, Connected, Leaving, Failed, DisconnectedGrace, Reconnecting, Recovering }
 
     public sealed partial class OnlineConnection : MonoBehaviour
     {
-        private const ushort ProtocolVersion = 4;
+        private const ushort ProtocolVersion = 5;
         private const string RequestMessage = "PokeChess.Connection.Request.v1", ReplyMessage = "PokeChess.Connection.Reply.v1";
         private static OnlineConnection instance;
         public static OnlineConnection Instance
@@ -50,17 +50,23 @@ namespace PokeChess.Network.Session
             manager.NetworkConfig.EnableSceneManagement = false;
             manager.NetworkConfig.ForceSamePrefabs = false;
             manager.NetworkConfig.ProtocolVersion = ProtocolVersion;
+            manager.OnClientDisconnectCallback+=ClientDisconnected;
         }
         private void OnDestroy()
         {
             if(instance == this) instance=null;
+            if(manager!=null)manager.OnClientDisconnectCallback-=ClientDisconnected;
             if(manager != null) { if(manager.IsListening)manager.Shutdown(); if(Application.isPlaying)Destroy(manager.gameObject);else DestroyImmediate(manager.gameObject); }
         }
         public Task CreateAsync() => Run(() => ConnectAsync(null));
         public Task CreateRoomAsync(string name,int capacity,bool isPrivate) => Run(()=>ConnectAsync(null,new RoomCreation(name,capacity,isPrivate)));
         public Task JoinAsync(string code) => Run(() => ConnectAsync((code ?? "").Trim().ToUpperInvariant()));
         public Task JoinByIdAsync(string id) => Run(()=>ConnectAsync(id ?? "",byId:true));
-        public Task LeaveAsync() => Run(() => LeaveCoreAsync());
+        public Task LeaveAsync()
+        {
+            if(recoveryActive){recoveryGeneration++;recoveryActive=false;networkHandler?.Cancel();operation=LeaveCoreAsync();return operation;}
+            return Run(()=>LeaveCoreAsync());
+        }
         private Task Run(Func<Task> action)
         {
             if(IsBusy) return operation;
@@ -76,6 +82,7 @@ namespace PokeChess.Network.Session
                 if(code != null && (code.Length == 0 || code.Length > (byId?128:32))) throw new ArgumentException(byId?"InvalidRoomId":"InvalidJoinCode");
                 if(room != null)room.Validate();
                 State = code == null ? ConnectionState.Creating : ConnectionState.Joining;
+                wasHosting=code==null;networkHandler=new ResumableNetworkHandler(manager,wasHosting);
                 if(code == null)
                     session = await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions {
                         Name=room?.Name??"PokeChess connection test", MaxPlayers=room?.Capacity??8, IsPrivate=room?.IsPrivate??true,
@@ -83,8 +90,8 @@ namespace PokeChess.Network.Session
                             {"gameVersion",new SessionProperty(Application.version,VisibilityPropertyOptions.Public,PropertyIndex.String1)},
                             {"roomKind",new SessionProperty(RoomBrowser.RoomKind,VisibilityPropertyOptions.Public,PropertyIndex.String2)}
                         }
-                    }.WithRelayNetwork());
-                else session = byId ? await MultiplayerService.Instance.JoinSessionByIdAsync(code) : await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
+                    }.WithRelayNetwork().WithNetworkHandler(networkHandler));
+                else session = byId ? await MultiplayerService.Instance.JoinSessionByIdAsync(code,new JoinSessionOptions().WithNetworkHandler(networkHandler)) : await MultiplayerService.Instance.JoinSessionByCodeAsync(code,new JoinSessionOptions().WithNetworkHandler(networkHandler));
                 session.Deleted += SessionEnded; session.RemovedFromSession += SessionEnded;
                 ResetLobby();
                 State = ConnectionState.Connecting;
@@ -137,28 +144,32 @@ namespace PokeChess.Network.Session
                 if(version != ProtocolVersion || gameVersion != Application.version) { Error="VersionMismatch"; SessionEnded(); return; }
                 if(id != sequence) return;
                 RepliesReceived++; LastRoundTripMilliseconds=(Time.realtimeSinceStartupAsDouble-sentAt)*1000;
-                State=ConnectionState.Connected;
+                State=recoveryActive?ConnectionState.Recovering:ConnectionState.Connected;
             }
             catch(Exception) { Error="InvalidHandshake"; SessionEnded(); }
         }
         private void Update()
         {
+            UpdateReconnect();
             UpdateLobby();
             UpdateGameCommands();
-            Combat.Advance(Time.unscaledDeltaTime);
+            if(!recoveryActive)Combat.Advance(Time.unscaledDeltaTime);
+            if(recoveryActive)return;
             if(session == null || IsBusy || State == ConnectionState.Leaving) return;
-            if(!manager.IsListening) { Error="ConnectionLost"; SessionEnded(); }
+            if(!manager.IsListening) { HandleConnectionLoss("ConnectionLost"); }
             else if(State == ConnectionState.Connecting && Time.realtimeSinceStartupAsDouble-sentAt > 15) { Error="HandshakeTimeout"; SessionEnded(); }
         }
         private async void SessionEnded()
         {
             if(IsBusy || State == ConnectionState.Leaving) return;
+            if(StartInfo!=null||recoveryActive){await EndRecoveryAsync("HostLost");return;}
             if(Error == null) Error="SessionEnded";
             await LeaveAsync();
         }
-        private async Task LeaveCoreAsync() { State=ConnectionState.Leaving; await CleanupAsync(); State=ConnectionState.Idle; }
+        private async Task LeaveCoreAsync() {recoveryGeneration++;ClearRecoveryTicket();recoveryActive=false;State=ConnectionState.Leaving;await CleanupAsync();State=ConnectionState.Idle;}
         private async Task CleanupAsync()
         {
+            networkHandler?.Cancel();
             var old=session; session=null; ResetLobby();
             if(old != null)
             {

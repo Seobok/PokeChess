@@ -40,7 +40,7 @@ namespace PokeChess.Network.Session
         private double lastCombatTime,nextCombatSend;
         private MatchPhase deadlinePhase;private int deadlineRound,combatFrameRound;
         public CombatPlayback Combat {get;}=new CombatPlayback();
-        public double PhaseRemainingSeconds=>PublicState?.hasPhaseDeadline==true?Math.Max(0,PublicState.phaseEndsAt-manager.ServerTime.Time):0;
+        public double PhaseRemainingSeconds=>PublicState?.hasPhaseDeadline==true?Math.Max(0,PublicState.phaseEndsAt-NetworkServerTime):0;
         public string CombatError {get;private set;}
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         public double QAOnlineSpeed {get;set;}=1;
