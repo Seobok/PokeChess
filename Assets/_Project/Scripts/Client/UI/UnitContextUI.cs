@@ -74,7 +74,7 @@ namespace PokeChess.Client.UI
                 (Player.ItemInventory.Count==0?"No items":string.Join("\n",Player.ItemInventory.Take(3).Select(ItemCatalog.DisplayName)))+
                 (Player.ItemInventory.Count>3?"\n+"+(Player.ItemInventory.Count-3)+" more":"");
             var selected=Player.Units.FirstOrDefault(u=>u.InstanceId==selectedUnitId);
-            if(selected==null){selectedUnitId=null;detailLabel.text="SELECT YOUR UNIT\nClick board or bench to inspect.\n"+RankFeedbackText;sellButton.interactable=false;ButtonText(sellButton,"Sell");return;}
+            if(selected==null){selectedUnitId=null;RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
             var definition=catalog.Get(selected.DefinitionId);var rank=selected.Rank;
             var stats=RankRules.Default.Apply(definition.BaseStats,rank);
             var fighter=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor("p1")?.Battle?.Units.FirstOrDefault(u=>u.UnitInstanceId==selectedUnitId):null;
@@ -87,7 +87,8 @@ namespace PokeChess.Client.UI
                 "\nItems ("+selected.ItemInstanceIds.Count+"): "+(selected.ItemInstanceIds.Count==0?"None":string.Join(", ",selected.ItemInstanceIds.Select(ItemCatalog.DisplayName)))+
                 "\n"+(RankFeedbackText.Length>0?RankFeedbackText:selected.ItemInstanceIds.Count>0?"Sale returns equipped items":"");
             bool allowed=commands.CanTrade&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
-            sellButton.interactable=allowed;ButtonText(sellButton,allowed?"Sell / +"+commands.SalePrice(selectedUnitId)+"G":"Sell unavailable / "+Match.Phase);
+            RenderUnitInfoIcons(definition,rank,stats,fighter?.CurrentHP??stats.MaxHP,stats.MaxHP,fighter?.CurrentEnergy??stats.StartingEnergy,stats.MaxEnergy,fighter?.CurrentShield??0,selected.ItemInstanceIds.ToArray());
+            sellButton.interactable=allowed;ButtonText(sellButton,allowed?"판매 / +"+commands.SalePrice(selectedUnitId)+"G":"판매 불가");
         }
     }
 }

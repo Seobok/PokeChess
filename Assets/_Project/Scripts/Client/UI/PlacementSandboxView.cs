@@ -40,7 +40,7 @@ namespace PokeChess.Client.UI
         private void Awake() { BuildUI();ResetMatchUI(); }
         private void Update()
         {
-            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelItemDrag();HideItemHint();}
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelItemDrag();HideItemHint();HideUnitInfoHint();}
             if(IsOnlineMatch){UpdateOnlineMatch();return;}
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");

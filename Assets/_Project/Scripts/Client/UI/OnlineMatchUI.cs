@@ -190,14 +190,17 @@ namespace PokeChess.Client.UI
         {
             inventoryLabel.font=itemFont;
             inventoryLabel.text="ITEMS ("+owner.inventory.Length+")\n"+(owner.inventory.Length==0?"No items":string.Join("\n",owner.inventory.Take(3).Select(ItemCatalog.DisplayName)))+"\n"+ItemFeedbackText;
-            var unit=owner.units.FirstOrDefault(u=>u.id==selectedUnitId);var board=pub.players.SelectMany(p=>p.board).FirstOrDefault(u=>u.id==selectedUnitId);var fighter=onlineService.Combat.Current?.units.FirstOrDefault(u=>u.id==selectedUnitId);
+            var unit=owner.units.FirstOrDefault(u=>u.id==selectedUnitId);var board=pub.players.SelectMany(p=>p.board).FirstOrDefault(u=>u.id==selectedUnitId);
+            var activeFrame=onlineService.Combat.Current;
+            var fighter=activeFrame?.round==pub.round&&(pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying)?activeFrame.units.FirstOrDefault(u=>u.id==selectedUnitId):null;
             string definition=unit?.definitionId??board?.definitionId??fighter?.definitionId;int rank=unit?.rank??board?.rank??fighter?.rank??1;
-            if(definition==null){detailLabel.text="SELECT A UNIT\nInspect board, bench or combat.\n"+RankFeedbackText;sellButton.interactable=false;ButtonText(sellButton,"Sell");return;}
+            if(definition==null){RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
             var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d.BaseStats,(UnitRank)rank);var items=unit?.items??board?.items??fighter?.items??Array.Empty<string>();
             detailLabel.font=itemFont;
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+
                 (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items.Select(ItemCatalog.DisplayName)))+"\n"+RankFeedbackText;
-            sellButton.interactable=unit!=null&&OnlineInputReady&&pub.phase==MatchPhase.Preparation;ButtonText(sellButton,sellButton.interactable?"Sell / +"+unit.saleGold+"G":"Sell unavailable");
+            RenderUnitInfoIcons(d,(UnitRank)rank,stats,fighter?.hp??stats.MaxHP,fighter?.maxHP??stats.MaxHP,fighter?.energy??stats.StartingEnergy,fighter?.maxEnergy??stats.MaxEnergy,fighter?.shield??0,items,true);
+            sellButton.interactable=unit!=null&&OnlineInputReady&&pub.phase==MatchPhase.Preparation;ButtonText(sellButton,sellButton.interactable?"판매 / +"+unit.saleGold+"G":"판매 불가");
         }
     }
 }
