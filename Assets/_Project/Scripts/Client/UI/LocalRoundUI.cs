@@ -235,6 +235,8 @@ namespace PokeChess.Client.UI
             RenderFinalResultUI();
             RenderSimulationUI();
             RenderItemWildUI();
+            RenderUnitCryAudio();
+            RenderCombatAudio();
         }
     }
 }

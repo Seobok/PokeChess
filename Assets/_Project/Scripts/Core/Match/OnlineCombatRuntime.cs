@@ -18,6 +18,7 @@ namespace PokeChess.Core.Match
     }
     [Serializable] public sealed class CombatEventView
     {
+        public DamageOrigin origin;
         public long sequence,tick;public string kind,source,target,detail;public float value,hpAfter,shieldAfter;
     }
     [Serializable] public sealed class CombatFrame
@@ -79,7 +80,7 @@ namespace PokeChess.Core.Match
             else if(battle!=null&&(!lastTicks.TryGetValue(pair,out var old)||tick!=old)){
                 foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
                 foreach(var e in battle.Items.EventsThisTick)add("Item",e.SourceId,e.TargetId,e.ItemId,e.Value,0,0);
-                foreach(var d in battle.DamageResultsThisTick)add("Damage",d.Request.SourceId,d.Request.TargetId,d.IsCritical?"Critical":d.Request.Type.ToString(),d.AppliedDamage,d.RemainingHP,d.RemainingShield);
+                foreach(var d in battle.DamageResultsThisTick){add("Damage",d.Request.SourceId,d.Request.TargetId,d.IsCritical?"Critical":d.Request.Type.ToString(),d.AppliedDamage,d.RemainingHP,d.RemainingShield);events[events.Count-1].origin=d.Request.Origin;}
                 foreach(var e in battle.SkillEventsThisTick)add("Skill"+e.Kind,e.UnitId,e.TargetId,e.SkillId,0,0,0);
                 foreach(var e in battle.SkillEffectEventsThisTick)add("Effect"+e.Type,e.CasterId,e.TargetId,e.Outcome.ToString(),e.ActualValue,0,0);
                 foreach(var e in battle.StatusEffects.EventsThisTick)add("Status"+e.Kind,e.Effect.SourceId,e.Effect.TargetId,e.Effect.Definition.Id,e.Effect.StackCount,0,0);

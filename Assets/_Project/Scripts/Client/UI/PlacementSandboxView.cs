@@ -53,7 +53,7 @@ namespace PokeChess.Client.UI
             UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();AnimateRosterSprites();
         }
         private void OnApplicationFocus(bool focus) { if(!focus){CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled.");} }
-        private void OnDisable() { CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
+        private void OnDisable() { combatAudio?.ResetPlayback();CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
         private RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 position)
         {
             var obj=new GameObject(name,typeof(RectTransform));var rect=obj.GetComponent<RectTransform>();
@@ -220,6 +220,7 @@ namespace PokeChess.Client.UI
             var destination=Hit(point);
             if(destination!=null) { LastResult=placements.Move(Match,"p1",dragged,destination.Placement,dragRevision);Feedback(LastResult.Accepted ? LastResult.Outcome.ToString() : "Rejected: "+LastResult.Reason); }
             else { LastResult=null;Feedback("Cancelled: dropped outside board / bench."); }
+            if(LastResult?.Accepted==true&&LastResult.Outcome!=PlacementOutcome.Unchanged)PlayActionSound(ActionSoundKind.Placement);
             dragged=null;ghost.gameObject.SetActive(false);Render();Match.Pool.AssertConservation(Match);
         }
         public void CancelDrag(string message)

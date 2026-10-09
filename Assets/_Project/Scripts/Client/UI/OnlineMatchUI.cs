@@ -83,7 +83,15 @@ namespace PokeChess.Client.UI
             if(!OnlineInputReady){Feedback("Waiting for confirmed state or command response.");return;}
             dragged=null;ghost.gameObject.SetActive(false);
             var command=onlineService.CreateCommand(kind);configure?.Invoke(command);
-            try{await onlineService.SubmitCommandAsync(command);}catch(Exception e){Feedback(e.Message);}
+            var beforeMove=onlineService.LocalMatchState.units.FirstOrDefault(u=>u.id==command.unitId);
+            bool moved=kind==MatchCommandKind.Move&&beforeMove!=null&&(beforeMove.placement!=command.destination||(command.destination==PlacementKind.Board?(beforeMove.column!=command.column||beforeMove.row!=command.row):beforeMove.bench!=command.bench));
+            try{
+                var ack=await onlineService.SubmitCommandAsync(command);
+                if(IsOnlineMatch&&onlineMatchId==command.matchId&&ack?.accepted==true){
+                    if(kind==MatchCommandKind.Buy)PlayActionSound(ActionSoundKind.Purchase);
+                    else if(moved)PlayActionSound(ActionSoundKind.Placement);
+                }
+            }catch(Exception e){Feedback(e.Message);}
         }
         private void SelectOnlineUnit(string id)
         {if(IsDragging)return;selectedUnitId=id;RenderOnlineMatch();}
@@ -141,6 +149,7 @@ namespace PokeChess.Client.UI
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
             RenderOnlineSynergies(pub);
             RenderItemWildUI();
+            RenderUnitCryAudio();
             UpdateTokenFeedback();
         }
         private void RenderOnlineShop(OwnerMatchState owner)

@@ -178,6 +178,7 @@ namespace PokeChess.Client.UI
                 if(!result.Accepted) Feedback(result.Message);
                 else if(result.Purchase!=null)
                 {
+                    PlayActionSound(ActionSoundKind.Purchase);
                     var purchase=result.Purchase;RecordContextRankUps(purchase.RankUps);highlights[purchase.Unit.InstanceId]=Time.unscaledTime+1.2f;
                     string rank=purchase.RankUps.Count==0 ? "" : " / rank "+string.Join(" -> ",purchase.RankUps.Select(e=>(int)e.Rank));
                     int returned=purchase.RankUps.Sum(e=>e.ReturnedItemIds.Count);

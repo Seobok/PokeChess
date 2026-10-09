@@ -90,6 +90,8 @@ namespace PokeChess.Client.UI
         }
         private void ShowOnlineEffect(CombatEventView effect)
         {
+            PlayOnlineUnitCry(effect);
+            PlayOnlineCombatSound(effect);
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;
             if(effect.kind=="Item") { label.font=itemFont;label.text=ItemCatalog.Get(effect.detail).Name;label.color=new Color(.5f,1,.7f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
             if(effect.kind=="Synergy") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
