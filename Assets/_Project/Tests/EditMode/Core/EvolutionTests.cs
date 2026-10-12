@@ -74,28 +74,61 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void RefreshReplacesOnlyOwnersShopAndBuyingConsumesBasePool()
         {
-            var f=Fixture();Add(f.m,f.c);var p=f.m.GetPlayer("p1");Evolve(f.m,f.c);
-            Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="bulbasaur"),Is.True);
-            new ShopSystem().Reroll(f.m,"p1");Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="ivysaur"&&s.EvolutionStage==1&&s.PoolOriginDefinitionId=="bulbasaur"),Is.True);
+            var f=Fixture();Add(f.m,f.c);var p=f.m.GetPlayer("p1");var revision=p.Shop.Revision;var random=p.Shop.RandomState;var draws=p.Shop.RandomDrawCount;Evolve(f.m,f.c);
+            Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="ivysaur"&&s.EvolutionStage==1&&s.PoolOriginDefinitionId=="bulbasaur"),Is.True);
+            Assert.That(p.Shop.Revision,Is.EqualTo(revision+1));Assert.That(p.Shop.RandomState,Is.EqualTo(random));Assert.That(p.Shop.RandomDrawCount,Is.EqualTo(draws));
+            Assert.Throws<InvalidOperationException>(()=>new ShopTransactionSystem(f.c).Buy(f.m,"p1",0,revision));
             Assert.That(f.m.GetPlayer("p2").Shop.Slots.All(s=>s.DefinitionId=="bulbasaur"),Is.True);
             var trades=new ShopTransactionSystem(f.c);var bought=trades.Buy(f.m,"p1",0,p.Shop.Revision);
             Assert.That(bought.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(bought.EvolutionStage,Is.EqualTo(1));Assert.That(bought.PoolOriginDefinitionId,Is.EqualTo("bulbasaur"));f.m.Pool.AssertConservation(f.m);
             trades.Sell(f.m,"p1",bought.InstanceId);trades.Sell(f.m,"p1","a");Assert.That(p.ShopEvolutions["bulbasaur"].Stage,Is.EqualTo(1));f.m.Pool.AssertConservation(f.m);
         }
-        [Test] public void LockedOldOfferRetainsOldFormAndStageUntilReroll()
+        [Test] public void LockedOffersEvolveImmediatelyAndStayEvolvedNextRound()
         {
             var f=Fixture();Add(f.m,f.c);var p=f.m.GetPlayer("p1");new ShopSystem().SetLocked(f.m,"p1",true);Evolve(f.m,f.c);
             // Empty both boards so advancing the fixture stays deterministic.
             f.rounds.StartCombat(5);f.rounds.NextRound(5);
-            Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="bulbasaur"&&s.EvolutionStage==0),Is.True);
-            var unit=new ShopTransactionSystem(f.c).Buy(f.m,"p1",0,p.Shop.Revision);Assert.That(unit.DefinitionId,Is.EqualTo("bulbasaur"));Assert.That(unit.EvolutionStage,Is.Zero);
+            Assert.That(p.Shop.IsLocked,Is.True);
+            Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="ivysaur"&&s.EvolutionStage==1),Is.True);
+            var unit=new ShopTransactionSystem(f.c).Buy(f.m,"p1",0,p.Shop.Revision);Assert.That(unit.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(unit.EvolutionStage,Is.EqualTo(1));
             new ShopSystem().Reroll(f.m,"p1");Assert.That(p.Shop.Slots.All(s=>s.DefinitionId=="ivysaur"),Is.True);
+        }
+        [Test] public void EvolutionDoesNotRefillAlreadyPurchasedShopSlot()
+        {
+            var f=Fixture();var p=f.m.GetPlayer("p1");
+            var bought=new ShopTransactionSystem(f.c).Buy(f.m,"p1",0,p.Shop.Revision);
+            new EvolutionSystem(f.c).Evolve(f.m,"p1",bought.InstanceId,p.EvolutionRevision,p.PlacementRevision);
+            Assert.That(p.Shop.Slots[0].IsEmpty,Is.True);
+            Assert.That(p.Shop.Slots.Skip(1).All(s=>s.DefinitionId=="ivysaur"&&s.Cost==1&&s.EvolutionStage==1),Is.True);
+            f.m.Pool.AssertConservation(f.m);
+        }
+        [TestCase(PlacementKind.Board)] [TestCase(PlacementKind.Bench)]
+        public void EvolutionAlsoUpdatesSameFormBenchCopiesWithOnePoint(PlacementKind selectedPlacement)
+        {
+            var f=Fixture(10);var p=f.m.GetPlayer("p1");p.SetProgress(100,0,2);
+            var selected=Add(f.m,f.c,placement:selectedPlacement==PlacementKind.Board?UnitPlacement.OnBoard(new BoardPosition(0,0)):UnitPlacement.OnBench(0));
+            var copy=Add(f.m,f.c,"copy",UnitRank.Two,UnitPlacement.OnBench(1),new[]{"item:choice-scarf:99:p1"});
+            var field=Add(f.m,f.c,"field",placement:UnitPlacement.OnBoard(new BoardPosition(1,0)));
+            var enemy=SharedPoolSystem.RegisterUnit(f.m,f.c.CreateUnit("enemy","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBench(0)),"bulbasaur");
+            var originalStock=f.m.Pool.GetStock("bulbasaur").Available;var revision=p.PlacementRevision;
+            Evolve(f.m,f.c);
+            Assert.That(selected.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(copy.DefinitionId,Is.EqualTo("ivysaur"));
+            Assert.That(copy.EvolutionStage,Is.EqualTo(1));Assert.That(copy.Rank,Is.EqualTo(UnitRank.Two));
+            Assert.That(copy.Placement.BenchSlot,Is.EqualTo(1));Assert.That(copy.ItemInstanceIds,Is.EqualTo(new[]{"item:choice-scarf:99:p1"}));
+            Assert.That(copy.PoolOriginDefinitionId,Is.EqualTo("bulbasaur"));
+            Assert.That(field.DefinitionId,Is.EqualTo("bulbasaur"));Assert.That(enemy.DefinitionId,Is.EqualTo("bulbasaur"));
+            Assert.That(p.EvolutionPoints,Is.EqualTo(1));Assert.That(p.PlacementRevision,Is.EqualTo(revision+1));
+            Evolve(f.m,f.c);
+            Assert.That(copy.DefinitionId,Is.EqualTo("venusaur"));Assert.That(copy.EvolutionStage,Is.EqualTo(2));
+            Assert.That(p.EvolutionPoints,Is.Zero);Assert.That(f.m.Pool.GetStock("bulbasaur").Available,Is.EqualTo(originalStock));
+            f.m.Pool.AssertConservation(f.m);
         }
         [Test] public void FinalEvolutionDoesNotRegressWhenAnotherBaseUnitEvolves()
         {
-            var f=Fixture(15);Add(f.m,f.c);Add(f.m,f.c,"b",placement:UnitPlacement.OnBench(1));Evolve(f.m,f.c);Evolve(f.m,f.c);
+            var f=Fixture(15);Add(f.m,f.c);Evolve(f.m,f.c);Evolve(f.m,f.c);Add(f.m,f.c,"b",placement:UnitPlacement.OnBench(1));
             Assert.That(f.m.GetPlayer("p1").GetUnit("a").DefinitionId,Is.EqualTo("venusaur"));
             Evolve(f.m,f.c,"b");Assert.That(f.m.GetPlayer("p1").ShopEvolutions["bulbasaur"].DefinitionId,Is.EqualTo("venusaur"));
+            Assert.That(f.m.GetPlayer("p1").Shop.Slots.All(s=>s.DefinitionId=="venusaur"&&s.EvolutionStage==2),Is.True);
             Assert.Throws<InvalidOperationException>(()=>Evolve(f.m,f.c));f.m.Pool.AssertConservation(f.m);
         }
         [Test] public void EvolvedShopCopiesMergeWithoutChangingFamilyPool()

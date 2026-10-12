@@ -54,11 +54,16 @@ namespace PokeChess.Core.Match
         }
         internal void CommitEvolution(UnitInstance unit, PokemonDefinition target, string root, int stage, int cost)
         {
+            var evolving=units.Where(u=>u==unit ||
+                (u.Placement.Kind==PlacementKind.Bench && u.DefinitionId==unit.DefinitionId)).ToArray();
             long revision = checked(EvolutionRevision + 1);
             long placementRevision = checked(PlacementRevision + 1);
+            var shopForm=shopEvolutions.TryGetValue(root,out var unlocked)&&unlocked.Stage>=stage
+                ? unlocked : new ShopEvolution(root,target.Id,stage);
+            Shop.EvolveOffers(root,shopForm.DefinitionId,shopForm.Stage);
             if (!shopEvolutions.TryGetValue(root, out var current) || current.Stage < stage)
                 shopEvolutions[root] = new ShopEvolution(root, target.Id, stage);
-            unit.ApplyEvolution(target.Id, stage);
+            foreach(var copy in evolving)copy.ApplyEvolution(target.Id, stage);
             EvolutionPoints -= cost; EvolutionRevision = revision; PlacementRevision = placementRevision;
         }
         public MatchRules Rules { get; }

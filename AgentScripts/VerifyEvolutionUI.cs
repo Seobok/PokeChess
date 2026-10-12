@@ -35,7 +35,7 @@ public static class VerifyEvolutionUI
             var source=SharedPoolSystem.RegisterUnit(view.Match,catalog.CreateUnit("evolution-ui-unit","bulbasaur","p1",UnitRank.Two,0,UnitPlacement.OnBench(0)),"bulbasaur");
             view.SelectUnit(source.InstanceId);view.RefreshFromState();
             Check(view.EvolutionPointText.Contains("1 EP"),"EP grant not shown");Check(view.EvolveButton.interactable,"Evolution button unavailable");
-            Check(view.EvolutionHintText.Contains("이상해풀")&&view.EvolutionHintText.Contains("다음 상점 갱신"),"Preview guidance missing");
+            Check(view.EvolutionHintText.Contains("이상해풀")&&view.EvolutionHintText.Contains("즉시 진화"),"Preview guidance missing");
             var pointButton=view.InventoryItemButton(0);
             Check(pointButton.gameObject.activeSelf&&pointButton.interactable,"Evolution point is not first inventory item");
             Check(pointButton.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().sprite.name=="MoonStone","Wrong evolution icon");

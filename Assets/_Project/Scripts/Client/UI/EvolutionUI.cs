@@ -98,7 +98,7 @@ namespace PokeChess.Client.UI
             evolveButton.interactable = allowed && points >= option.EvolutionPointCost;
             ButtonText(evolveButton,"진화 / " + option.EvolutionPointCost + " EP");
             evolutionHint.text = KoreanInfo(id)+" → "+KoreanInfo(target.Id)+"\n체력 "+Number(before.MaxHP)+" → "+Number(after.MaxHP)+
-                " · 공격 "+Number(before.Attack)+" → "+Number(after.Attack)+"\n다음 상점 갱신부터 진화체 등장\n"+
+                " · 공격 "+Number(before.Attack)+" → "+Number(after.Attack)+"\n현재 상점의 같은 계열도 즉시 진화\n"+
                 (points < option.EvolutionPointCost ? "진화포인트가 부족합니다." : !allowed ? unavailable ?? "준비 단계에서 진화할 수 있습니다." : "성급·장착 도구·위치 유지");
         }
     }

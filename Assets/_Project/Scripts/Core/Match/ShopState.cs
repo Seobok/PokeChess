@@ -58,6 +58,20 @@ namespace PokeChess.Core.Match
             Revision = revision;
         }
         internal void SetLocked(bool locked) => IsLocked = locked;
+        internal void EvolveOffers(string root, string definition, int stage)
+        {
+            ShopSlot[] replacement = null;
+            for (int i=0;i<slots.Count;i++)
+            {
+                var slot=slots[i];
+                if(slot.IsEmpty || slot.PoolOriginDefinitionId!=root || slot.EvolutionStage>=stage)continue;
+                if(replacement==null){replacement=new ShopSlot[slots.Count];for(int j=0;j<slots.Count;j++)replacement[j]=slots[j];}
+                replacement[i]=new ShopSlot(slot.Index,definition,slot.Cost,slot.PoolOriginDefinitionId,stage);
+            }
+            if(replacement==null)return;
+            long revision=checked(Revision+1);
+            slots=Array.AsReadOnly(replacement);Revision=revision;
+        }
         internal void RecordLockedRefresh(int roundNumber) => LastRefreshRound = roundNumber;
         internal void Apply(ReadOnlyCollection<ShopSlot> replacement, ulong randomState, long drawCount, int? roundNumber, long revision)
         {

@@ -80,7 +80,7 @@ namespace PokeChess.Client.UI
         public void ShowItemHint(int slot)
         {
             if(IsItemDragging||slot<0||slot>=6)return;
-            if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n준비 단계에서 내 유닛에 드래그하여 진화\n한 단계당 1 EP · 다음 상점 갱신부터 진화체 등장";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
+            if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
             int index=InventoryIndex(slot);if(index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
             var definition=ItemCatalog.Get(key);itemTooltipLabel.text=definition.Name+"\n"+definition.Description;
