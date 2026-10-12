@@ -11,14 +11,14 @@ namespace PokeChess.Client.UI
         private readonly Dictionary<string,PokemonSpriteView> placementSprites=new Dictionary<string,PokemonSpriteView>();
         private readonly Dictionary<string,PokemonSpriteView> fighterSprites=new Dictionary<string,PokemonSpriteView>();
         private readonly Dictionary<int,PokemonSpriteView> shopSprites=new Dictionary<int,PokemonSpriteView>();
-        private PokemonSpriteView AddSprite(Transform parent,string species)
+        private PokemonSpriteView AddSprite(Transform parent,string species,string instanceId=null)
         {
             var rect=Rect("PokemonSprite",parent,Vector2.one,Vector2.zero);
-            var view=rect.gameObject.AddComponent<PokemonSpriteView>();view.Initialize(species);return view;
+            var view=rect.gameObject.AddComponent<PokemonSpriteView>();view.Initialize(species,instanceId);return view;
         }
         private void AnimateRosterSprites()
         {
-            foreach(var unit in Player.Units)
+            foreach(var unit in ViewedPlayer.Units)
             {
                 if(!tokens.TryGetValue(unit.InstanceId,out var token))continue;
                 if(!placementSprites.TryGetValue(unit.InstanceId,out var sprite)||sprite==null)
@@ -47,7 +47,7 @@ namespace PokeChess.Client.UI
         private bool RenderFighterSprite(LocalPairBattle pair,UnitCombatState unit,UnityEngine.UI.Text label)
         {
             if(!fighterSprites.TryGetValue(unit.UnitInstanceId,out var sprite)||sprite==null)
-                fighterSprites[unit.UnitInstanceId]=sprite=AddSprite(label.transform.parent,unit.DefinitionId);
+                fighterSprites[unit.UnitInstanceId]=sprite=AddSprite(label.transform.parent,unit.DefinitionId,unit.UnitInstanceId);
             var action=pair.GetActionRuntime(unit.UnitInstanceId);
             Vector2 current=CombatPoint(unit.Position),facing=Vector2.zero;
             if(action.MoveDestination.HasValue)
@@ -64,7 +64,7 @@ namespace PokeChess.Client.UI
             }
             sprite.ShowCombat(pair.Battle,unit,action,facing);
             RenderUnitHealthBar(label.transform.parent, unit.CurrentHP, unit.Stats.MaxHP,
-                unit.TeamId == (pair.Pairing.PlayerOneId == "p1" ? 1 : 2), unit.CurrentShield);
+                unit.TeamId == (pair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2), unit.CurrentShield);
             RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
             RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
             if(sprite.Visible)
@@ -96,3 +96,4 @@ namespace PokeChess.Client.UI
         }
     }
 }
+

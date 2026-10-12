@@ -80,7 +80,7 @@ namespace PokeChess.Client.UI
         private void RenderLocalSynergies()
         {
             synergyDemoButton.gameObject.SetActive(true);
-            var battle = Match.Phase == MatchPhase.Combat ? RoundLoop.GetBattleFor("p1")?.Battle : null;
+            var battle = Match.Phase == MatchPhase.Combat ? RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle : null;
             if (synergyVisualBattle != battle) { synergyVisualBattle = battle; synergyVisualTick = -1; synergyFlashes.Clear(); }
             if (battle != null && synergyVisualTick != battle.CurrentTick)
             {
@@ -88,8 +88,8 @@ namespace PokeChess.Client.UI
                 foreach (var e in battle.Synergies.EventsThisTick) synergyFlashes[e.TargetId] = (e.Detail, Time.unscaledTime + .65f);
                 foreach (var e in battle.Items.EventsThisTick) synergyFlashes[e.TargetId] = (e.ItemId==ItemCatalog.RockyHelmet?"REFLECT":"ITEM",Time.unscaledTime+.65f);
             }
-            var own = battle?.Units.FirstOrDefault(u => u.OwnerPlayerId == "p1");
-            var counts = own == null ? SynergySystem.Count(Player.Units.Where(u => u.Placement.Kind == PlacementKind.Board).Select(u => catalog.Get(u.DefinitionId))) : battle.Synergies.TeamCounts(own.TeamId);
+            var own = battle?.Units.FirstOrDefault(u => u.OwnerPlayerId == localViewedPlayerId);
+            var counts = own == null ? SynergySystem.Count(ViewedPlayer.Units.Where(u => u.Placement.Kind == PlacementKind.Board).Select(u => catalog.Get(u.DefinitionId))) : battle.Synergies.TeamCounts(own.TeamId);
             RenderSynergies(counts, Match.Phase != MatchPhase.Finished);
         }
         private string LocalSynergyFlash(UnitCombatState unit) => synergyFlashes.TryGetValue(unit.UnitInstanceId, out var flash) && flash.until > Time.unscaledTime ? flash.text : "";
@@ -124,3 +124,4 @@ namespace PokeChess.Client.UI
         }
     }
 }
+

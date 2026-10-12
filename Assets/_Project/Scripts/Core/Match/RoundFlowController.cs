@@ -37,7 +37,7 @@ namespace PokeChess.Core.Match
         }
 
         private double Duration => Match.Phase == MatchPhase.Preparation ? Rules.PreparationSeconds
-            : Match.Phase == MatchPhase.Result ? WildRoundSystem.IsWild(Match)?Math.Max(12,Rules.ResultSeconds):Rules.ResultSeconds : 0;
+            : Match.Phase == MatchPhase.Result ? Rules.ResultSeconds : 0;
         private bool TimedPhaseReady => Match.Phase == MatchPhase.Preparation ? runtime.PreparationReady && !AwaitingMatchEnd
             : Match.Phase == MatchPhase.Result && runtime.IsSettled;
 
@@ -72,7 +72,9 @@ namespace PokeChess.Core.Match
             if (double.IsNaN(elapsedSeconds) || double.IsInfinity(elapsedSeconds) || elapsedSeconds < 0)
                 throw new ArgumentOutOfRangeException(nameof(elapsedSeconds));
             // A newly observed phase/readiness gets its entire duration. Old frame time is discarded.
-            if (Synchronize() || Fault != null) return;
+            bool changed = Synchronize();
+            if (Fault != null) return;
+            if (AdvanceImmediateResult() || changed) return;
             if (Match.Phase == MatchPhase.Combat)
             {
                 combatAccumulator = Math.Min(double.MaxValue - elapsedSeconds, combatAccumulator) + elapsedSeconds;
@@ -139,7 +141,20 @@ namespace PokeChess.Core.Match
                 Fault = error;
                 return false;
             }
-            finally { Synchronize(); }
+            finally { Synchronize(); AdvanceImmediateResult(); }
+        }
+
+        private bool AdvanceImmediateResult()
+        {
+            if (Fault != null || Rules.ResultSeconds != 0 || Match.Phase != MatchPhase.Result || !runtime.IsSettled)
+                return false;
+            Execute(() =>
+            {
+                if (!runtime.NextRound(Match.RoundNumber))
+                    throw new InvalidOperationException("Automatic round transition was rejected.");
+                return true;
+            });
+            return true;
         }
     }
 }

@@ -27,7 +27,6 @@ namespace PokeChess.Client.UI
         private double lastRoundClick=-1;
         public RoundFlowController RoundFlow { get; private set; }
         [SerializeField, Min(.01f)] private float preparationSeconds = 30;
-        [SerializeField, Min(.01f)] private float resultSeconds = 3;
         private bool automaticRoundFlow = true;
         public bool AutomaticRoundFlowEnabled => automaticRoundFlow;
         private UnityEngine.UI.Text roundTimer;
@@ -56,12 +55,16 @@ namespace PokeChess.Client.UI
             BuildFinalResultUI();BuildResultPresentation();
             BuildSimulationUI();
         }
-        private static Vector2 CombatPoint(BoardPosition position) => new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
+        private Vector2 CombatPoint(BoardPosition position) {
+            bool reversed=IsOnlineMatch ? onlineService?.Combat.Current?.two==onlineService?.WatchingPlayerId && onlineService?.Combat.Current!=null : RoundLoop?.GetBattleFor(localViewedPlayerId)?.Pairing.PlayerTwoId==localViewedPlayerId;
+            if(reversed)position=new BoardPosition(6-position.Column,7-position.Row);
+            return new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
+        }
         private void AttachRoundLoop()
         {
-            Simulation?.Cancel();SaveSimulation();Simulation=null;
+            Simulation?.Cancel();SaveSimulation();Simulation=null;localViewedPlayerId="p1";
             RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
-            RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds,resultSeconds));
+            RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
             foreach(var token in combatTokens.Values){token.transform.parent.gameObject.SetActive(false);Destroy(token.transform.parent.gameObject);}
             combatTokens.Clear();
@@ -165,24 +168,24 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Result && !RoundLoop.IsSettled) clock="WAITING FOR SETTLEMENT";
             else if(Match.Phase==MatchPhase.Preparation && !RoundLoop.PreparationReady) clock="WAITING FOR PREPARATION";
             else if(RoundFlow.IsTimerRunning) clock=Math.Ceiling(RoundFlow.RemainingSeconds).ToString("0")+"s";
-            else clock=Match.Phase==MatchPhase.Combat && RoundLoop.GetBattleFor("p1")?.Battle!=null ? RoundLoop.GetBattleFor("p1").Battle.ElapsedSeconds.ToString("0.0")+"s" : Match.Phase==MatchPhase.Combat ? "WAITING" : "";
+            else clock=Match.Phase==MatchPhase.Combat && RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle!=null ? RoundLoop.GetBattleFor(localViewedPlayerId).Battle.ElapsedSeconds.ToString("0.0")+"s" : Match.Phase==MatchPhase.Combat ? "WAITING" : "";
             roundTimer.text="ROUND "+Match.RoundNumber+" / "+Match.Phase.ToString().ToUpperInvariant()+" / "+clock;
             roundTimer.color=roundFault!=null ? new Color(1,.45f,.4f) : RoundFlow.IsTimerRunning && RoundFlow.RemainingSeconds<=5 ? new Color(1,.78f,.36f) : Color.white;
             roundButton.interactable=automaticRoundFlow && !RoundFlow.AwaitingMatchEnd && Player.HP>0 && !Player.IsEliminated &&
                 (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
             ButtonText(roundButton,Match.Phase==MatchPhase.Finished ? "Match complete" : Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
-            var ownPair=RoundLoop.GetBattleFor("p1");
+            var ownPair=RoundLoop.GetBattleFor(localViewedPlayerId);
             bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
             header.gameObject.SetActive(Match.Phase!=MatchPhase.Combat&&Match.Phase!=MatchPhase.Finished);
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
-                roundTimer.text+=" / VS "+OpponentLabel(ownPair,"p1")+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf("p1")+" / WAITING FOR OTHER PAIRS" : "");
-            combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
+                roundTimer.text+=" / VS "+OpponentLabel(ownPair,localViewedPlayerId)+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf(localViewedPlayerId)+" / WAITING FOR OTHER PAIRS" : "");
+            combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(!WildRoundSystem.IsWild(Match) && Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
-            foreach(var unit in Player.Units)if(unit.Placement.Kind==PlacementKind.Board)tokens[unit.InstanceId].gameObject.SetActive(!combat);
+            foreach(var unit in ViewedPlayer.Units)if(unit.Placement.Kind==PlacementKind.Board && tokens.TryGetValue(unit.InstanceId,out var boardToken))boardToken.gameObject.SetActive(!combat);
             if(combat)
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
-                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,"p1");
+                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
                 if(lastVisualBattle!=battle)
                 {
                     lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();
@@ -207,8 +210,8 @@ namespace PokeChess.Client.UI
                     if(!combatTokens.TryGetValue(unit.UnitInstanceId,out var label))
                     {
                         var rect=Rect("Fighter_"+unit.UnitInstanceId,combatRoot,new Vector2(43,35),Vector2.zero);
-                        var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2) ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
-                        if(Player.Units.Any(u=>u.InstanceId==unit.UnitInstanceId)) { image.raycastTarget=true; var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.UnitInstanceId;button.onClick.AddListener(()=>SelectUnit(id)); }
+                        var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==(ownPair.Pairing.PlayerOneId==localViewedPlayerId ? 1 : 2) ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
+                        if(ViewedPlayer.Units.Any(u=>u.InstanceId==unit.UnitInstanceId)) { image.raycastTarget=true; var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.UnitInstanceId;button.onClick.AddListener(()=>SelectUnit(id)); }
                         label=Label("HP",rect,"",10,new Vector2(43,35),Vector2.zero);combatTokens[unit.UnitInstanceId]=label;
                     }
                     label.transform.parent.gameObject.SetActive(unit.IsAlive && unit.IsOnBoard);
@@ -223,7 +226,7 @@ namespace PokeChess.Client.UI
                     if(selection==null){selection=tokenImage.gameObject.AddComponent<UnityEngine.UI.Outline>();selection.effectColor=new Color(.4f,1,1);selection.effectDistance=new Vector2(2,-2);}
                     selection.enabled=unit.UnitInstanceId==selectedUnitId;
                     tokenImage.color=healing?new Color(.15f,.65f,.3f):unit.ActionState==CombatActionState.Casting?new Color(.55f,.3f,.75f):
-                        buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId=="p1" ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
+                        buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId==localViewedPlayerId ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
                     label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+
                         (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":"");
                     label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
@@ -240,6 +243,9 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
+
 
 
 

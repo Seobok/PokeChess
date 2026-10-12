@@ -65,7 +65,7 @@ namespace PokeChess.Client.UI
             itemTooltip.gameObject.SetActive(false);
             itemRewardPanel=Panel("ItemRewardPanel",new Vector2(690,245),new Vector2(0,100));
             ItemLabel("Title",itemRewardPanel,"야생 라운드 보상 · 도구 1개 선택",18,new Vector2(640,28),new Vector2(0,93));
-            ItemLabel("Hint",itemRewardPanel,"시간이 끝나면 첫 번째 도구를 자동 획득합니다. 다음 준비 단계에서 장착하세요.",12,new Vector2(650,25),new Vector2(0,-97));
+            ItemLabel("Hint",itemRewardPanel,"준비 시간이 끝나면 첫 번째 도구를 자동 획득합니다. 선택 후 바로 장착할 수 있습니다.",12,new Vector2(650,25),new Vector2(0,-97));
             for(int i=0;i<3;i++){
                 int slot=i;itemChoices[i]=ItemButton("ChooseItem_"+i,itemRewardPanel,new Vector2(207,142),new Vector2((i-1)*220,0),()=>ChooseItemReward(slot));
             }
@@ -80,7 +80,7 @@ namespace PokeChess.Client.UI
         public void ShowItemHint(int slot)
         {
             if(IsItemDragging||slot<0||slot>=6)return;
-            if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
+            if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 필드·대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
             int index=InventoryIndex(slot);if(index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
             var definition=ItemCatalog.Get(key);itemTooltipLabel.text=definition.Name+"\n"+definition.Description;
@@ -105,8 +105,8 @@ namespace PokeChess.Client.UI
             itemDragGhost.gameObject.SetActive(true);itemDragGhost.SetAsLastSibling();DragItem(point);
         }
         private bool CanDragItems()=>IsOnlineMatch
-            ? OnlineInputReady&&onlineService.LocalMatchState?.phase==MatchPhase.Preparation&&!onlineService.LocalMatchState.eliminated&&onlineService.LocalMatchState.hp>0
-            : Match!=null&&Match.Phase==MatchPhase.Preparation&&!busy&&!RoundLoop.NextPreparationPending&&Simulation?.Status!=SimulationStatus.Running&&!Player.IsEliminated&&Player.HP>0;
+            ? onlineService.WatchingPlayerId==onlineService.LocalMatchState?.playerId&&OnlineInputReady&&onlineService.LocalMatchState?.phase==MatchPhase.Preparation&&!onlineService.LocalMatchState.eliminated&&onlineService.LocalMatchState.hp>0
+            : localViewedPlayerId=="p1"&&Match!=null&&Match.Phase==MatchPhase.Preparation&&!busy&&!RoundLoop.NextPreparationPending&&Simulation?.Status!=SimulationStatus.Running&&!Player.IsEliminated&&Player.HP>0;
         private string ItemTarget(Vector2 point)
         {
             var slot=Hit(point);if(slot==null)return null;
@@ -160,7 +160,7 @@ namespace PokeChess.Client.UI
             var candidates=IsOnlineMatch?owner.itemCandidates??Array.Empty<string>():Player.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>();
             displayedItemRevision=IsOnlineMatch?owner.itemRevision:Player.ItemRevision;
             visibleInventory=IsOnlineMatch?owner.inventory??Array.Empty<string>():Player.ItemInventory.ToArray();
-            bool selecting=alive&&candidates.Length==3&&(phase==MatchPhase.Result||phase==MatchPhase.Preparation);
+            bool selecting=alive&&candidates.Length==3&&phase==MatchPhase.Preparation;
             itemRewardPanel.gameObject.SetActive(selecting);
             if(selecting){
                 itemRewardPanel.SetAsLastSibling();
@@ -202,4 +202,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 

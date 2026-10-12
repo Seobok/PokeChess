@@ -22,10 +22,16 @@ namespace PokeChess.Client.UI
         public string HudNoticeText=>hudNotice?.text;
         public int HudProfileCount=>hudProfiles.Count;
         public string HudProfileText(string id)=>hudProfiles[id].Name.text+" / "+hudProfiles[id].State.text;
-        // Reserved for the later scouting controller; information-only profiles have no click target yet.
+        private string localViewedPlayerId = "p1";
+        public string ViewedPlayerId => IsOnlineMatch ? OnlineObservedPlayerId : localViewedPlayerId;
+        private PlayerState ViewedPlayer => Match.GetPlayer(localViewedPlayerId);
         public event Action<string> PlayerViewRequested;
         public void RequestPlayerView(string id) {
-            if(Match.Players.Any(p=>p.PlayerId==id))PlayerViewRequested?.Invoke(id);
+            if(IsOnlineMatch){WatchOnlinePlayer(id);return;}
+            if(Match==null||!Match.Players.Any(p=>p.PlayerId==id)||localViewedPlayerId==id)return;
+            CancelDrag("View changed.");selectedUnitId=null;localViewedPlayerId=id;
+            foreach(var token in combatTokens.Values)Destroy(token.transform.parent.gameObject);combatTokens.Clear();ClearFighterSprites();lastVisualBattle=null;
+            Render();PlayerViewRequested?.Invoke(id);
         }
         private UnityEngine.UI.Image HudImage(string name,Transform parent,Vector2 size,Vector2 pos,Color color) {
             var rect=Rect(name,parent,size,pos);var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();
@@ -47,7 +53,7 @@ namespace PokeChess.Client.UI
         private void RenderMatchHud() {
             if(hudRound==null||RoundFlow==null)return;
             hudRound.text="ROUND "+Match.RoundNumber;
-            var own=RoundLoop.GetBattleFor("p1");
+            var own=RoundLoop.GetBattleFor(localViewedPlayerId);
             string notice="";string kind="Idle";double progress=0;
             if(Match.Phase==MatchPhase.Finished)notice="MATCH COMPLETE";
             else if(!automaticRoundFlow)notice="Paused for input test";
@@ -59,7 +65,7 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Preparation) {
                 kind="Preparation";progress=RoundFlow.RemainingSeconds/RoundFlow.Rules.PreparationSeconds;
             } else if(Match.Phase==MatchPhase.Result) {
-                kind="Result";progress=RoundFlow.RemainingSeconds/(WildRoundSystem.IsWild(Match)?Math.Max(12,RoundFlow.Rules.ResultSeconds):RoundFlow.Rules.ResultSeconds);
+                kind="Result";progress=RoundFlow.Rules.ResultSeconds>0?RoundFlow.RemainingSeconds/RoundFlow.Rules.ResultSeconds:0;
             } else if(Match.Phase==MatchPhase.Combat) {
                 if(own==null||own.IsComplete)notice="Waiting for other battles";
                 else if(own.Battle!=null) {
@@ -79,7 +85,7 @@ namespace PokeChess.Client.UI
             hudTimer.color=new Color(color.r,color.g,color.b,kind=="Result"?.55f+.45f*HudTimerProgress:pulse);
             hudTimerBorder.color=warning?Color.Lerp(color,Color.white,1-pulse):color*.65f;
             hudTimer.rectTransform.sizeDelta=new Vector2(280*HudTimerProgress,8);
-            hudNotice.text=notice;
+            hudNotice.text=(localViewedPlayerId=="p1"?"":"WATCHING "+localViewedPlayerId+" · ")+notice;
             hudTimerBorder.gameObject.SetActive(Match.Phase!=MatchPhase.Finished&&!(Match.Phase==MatchPhase.Combat&&(own==null||own.IsComplete)));
             if(!ReferenceEquals(hudMatch,Match)) {
                 foreach(var row in hudProfiles.Values){row.Rect.gameObject.SetActive(false);Destroy(row.Rect.gameObject);}
@@ -93,6 +99,7 @@ namespace PokeChess.Client.UI
                 if(!hudProfiles.TryGetValue(p.PlayerId,out var row)) {
                     var image=HudImage("Profile_"+p.PlayerId,sidebar,new Vector2(195,height),Vector2.zero,Color.white);
                     row=new ProfileRow{Rect=image.rectTransform,Background=image,PreviousHP=p.HP};
+                    image.raycastTarget=true;var button=image.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string viewId=p.PlayerId;button.onClick.AddListener(()=>RequestPlayerView(viewId));
                     var avatar=HudImage("Avatar",row.Rect,new Vector2(self?32:22,self?32:22),new Vector2(-79,0),new Color(.22f,.35f,.46f));
                     Label("AvatarText",avatar.transform,p.PlayerId.ToUpperInvariant(),11,new Vector2(32,24),Vector2.zero);
                     row.Name=Label("Name",row.Rect,"",self?14:12,new Vector2(108,18),new Vector2(-5,self?12:8));
@@ -111,18 +118,19 @@ namespace PokeChess.Client.UI
                 row.Name.text=(self?"YOU · ":"")+p.PlayerId+"  "+p.HP+" HP";
                 string state=p.FinalPlacement==1?"#1 WINNER":p.IsEliminated?"#"+p.FinalPlacement+" "+
                     (p.Elimination?.Reason==EliminationReason.Surrender?"SURRENDER":"OUT"):"IN MATCH";
-                bool opponent=Match.Phase==MatchPhase.Combat&&own!=null&&own.Pairing.OpponentOf("p1")==p.PlayerId;
+                bool opponent=Match.Phase==MatchPhase.Combat&&own!=null&&own.Pairing.OpponentOf(localViewedPlayerId)==p.PlayerId;
                 if(!p.IsEliminated&&p.FinalPlacement!=1) {
                     var pair=RoundLoop.GetBattleFor(p.PlayerId);
                     if(Match.Phase==MatchPhase.Combat)state=pair==null?"WAITING":pair.IsComplete?"BATTLE DONE":"IN BATTLE";
                     else if(Match.Phase==MatchPhase.Preparation)state="READY TO DEPLOY";
                     else if(Match.Phase==MatchPhase.Result)state="ROUND COMPLETE";
                 }
-                row.State.text=(opponent?"VS · ":"")+state;
-                row.Background.color=p.IsEliminated?new Color(.09f,.12f,.16f):opponent?new Color(.32f,.23f,.13f):self?new Color(.1f,.27f,.36f):new Color(.12f,.18f,.25f);
+                row.State.text=(p.PlayerId==localViewedPlayerId?"VIEW · ":opponent?"VS · ":"")+state;
+                row.Background.color=p.PlayerId==localViewedPlayerId?new Color(.16f,.35f,.43f):p.IsEliminated?new Color(.09f,.12f,.16f):opponent?new Color(.32f,.23f,.13f):self?new Color(.1f,.27f,.36f):new Color(.12f,.18f,.25f);
                 row.Name.color=row.State.color=p.IsEliminated?new Color(.55f,.6f,.65f):Color.white;
                 row.HP.rectTransform.sizeDelta=new Vector2(125*Mathf.Clamp01(p.HP/(float)p.Rules.StartingHP),3);
             }
         }
     }
 }
+

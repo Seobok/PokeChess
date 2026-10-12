@@ -196,7 +196,8 @@ namespace PokeChess.Core.Tests
             flow.AdvanceTime(30);
             var position = One.GetUnit("A").Placement.Position.Value;
             for (int i = 0; i < 1400 && match.Phase == MatchPhase.Combat; i++) flow.AdvanceTime(1d / 30);
-            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
+            Assert.That(flow.RemainingSeconds, Is.EqualTo(30));
             Assert.That(One.Level, Is.EqualTo(2));
             Assert.That(One.GetUnit("extra").Placement.Kind, Is.EqualTo(PlacementKind.Bench));
             flow.AdvanceTime(3);

@@ -30,12 +30,30 @@ namespace PokeChess.Core.Tests
             if (initializeShops)
                 foreach (var player in match.Players) new ShopSystem().RefreshForRound(match, player.PlayerId);
             loop = new LocalRoundCoordinator(match, catalog);
-            flow = new RoundFlowController(loop);
+            flow = new RoundFlowController(loop, new RoundFlowRules(resultSeconds: 3));
         }
 
         private void Add(string id, string owner, UnitPlacement placement)
             => SharedPoolSystem.RegisterUnit(match, catalog.CreateUnit(id, "test", owner, UnitRank.One, 0, placement), "test");
 
+        [Test]
+        public void DefaultClockImmediatelyReturnsToFullPreparationAfterCombat()
+        {
+            AddFighters();
+            flow = new RoundFlowController(loop);
+            Assert.That(flow.Rules.ResultSeconds, Is.Zero);
+            flow.AdvanceTime(30);
+            for (int i = 0; i < 10000 && match.Phase == MatchPhase.Combat; i++) flow.AdvanceTime(1d / 30);
+            Assert.That(flow.Fault, Is.Null);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
+            Assert.That(match.RoundNumber, Is.EqualTo(2));
+            Assert.That(flow.RemainingSeconds, Is.EqualTo(30));
+            Assert.That(flow.ResultElapsedSeconds, Is.Zero);
+            Assert.That(One.LastEconomyRound, Is.EqualTo(1));
+            Assert.That(One.LastAutomaticXPRound, Is.EqualTo(1));
+            Assert.That(One.Shop.LastRefreshRound, Is.EqualTo(2));
+            Assert.That(flow.RequestAdvance(1, MatchPhase.Result), Is.False);
+        }
         private void AddFighters()
         {
             Add("A", "p1", UnitPlacement.OnBoard(new BoardPosition(2, 0)));
@@ -70,7 +88,7 @@ namespace PokeChess.Core.Tests
         public void InvalidDurationsAreRejected(double seconds)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => new RoundFlowRules(seconds, 3));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RoundFlowRules(30, seconds));
+            if (seconds != 0) Assert.Throws<ArgumentOutOfRangeException>(() => new RoundFlowRules(30, seconds));
         }
 
         [Test]

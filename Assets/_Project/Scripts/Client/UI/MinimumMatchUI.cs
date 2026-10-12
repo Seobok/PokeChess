@@ -210,12 +210,12 @@ namespace PokeChess.Client.UI
         {
             if(IsOnlineMatch){SelectOnlineUnit(id);return;}
             if(IsDragging) return;
-            selectedUnitId=Player.Units.Any(u=>u.InstanceId==id) ? id : null;Render();
+            selectedUnitId=ViewedPlayer.Units.Any(u=>u.InstanceId==id) ? id : null;Render();
         }
         public void SellSelected()
         {
             if(IsOnlineMatch){if(selectedUnitId!=null)SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=selectedUnitId);return;}
-            if(selectedUnitId==null) { Feedback("Select your unit first.");return; }
+            if(localViewedPlayerId!="p1"||selectedUnitId==null) { Feedback("Select your unit first.");return; }
             string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
         }
         public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
@@ -238,7 +238,7 @@ namespace PokeChess.Client.UI
             surrenderButton.interactable=!Player.IsEliminated && Player.HP>0 && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result);
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
             bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
-            header.text="BOARD "+Player.DeployedUnitCount+" / "+Player.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
+            header.text=(localViewedPlayerId=="p1"?"BOARD ":"WATCHING "+localViewedPlayerId+" · BOARD ")+ViewedPlayer.DeployedUnitCount+" / "+ViewedPlayer.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
 
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
@@ -266,6 +266,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

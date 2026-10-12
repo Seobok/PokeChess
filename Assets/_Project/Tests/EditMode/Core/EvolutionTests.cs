@@ -103,7 +103,7 @@ namespace PokeChess.Core.Tests
             f.m.Pool.AssertConservation(f.m);
         }
         [TestCase(PlacementKind.Board)] [TestCase(PlacementKind.Bench)]
-        public void EvolutionAlsoUpdatesSameFormBenchCopiesWithOnePoint(PlacementKind selectedPlacement)
+        public void EvolutionAlsoUpdatesSameFormBoardAndBenchCopiesWithOnePoint(PlacementKind selectedPlacement)
         {
             var f=Fixture(10);var p=f.m.GetPlayer("p1");p.SetProgress(100,0,2);
             var selected=Add(f.m,f.c,placement:selectedPlacement==PlacementKind.Board?UnitPlacement.OnBoard(new BoardPosition(0,0)):UnitPlacement.OnBench(0));
@@ -116,10 +116,12 @@ namespace PokeChess.Core.Tests
             Assert.That(copy.EvolutionStage,Is.EqualTo(1));Assert.That(copy.Rank,Is.EqualTo(UnitRank.Two));
             Assert.That(copy.Placement.BenchSlot,Is.EqualTo(1));Assert.That(copy.ItemInstanceIds,Is.EqualTo(new[]{"item:choice-scarf:99:p1"}));
             Assert.That(copy.PoolOriginDefinitionId,Is.EqualTo("bulbasaur"));
-            Assert.That(field.DefinitionId,Is.EqualTo("bulbasaur"));Assert.That(enemy.DefinitionId,Is.EqualTo("bulbasaur"));
+            Assert.That(field.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(field.EvolutionStage,Is.EqualTo(1));
+            Assert.That(field.Placement.Position,Is.EqualTo(new BoardPosition(1,0)));Assert.That(enemy.DefinitionId,Is.EqualTo("bulbasaur"));
             Assert.That(p.EvolutionPoints,Is.EqualTo(1));Assert.That(p.PlacementRevision,Is.EqualTo(revision+1));
             Evolve(f.m,f.c);
             Assert.That(copy.DefinitionId,Is.EqualTo("venusaur"));Assert.That(copy.EvolutionStage,Is.EqualTo(2));
+            Assert.That(field.DefinitionId,Is.EqualTo("venusaur"));Assert.That(field.EvolutionStage,Is.EqualTo(2));
             Assert.That(p.EvolutionPoints,Is.Zero);Assert.That(f.m.Pool.GetStock("bulbasaur").Available,Is.EqualTo(originalStock));
             f.m.Pool.AssertConservation(f.m);
         }

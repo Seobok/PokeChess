@@ -52,7 +52,7 @@ namespace PokeChess.Client.UI
             foreach(var u in frame.units){
                 if(!combatFighters.TryGetValue(u.id,out var f)){
                     var node=Rect("Fighter "+u.id,combatLayer,new Vector2(40,36),Vector2.zero);
-                    var spriteNode=Rect("Sprite",node,new Vector2(32,32),Vector2.zero);var sprite=spriteNode.gameObject.AddComponent<PokemonSpriteView>();sprite.Initialize(u.definitionId);
+                    var spriteNode=Rect("Sprite",node,new Vector2(32,32),Vector2.zero);var sprite=spriteNode.gameObject.AddComponent<PokemonSpriteView>();sprite.Initialize(u.definitionId,u.id);
                     f=new Fighter{root=node,sprite=sprite,label=Label("Vitals",node,"",new Vector2(70,22),new Vector2(0,-14),8),popup=Label("Effect",node,"",new Vector2(65,17),new Vector2(0,20),10)};
                     f.label.raycastTarget=f.popup.raycastTarget=false;combatFighters.Add(u.id,f);
                 }

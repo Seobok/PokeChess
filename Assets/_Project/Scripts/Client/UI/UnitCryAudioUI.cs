@@ -34,7 +34,7 @@ namespace PokeChess.Client.UI
             if(!muted&&chosen!=null)cryPlayer.Play(chosen.Species,PokemonCryReason.RankUp);
             cryUnits.Clear();foreach(var unit in current)cryUnits[unit.Id]=unit;
             if(IsOnlineMatch)return;
-            var battle=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor("p1")?.Battle:null;
+            var battle=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle:null;
             if(cryBattle!=battle){cryBattle=battle;cryTick=-1;}
             if(battle==null||cryTick==battle.CurrentTick)return;
             cryTick=battle.CurrentTick;if(muted)return;
@@ -51,4 +51,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 

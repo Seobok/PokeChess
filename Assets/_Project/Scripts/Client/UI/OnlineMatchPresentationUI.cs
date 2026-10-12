@@ -43,7 +43,7 @@ namespace PokeChess.Client.UI
                     var track=HudImage("HPTrack",row.Rect,new Vector2(160,3),new Vector2(0,-height/2+4),new Color(.05f,.08f,.11f));
                     row.HP=HudImage("HPFill",track.transform,new Vector2(160,3),Vector2.zero,new Color(.25f,.85f,.55f));row.HP.rectTransform.anchorMin=row.HP.rectTransform.anchorMax=row.HP.rectTransform.pivot=new Vector2(0,.5f);
                     row.Damage=Label("Damage",row.Rect,"",11,new Vector2(35,18),new Vector2(80,8));row.Damage.color=new Color(1,.45f,.4f);
-                    var button=row.Rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=background;string id=player.id;button.onClick.AddListener(()=>WatchOnlinePlayer(id));hudProfiles[player.id]=row;
+                    var button=row.Rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=background;string id=player.id;button.onClick.AddListener(()=>RequestPlayerView(id));hudProfiles[player.id]=row;
                 }
                 row.Rect.gameObject.SetActive(true);row.Rect.anchoredPosition=new Vector2(0,top-height/2);top-=height+4;
                 if(player.hp<row.PreviousHP){row.DamageValue=row.PreviousHP-player.hp;row.DamageUntil=Time.unscaledTime+1.5f;}
@@ -66,7 +66,7 @@ namespace PokeChess.Client.UI
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
                     var button=node.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.id;button.onClick.AddListener(()=>SelectOnlineUnit(id));
-                    combatTokens[unit.id]=label=Label("HP",node,"",9,new Vector2(60,26),new Vector2(0,-15));fighterSprites[unit.id]=AddSprite(node,unit.definitionId);
+                    combatTokens[unit.id]=label=Label("HP",node,"",9,new Vector2(60,26),new Vector2(0,-15));fighterSprites[unit.id]=AddSprite(node,unit.definitionId,unit.id);
                     onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,50));
                 }
                 Vector2 position=CombatPoint(new BoardPosition(unit.column,unit.row)),facing=Vector2.zero;
@@ -110,7 +110,7 @@ namespace PokeChess.Client.UI
             bool eliminated=own.eliminated&&!final&&!eliminationDismissed&&!playing;
             eliminationRoot.gameObject.SetActive(eliminated);
             if(eliminated){eliminationInfo.text="ELIMINATED · PLACEMENT #"+own.placement+"\n\nRound "+own.eliminationRound+" · "+own.eliminationReason+"\nThe remaining match continues.";eliminationRoot.SetAsLastSibling();}
-            resultRoot.gameObject.SetActive(!final&&!eliminated&&!owner.eliminated&&!playing&&pub.phase==MatchPhase.Result);
+            resultRoot.gameObject.SetActive(!final&&!eliminated&&!owner.eliminated&&!playing&&!pub.wildRound&&pub.phase==MatchPhase.Result);
             if(resultRoot.gameObject.activeSelf){
                 var result=pub.results.FirstOrDefault(r=>r.playerId==owner.playerId);var reward=owner.reward;
                 resultRoot.sizeDelta=new Vector2(600,resultExpanded?360:230);resultRoot.anchoredPosition=new Vector2(0,105);float shift=resultExpanded?65:0;
@@ -134,3 +134,4 @@ namespace PokeChess.Client.UI
         }
     }
 }
+

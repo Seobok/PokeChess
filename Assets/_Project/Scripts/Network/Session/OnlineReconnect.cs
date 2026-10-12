@@ -120,7 +120,7 @@ namespace PokeChess.Network.Session
                 }
                 if(generation!=recoveryGeneration){await CleanupAsync();return;}
                 var info=JsonUtility.FromJson<MatchStartInfo>(SessionValue("matchStart")??"");
-                if(info?.matchId!=StartInfo.matchId||info.ruleVersion!="pokechess-alpha-v5"||info.gameVersion!=Application.version||session.Host!=StartInfo.players[0])throw new InvalidOperationException("HostLost");
+                if(info?.matchId!=StartInfo.matchId||info.ruleVersion!="pokechess-alpha-v7-wild"||info.gameVersion!=Application.version||session.Host!=StartInfo.players[0])throw new InvalidOperationException("HostLost");
                 StartInfo=info;acknowledgedMatch=info.matchId;connectedPublished=true;
                 manager.CustomMessagingManager.RegisterNamedMessageHandler(RequestMessage,OnRequest);manager.CustomMessagingManager.RegisterNamedMessageHandler(ReplyMessage,OnReply);RegisterGameMessages();messagesRegistered=true;
                 State=ConnectionState.Recovering;SendProbe();

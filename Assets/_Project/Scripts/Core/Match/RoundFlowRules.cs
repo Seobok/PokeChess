@@ -8,11 +8,12 @@ namespace PokeChess.Core.Match
         public double ResultSeconds { get; }
         public int MaxCombatTicksPerUpdate { get; }
 
-        public RoundFlowRules(double preparationSeconds = 30, double resultSeconds = 3,
+        public RoundFlowRules(double preparationSeconds = 30, double resultSeconds = 0,
             int maxCombatTicksPerUpdate = 60)
         {
             ValidateDuration(preparationSeconds, nameof(preparationSeconds));
-            ValidateDuration(resultSeconds, nameof(resultSeconds));
+            if (double.IsNaN(resultSeconds) || double.IsInfinity(resultSeconds) || resultSeconds < 0)
+                throw new ArgumentOutOfRangeException(nameof(resultSeconds));
             if (maxCombatTicksPerUpdate < 1)
                 throw new ArgumentOutOfRangeException(nameof(maxCombatTicksPerUpdate));
             PreparationSeconds = preparationSeconds;

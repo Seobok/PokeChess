@@ -84,7 +84,7 @@ namespace PokeChess.Core.Tests
             Assert.That(r.Flow.PreparationElapsedSeconds,Is.EqualTo(30));
             // Empty boards finish instantly, so no combat time or final result hold is added.
             Assert.That(r.Flow.CombatTicks,Is.Zero);Assert.That(r.Flow.MatchElapsedSeconds,Is.EqualTo(30));
-            r.Flow.AdvanceTime(1000);Assert.That(r.Flow.ResultElapsedSeconds,Is.EqualTo(3));
+            r.Flow.AdvanceTime(1000);Assert.That(r.Flow.ResultElapsedSeconds,Is.Zero);
         }
         [Test] public void LargeCombatInputCountsProcessedTicksAndKeepsBacklogOutOfDuration()
         {

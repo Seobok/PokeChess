@@ -39,7 +39,7 @@ namespace PokeChess.Client.UI
         private void RenderCombatAudio()
         {
             EnsureCombatAudio();if(IsOnlineMatch||combatSounds==null)return;
-            var pair=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor("p1"):null;var battle=pair?.Battle;
+            var pair=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor(localViewedPlayerId):null;var battle=pair?.Battle;
             if(soundBattle!=battle){soundBattle=battle;soundTick=-1;soundAttacks.Clear();combatAudio.ResetPlayback();}
             if(battle==null||soundTick==battle.CurrentTick)return;soundTick=battle.CurrentTick;
             if(Simulation?.Status==SimulationStatus.Running)return;
@@ -71,3 +71,4 @@ namespace PokeChess.Client.UI
         }
     }
 }
+

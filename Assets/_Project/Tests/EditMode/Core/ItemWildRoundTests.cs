@@ -95,20 +95,45 @@ namespace PokeChess.Core.Tests
             foreach(var p in m.Players){new ShopSystem().RefreshForRound(m,p.PlayerId);if(units)SharedPoolSystem.RegisterUnit(m,c.CreateUnit("unit-"+p.PlayerId,"bulbasaur",p.PlayerId,UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0))),"bulbasaur");}
             return(m,new LocalRoundCoordinator(m,c),c);
         }
-        [Test] public void EmptyWildBoardsLoseWithoutHPLossAndBothReceiveSameOffer()
+        private static (MatchState match,LocalRoundCoordinator rounds,PokemonCatalog catalog) RewardMatch()
+        {
+            var f=Match(units:true);
+            for(int round=1;round<=3;round++){
+                f.rounds.StartCombat(round);
+                for(int tick=0;tick<1400&&f.match.Phase==MatchPhase.Combat;tick++)f.rounds.Step();
+                Assert.That(f.rounds.LastResult.PlayerResults.Values.All(r=>r.Outcome==RoundOutcome.Win),Is.True);
+                if(round<3)f.rounds.NextRound(round);
+            }
+            return f;
+        }
+        [Test] public void EmptyWildBoardsLoseHPAndReceiveNoOffer()
         {
             var f=Match();Assert.That(f.rounds.StartCombat(1),Is.True);Assert.That(f.rounds.IsSettled,Is.True);
             Assert.That(f.rounds.LastResult.PlayerResults.Count,Is.EqualTo(2));Assert.That(f.rounds.Battles.All(b=>b.IsWild&&!b.IsShadow),Is.True);
-            foreach(var p in f.match.Players){Assert.That(p.HP,Is.EqualTo(60));Assert.That(p.WinStreak+p.LoseStreak,Is.Zero);Assert.That(p.PendingItemReward.Candidates.Count,Is.EqualTo(3));}
-            Assert.That(f.match.GetPlayer("p1").PendingItemReward.Candidates,Is.EqualTo(f.match.GetPlayer("p2").PendingItemReward.Candidates));
+            foreach(var p in f.match.Players){Assert.That(p.HP,Is.EqualTo(56));Assert.That(p.WinStreak+p.LoseStreak,Is.Zero);Assert.That(p.PendingItemReward,Is.Null);}
             f.rounds.SettleResult();Assert.That(f.match.GetPlayer("p1").ItemInventory,Is.Empty);
+        }
+        [Test] public void ImmediateWildTransitionPreservesRewardChoiceForPreparation()
+        {
+            var f=RewardMatch();var flow=new RoundFlowController(f.rounds);flow.AdvanceTime(1000);
+            Assert.That(flow.Fault,Is.Null);
+            Assert.That(f.match.Phase,Is.EqualTo(MatchPhase.Preparation));
+            Assert.That(f.match.RoundNumber,Is.EqualTo(4));
+            Assert.That(flow.RemainingSeconds,Is.EqualTo(30));
+            Assert.That(flow.ResultElapsedSeconds,Is.Zero);
+            var p=f.match.GetPlayer("p1");string expected=p.PendingItemReward.Candidates[2];
+            string chosen=new ItemSystem().Choose(f.match,"p1",2,p.ItemRevision);
+            Assert.That(ItemCatalog.DefinitionId(chosen),Is.EqualTo(expected));
+            Assert.That(p.PendingItemReward,Is.Null);
+            Assert.That(p.LastItemRewardRound,Is.EqualTo(3));
         }
         [Test] public void RewardChoiceIsOnceOnlyAndTimeoutSelectsFirst()
         {
-            var f=Match();f.rounds.StartCombat(1);var p=f.match.GetPlayer("p1");var items=new ItemSystem();
+            var f=RewardMatch();var p=f.match.GetPlayer("p1");var items=new ItemSystem();
             string expected=f.match.GetPlayer("p2").PendingItemReward.Candidates[0];
             items.Choose(f.match,"p1",2,p.ItemRevision);Assert.Throws<InvalidOperationException>(()=>items.Choose(f.match,"p1",0,p.ItemRevision));
-            Assert.That(f.rounds.NextRound(1),Is.True);Assert.That(p.ItemInventory.Count,Is.EqualTo(1));
+            Assert.That(f.rounds.NextRound(3),Is.True);Assert.That(p.ItemInventory.Count,Is.EqualTo(1));
+            Assert.That(f.match.GetPlayer("p2").PendingItemReward,Is.Not.Null); f.rounds.StartCombat(4);
             Assert.That(ItemCatalog.DefinitionId(f.match.GetPlayer("p2").ItemInventory.Single()),Is.EqualTo(expected));Assert.That(p.PendingItemReward,Is.Null);
         }
         [Test] public void EquipSwapRecoveryAndForeignOwnershipAreValidated()
@@ -137,38 +162,90 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void HostCommandReplayCannotDuplicateRewardAndInventoryStaysPrivate()
         {
-            var f=Match();f.rounds.StartCombat(1);var host=new HostCommandProcessor(f.match,f.catalog,f.rounds);var s=host.Snapshot("p1");
+            var f=RewardMatch();var host=new HostCommandProcessor(f.match,f.catalog,f.rounds);var s=host.Snapshot("p1");
             var cmd=new MatchCommand{matchId=s.matchId,playerId="p1",commandId="reward",sequence=s.nextSequence,round=s.round,phase=s.phase,playerRevision=s.playerRevision,kind=MatchCommandKind.ChooseItem,slot=1,itemRevision=s.itemRevision};
             Assert.That(host.Process("p1",cmd).accepted,Is.True);Assert.That(host.Process("p1",cmd).accepted,Is.True);
             Assert.That(f.match.GetPlayer("p1").ItemInventory.Count,Is.EqualTo(1));Assert.That(host.Snapshot("p2").inventory,Is.Empty);Assert.That(host.PublicSnapshot().wildRound,Is.True);
             var changed=cmd.Copy();changed.slot=2;Assert.That(host.Process("p1",changed).code,Is.EqualTo("DuplicateConflict"));
         }
-        [Test] public void WildScheduleIncludesExactlyFourPvPRoundsBetweenEncountersAndCapsFiveRewards()
-        {Assert.That(Enumerable.Range(1,40).Where(WildRoundSystem.IsWildRound),Is.EqualTo(new[]{1,6,11,16,21}));}
+        [Test] public void WildScheduleStartsWithThreeEncountersAndContinuesEveryFiveRounds()
+        {Assert.That(Enumerable.Range(1,40).Where(WildRoundSystem.IsWildRound),Is.EqualTo(new[]{1,2,3,9,14,19,24,29,34,39}));}
         [Test] public void LivingWildBattleFinishesAndCanAdvanceIntoPvP()
         {
             var f=Match(units:true);Assert.That(f.rounds.StartCombat(1),Is.True);
             for(int i=0;i<1400&&f.match.Phase==MatchPhase.Combat;i++)f.rounds.Step();
             Assert.That(f.rounds.IsSettled,Is.True);Assert.That(f.rounds.LastResult.PlayerResults.Values.All(r=>r.Outcome==RoundOutcome.Win),Is.True);
             Assert.That(f.match.Players.All(p=>p.WinStreak==0&&p.LoseStreak==0&&p.HP==60),Is.True);
-            Assert.That(f.rounds.NextRound(1),Is.True);Assert.That(f.rounds.StartCombat(2),Is.True);Assert.That(f.rounds.Battles.All(b=>!b.IsWild),Is.True);
+            Assert.That(f.match.Players.All(p=>p.PendingItemReward==null),Is.True);
+            Assert.That(f.rounds.LastResult.Income.Values.All(i=>i.TotalIncome>=7),Is.True);
+            Assert.That(f.rounds.NextRound(1),Is.True);Assert.That(f.rounds.StartCombat(2),Is.True);Assert.That(f.rounds.Battles.All(b=>b.IsWild),Is.True);
         }
-        [Test] public void WildBattlePreservesExistingWinAndLossStreaksAndHP()
+        [Test] public void WildBattlePreservesStreaksButLossCostsHP()
         {
             var f=Match();SharedPoolSystem.RegisterUnit(f.match,f.catalog.CreateUnit("winner","bulbasaur","p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0))),"bulbasaur");
-            for(int round=1;round<=5;round++){
+            for(int round=1;round<=8;round++){
                 Assert.That(f.rounds.StartCombat(round),Is.True);for(int tick=0;tick<1400&&f.match.Phase==MatchPhase.Combat;tick++)f.rounds.Step();Assert.That(f.rounds.NextRound(round),Is.True);
             }
             var one=f.match.GetPlayer("p1");var two=f.match.GetPlayer("p2");int hp1=one.HP,hp2=two.HP;
-            Assert.That(one.WinStreak,Is.EqualTo(4));Assert.That(two.LoseStreak,Is.EqualTo(4));
-            f.rounds.StartCombat(6);for(int i=0;i<1400&&f.match.Phase==MatchPhase.Combat;i++)f.rounds.Step();
-            Assert.That(one.WinStreak,Is.EqualTo(4));Assert.That(two.LoseStreak,Is.EqualTo(4));Assert.That(one.HP,Is.EqualTo(hp1));Assert.That(two.HP,Is.EqualTo(hp2));
+            Assert.That(one.WinStreak,Is.EqualTo(5));Assert.That(two.LoseStreak,Is.EqualTo(5));
+            f.rounds.StartCombat(9);for(int i=0;i<1400&&f.match.Phase==MatchPhase.Combat;i++)f.rounds.Step();
+            Assert.That(one.WinStreak,Is.EqualTo(5));Assert.That(two.LoseStreak,Is.EqualTo(5));Assert.That(one.HP,Is.EqualTo(hp1));Assert.That(two.HP,Is.LessThan(hp2));
         }
         [Test] public void WildPreparationSurrenderRepairsOnlyPvEPairings()
         {
             var f=Match(playerCount:3);Assert.That(f.rounds.Surrender("p2",1,MatchPhase.Preparation).Accepted,Is.True);
             Assert.That(f.match.Pairings.All(pair=>pair.IsWild&&pair.ParticipantIds.Count==1),Is.True);
             Assert.That(f.rounds.StartCombat(1),Is.True);Assert.That(f.rounds.LastResult.PlayerResults.Keys,Is.EquivalentTo(new[]{"p1","p3"}));f.match.Pool.AssertConservation(f.match);
+        }
+        [TestCase(1,2)] [TestCase(2,3)] [TestCase(3,3)] [TestCase(9,1)] [TestCase(24,1)]
+        public void WildEncounterHasExpectedCountPositionAndEarlySkillsDisabled(int round,int count)
+        {
+            var f=Match(units:true);var p=f.match.GetPlayer("p1");
+            for(int r=1;r<round;r++){
+                // Build encounter snapshots without advancing the match economy or damaging players.
+                f.match.TransitionTo(MatchPhase.Combat);f.match.TransitionTo(MatchPhase.Result);f.match.TransitionTo(MatchPhase.Preparation);
+            }
+            var factory=typeof(WildRoundSystem).GetMethod("CreateBattle",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static);
+            var battle=(BattleState)factory.Invoke(null,new object[]{f.match,f.catalog,p,new[]{new BattleUnitSetup(p.Units.Single(),1,new BoardPosition(0,0))},30});
+            var enemies=battle.Units.Where(u=>u.TeamId==2).ToArray();
+            Assert.That(enemies.Length,Is.EqualTo(count));
+            if(round<=3){
+                foreach(var enemy in enemies){enemy.SetVitals(enemy.CurrentHP,1000);Assert.That(battle.Energy.IsSkillReady(enemy),Is.False);}
+            }else Assert.That(enemies.Single().Position,Is.EqualTo(new BoardPosition(3,4)));
+        }
+        [Test] public void FirstTwoWinsGrantGoldOnlyThirdWinGrantsIdenticalItemOffers()
+        {
+            var f=Match(units:true);
+            for(int round=1;round<=3;round++){
+                f.rounds.StartCombat(round);for(int tick=0;tick<1400&&f.match.Phase==MatchPhase.Combat;tick++)f.rounds.Step();
+                foreach(var p in f.match.Players){
+                    Assert.That(p.HP,Is.EqualTo(60));
+                    Assert.That(p.PendingItemReward==null,Is.EqualTo(round<3));
+                    int gold=p.Gold;f.rounds.SettleResult();Assert.That(p.Gold,Is.EqualTo(gold));
+                }
+                if(round<3)f.rounds.NextRound(round);
+            }
+            Assert.That(f.match.Players[0].PendingItemReward.Candidates,Is.EqualTo(f.match.Players[1].PendingItemReward.Candidates));
+        }
+        [Test] public void ThirdRoundLossOffersNoToolAndWildDamageCanEliminate()
+        {
+            var f=Match();
+            for(int round=1;round<=3;round++){
+                f.rounds.StartCombat(round);
+                foreach(var p in f.match.Players)Assert.That(p.PendingItemReward,Is.Null);
+                if(round<3)f.rounds.NextRound(round);
+            }
+            Assert.That(f.match.Players.All(p=>p.HP==46),Is.True);
+            var lethal=Match(playerCount:8);
+            for(int round=1;round<=3;round++){
+                if(round==3)lethal.match.GetPlayer("p1").SetHP(1);
+                lethal.rounds.StartCombat(round);
+                if(round<3)lethal.rounds.NextRound(round);
+            }
+            // Repeat completed-round settlement to verify HP cannot be charged twice.
+            int hp=lethal.match.GetPlayer("p1").HP;lethal.rounds.SettleResult();
+            Assert.That(lethal.match.GetPlayer("p1").HP,Is.EqualTo(hp));
+            Assert.That(hp,Is.Zero);Assert.That(lethal.match.GetPlayer("p1").IsEliminated,Is.True);
         }
         [Test] public void HostEquipReplayAndRecoverySnapshotRetainExactlyOneTool()
         {

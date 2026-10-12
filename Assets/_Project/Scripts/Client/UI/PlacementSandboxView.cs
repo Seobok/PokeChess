@@ -175,20 +175,21 @@ namespace PokeChess.Client.UI
         {
             if(IsOnlineMatch){RenderOnlineMatch();return;}
             foreach(var slot in slots) slot.Graphic.color=BaseSlotColor(slot);
-            foreach(var unit in Player.Units) if(!tokens.ContainsKey(unit.InstanceId)) CreateToken(unit.InstanceId);
+            foreach(var unit in ViewedPlayer.Units) if(!tokens.ContainsKey(unit.InstanceId)) CreateToken(unit.InstanceId);
             foreach(var pair in tokens)
             {
-                var unit=Player.Units.FirstOrDefault(u=>u.InstanceId==pair.Key);pair.Value.gameObject.SetActive(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced);
+                var unit=ViewedPlayer.Units.FirstOrDefault(u=>u.InstanceId==pair.Key);pair.Value.gameObject.SetActive(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced);
                 if(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced) { pair.Value.anchoredPosition=FindSlot(unit.Placement).Rect.anchoredPosition;tokenLabels[pair.Key].text=(unit.DefinitionId.StartsWith("sample-c",StringComparison.Ordinal) ? "C"+catalog.Get(unit.DefinitionId).Cost : unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant())+" R"+(int)unit.Rank; }
                 groups[pair.Key].alpha=pair.Key==dragged ? .3f : 1;
                 if(unit!=null)RenderEquippedItemIcon(pair.Value,unit.ItemInstanceIds,true,44);
             }
-            RenderMinimumUI();
+            RenderMinimumUI();AnimateRosterSprites();
         }
         public void BeginDrag(string id,Vector2 point)
         {
             if(IsItemDragging)return;
             if(IsOnlineMatch){BeginOnlineDrag(id,point);return;}
+            if(localViewedPlayerId!="p1"){Feedback("Observed units are read only. Select YOU to place units.");return;}
             if(Simulation?.Status==SimulationStatus.Running)return;
             if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
             if(IsDragging) CancelDrag("New drag.");
@@ -231,4 +232,6 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
 

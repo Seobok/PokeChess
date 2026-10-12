@@ -73,11 +73,11 @@ namespace PokeChess.Client.UI
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")"+(ItemFeedbackText.Length>0?" · "+ItemFeedbackText:"")+"\n"+
                 (Player.ItemInventory.Count==0?"No items":string.Join("\n",Player.ItemInventory.Take(3).Select(ItemCatalog.DisplayName)))+
                 (Player.ItemInventory.Count>3?"\n+"+(Player.ItemInventory.Count-3)+" more":"");
-            var selected=Player.Units.FirstOrDefault(u=>u.InstanceId==selectedUnitId);
+            var selected=ViewedPlayer.Units.FirstOrDefault(u=>u.InstanceId==selectedUnitId);
             if(selected==null){selectedUnitId=null;RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
             var definition=catalog.Get(selected.DefinitionId);var rank=selected.Rank;
             var stats=RankRules.Default.Apply(definition.BaseStats,rank);
-            var fighter=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor("p1")?.Battle?.Units.FirstOrDefault(u=>u.UnitInstanceId==selectedUnitId):null;
+            var fighter=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units.FirstOrDefault(u=>u.UnitInstanceId==selectedUnitId):null;
             if(fighter!=null){rank=fighter.Rank;stats=fighter.Stats;}
             string vitals=fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.CurrentHP)+" / "+Number(stats.MaxHP)+" · Shield "+Number(fighter.CurrentShield);
             string state=fighter==null?selected.Placement.Kind.ToString():fighter.ActionState+" · Energy "+Number(fighter.CurrentEnergy)+" / "+Number(stats.MaxEnergy);
@@ -86,9 +86,10 @@ namespace PokeChess.Client.UI
                 vitals+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+state+"\n"+ContextSkill(definition,rank,stats)+
                 "\nItems ("+selected.ItemInstanceIds.Count+"): "+(selected.ItemInstanceIds.Count==0?"None":string.Join(", ",selected.ItemInstanceIds.Select(ItemCatalog.DisplayName)))+
                 "\n"+(RankFeedbackText.Length>0?RankFeedbackText:selected.ItemInstanceIds.Count>0?"Sale returns equipped items":"");
-            bool allowed=commands.CanTrade&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
+            bool allowed=localViewedPlayerId=="p1"&&commands.CanTrade&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
             RenderUnitInfoIcons(definition,rank,stats,fighter?.CurrentHP??stats.MaxHP,stats.MaxHP,fighter?.CurrentEnergy??stats.StartingEnergy,stats.MaxEnergy,fighter?.CurrentShield??0,selected.ItemInstanceIds.ToArray());
             sellButton.interactable=allowed;ButtonText(sellButton,allowed?"판매 / +"+commands.SalePrice(selectedUnitId)+"G":"판매 불가");
         }
     }
 }
+

@@ -61,8 +61,8 @@ namespace PokeChess.Core.Match
                 throw new InvalidOperationException("Invalid evolution lineage.");
             checked { var nextRevision = player.EvolutionRevision + 1; var placement = player.PlacementRevision + 1; }
             var evolving=player.Units.Where(u=>u==unit ||
-                (u.Placement.Kind==PlacementKind.Bench && u.DefinitionId==unit.DefinitionId)).ToArray();
-            if(evolving.Any(u=>u.EvolutionStage!=stage))throw new InvalidOperationException("Invalid evolution stage in bench copies.");
+                ((u.Placement.Kind==PlacementKind.Bench || u.Placement.Kind==PlacementKind.Board) && u.DefinitionId==unit.DefinitionId)).ToArray();
+            if(evolving.Any(u=>u.EvolutionStage!=stage))throw new InvalidOperationException("Invalid evolution stage in owned copies.");
             if (match.Pool != null) match.Pool.ValidateRelease(evolving);
             else if (evolving.Any(u=>u.PoolOriginDefinitionId != null)) throw new InvalidOperationException("Pool-origin unit has no owning pool.");
             return target;

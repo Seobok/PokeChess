@@ -55,7 +55,7 @@ namespace PokeChess.Core.Match
         internal void CommitEvolution(UnitInstance unit, PokemonDefinition target, string root, int stage, int cost)
         {
             var evolving=units.Where(u=>u==unit ||
-                (u.Placement.Kind==PlacementKind.Bench && u.DefinitionId==unit.DefinitionId)).ToArray();
+                ((u.Placement.Kind==PlacementKind.Bench || u.Placement.Kind==PlacementKind.Board) && u.DefinitionId==unit.DefinitionId)).ToArray();
             long revision = checked(EvolutionRevision + 1);
             long placementRevision = checked(PlacementRevision + 1);
             var shopForm=shopEvolutions.TryGetValue(root,out var unlocked)&&unlocked.Stage>=stage

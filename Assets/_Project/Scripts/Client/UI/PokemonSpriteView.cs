@@ -20,8 +20,14 @@ namespace PokeChess.Client.UI
         private const float PixelScale=1.5f;
         public string PokemonId=>pokemon;
         public bool Visible=>image!=null&&image.enabled&&image.color.a>0;
-        public void Initialize(string id)
+        public void Initialize(string id,string instanceId=null)
         {
+            if(instanceId!=null&&instanceId.StartsWith("wild-",StringComparison.Ordinal))
+            {
+                var parts=instanceId.Split('-');
+                if(parts.Length>1&&int.TryParse(parts[1],out int round))
+                    id=round==1||round==2?"magikarp":round==3?"rattata":id;
+            }
             pokemon=id;library=PokemonAnimationLibrary.Load();
             animationPokemon=library?.Find(id,"Idle")!=null ? id : PrototypeEvolutionRoster.BaseForm(id);
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();

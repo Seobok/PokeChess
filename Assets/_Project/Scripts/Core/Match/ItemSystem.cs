@@ -71,7 +71,8 @@ namespace PokeChess.Core.Match
             if(match.Phase!=MatchPhase.Result&&match.Phase!=MatchPhase.Preparation)throw new InvalidOperationException("Reward is unavailable in this phase.");
             if(p.ItemRevision!=revision)throw new InvalidOperationException("Stale item revision.");
             var offer=p.PendingItemReward??throw new InvalidOperationException("No reward available.");
-            if(offer.Round!=match.RoundNumber||slot<0||slot>=offer.Candidates.Count)throw new ArgumentException("Invalid reward choice.");
+            bool currentOffer=offer.Round==match.RoundNumber || match.Phase==MatchPhase.Preparation && offer.Round==match.RoundNumber-1;
+            if(!currentOffer||slot<0||slot>=offer.Candidates.Count)throw new ArgumentException("Invalid reward choice.");
             string id="item:"+offer.Candidates[slot]+":"+offer.Round+":"+p.PlayerId;
             p.ClaimItemReward(id);return id;
         }

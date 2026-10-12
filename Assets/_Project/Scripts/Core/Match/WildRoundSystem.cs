@@ -10,24 +10,21 @@ namespace PokeChess.Core.Match
     public static class WildRoundSystem
     {
         public static bool IsWild(MatchState match)=>match.Rules.EnableWildRounds&&IsWildRound(match.RoundNumber);
-        public static bool IsWildRound(int round)=>round>=1&&round<=21&&(round-1)%5==0;
-        public static string Pattern(int round)=>round==1?"Tutorial":((round-1)/5-1)%3==0?"Swarm":((round-1)/5-1)%3==1?"Guard":"Rush";
+        public static bool IsWildRound(int round)=>round>=1&&(round<=3||round>=9&&(round-9)%5==0);
+        public static bool HasItemReward(int round)=>IsWildRound(round)&&round>=3;
+        public static int EnemyCount(int round)=>round==1?2:round<=3?3:1;
+        public static string Pattern(int round)=>round<=3?"Tutorial":"Single";
         public static string Preview(int round)
         {
-            switch(Pattern(round)){
-                case "Tutorial":return "약한 야생 포켓몬 1마리 · 도구 장착 연습";
-                case "Swarm":return "무리형 · 적 3마리 · 광역 공격 추천";
-                case "Guard":return "수호형 · 앞줄 2마리 + 원거리 뒷줄 · 집중 공격 추천";
-                default:return "돌진형 · 빠른 적 3마리 · 후방 보호 추천";
-            }
+            return round<=3
+                ? "약한 야생 포켓몬 "+EnemyCount(round)+"마리 · 일반 공격만 사용 · 승리 보상: "+(HasItemReward(round)?"도구 선택":"추가 2골드")
+                : "중앙 야생 포켓몬 1마리 · 임시 편성 · 승리 보상: 도구 선택";
         }
         internal static BattleState CreateBattle(MatchState match,PokemonCatalog catalog,PlayerState player,
             IEnumerable<BattleUnitSetup> allies,int tickRate)
         {
-            int round=match.RoundNumber;string pattern=Pattern(round);int count=round==1?1:3;
-            string[] preferred=pattern=="Swarm"?new[]{"weedle","caterpie","weedle"}:
-                pattern=="Guard"?new[]{"geodude","slowpoke","magnemite"}:
-                pattern=="Rush"?new[]{"mankey","mankey","gastly"}:new[]{"caterpie"};
+            int round=match.RoundNumber;int count=EnemyCount(round);
+            string[] preferred={"caterpie","weedle","caterpie"};
             var first=player.Units.FirstOrDefault();
             var enemies=new List<BattleUnitSetup>();
             for(int i=0;i<count;i++){
@@ -38,7 +35,7 @@ namespace PokeChess.Core.Match
                         id=new[]{"bulbasaur","charmander","squirtle","pikachu"}.FirstOrDefault(candidate=>catalog.TryGet(candidate,out _));
                 }
                 if(id==null)throw new InvalidOperationException("No wild encounter definition available.");
-                var position=HexCoordinates.MirrorCombat(new BoardPosition(2+i*2,pattern=="Guard"&&i==2?0:3));
+                var position=HexCoordinates.MirrorCombat(new BoardPosition(count==1?3:count==2?2+i*2:1+i*2,3));
                 var unit=catalog.CreateUnit("wild-"+round+"-"+player.PlayerId+"-"+i,id,"wild:"+player.PlayerId,
                     round>=16?UnitRank.Two:UnitRank.One,0,UnitPlacement.OnBoard(position));
                 enemies.Add(new BattleUnitSetup(unit,2,position));
@@ -48,10 +45,10 @@ namespace PokeChess.Core.Match
                 (unit,definition)=>{
                     var s=RankRules.Default.Apply(definition.BaseStats,unit.Rank);
                     if(unit.OwnerPlayerId==player.PlayerId)return s;
-                    float scale=round==1?.35f: .65f+(round-6)*.025f;
+                    float scale=round<=3?.15f+(round-1)*.025f: .65f+(round-9)*.025f;
                     return new PokemonStats(s.MaxHP*scale,s.Attack*scale,s.SpellPower,s.AttackSpeed,
-                        s.Armor,s.MagicResistance,s.AttackRange,s.MoveSpeed*(pattern=="Rush"?1.5f:1),
-                        s.MaxEnergy,s.StartingEnergy,s.AttackHitTime,s.AttackDelivery,s.ProjectileSpeed,s.CritChance,s.CritMultiplier,s.EnergyLockSeconds);
+                        s.Armor,s.MagicResistance,s.AttackRange,s.MoveSpeed,
+                        round<=3?0:s.MaxEnergy,round<=3?0:s.StartingEnergy,s.AttackHitTime,s.AttackDelivery,s.ProjectileSpeed,s.CritChance,s.CritMultiplier,s.EnergyLockSeconds);
                 });
         }
     }

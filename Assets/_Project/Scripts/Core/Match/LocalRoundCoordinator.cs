@@ -208,7 +208,7 @@ namespace PokeChess.Core.Match
                 var pair=new RoundPairing(p.PlayerId,"wild-"+WildRoundSystem.Pattern(round),isWild:true);
                 var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[p.PlayerId])));
                 var battle=one.Length==0?null:WildRoundSystem.CreateBattle(Match,catalog,p,setup,TickRate);
-                next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:round==1?1:3,skills:skills,statuses:statuses));
+                next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses));
             }
             foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);battles=next.AsReadOnly();LastResult=null;
@@ -278,7 +278,9 @@ namespace PokeChess.Core.Match
         }
         private void SettleWildResult(PlayerState[] recipients)
         {
+            var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients){
+                if(damagePlans[p.PlayerId].HPAfter==0&&!p.IsEliminated)EliminationSystem.ValidateRelease(Match,p);
                 var outcome=LastResult.PlayerResults[p.PlayerId].Outcome;
                 if(p.LastEconomyRound!=Match.RoundNumber){
                     var income=new RoundIncome(p.PlayerId,Match.RoundNumber,outcome,p.Gold,economy.Rules.BaseIncome,
@@ -290,10 +292,11 @@ namespace PokeChess.Core.Match
             foreach(var p in recipients){
                 if(p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
-                // Advance the settlement ledger without player HP loss, retaining the PvE outcome in PlayerResults.
-                LastResult.Record(playerDamage.Apply(p,Match.RoundNumber,RoundOutcome.Win,0));
-                new ItemSystem().Offer(Match,p);
+                playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
+                if(LastResult.PlayerResults[p.PlayerId].Outcome==RoundOutcome.Win&&WildRoundSystem.HasItemReward(Match.RoundNumber))
+                    new ItemSystem().Offer(Match,p);
             }
+            elimination.SettleDamage(Match);
             TryFinishMatch(Match.RoundNumber);
         }
         public bool NextRound(int completedRound)
@@ -301,7 +304,6 @@ namespace PokeChess.Core.Match
             if(!refreshing)
             {
                 if(Match.Phase!=MatchPhase.Result || completedRound!=Match.RoundNumber || !IsSettled)return false;
-                foreach(var p in Survivors)new ItemSystem().AutoChoose(Match,p);
                 Match.TransitionTo(MatchPhase.Preparation);refreshing=true;preparationRankUps.Clear();
                 PreparePairings(Match.RoundNumber);
             }

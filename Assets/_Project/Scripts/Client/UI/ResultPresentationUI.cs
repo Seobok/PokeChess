@@ -56,8 +56,8 @@ namespace PokeChess.Client.UI
                 eliminationRoot.SetAsLastSibling();
             }
             var pair=RoundLoop.GetBattleFor("p1");
-            bool early=!eliminated&&Match.Phase==MatchPhase.Combat&&pair!=null&&pair.IsComplete;
-            bool settled=Match.Phase==MatchPhase.Result&&RoundLoop.LastResult!=null;
+            bool early=!WildRoundSystem.IsWild(Match)&&!eliminated&&Match.Phase==MatchPhase.Combat&&pair!=null&&pair.IsComplete;
+            bool settled=!WildRoundSystem.IsWild(Match)&&Match.Phase==MatchPhase.Result&&RoundLoop.LastResult!=null;
             resultRoot.gameObject.SetActive(!finished&&!showElimination&&!eliminated&&(early||settled));
             if(!resultRoot.gameObject.activeSelf)return;
             resultRoot.sizeDelta=new Vector2(600,resultExpanded&&!early?360:230);
