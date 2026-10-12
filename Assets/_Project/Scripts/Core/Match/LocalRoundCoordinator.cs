@@ -146,7 +146,10 @@ namespace PokeChess.Core.Match
             skills=skillCatalog;statuses=statusCatalog;
             if(match.Rules.BoardWidth!=7 || match.Rules.BoardHeight!=4)
                 throw new ArgumentException("Local round loop requires 7x4 preparation boards.");
-            if(match.Phase==MatchPhase.Preparation) {PreparePairings(match.RoundNumber);TryFinishMatch(match.RoundNumber);}
+            if(match.Phase==MatchPhase.Preparation) {
+                foreach(var player in Survivors)EvolutionPointRules.GrantForPreparation(Match,player.PlayerId);
+                PreparePairings(match.RoundNumber);TryFinishMatch(match.RoundNumber);
+            }
         }
         public RoundPairingPlan PreparePairings(int expectedRound)
         {
@@ -303,6 +306,7 @@ namespace PokeChess.Core.Match
                 PreparePairings(Match.RoundNumber);
             }
             else if(Match.RoundNumber!=completedRound+1)return false;
+            foreach(var player in Survivors)EvolutionPointRules.GrantForPreparation(Match,player.PlayerId);
             foreach(var player in Survivors)preparationRankUps.AddRange(new RankUpSystem(catalog).Resolve(Match,player.PlayerId,player.PlacementRevision));
             foreach(var player in Survivors)if(player.Shop.LastRefreshRound!=Match.RoundNumber)shops.RefreshForRound(Match,player.PlayerId);
             PreparePairings(Match.RoundNumber);

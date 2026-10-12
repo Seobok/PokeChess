@@ -42,11 +42,13 @@ namespace PokeChess.Core.Pokemon
     public sealed class UnitInstance
     {
         public string InstanceId { get; }
-        public string DefinitionId { get; }
+        public string DefinitionId { get; private set; }
         public string OwnerPlayerId { get; }
         public UnitRank Rank { get; private set; }
         internal void ApplyRankUnchecked(UnitRank rank) => Rank = rank;
-        public int EvolutionStage { get; }
+        public int EvolutionStage { get; private set; }
+        internal void ApplyEvolution(string definitionId, int stage)
+        { DefinitionId = definitionId; EvolutionStage = stage; }
         public string PoolOriginDefinitionId { get; private set; }
         internal void SetPoolOrigin(string origin) => PoolOriginDefinitionId = origin;
         public UnitPlacement Placement { get; private set; }

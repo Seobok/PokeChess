@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PokeChess.Client.Data;
 using PokeChess.Core.Battle;
+using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Client.UI
 {
@@ -11,6 +12,7 @@ namespace PokeChess.Client.UI
         private UnityEngine.UI.Image image;
         private PokemonAnimationLibrary library;
         private string pokemon;
+        private string animationPokemon;
         private int direction;
         private CombatActionState previousAction;
         private long idleStart, hurtStart=-1000,deathStart=-1;
@@ -21,6 +23,7 @@ namespace PokeChess.Client.UI
         public void Initialize(string id)
         {
             pokemon=id;library=PokemonAnimationLibrary.Load();
+            animationPokemon=library?.Find(id,"Idle")!=null ? id : PrototypeEvolutionRoster.BaseForm(id);
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();
             image.raycastTarget=false;image.color=Color.white;
             direction=0;previousHP=-1;deathStart=-1;hurtStart=-1000;
@@ -35,11 +38,11 @@ namespace PokeChess.Client.UI
             previousHP=unit.CurrentHP;
             double elapsed=(battle.CurrentTick-action.StartTick)/(double)battle.TickRate;
             string name=unit.ActionState==CombatActionState.Moving?"Walk":unit.ActionState==CombatActionState.Attacking?
-                (pokemon=="weedle"||pokemon=="chansey"||pokemon=="gastly"||pokemon=="caterpie"||pokemon=="magnemite"||pokemon=="squirtle"||pokemon=="abra"?"Shoot":"Attack"):unit.ActionState==CombatActionState.Casting?
+                AttackAnimation():unit.ActionState==CombatActionState.Casting?
                 SkillAnimation():"Idle";
             if(unit.ActionState!=previousAction){idleStart=battle.CurrentTick;previousAction=unit.ActionState;}
             double time=elapsed;
-            var anim=library==null?null:library.Find(pokemon,name);
+            var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim!=null && (unit.ActionState==CombatActionState.Attacking||unit.ActionState==CombatActionState.Casting))
             {
                 var cast=unit.ActionState==CombatActionState.Casting?action.SkillCast:null;
@@ -70,10 +73,10 @@ namespace PokeChess.Client.UI
             if(facing.sqrMagnitude>.001f)direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
             if(previousHP>=0&&unit.hp<previousHP&&unit.hp>0)hurtStart=(long)tick;previousHP=unit.hp;
             string name=unit.action==CombatActionState.Moving?"Walk":unit.action==CombatActionState.Attacking?
-                (pokemon=="weedle"||pokemon=="chansey"||pokemon=="gastly"||pokemon=="caterpie"||pokemon=="magnemite"||pokemon=="squirtle"||pokemon=="abra"?"Shoot":"Attack"):
+                AttackAnimation():
                 unit.action==CombatActionState.Casting?SkillAnimation():"Idle";
             if(previousAction!=unit.action){idleStart=(long)tick;previousAction=unit.action;}
-            double seconds=(tick-unit.startTick)/tickRate;var animation=library?.Find(pokemon,name);
+            double seconds=(tick-unit.startTick)/tickRate;var animation=library?.Find(animationPokemon,name);
             if(animation!=null&&(unit.action==CombatActionState.Attacking||unit.action==CombatActionState.Casting))seconds=animation.ActionTime(seconds,(unit.effectTick-unit.startTick)/(double)tickRate,(unit.endTick-unit.startTick)/(double)tickRate);
             if(name=="Idle")seconds=(tick-idleStart)/tickRate;
             float alpha=1;if(unit.hp<=0){if(deathStart<0)deathStart=(long)tick;name="Hurt";seconds=(tick-deathStart)/tickRate;alpha=Mathf.Clamp01(1-(float)seconds/.45f);}
@@ -82,24 +85,35 @@ namespace PokeChess.Client.UI
         }
         private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
-            var anim=library==null?null:library.Find(pokemon,name);
+            var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);
-            image.enabled=true;image.sprite=anim.Frames[index];image.color=new Color(1,1,1,alpha);
+            image.enabled=true;image.sprite=anim.Frames[index];
+            int stage=PrototypeEvolutionRoster.Stage(pokemon);
+            var tint=animationPokemon==pokemon?Color.white:stage==1?new Color(.7f,1,.75f):new Color(1,.8f,.45f);
+            image.color=new Color(tint.r,tint.g,tint.b,alpha);
             image.rectTransform.sizeDelta=anim.Frames[index].rect.size*scale;
             image.rectTransform.anchoredPosition=anim.GroundOffsets[index]*scale;
             return true;
         }
+        private string AttackAnimation()
+        {
+            switch(PrototypeEvolutionRoster.BaseForm(pokemon))
+            {
+                case "weedle":case "chansey":case "gastly":case "caterpie":case "magnemite":case "squirtle":case "abra":return "Shoot";
+                default:return "Attack";
+            }
+        }
         private string SkillAnimation()
         {
-            switch(pokemon)
+            switch(PrototypeEvolutionRoster.BaseForm(pokemon))
             {
                 case "slowpoke":case "geodude":case "bulbasaur":case "charmander":return "Charge";
                 case "mankey":return "MultiStrike";
                 case "weedle":case "gastly":case "caterpie":case "magnemite":return "Shoot";
                 case "squirtle":return "Withdraw";
                 case "abra":return "SpAttack";
-                default:return "SpAttack";
+                default:return library?.Find(animationPokemon,"SpAttack")!=null?"SpAttack":"Charge";
             }
         }
     }

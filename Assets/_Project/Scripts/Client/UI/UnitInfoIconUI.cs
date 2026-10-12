@@ -17,6 +17,15 @@ namespace PokeChess.Client.UI
         private static string KoreanInfo(string id)
         {
             switch(id){
+                case "slowbro":return "야도란";case "primeape":return "성원숭";
+                case "kakuna":return "딱충이";case "beedrill":return "독침붕";
+                case "graveler":return "데구리";case "golem":return "딱구리";
+                case "haunter":return "고우스트";case "gengar":return "팬텀";
+                case "metapod":return "단데기";case "butterfree":return "버터플";
+                case "magneton":return "레어코일";case "kadabra":return "윤겔라";case "alakazam":return "후딘";
+                case "ivysaur":return "이상해풀";case "venusaur":return "이상해꽃";
+                case "wartortle":return "어니부기";case "blastoise":return "거북왕";
+                case "charmeleon":return "리자드";case "charizard":return "리자몽";
                 case "bulbasaur":return "이상해씨";case "charmander":return "파이리";case "squirtle":return "꼬부기";case "caterpie":return "캐터피";case "weedle":return "뿔충이";case "mankey":return "망키";case "abra":return "캐이시";case "geodude":return "꼬마돌";case "slowpoke":return "야돈";case "magnemite":return "코일";case "gastly":return "고오스";case "chansey":return "럭키";
                 case "normal":return "노말";case "fire":return "불꽃";case "water":return "물";case "grass":return "풀";case "poison":return "독";case "bug":return "벌레";case "fighting":return "격투";case "psychic":return "에스퍼";case "rock":return "바위";case "ground":return "땅";case "electric":return "전기";case "steel":return "강철";case "ghost":return "고스트";
                 case "tank":return "탱커";case "support":return "지원";case "carry":return "딜러";case "caster":return "기술 딜러";

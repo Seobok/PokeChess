@@ -26,7 +26,7 @@ namespace PokeChess.Client.UI
                 if(sprite.PokemonId!=unit.DefinitionId)sprite.Initialize(unit.DefinitionId);
                 if(sprite.ShowIdle(Time.unscaledTimeAsDouble))
                 {
-                    var text=tokenLabels[unit.InstanceId];text.text=new string('★',(int)unit.Rank);text.fontSize=11;
+                    var text=tokenLabels[unit.InstanceId];text.text=new string('★',(int)unit.Rank)+(unit.EvolutionStage>0?" E"+unit.EvolutionStage:"");text.fontSize=11;
                     text.rectTransform.anchoredPosition=new Vector2(0,25);text.color=Color.white;text.transform.SetAsLastSibling();
                 }
             }
@@ -82,7 +82,7 @@ namespace PokeChess.Client.UI
                     else if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
                     else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
                 }
-                label.text="R"+(int)unit.Rank+"\n"+state;
+                label.text="R"+(int)unit.Rank+(unit.EvolutionStage>0?" E"+unit.EvolutionStage:"")+"\n"+state;
                 var background=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
                 var c=background.color;c.a=.2f;background.color=c;
                 if(!unit.IsAlive)label.text="";

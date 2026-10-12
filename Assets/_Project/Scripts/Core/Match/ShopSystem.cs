@@ -64,7 +64,9 @@ namespace PokeChess.Core.Match
                     var list = lists[cost-1];
                     definition = list[random.NextInt(list.Length)];
                 }
-                slots[i] = new ShopSlot(i, definition.Id, cost);
+                slots[i] = player.ShopEvolutions.TryGetValue(definition.Id, out var evolution)
+                    ? new ShopSlot(i, evolution.DefinitionId, cost, definition.Id, evolution.Stage)
+                    : new ShopSlot(i, definition.Id, cost);
             }
             state = random.State;
             drawCount = checked(player.Shop.RandomDrawCount + random.DrawCount);

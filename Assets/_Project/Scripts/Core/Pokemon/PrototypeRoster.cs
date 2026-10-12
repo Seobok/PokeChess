@@ -34,7 +34,7 @@ namespace PokeChess.Core.Pokemon
             int range,float energy,float starting,string role,string skill,int cost,params string[] types) =>
             new PokemonDefinition(id,name,cost,new PokemonStats(hp,attack,0,speed,armor,mr,range,2,energy,starting,.2f,
                 range>1?AttackDeliveryType.Projectile:AttackDeliveryType.Melee,8,.25f,1.3f,1),role,skill,types,SynergyTraits.ForPokemon(id));
-        public static PokemonCatalog CreateCatalog() => new PokemonCatalog(CreateDefinitions());
+        public static PokemonCatalog CreateCatalog() => new PokemonCatalog(PrototypeEvolutionRoster.WithEvolutions(CreateDefinitions()));
         public static SkillCatalog CreateSkills() => new SkillCatalog(new[] {
             Buff("harden",.5f,.6f,"harden-r1","harden-r2","harden-r3"),
             Buff("fury-swipes",.3f,.5f,"fury-swipes-r1","fury-swipes-r2","fury-swipes-r3"),

@@ -114,7 +114,7 @@ namespace PokeChess.Client.UI
                 }
                 c.Purchased=false;c.PurchasedSlot=null;var d=catalog.Get(offer.DefinitionId);var availability=commands.PreviewBuy(i,displayedShopRevision);
                 c.Name.text=d.DisplayName;c.Price.text=offer.Cost+"G · C"+offer.Cost;c.Types.text=TraitList(d);
-                c.Owned.text=string.Join(" · ",new[]{UnitRank.One,UnitRank.Two,UnitRank.Three}.Select(r=>"R"+(int)r+" "+Player.Units.Count(u=>u.DefinitionId==d.Id&&u.EvolutionStage==0&&u.Rank==r)));
+                c.Owned.text=string.Join(" · ",new[]{UnitRank.One,UnitRank.Two,UnitRank.Three}.Select(r=>"R"+(int)r+" "+Player.Units.Count(u=>u.DefinitionId==d.Id&&u.Rank==r)));
                 c.Action.text=!availability.Accepted?ShortBuyFailure(availability.Failure):availability.Preview.MergeNextPreparation?
                     (availability.Preview.RankUpCount>0?"R"+(int)availability.Preview.FinalRank+" + NEXT PREP MERGE":"BUY / NEXT PREP MERGE"):
                     availability.Preview.RankUpCount>0?"BUY / R"+(int)availability.Preview.FinalRank:"BUY";

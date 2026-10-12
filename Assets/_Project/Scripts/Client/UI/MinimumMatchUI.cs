@@ -91,6 +91,7 @@ namespace PokeChess.Client.UI
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
             ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();BuildSynergyUI();
             BuildItemWildUI();
+            BuildEvolutionUI();
         }
         private void ConfigureShopPanel()
         {
@@ -250,7 +251,7 @@ namespace PokeChess.Client.UI
                 shopCards[i].gameObject.SetActive(ShopExpanded);var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) { cardText[i].text="EMPTY SLOT";shopCards[i].interactable=false;continue; }
                 var availability=commands.PreviewBuy(i,displayedShopRevision);var definition=catalog.Get(offer.DefinitionId);
-                int owned=Player.Units.Count(u=>u.DefinitionId==offer.DefinitionId && u.EvolutionStage==0);
+                int owned=Player.Units.Count(u=>u.DefinitionId==offer.DefinitionId);
                 cardText[i].text=definition.DisplayName+"\nCost "+offer.Cost+" / "+offer.Cost+"G\nOwned units: "+owned+"\n"+(availability.Accepted ? availability.Preview.MergeNextPreparation ? (availability.Preview.RankUpCount>0 ? "BENCH RANK UP + NEXT PREP MERGE" : "BUY / MERGE NEXT PREP") : availability.Preview.RankUpCount>0 ? "BUY + RANK UP" : "BUY" : availability.Message);
                 shopCards[i].interactable=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability.Accepted;
             }
@@ -260,6 +261,7 @@ namespace PokeChess.Client.UI
             xpButton.interactable=trade && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
             ButtonText(xpButton,Player.Level==commands.LevelRules.MaxLevel ? "XP MAX" : "Buy "+commands.LevelRules.PurchaseXP+" XP / "+commands.LevelRules.PurchaseGoldCost+"G");
             RenderUnitContext();
+            RenderEvolutionUI();
             RenderShopEconomyUI();UpdateTokenFeedback();RenderRoundUI();
         }
     }

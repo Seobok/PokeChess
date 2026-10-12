@@ -56,8 +56,8 @@ namespace PokeChess.Core.Match
             int benchSlot = player.FindFirstEmptyBenchSlot() ?? player.Rules.BenchCapacity;
             long revision = checked(shop.Revision + 1);
             string id = match.NextUnitId(out var sequence);
-            var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, 0, UnitPlacement.OnBench(benchSlot));
-            var holding = match.Pool?.ValidateAcquire(unit, definition.Id);
+            var unit = catalog.CreateUnit(id, definition.Id, playerId, UnitRank.One, slot.EvolutionStage, UnitPlacement.OnBench(benchSlot));
+            var holding = match.Pool?.ValidateAcquire(unit, slot.PoolOriginDefinitionId);
             var plan = RankUpPlan.Build(player,catalog,unit,benchOnly:match.Phase==MatchPhase.Combat);
             RankUpSystem.Validate(match,player,plan,holding);
             return new Checkout { Player=player,Plan=plan,Holding=holding,Price=slot.Cost,ShopRevision=revision,Sequence=sequence };

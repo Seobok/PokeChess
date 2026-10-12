@@ -41,6 +41,26 @@ namespace PokeChess.Core.Match
             unit.ClearItems();
         }
         public string PlayerId { get; }
+        private readonly Dictionary<string, ShopEvolution> shopEvolutions = new Dictionary<string, ShopEvolution>(StringComparer.Ordinal);
+        public IReadOnlyDictionary<string, ShopEvolution> ShopEvolutions => new ReadOnlyDictionary<string, ShopEvolution>(shopEvolutions);
+        public int EvolutionPoints { get; private set; }
+        public int LastEvolutionPointRound { get; private set; }
+        public long EvolutionRevision { get; private set; }
+        internal void GrantEvolutionPoints(int round, int amount)
+        {
+            int points = checked(EvolutionPoints + amount);
+            long revision = checked(EvolutionRevision + 1);
+            EvolutionPoints = points; LastEvolutionPointRound = round; EvolutionRevision = revision;
+        }
+        internal void CommitEvolution(UnitInstance unit, PokemonDefinition target, string root, int stage, int cost)
+        {
+            long revision = checked(EvolutionRevision + 1);
+            long placementRevision = checked(PlacementRevision + 1);
+            if (!shopEvolutions.TryGetValue(root, out var current) || current.Stage < stage)
+                shopEvolutions[root] = new ShopEvolution(root, target.Id, stage);
+            unit.ApplyEvolution(target.Id, stage);
+            EvolutionPoints -= cost; EvolutionRevision = revision; PlacementRevision = placementRevision;
+        }
         public MatchRules Rules { get; }
         public int HP { get; private set; }
         public bool IsEliminated { get; private set; }

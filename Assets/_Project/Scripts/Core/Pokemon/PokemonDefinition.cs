@@ -150,6 +150,20 @@ namespace PokeChess.Core.Pokemon
             return definition;
         }
         public bool TryGet(string id,out PokemonDefinition definition) => definitions.TryGetValue(ModelGuard.Id(id,nameof(id)),out definition);
+        // An authored, single-parent lineage. Reject cycles and converging paths rather than guessing a family.
+        public string EvolutionRoot(string id, out int stage)
+        {
+            Get(id); stage = 0;
+            var visited = new HashSet<string>(StringComparer.Ordinal);
+            while (visited.Add(id))
+            {
+                var parents = definitions.Values.Where(d => d.Evolutions.Any(e => e.TargetDefinitionId == id)).ToArray();
+                if (parents.Length == 0) return id;
+                if (parents.Length != 1) throw new InvalidOperationException("Ambiguous evolution lineage.");
+                id = parents[0].Id; stage = checked(stage + 1);
+            }
+            throw new InvalidOperationException("Cyclic evolution lineage.");
+        }
         public UnitInstance CreateUnit(string instanceId, string definitionId, string ownerPlayerId,
             UnitRank rank, int evolutionStage, UnitPlacement placement, IEnumerable<string> itemIds = null)
         {

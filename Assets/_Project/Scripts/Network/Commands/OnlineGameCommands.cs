@@ -149,7 +149,7 @@ namespace PokeChess.Network.Session
         public MatchCommand CreateCommand(MatchCommandKind kind)
         {
             var state=LocalMatchState;return new MatchCommand{protocol=1,matchId=StartInfo?.matchId,commandId=Guid.NewGuid().ToString("N"),playerId=session?.CurrentPlayer.Id,sequence=nextCommandSequence,kind=kind,
-                round=state?.round??1,phase=state?.phase??MatchPhase.Preparation,playerRevision=state?.playerRevision??0,shopRevision=state?.shopRevision??0,placementRevision=state?.placementRevision??0,itemRevision=state?.itemRevision??0};
+                round=state?.round??1,phase=state?.phase??MatchPhase.Preparation,playerRevision=state?.playerRevision??0,shopRevision=state?.shopRevision??0,placementRevision=state?.placementRevision??0,itemRevision=state?.itemRevision??0,evolutionRevision=state?.evolutionRevision??0};
         }
         public async Task<CommandAck> SubmitCommandAsync(MatchCommand command)
         {

@@ -21,5 +21,7 @@ namespace PokeChess.Client.Match
         public MatchCommandResult ChooseItem(int slot,long revision)=>executor.ChooseItem(slot,revision);
         public MatchCommandResult EquipItem(string unitId,string itemId,long revision)=>executor.EquipItem(unitId,itemId,revision);
         public MatchCommandResult UnequipItem(string unitId,long revision)=>executor.UnequipItem(unitId,revision);
+        public MatchCommandResult PreviewEvolution(string id,long evolutionRevision,long placementRevision)=>executor.PreviewEvolution(id,evolutionRevision,placementRevision);
+        public MatchCommandResult Evolve(string id,long evolutionRevision,long placementRevision)=>executor.Evolve(id,evolutionRevision,placementRevision);
     }
 }

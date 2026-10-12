@@ -10,9 +10,11 @@ namespace PokeChess.Core.Match
         public int Index { get; }
         public string DefinitionId { get; }
         public int Cost { get; }
+        public string PoolOriginDefinitionId { get; }
+        public int EvolutionStage { get; }
         public bool IsEmpty => DefinitionId == null;
-        internal ShopSlot(int index, string definitionId = null, int cost = 0)
-        { Index = index; DefinitionId = definitionId; Cost = cost; }
+        internal ShopSlot(int index, string definitionId = null, int cost = 0, string poolOriginDefinitionId = null, int evolutionStage = 0)
+        { Index = index; DefinitionId = definitionId; Cost = cost; PoolOriginDefinitionId = poolOriginDefinitionId ?? definitionId; EvolutionStage = evolutionStage; }
     }
 
     // Host-only RNG state. Expose filtered slot/lock DTOs to the owner, never the RNG.

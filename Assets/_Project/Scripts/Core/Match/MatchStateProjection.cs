@@ -6,7 +6,7 @@ namespace PokeChess.Core.Match
 {
     [Serializable] public sealed class PublicBoardUnit
     {
-        public string id,definitionId;public int rank,column,row;public string[] items;
+        public string id,definitionId;public int rank,column,row,evolutionStage;public string[] items;
     }
     [Serializable] public sealed class PublicPlayer
     {
@@ -51,7 +51,7 @@ namespace PokeChess.Core.Match
                 players=match.Players.Select(p=>new PublicPlayer{id=p.PlayerId,hp=p.HP,maxHP=p.Rules.StartingHP,level=p.Level,eliminated=p.IsEliminated,
                     placement=match.FinalResult?.Standings.FirstOrDefault(r=>r.PlayerId==p.PlayerId)?.Placement??p.FinalPlacement??0,eliminationReason=p.Elimination?.Reason.ToString(),eliminationRound=p.Elimination?.Round??0,
                     board=p.Units.Where(u=>u.Placement.Kind==PlacementKind.Board).Select(u=>new PublicBoardUnit{id=u.InstanceId,definitionId=u.DefinitionId,
-                        rank=(int)u.Rank,column=u.Placement.Position.Value.Column,row=u.Placement.Position.Value.Row,items=u.ItemInstanceIds.ToArray()}).ToArray()}).ToArray(),
+                        rank=(int)u.Rank,evolutionStage=u.EvolutionStage,column=u.Placement.Position.Value.Column,row=u.Placement.Position.Value.Row,items=u.ItemInstanceIds.ToArray()}).ToArray()}).ToArray(),
                 results=rounds.LastResult?.PlayerResults.Values.Select(r=>new PublicRoundResult{playerId=r.PlayerId,opponentId=r.OpponentId,outcome=r.Outcome.ToString(),shadow=r.IsShadow,opponentSurvivors=r.OpponentSurvivors}).ToArray()??Array.Empty<PublicRoundResult>()};
         }
     }

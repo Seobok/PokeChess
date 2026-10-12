@@ -5,7 +5,7 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
-    public enum MatchCommandFailure { None, NotEnoughGold, Changed, FullBench, PoolEmpty, WrongPhase, Eliminated, Unavailable, InvalidRequest }
+    public enum MatchCommandFailure { None, NotEnoughGold, Changed, FullBench, PoolEmpty, WrongPhase, Eliminated, Unavailable, InvalidRequest, NotEnoughEvolutionPoints }
     public sealed class MatchCommandResult
     {
         public bool Accepted => Failure==MatchCommandFailure.None;
@@ -24,6 +24,7 @@ namespace PokeChess.Core.Match
         private readonly MatchState match;
         private readonly string playerId;
         private readonly ShopTransactionSystem trades;
+        private readonly EvolutionSystem evolutions;
         private readonly ShopSystem shops=new ShopSystem();
         private readonly LevelSystem levels=new LevelSystem();
         public ShopRules ShopRules => shops.Rules;
@@ -35,6 +36,7 @@ namespace PokeChess.Core.Match
         {
             this.match=match ?? throw new ArgumentNullException(nameof(match));this.playerId=playerId;match.GetPlayer(playerId);
             trades=new ShopTransactionSystem(catalog);
+            evolutions=new EvolutionSystem(catalog);
         }
         private MatchCommandResult Run(Func<MatchCommandResult> action)
         {
@@ -46,6 +48,7 @@ namespace PokeChess.Core.Match
         }
         private static MatchCommandResult Reject(string reason)
         {
+            if(reason.IndexOf("Not enough evolution points",StringComparison.OrdinalIgnoreCase)>=0) return new MatchCommandResult("진화포인트가 부족합니다.",failure:MatchCommandFailure.NotEnoughEvolutionPoints);
             if(reason.IndexOf("gold",StringComparison.OrdinalIgnoreCase)>=0) return new MatchCommandResult("Not enough gold.",failure:MatchCommandFailure.NotEnoughGold);
             if(reason.IndexOf("stale",StringComparison.OrdinalIgnoreCase)>=0) return new MatchCommandResult("State changed. Please retry.",failure:MatchCommandFailure.Changed);
             if(reason.IndexOf("bench is full",StringComparison.OrdinalIgnoreCase)>=0) return new MatchCommandResult("Bench full: no room after merging.",failure:MatchCommandFailure.FullBench);
@@ -65,6 +68,11 @@ namespace PokeChess.Core.Match
         public MatchCommandResult Lock(bool locked,long revision) => Run(()=> { CheckShopRevision(revision);shops.SetLocked(match,playerId,locked);return new MatchCommandResult(locked ? "Shop locked for the next round." : "Shop unlocked."); });
         public MatchCommandResult BuyXP() => Run(()=> { if(Player.HP==0 || Player.IsEliminated) throw new InvalidOperationException("Player is eliminated.");levels.BuyXP(match,playerId);return new MatchCommandResult("XP purchased."); });
         public int SalePrice(string id) => trades.SalePrice(Player.GetUnit(id));
+        public MatchCommandResult PreviewEvolution(string id,long evolutionRevision,long placementRevision)
+            => Run(()=> { evolutions.Preview(match,playerId,id,evolutionRevision,placementRevision);return new MatchCommandResult("진화 가능"); });
+        public MatchCommandResult Evolve(string id,long evolutionRevision,long placementRevision)
+            => Run(()=> { var unit=evolutions.Evolve(match,playerId,id,evolutionRevision,placementRevision);
+                return new MatchCommandResult(unit.DefinitionId+" 진화 완료. 다음 상점 갱신부터 진화체가 등장합니다."); });
         public MatchCommandResult ChooseItem(int slot,long revision)=>Run(()=>{
             var id=new ItemSystem().Choose(match,playerId,slot,revision);
             return new MatchCommandResult(ItemCatalog.DisplayName(id)+" 획득");

@@ -149,6 +149,7 @@ namespace PokeChess.Client.UI
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
             RenderOnlineSynergies(pub);
             RenderItemWildUI();
+            RenderEvolutionUI();
             RenderUnitCryAudio();
             UpdateTokenFeedback();
         }
@@ -184,7 +185,8 @@ namespace PokeChess.Client.UI
         {
             if(!tokens.ContainsKey(id))CreateToken(id);var token=tokens[id];token.gameObject.SetActive(true);token.anchoredPosition=FindSlot(placement).Rect.anchoredPosition;groups[id].alpha=id==dragged?.3f:1;
             if(!placementSprites.TryGetValue(id,out var sprite)||sprite==null)placementSprites[id]=sprite=AddSprite(token,definition);if(sprite.PokemonId!=definition)sprite.Initialize(definition);sprite.ShowIdle(Time.unscaledTimeAsDouble);
-            tokenLabels[id].text=new string('★',rank);tokenLabels[id].color=Color.white;tokenLabels[id].fontSize=11;tokenLabels[id].rectTransform.anchoredPosition=new Vector2(0,25);tokenLabels[id].transform.SetAsLastSibling();
+            int evolutionStage=PrototypeEvolutionRoster.Stage(definition);
+            tokenLabels[id].text=new string('★',rank)+(evolutionStage>0?" E"+evolutionStage:"");tokenLabels[id].color=Color.white;tokenLabels[id].fontSize=11;tokenLabels[id].rectTransform.anchoredPosition=new Vector2(0,25);tokenLabels[id].transform.SetAsLastSibling();
         }
         private void RenderOnlineContext(OwnerMatchState owner,PublicMatchState pub)
         {
