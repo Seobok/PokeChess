@@ -13,9 +13,47 @@ namespace PokeChess.Client.UI
         private RectTransform detailPopup, developerPanel;
         private UnityEngine.UI.Button developerToggle;
         private readonly List<PlacementHexGraphic> tableHexes = new List<PlacementHexGraphic>();
+        private string hoveredUnitId;
+        private int hoveredShopSlot=-1;
+        private long hoveredShopRevision;
+
+        public string HoveredUnitId => hoveredUnitId;
+        public int HoveredShopSlot => hoveredShopSlot;
+        public void HoverShopUnit(int slot)
+        {
+            if(IsDragging||IsItemDragging||slot<0||slot>=shopCards.Length||!ShopExpanded)return;
+            selectedUnitId=null;hoveredUnitId=null;HideUnitInfoHint();hoveredShopSlot=slot;
+            hoveredShopRevision=IsOnlineMatch?onlineService.LocalMatchState.shopRevision:Player.Shop.Revision;
+            UpdateTablePresentation();
+        }
+        public void EndShopUnitHover(int slot){if(hoveredShopSlot==slot)DeselectUnit();}
+        private bool RenderShopHoverInfo()
+        {
+            if(hoveredShopSlot<0)return false;
+            long revision=IsOnlineMatch?onlineService.LocalMatchState.shopRevision:Player.Shop.Revision;
+            string definitionId=IsOnlineMatch?onlineService.LocalMatchState.shop[hoveredShopSlot].definitionId:Player.Shop.Slots[hoveredShopSlot].DefinitionId;
+            if(!ShopExpanded||revision!=hoveredShopRevision||string.IsNullOrEmpty(definitionId)){
+                hoveredShopSlot=-1;HideUnitInfoHint();return false;
+            }
+            var definition=catalog.Get(definitionId);
+            var stats=RankRules.Default.Apply(definition.BaseStats,UnitRank.One);
+            RenderUnitInfoIcons(definition,UnitRank.One,stats,stats.MaxHP,stats.MaxHP,stats.StartingEnergy,stats.MaxEnergy,0,System.Array.Empty<string>());
+            return true;
+        }
+        public void HoverUnit(string id)
+        {
+            if(IsDragging||IsItemDragging)return;
+            hoveredShopSlot=-1;hoveredUnitId=id;
+            SelectUnit(id);
+        }
+        public void EndUnitHover(string id)
+        {
+            if(id==null||hoveredUnitId!=id)return;
+            DeselectUnit();
+        }
         public bool UnitPopupVisible => detailPopup != null && detailPopup.gameObject.activeSelf;
         public bool BoardOutlineVisible => tableHexes.Any(h=>h.gameObject.activeInHierarchy);
-        public void DeselectUnit(){selectedUnitId=null;HideUnitInfoHint();UpdateTablePresentation();}
+        public void DeselectUnit(){selectedUnitId=null;hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();UpdateTablePresentation();}
         private static Vector2 TablePoint(BoardPosition p) => new Vector2(-252+p.Column*72+(p.Row%2)*36,-70+p.Row*43);
         private void Place(RectTransform rect,Vector2 size,Vector2 position)
         { rect.sizeDelta=size;rect.anchoredPosition=position; }
@@ -75,6 +113,7 @@ namespace PokeChess.Client.UI
             status.gameObject.SetActive(false);
             for(int i=0;i<shopCards.Length;i++){
                 Place((RectTransform)shopCards[i].transform,new Vector2(180,96),new Vector2(-365+i*188,57));
+                var shopHover=shopCards[i].gameObject.AddComponent<UnitHoverTarget>();shopHover.View=this;shopHover.ShopSlot=i;
                 var c=shopViews[i];Place(c.Name.rectTransform,new Vector2(124,20),new Vector2(21,30));
                 Place(c.Price.rectTransform,new Vector2(90,18),new Vector2(33,9));
                 Place(c.Types.rectTransform,new Vector2(168,16),new Vector2(0,-10));
@@ -104,8 +143,13 @@ namespace PokeChess.Client.UI
                 bool keep=hits.Count>0&&(hits[0].gameObject.transform.IsChildOf(detailPopup)||hits[0].gameObject.GetComponentInParent<PlacementDragToken>()!=null||hits[0].gameObject.transform.IsChildOf(combatRoot)&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()!=null);
                 if(!keep){selectedUnitId=null;HideUnitInfoHint();}
             }
-            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true)selectedUnitId=null;
-            detailPopup.gameObject.SetActive(selectedUnitId!=null);
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){selectedUnitId=null;hoveredShopSlot=-1;}
+            if(IsDragging||IsItemDragging||selectedUnitId!=hoveredUnitId){
+                hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();
+            }
+            bool shopInfo=RenderShopHoverInfo();
+            sellButton.gameObject.SetActive(!shopInfo);
+            detailPopup.gameObject.SetActive(shopInfo||hoveredUnitId!=null&&selectedUnitId==hoveredUnitId);
             if(detailPopup.gameObject.activeSelf)detailPopup.SetAsLastSibling();
             bool outline=selectedUnitId!=null||IsDragging||IsItemDragging;
             foreach(var hex in tableHexes)hex.gameObject.SetActive(outline);
@@ -140,6 +184,9 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
+
 
 
 

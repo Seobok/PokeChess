@@ -65,7 +65,7 @@ namespace PokeChess.Client.UI
             foreach(var unit in frame.units){
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
-                    var button=node.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.id;button.onClick.AddListener(()=>SelectOnlineUnit(id));
+                    var button=node.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.id;button.onClick.AddListener(()=>SelectOnlineUnit(id));var hover=node.gameObject.AddComponent<UnitHoverTarget>();hover.View=this;hover.UnitId=id;
                     combatTokens[unit.id]=label=Label("HP",node,"",9,new Vector2(60,26),new Vector2(0,-15));fighterSprites[unit.id]=AddSprite(node,unit.definitionId,unit.id);
                     onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,50));
                 }
@@ -134,5 +134,6 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 

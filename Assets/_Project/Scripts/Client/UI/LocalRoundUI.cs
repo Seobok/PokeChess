@@ -211,7 +211,7 @@ namespace PokeChess.Client.UI
                     {
                         var rect=Rect("Fighter_"+unit.UnitInstanceId,combatRoot,new Vector2(43,35),Vector2.zero);
                         var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=unit.TeamId==(ownPair.Pairing.PlayerOneId==localViewedPlayerId ? 1 : 2) ? new Color(.12f,.44f,.58f) : new Color(.6f,.2f,.23f);image.raycastTarget=false;
-                        if(ViewedPlayer.Units.Any(u=>u.InstanceId==unit.UnitInstanceId)) { image.raycastTarget=true; var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.UnitInstanceId;button.onClick.AddListener(()=>SelectUnit(id)); }
+                        if(ViewedPlayer.Units.Any(u=>u.InstanceId==unit.UnitInstanceId)) { image.raycastTarget=true; var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.UnitInstanceId;button.onClick.AddListener(()=>SelectUnit(id));var hover=rect.gameObject.AddComponent<UnitHoverTarget>();hover.View=this;hover.UnitId=id; }
                         label=Label("HP",rect,"",10,new Vector2(43,35),Vector2.zero);combatTokens[unit.UnitInstanceId]=label;
                     }
                     label.transform.parent.gameObject.SetActive(unit.IsAlive && unit.IsOnBoard);
@@ -243,6 +243,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

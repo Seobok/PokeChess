@@ -9,7 +9,7 @@ public static class CaptureTableLayout {
     static void Check(bool v,string m){if(!v)throw new Exception(m);}
     public static string Main(){
         EditorApplication.isPaused=true;
-        var v=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();v.ResetSynergyDemo();v.SelectUnit("p1-synergy-0");
+        var v=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();v.ResetSynergyDemo();v.HoverUnit("p1-synergy-0");
         var canvas=v.GetComponentInChildren<Canvas>();var mode=canvas.renderMode;var oldCamera=canvas.worldCamera;float plane=canvas.planeDistance;
         var cameraObject=new GameObject("TableLayoutQACamera");var camera=cameraObject.AddComponent<Camera>();
         camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.035f,.06f,.1f);
@@ -40,4 +40,5 @@ public static class CaptureTableLayout {
         }
     }
 }
+
 

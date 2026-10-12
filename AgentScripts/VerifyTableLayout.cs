@@ -23,7 +23,7 @@ public static class VerifyTableLayout {
         var sidebar=Field<RectTransform>(v,"sidebar");Check(sidebar.anchoredPosition.x>450,"Right player list");
         Check(Field<RectTransform>(v,"developerPanel").gameObject.activeSelf==false,"Developer panel collapsed");
         Check(v.GetComponentsInChildren<RectTransform>(true).Count(t=>t.name.StartsWith("Bench_")&&t.gameObject.activeSelf)==9,"Persistent bench slots");
-        v.SelectUnit("p1-synergy-0");Check(v.UnitPopupVisible&&v.BoardOutlineVisible,"Selected popup and grid");
+        v.HoverUnit("p1-synergy-0");Check(v.UnitPopupVisible&&v.BoardOutlineVisible,"Selected popup and grid");
         Field<RectTransform>(v,"canvasRect").Find("Background").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
         Check(!v.UnitPopupVisible&&!v.BoardOutlineVisible&&v.SelectedUnitId==null,"Background deselection");
         for(int i=0;i<10;i++)Check(v.InventoryItemButton(i).gameObject.activeSelf,"Ten fixed inventory slots");
@@ -73,6 +73,7 @@ public static class VerifyTableLayout {
         return "PASS: evolution drag, 56 hexes, hidden idle grid, fixed bench, right sidebar, popup/deselect, 10 inventory slots, overflow FIFO/stable slots, equip/return drags, scouting, 8+2 trait pages, shop purchase, board placement, combat.";
     }
 }
+
 
 
 
