@@ -41,7 +41,7 @@ namespace PokeChess.Client.UI
         private void Update()
         {
             if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelItemDrag();HideItemHint();HideUnitInfoHint();}
-            if(IsOnlineMatch){UpdateOnlineMatch();return;}
+            if(IsOnlineMatch){UpdateOnlineMatch();UpdateTablePresentation();return;}
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");
             if(keyboard!=null && keyboard.spaceKey.wasPressedThisFrame) AdvanceRound();
@@ -50,7 +50,7 @@ namespace PokeChess.Client.UI
                 var source=Player.Units.FirstOrDefault(u=>u.InstanceId==dragged);
                 if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (Match.Phase!=MatchPhase.Combat || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
             }
-            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();AnimateRosterSprites();
+            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();AnimateRosterSprites();UpdateTablePresentation();
         }
         private void OnApplicationFocus(bool focus) { if(!focus){CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled.");} }
         private void OnDisable() { combatAudio?.ResetPlayback();CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
@@ -99,6 +99,7 @@ namespace PokeChess.Client.UI
             ghost.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(1,.78f,.36f,.85f);
             var group=ghost.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;group.interactable=false;
             ghostLabel=Label("Name",ghost,"",20,ghost.sizeDelta,Vector2.zero);ghostLabel.color=Color.black;ghost.gameObject.SetActive(false);
+            ApplyTableLayout();
             if(EventSystem.current==null)
             {
                 var system=new GameObject("PlacementEventSystem",typeof(EventSystem));system.transform.SetParent(transform,false);
@@ -232,6 +233,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

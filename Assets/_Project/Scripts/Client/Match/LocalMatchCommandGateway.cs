@@ -11,6 +11,7 @@ namespace PokeChess.Client.Match
         public LevelRules LevelRules=>executor.LevelRules;
         public bool CanBuy=>executor.CanBuy;
         public bool CanTrade=>executor.CanTrade;
+        public bool CanSell(string id)=>executor.CanSell(id);
         public MatchCommandResult PreviewBuy(int slot,long revision)=>executor.PreviewBuy(slot,revision);
         public MatchCommandResult Buy(int slot,long revision)=>executor.Buy(slot,revision);
         public MatchCommandResult Reroll(long revision)=>executor.Reroll(revision);
@@ -25,3 +26,4 @@ namespace PokeChess.Client.Match
         public MatchCommandResult Evolve(string id,long evolutionRevision,long placementRevision)=>executor.Evolve(id,evolutionRevision,placementRevision);
     }
 }
+

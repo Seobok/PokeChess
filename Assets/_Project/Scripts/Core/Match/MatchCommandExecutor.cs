@@ -32,6 +32,7 @@ namespace PokeChess.Core.Match
         private PlayerState Player => match.GetPlayer(playerId);
         public bool CanBuy => (match.Phase==MatchPhase.Preparation || match.Phase==MatchPhase.Combat) && Player.HP>0 && !Player.IsEliminated;
         public bool CanTrade => match.Phase==MatchPhase.Preparation && Player.HP>0 && !Player.IsEliminated;
+        public bool CanSell(string id) => CanBuy && System.Linq.Enumerable.Any(Player.Units,u=>u.InstanceId==id && (match.Phase==MatchPhase.Preparation || u.Placement.Kind==PlacementKind.Bench));
         public MatchCommandExecutor(MatchState match,PokemonCatalog catalog,string playerId)
         {
             this.match=match ?? throw new ArgumentNullException(nameof(match));this.playerId=playerId;match.GetPlayer(playerId);
@@ -87,11 +88,12 @@ namespace PokeChess.Core.Match
         });
         public MatchCommandResult Sell(string id,long revision) => Run(()=>
         {
-            if(!CanTrade) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");
+            if(!CanSell(id)) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");
             if(Player.PlacementRevision!=revision) throw new InvalidOperationException("Stale placement revision.");
             int items=Player.GetUnit(id).ItemInstanceIds.Count;int gold=trades.Sell(match,playerId,id);
             return new MatchCommandResult("Sold for +"+gold+"G; "+items+" item(s) returned.",saleGold:gold,returnedItems:items);
         });
     }
 }
+
 

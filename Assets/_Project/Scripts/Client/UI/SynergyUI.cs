@@ -20,7 +20,10 @@ namespace PokeChess.Client.UI
         private BattleState synergyVisualBattle;
         private long synergyVisualTick = -1;
         private readonly Dictionary<string, (string text, float until)> synergyFlashes = new Dictionary<string, (string, float)>();
-        public string SynergyDisplay => string.Join(" | ", SynergyTraits.All.Select(t => synergyLabels[t].text));
+        private UnityEngine.UI.Button synergyNext;
+        private int synergyPage;
+        private IReadOnlyList<SynergyCount> lastSynergyCounts=Array.Empty<SynergyCount>();
+        public string SynergyDisplay => string.Join(" | ",synergyLabels.Where(p=>synergyColors[p.Key].gameObject.activeSelf).Select(p=>p.Value.text));
         private static string TraitName(string trait) => Readable(trait);
         private static string TraitList(PokemonDefinition definition) => string.Join(" / ", definition.TraitIds.Select(TraitName));
         private static string SynergyDescription(string trait)
@@ -41,36 +44,47 @@ namespace PokeChess.Client.UI
             combatRoot.anchoredPosition = new Vector2(0,-28);
             combatInfo.rectTransform.anchoredPosition = new Vector2(235,365);
             combatInfo.rectTransform.sizeDelta = new Vector2(280,24); combatInfo.fontSize = 12;
-            synergyRoot = Rect("Synergies", canvasRect, new Vector2(620, 24), new Vector2(0, 264));
-            for (int i = 0; i < SynergyTraits.All.Count; i++)
-            {
-                string trait = SynergyTraits.All[i];
-                var node = Rect(trait, synergyRoot, new Vector2(150, 24), new Vector2(-232.5f + i * 155, 0));
-                var image = node.gameObject.AddComponent<UnityEngine.UI.Image>(); image.color = Navy;
-                synergyColors[trait] = image;
-                synergyLabels[trait] = Label("Count", node, "", 10, new Vector2(146, 22), Vector2.zero);
-                var trigger = node.gameObject.AddComponent<EventTrigger>();
-                var enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-                enter.callback.AddListener(_ => { synergyHovered = trait; synergyTooltip.gameObject.SetActive(true); synergyTooltip.SetAsLastSibling(); });
-                var exit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-                exit.callback.AddListener(_ => { synergyHovered = null; synergyTooltip.gameObject.SetActive(false); });
-                trigger.triggers.Add(enter); trigger.triggers.Add(exit);
-            }
-            synergyTooltip = Panel("SynergyHelp", new Vector2(600, 96), new Vector2(0, 200));
+            synergyRoot = Rect("Synergies", canvasRect, new Vector2(155,400), new Vector2(-540,80));
+            synergyNext=ActionButton("Next traits",new Vector2(145,25),Vector2.zero,()=>{
+                synergyPage=(synergyPage+1)%Math.Max(1,(lastSynergyCounts.Count+7)/8);
+                synergyHovered=null;synergyTooltip.gameObject.SetActive(false);RenderSynergies(lastSynergyCounts,true);
+            });
+            synergyNext.transform.SetParent(synergyRoot,false);synergyNext.gameObject.SetActive(false);
+            synergyTooltip = Panel("SynergyHelp", new Vector2(320, 180), new Vector2(-290, 130));
             synergyTooltip.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            synergyHelp = Label("Description", synergyTooltip, "", 12, new Vector2(584, 88), Vector2.zero);
+            synergyHelp = Label("Description", synergyTooltip, "", 12, new Vector2(300, 165), Vector2.zero);
             synergyTooltip.gameObject.SetActive(false);
         }
         private void RenderSynergies(IReadOnlyList<SynergyCount> counts, bool visible)
         {
             synergyRoot.gameObject.SetActive(visible);
             if (!visible) { synergyTooltip.gameObject.SetActive(false); synergyHovered = null; return; }
-            foreach (var count in counts)
-            {
-                synergyLabels[count.TraitId].text = TraitName(count.TraitId) + " " + count.Count + "/" + (count.Tier == 3 ? 3 : count.Tier == 2 ? 3 : 2) +
-                    " · " + (count.Tier == 3 ? "MAX" : count.Tier == 2 ? "ACTIVE +1" : "+" + count.Needed);
-                synergyColors[count.TraitId].color = count.Tier == 3 ? new Color(.34f, .27f, .1f) : count.Tier == 2 ? new Color(.1f, .3f, .24f) : Navy;
+            lastSynergyCounts=counts.Where(c=>c.Count>0).ToArray();
+            synergyPage=Math.Min(synergyPage,Math.Max(0,(lastSynergyCounts.Count-1)/8));
+            foreach(var image in synergyColors.Values)image.gameObject.SetActive(false);
+            var page=lastSynergyCounts.Skip(synergyPage*8).Take(8).ToArray();
+            for(int i=0;i<page.Length;i++){
+                var count=page[i];
+                if(!synergyColors.TryGetValue(count.TraitId,out var image)){
+                    var node=Rect(count.TraitId,synergyRoot,new Vector2(150,40),Vector2.zero);
+                    image=node.gameObject.AddComponent<UnityEngine.UI.Image>();synergyColors[count.TraitId]=image;
+                    var mark=HudImage("Mark",node,new Vector2(29,29),new Vector2(-56,0),new Color(.22f,.38f,.4f));
+                    Label("Glyph",mark.transform,count.TraitId.Substring(0,1).ToUpperInvariant(),17,new Vector2(28,28),Vector2.zero);
+                    synergyLabels[count.TraitId]=Label("Count",node,"",11,new Vector2(112,36),new Vector2(19,0));
+                    var trigger=node.gameObject.AddComponent<EventTrigger>();string id=count.TraitId;
+                    var enter=new EventTrigger.Entry{eventID=EventTriggerType.PointerEnter};
+                    enter.callback.AddListener(_=>{synergyHovered=id;synergyTooltip.gameObject.SetActive(true);synergyTooltip.SetAsLastSibling();RenderSynergies(lastSynergyCounts,true);});
+                    var exit=new EventTrigger.Entry{eventID=EventTriggerType.PointerExit};
+                    exit.callback.AddListener(_=>{synergyHovered=null;synergyTooltip.gameObject.SetActive(false);});
+                    trigger.triggers.Add(enter);trigger.triggers.Add(exit);
+                }
+                image.gameObject.SetActive(true);image.rectTransform.anchoredPosition=new Vector2(0,165-i*44);
+                synergyLabels[count.TraitId].text=TraitName(count.TraitId)+"\n"+count.Count+"/"+(count.Tier>=2?3:2);
+                image.color=count.Tier==3?new Color(.34f,.27f,.1f):count.Tier==2?new Color(.1f,.3f,.24f):Navy;
             }
+            synergyNext.gameObject.SetActive(lastSynergyCounts.Count>8);
+            ((RectTransform)synergyNext.transform).anchoredPosition=new Vector2(0,165-page.Length*44);
+            ButtonText(synergyNext,(synergyPage+1)+"/"+Math.Max(1,(lastSynergyCounts.Count+7)/8)+"  >");
             if (synergyHovered != null)
             {
                 var members = PrototypeRoster.CreateDefinitions().Where(d => d.TraitIds.Contains(synergyHovered)).Select(d => d.DisplayName);
@@ -124,4 +138,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 

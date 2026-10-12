@@ -21,7 +21,7 @@ namespace PokeChess.Client.UI
         }
         private void RenderOnlineHud(OwnerMatchState owner,PublicMatchState pub)
         {
-            hudRound.text="ROUND "+pub.round;
+            hudRound.text=pub.round+"   "+(pub.phase==MatchPhase.Preparation?"◇":pub.phase==MatchPhase.Combat?"◆":pub.phase==MatchPhase.Result?"□":"✓");
             HudTimerKind=pub.phase.ToString();double remaining=onlineService.PhaseRemainingSeconds;
             double duration=pub.phase==MatchPhase.Preparation?30:pub.wildRound?12:3;
             var frame=onlineService.Combat.Current;
@@ -134,4 +134,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 

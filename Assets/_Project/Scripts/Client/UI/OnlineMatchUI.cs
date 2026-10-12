@@ -45,14 +45,14 @@ namespace PokeChess.Client.UI
         private void SetLocalControls(bool active)
         {
             string[] names={"DebugTitle","DebugState","P01-P04 demo","P05-P08 demo","P09-P12 demo","Reset match","Rank demo","Full bench","Fixed foe","4 players","6 players","8 players","3 players","5 players","7 players","DEV: Start battle","Auto play 20","Fast simulation","Save report"};
-            foreach(var name in names){var node=canvasRect.Find(name);if(node!=null)node.gameObject.SetActive(active);}
+            foreach(var name in names){var node=canvasRect.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t=>t.name==name);if(node!=null)node.gameObject.SetActive(active);}
             roundButton.gameObject.SetActive(active);
             SimulationStartButton.gameObject.SetActive(active);SimulationSpeedButton.gameObject.SetActive(active);simulationPanel.gameObject.SetActive(false);simulationInfo.gameObject.SetActive(false);
             foreach(var button in canvasRect.GetComponentsInChildren<UnityEngine.UI.Button>(true))if(button.name.Contains("simulat")||button.name.StartsWith("Run ")||button.name=="Copy report")button.gameObject.SetActive(active);
         }
         private void BuildOnlineControls()
         {
-            onlineControls=Rect("OnlineMatchControls",canvasRect,Vector2.zero,Vector2.zero).gameObject;
+            onlineControls=Rect("OnlineMatchControls",developerPanel,new Vector2(225,170),new Vector2(0,-110)).gameObject;
             AddOnlineControl("My board",13,()=>WatchOnlinePlayer(onlineService.LocalMatchState.playerId));
             AddOnlineControl("Watch next",-23,()=>{
                 var players=onlineService.PublicState.players.Where(p=>!p.eliminated).ToArray();if(players.Length==0)return;
@@ -63,7 +63,7 @@ namespace PokeChess.Client.UI
             AddOnlineControl("Leave match",-123,LeaveOnlineMatch);
         }
         private UnityEngine.UI.Button AddOnlineControl(string name,float y,Action action)
-        {var button=ActionButton(name,new Vector2(225,28),new Vector2(490,y),action);button.transform.SetParent(onlineControls.transform,false);return button;}
+        {var button=ActionButton(name,new Vector2(225,28),new Vector2(0,y),action);button.transform.SetParent(onlineControls.transform,false);return button;}
         private async void LeaveOnlineMatch(){await onlineService.LeaveAsync();}
         public void WatchOnlinePlayer(string id)
         {
@@ -100,6 +100,7 @@ namespace PokeChess.Client.UI
             if(!OnlineInputReady||unit==null||onlineService.WatchingPlayerId!=onlineService.LocalMatchState.playerId)return false;
             return onlineService.PublicState.phase==MatchPhase.Preparation||onlineService.PublicState.phase==MatchPhase.Combat&&unit.placement==PlacementKind.Bench&&destination.Kind==PlacementKind.Bench;
         }
+        private bool CanOnlineSell(OwnerUnit unit)=>unit!=null&&OnlineInputReady&&onlineService.WatchingPlayerId==onlineService.LocalMatchState.playerId&&(onlineService.PublicState.phase==MatchPhase.Preparation||onlineService.PublicState.phase==MatchPhase.Combat&&unit.placement==PlacementKind.Bench);
         private UnitPlacement OnlinePlacement(OwnerUnit unit)=>unit.placement==PlacementKind.Board?UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)):UnitPlacement.OnBench(unit.bench);
         private void BeginOnlineDrag(string id,Vector2 point)
         {
@@ -112,7 +113,7 @@ namespace PokeChess.Client.UI
             if(!IsDragging)return;RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
             var unit=onlineService.LocalMatchState.units.FirstOrDefault(u=>u.id==dragged);var destination=Hit(point);
             foreach(var slot in slots)slot.Graphic.color=slot.Color;
-            if(HitShop(point)){Feedback(onlineService.PublicState.phase==MatchPhase.Preparation?"Release to request sale":"Sale unavailable during combat");return;}
+            if(HitShop(point)){Feedback(CanOnlineSell(unit)?"Release to request sale":"Sale unavailable for this unit");return;}
             if(destination!=null)destination.Graphic.color=CanOnlinePlace(unit,destination.Placement)?new Color(.08f,.36f,.29f):new Color(.48f,.12f,.17f);
         }
         private void EndOnlineDrag(Vector2 point)
@@ -120,7 +121,7 @@ namespace PokeChess.Client.UI
             if(IsDragging&&onlineService.LocalMatchState?.placementRevision!=dragRevision){CancelDrag("State changed; drag cancelled.");return;}
             if(!IsDragging)return;string id=dragged;var unit=onlineService.LocalMatchState.units.FirstOrDefault(u=>u.id==id);var destination=Hit(point);
             dragged=null;ghost.gameObject.SetActive(false);
-            if(HitShop(point)){if(onlineService.PublicState.phase==MatchPhase.Preparation)SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=id);return;}
+            if(HitShop(point)){if(CanOnlineSell(unit))SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=id);return;}
             if(destination!=null&&CanOnlinePlace(unit,destination.Placement))SendOnlineCommand(MatchCommandKind.Move,c=>{c.unitId=id;c.destination=destination.Placement.Kind;c.column=destination.Placement.Position?.Column??0;c.row=destination.Placement.Position?.Row??0;c.bench=destination.Placement.BenchSlot??0;});
             else Feedback("Move cancelled or unavailable.");
         }
@@ -202,7 +203,10 @@ namespace PokeChess.Client.UI
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+
                 (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items.Select(ItemCatalog.DisplayName)))+"\n"+RankFeedbackText;
             RenderUnitInfoIcons(d,(UnitRank)rank,stats,fighter?.hp??stats.MaxHP,fighter?.maxHP??stats.MaxHP,fighter?.energy??stats.StartingEnergy,fighter?.maxEnergy??stats.MaxEnergy,fighter?.shield??0,items,true);
-            sellButton.interactable=unit!=null&&OnlineInputReady&&pub.phase==MatchPhase.Preparation;ButtonText(sellButton,sellButton.interactable?"판매 / +"+unit.saleGold+"G":"판매 불가");
+            sellButton.interactable=CanOnlineSell(unit);ButtonText(sellButton,sellButton.interactable?"판매 / +"+unit.saleGold+"G":"판매 불가");
         }
     }
 }
+
+
+

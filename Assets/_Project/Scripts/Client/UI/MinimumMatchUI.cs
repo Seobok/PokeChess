@@ -16,19 +16,19 @@ namespace PokeChess.Client.UI
         private UnityEngine.UI.Button rerollButton,lockButton,xpButton,sellButton,shopToggle;
         private UnityEngine.UI.Text resources,inventoryLabel,detailLabel,debugLabel;
         private RectTransform shopFrame;
-        private const float ShopHeight=200, ShopHandleHeight=64;
+        private const float ShopHeight=160, ShopHandleHeight=44;
         public RectTransform ShopRect => shopFrame;
         private void AnimateShop()
         {
-            float target=ShopExpanded ? 20 : ShopHandleHeight-ShopHeight;
+            float target=ShopExpanded ? 10 : ShopHandleHeight-ShopHeight;
             shopFrame.anchoredPosition=new Vector2(0,Mathf.MoveTowards(shopFrame.anchoredPosition.y,target,900*Time.unscaledDeltaTime));
         }
         private bool HitShop(Vector2 point) => RectTransformUtility.RectangleContainsScreenPoint(canvasRect,point,null) && RectTransformUtility.RectangleContainsScreenPoint(shopFrame,point,null);
         private void PreviewShopSale()
         {
-            bool allowed=commands.CanTrade && Player.PlacementRevision==dragRevision;
+            bool allowed=commands.CanSell(dragged) && Player.PlacementRevision==dragRevision;
             shopFrame.GetComponent<UnityEngine.UI.Image>().color=allowed ? new Color(.08f,.36f,.29f) : new Color(.48f,.12f,.17f);
-            Feedback(allowed ? "Release to sell / +"+commands.SalePrice(dragged)+"G; equipped items return to inventory." : "Sale unavailable: preparation only, or placement changed.");
+            Feedback(allowed ? "Release to sell / +"+commands.SalePrice(dragged)+"G; equipped items return to inventory." : "Sale unavailable: combat requires a bench unit, or placement changed.");
         }
         private string selectedUnitId;
         private long displayedShopRevision,displayedPlacementRevision;
@@ -219,13 +219,14 @@ namespace PokeChess.Client.UI
             string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
         }
         public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
-        private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board && Match.Phase!=MatchPhase.Preparation ? new Color(.12f,.12f,.18f) : slot.Color;
+        private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board ? new Color(.35f,.62f,.65f,.6f) : slot.Color;
+
         private void UpdateTokenFeedback()
         {
             foreach(var pair in tokens)
             {
                 bool highlighted=highlights.TryGetValue(pair.Key,out float end) && end>Time.unscaledTime;
-                pair.Value.GetComponent<UnityEngine.UI.Image>().color=highlighted ? new Color(.22f,.85f,.53f) : pair.Key==selectedUnitId ? new Color(.3f,.73f,.94f) : new Color(.88f,.63f,.22f);
+                pair.Value.GetComponent<UnityEngine.UI.Image>().color=highlighted ? new Color(.22f,.85f,.53f,.25f) : pair.Key==selectedUnitId ? new Color(.3f,.73f,.94f,.2f) : Color.clear;
             }
         }
         private void RenderMinimumUI()
@@ -266,6 +267,10 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
+
+
 
 
 

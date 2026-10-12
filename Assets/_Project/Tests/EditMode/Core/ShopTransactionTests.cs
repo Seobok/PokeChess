@@ -106,11 +106,12 @@ namespace PokeChess.Core.Tests
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>trades.Sell(match,"p2","a"));
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>trades.Sell(match,"p1","missing"));Assert.That(Snapshot(),Is.EqualTo(before));
         }
-        [Test] public void CombatAllowsBuyButBlocksSell()
+        [Test] public void CombatAllowsBuyAndBenchSaleButBlocksBoardSale()
         {
-            Add("a",1);match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
+            Add("a",1,items:new[]{"tool"});player.AddUnit(catalog.CreateUnit("board","c1","p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0))));match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
             Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision),Is.Not.Null);before=Snapshot();
-            Assert.Throws<InvalidOperationException>(()=>trades.Sell(match,"p1","a"));Assert.That(Snapshot(),Is.EqualTo(before));
+            Assert.Throws<InvalidOperationException>(()=>trades.Sell(match,"p1","board"));Assert.That(Snapshot(),Is.EqualTo(before));
+            int gold=player.Gold;Assert.That(trades.Sell(match,"p1","a"),Is.EqualTo(1));Assert.That(player.Gold,Is.EqualTo(gold+1));Assert.That(player.ItemInventory,Does.Contain("tool"));
         }
         [Test] public void CatalogCostMismatchAndEmptySlotAreAtomic()
         {
@@ -124,7 +125,7 @@ namespace PokeChess.Core.Tests
             Assert.Throws<ArgumentException>(()=>new PokemonCatalog(new[]{Definition(1,"base",new[]{new EvolutionOption("next",0)}),Definition(2,"next")}));
             Assert.DoesNotThrow(()=>new PokemonCatalog(new[]{Definition(2,"base",new[]{new EvolutionOption("next",0)}),Definition(2,"next")}));
         }
-        [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)] [TestCase(MatchPhase.Combat)]
+        [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)]
         [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
         public void AllOtherPhasesRejectTrades(MatchPhase phase)
         {
@@ -163,3 +164,5 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+
+

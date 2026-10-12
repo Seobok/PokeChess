@@ -86,10 +86,12 @@ namespace PokeChess.Core.Match
         }
         public int Sell(MatchState match, string playerId, string unitId)
         {
-            var player = Player(match, playerId);
+            var player = Player(match, playerId, buying:true);
             var unit = player.GetUnit(unitId);
             if (unit.Placement.Kind != PlacementKind.Board && unit.Placement.Kind != PlacementKind.Bench)
                 throw new InvalidOperationException("Only board or bench units can be sold.");
+            if(match.Phase==MatchPhase.Combat && unit.Placement.Kind!=PlacementKind.Bench)
+                throw new InvalidOperationException("Combat sales require a bench unit.");
             int price = SalePrice(unit);
             int gold = checked(player.Gold + price);
             foreach (var item in unit.ItemInstanceIds)
@@ -106,3 +108,4 @@ namespace PokeChess.Core.Match
         }
     }
 }
+

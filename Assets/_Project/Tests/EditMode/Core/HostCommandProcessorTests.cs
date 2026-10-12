@@ -49,7 +49,10 @@ namespace PokeChess.Core.Tests
             match.TransitionTo(MatchPhase.Combat);var buy=Next(MatchCommandKind.Buy);Assert.That(processor.Process("p1",buy).accepted,Is.True);var unit=match.GetPlayer("p1").Units.Single();
             var move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Bench;move.bench=2;Assert.That(processor.Process("p1",move).accepted,Is.True);
             string before=Owned();move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Board;Assert.That(processor.Process("p1",move).accepted,Is.False);Assert.That(Owned(),Is.EqualTo(before));
-            foreach(var kind in new[]{MatchCommandKind.Reroll,MatchCommandKind.BuyXP,MatchCommandKind.Sell}){var c=Next(kind);c.unitId=unit.InstanceId;before=Owned();Assert.That(processor.Process("p1",c).accepted,Is.False);Assert.That(Owned(),Is.EqualTo(before));}
+            foreach(var kind in new[]{MatchCommandKind.Reroll,MatchCommandKind.BuyXP}){var c=Next(kind);c.unitId=unit.InstanceId;before=Owned();Assert.That(processor.Process("p1",c).accepted,Is.False);Assert.That(Owned(),Is.EqualTo(before));}
+            var sale=Next(MatchCommandKind.Sell);sale.unitId=unit.InstanceId;int gold=match.GetPlayer("p1").Gold;
+            Assert.That(processor.Process("p1",sale).accepted,Is.True);Assert.That(match.GetPlayer("p1").Units,Is.Empty);Assert.That(match.GetPlayer("p1").Gold,Is.GreaterThan(gold));
+            before=Owned();Assert.That(processor.Process("p1",sale.Copy()).accepted,Is.True);Assert.That(Owned(),Is.EqualTo(before));match.Pool.AssertConservation(match);
         }
         [Test] public void SequenceGapAndEvictedDuplicateNeverMutate()
         {
@@ -66,3 +69,4 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+

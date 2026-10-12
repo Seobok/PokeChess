@@ -52,7 +52,7 @@ namespace PokeChess.Client.UI
         }
         private void RenderMatchHud() {
             if(hudRound==null||RoundFlow==null)return;
-            hudRound.text="ROUND "+Match.RoundNumber;
+            hudRound.text=Match.RoundNumber+"   "+(Match.Phase==MatchPhase.Preparation?"◇":Match.Phase==MatchPhase.Combat?"◆":Match.Phase==MatchPhase.Result?"□":"✓");
             var own=RoundLoop.GetBattleFor(localViewedPlayerId);
             string notice="";string kind="Idle";double progress=0;
             if(Match.Phase==MatchPhase.Finished)notice="MATCH COMPLETE";
@@ -133,4 +133,5 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 

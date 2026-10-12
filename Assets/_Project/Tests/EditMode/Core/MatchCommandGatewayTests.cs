@@ -60,8 +60,8 @@ namespace PokeChess.Core.Tests
         {
             var unit=commands.Buy(0,player.Shop.Revision).Purchase.Unit;match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
             Assert.That(commands.Buy(1,player.Shop.Revision).Accepted,Is.True);before=Snapshot();Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
-            Assert.That(commands.Sell(unit.InstanceId,player.PlacementRevision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));Assert.That(commands.Lock(true,player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
-            Assert.That(Snapshot(),Is.EqualTo(before));player.SetHP(0);Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.Eliminated));Assert.That(commands.Reroll(player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.Eliminated));
+            Assert.That(commands.Lock(true,player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.WrongPhase));
+            Assert.That(Snapshot(),Is.EqualTo(before));Assert.That(commands.Sell(unit.InstanceId,player.PlacementRevision).Accepted,Is.True);player.SetHP(0);Assert.That(commands.BuyXP().Failure,Is.EqualTo(MatchCommandFailure.Eliminated));Assert.That(commands.Reroll(player.Shop.Revision).Failure,Is.EqualTo(MatchCommandFailure.Eliminated));
         }
         [Test] public void OtherPlayersUnitsCannotBeSoldOrChangeEconomy()
         {
@@ -70,3 +70,4 @@ namespace PokeChess.Core.Tests
         }
     }
 }
+

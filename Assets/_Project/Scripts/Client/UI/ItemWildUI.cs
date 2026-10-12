@@ -11,17 +11,20 @@ namespace PokeChess.Client.UI
         private RectTransform itemRewardPanel,itemInventoryPanel,itemDragGhost,itemTooltip;
         private UnityEngine.UI.Text itemTooltipLabel;
         private UnityEngine.UI.Text wildPreviewLabel,itemInventoryTitle;
-        private UnityEngine.UI.Button itemReturnButton,itemPrevious,itemNext;
+        private UnityEngine.UI.Button itemReturnButton;
         private readonly UnityEngine.UI.Button[] itemChoices=new UnityEngine.UI.Button[3];
-        private readonly UnityEngine.UI.Button[] inventoryChoices=new UnityEngine.UI.Button[6];
+        private readonly UnityEngine.UI.Button[] inventoryChoices=new UnityEngine.UI.Button[10];
         private string[] visibleInventory=Array.Empty<string>();
-        private int itemPage;
+
+        private readonly string[] visibleItemSlots=new string[8];
+        private object itemSlotOwner;
+        private const string ReturnDragId="return-tools";
         private ItemIconLibrary itemIcons;
         private string draggedItem;
         private long draggedItemRevision;
         private const string EvolutionDragId="evolution-point";
         private long draggedEvolutionRevision,draggedEvolutionPlacementRevision;
-        private int InventoryIndex(int slot)=>itemPage*5+slot-1;
+        private int InventoryIndex(int slot)=>slot<2?-1:Array.IndexOf(visibleInventory,visibleItemSlots[slot-2]);
         private int CurrentEvolutionPoints=>IsOnlineMatch?onlineService.LocalMatchState?.evolutionPoints??0:Player.EvolutionPoints;
         private long displayedItemRevision;
         private Font itemFont;
@@ -43,21 +46,20 @@ namespace PokeChess.Client.UI
             itemIcons=Resources.Load<ItemIconLibrary>("ItemIcons");
             inventoryLabel.rectTransform.sizeDelta=new Vector2(195,20);
             inventoryLabel.rectTransform.anchoredPosition=new Vector2(-510,-53);
-            itemInventoryPanel=Rect("ItemIcons",canvasRect,new Vector2(195,64),new Vector2(-510,-96));
-            for(int i=0;i<6;i++){
-                int slot=i;inventoryChoices[i]=ItemButton("InventoryItem_"+i,itemInventoryPanel,new Vector2(30,34),new Vector2(-78+i*31,9),()=>{});
+            itemInventoryPanel=Panel("ItemIcons",new Vector2(102,272),new Vector2(-390,70));
+            for(int i=0;i<10;i++){
+                int slot=i;inventoryChoices[i]=ItemButton("InventoryItem_"+i,itemInventoryPanel,new Vector2(42,44),new Vector2(i%2==0?-24:24,102-i/2*49),()=>{});
                 inventoryChoices[i].GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
-                var icon=Rect("Icon",inventoryChoices[i].transform,new Vector2(28,28),Vector2.zero).gameObject.AddComponent<UnityEngine.UI.Image>();
+                var icon=Rect("Icon",inventoryChoices[i].transform,new Vector2(32,32),Vector2.zero).gameObject.AddComponent<UnityEngine.UI.Image>();
                 icon.preserveAspect=true;icon.raycastTarget=false;
                 if(i==0)ItemLabel("Count",inventoryChoices[i].transform,"0",11,new Vector2(30,16),new Vector2(0,-12));
                 var drag=inventoryChoices[i].gameObject.AddComponent<ItemDragToken>();drag.View=this;drag.Slot=slot;
             }
-            itemPrevious=ItemButton("<",itemInventoryPanel,new Vector2(20,18),new Vector2(-86,-22),()=>{CancelItemDrag();HideItemHint();itemPage=Math.Max(0,itemPage-1);RenderItemWildUI();});
-            itemNext=ItemButton(">",itemInventoryPanel,new Vector2(20,18),new Vector2(86,-22),()=>{CancelItemDrag();HideItemHint();itemPage++;RenderItemWildUI();});
-            itemInventoryTitle=ItemLabel("ItemHint",itemInventoryPanel,"유닛에 드래그하여 장착",10,new Vector2(148,20),new Vector2(0,-22));
-            itemReturnButton=ItemButton("장착 도구 회수",canvasRect,new Vector2(205,26),new Vector2(-510,-25),UnequipSelectedItem);
+            itemInventoryTitle=ItemLabel("ItemHint",itemInventoryPanel,"",9,new Vector2(100,24),new Vector2(0,-123));
+            itemReturnButton=inventoryChoices[1];ItemLabel("ReturnGlyph",itemReturnButton.transform,"↶",28,new Vector2(40,40),Vector2.zero);
             itemDragGhost=Rect("ItemDragPreview",canvasRect,new Vector2(40,40),Vector2.zero);
             var ghostIcon=itemDragGhost.gameObject.AddComponent<UnityEngine.UI.Image>();ghostIcon.preserveAspect=true;ghostIcon.raycastTarget=false;
+            ItemLabel("ReturnGlyph",itemDragGhost,"↶",30,new Vector2(40,40),Vector2.zero).gameObject.SetActive(false);
             itemDragGhost.gameObject.SetActive(false);
             itemTooltip=Panel("ItemTooltip",new Vector2(275,80),new Vector2(-260,-45));
             itemTooltip.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;
@@ -79,9 +81,10 @@ namespace PokeChess.Client.UI
         public bool IsItemDragging=>draggedItem!=null;
         public void ShowItemHint(int slot)
         {
-            if(IsItemDragging||slot<0||slot>=6)return;
+            if(IsItemDragging||slot<0||slot>=10)return;
             if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 필드·대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
-            int index=InventoryIndex(slot);if(index>=visibleInventory.Length)return;
+            if(slot==1){itemTooltipLabel.text="도구 회수\n내 유닛에 드래그하면 장착 도구를 모두 회수합니다.";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
+            int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
             var definition=ItemCatalog.Get(key);itemTooltipLabel.text=definition.Name+"\n"+definition.Description;
             itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();
@@ -89,19 +92,21 @@ namespace PokeChess.Client.UI
         public void HideItemHint(){if(itemTooltip!=null)itemTooltip.gameObject.SetActive(false);}
         public void BeginItemDrag(int slot,Vector2 point)
         {
-            if(IsDragging||!CanDragItems()||slot<0||slot>=6||!inventoryChoices[slot].interactable)return;
+            if(IsDragging||!CanDragItems()||slot<0||slot>=10||!inventoryChoices[slot].interactable)return;
             if(slot==0){
                 if(CurrentEvolutionPoints<=0)return;
                 draggedItem=EvolutionDragId;
                 draggedEvolutionRevision=IsOnlineMatch?onlineService.LocalMatchState.evolutionRevision:Player.EvolutionRevision;
                 draggedEvolutionPlacementRevision=IsOnlineMatch?onlineService.LocalMatchState.placementRevision:Player.PlacementRevision;
-            }else{
-                int index=InventoryIndex(slot);if(index>=visibleInventory.Length)return;
+            }else if(slot==1){draggedItem=ReturnDragId;draggedItemRevision=displayedItemRevision;}
+            else{
+                int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
                 if(ItemCatalog.DefinitionId(visibleInventory[index])==null)return;
                 draggedItem=visibleInventory[index];draggedItemRevision=displayedItemRevision;
             }
             HideItemHint();
             itemDragGhost.GetComponent<UnityEngine.UI.Image>().sprite=draggedItem==EvolutionDragId?itemIcons?.evolutionPoint:itemIcons?.Get(ItemCatalog.DefinitionId(draggedItem));
+            itemDragGhost.transform.Find("ReturnGlyph").gameObject.SetActive(draggedItem==ReturnDragId);
             itemDragGhost.gameObject.SetActive(true);itemDragGhost.SetAsLastSibling();DragItem(point);
         }
         private bool CanDragItems()=>IsOnlineMatch
@@ -126,6 +131,7 @@ namespace PokeChess.Client.UI
             string id=draggedItem,target=CanDragItems()?ItemTarget(point):null;long revision=draggedItemRevision;CancelItemDrag();
             if(target==null){Feedback((id==EvolutionDragId?"진화":"장착")+" 취소: 준비 단계에서 내 유닛 위에 놓으세요.");Render();return;}
             selectedUnitId=target;
+            if(id==ReturnDragId){if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.UnequipItem,c=>{c.unitId=target;c.itemRevision=revision;});return;}Feedback(commands.UnequipItem(target,revision).Message);Render();return;}
             if(id==EvolutionDragId){
                 if(!CanEvolveTarget(target)){Feedback("진화 취소: 진화 가능한 내 유닛 위에 놓으세요.");Render();return;}
                 if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Evolve,c=>{c.unitId=target;c.evolutionRevision=draggedEvolutionRevision;c.placementRevision=draggedEvolutionPlacementRevision;});return;}
@@ -160,6 +166,10 @@ namespace PokeChess.Client.UI
             var candidates=IsOnlineMatch?owner.itemCandidates??Array.Empty<string>():Player.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>();
             displayedItemRevision=IsOnlineMatch?owner.itemRevision:Player.ItemRevision;
             visibleInventory=IsOnlineMatch?owner.inventory??Array.Empty<string>():Player.ItemInventory.ToArray();
+            object slotOwner=IsOnlineMatch?(object)owner.playerId:Match;
+            if(!Equals(itemSlotOwner,slotOwner)){Array.Clear(visibleItemSlots,0,8);itemSlotOwner=slotOwner;}
+            for(int i=0;i<8;i++)if(visibleItemSlots[i]!=null&&!visibleInventory.Contains(visibleItemSlots[i]))visibleItemSlots[i]=null;
+            foreach(var id in visibleInventory){if(visibleItemSlots.Contains(id))continue;int free=Array.IndexOf(visibleItemSlots,null);if(free<0)break;visibleItemSlots[free]=id;}
             bool selecting=alive&&candidates.Length==3&&phase==MatchPhase.Preparation;
             itemRewardPanel.gameObject.SetActive(selecting);
             if(selecting){
@@ -174,23 +184,19 @@ namespace PokeChess.Client.UI
             inventoryLabel.text="ITEMS ("+visibleInventory.Length+")";
             if(IsItemDragging&&(!CanDragItems()||(draggedItem==EvolutionDragId
                 ? CurrentEvolutionPoints<=0||(IsOnlineMatch?owner.evolutionRevision:Player.EvolutionRevision)!=draggedEvolutionRevision||(IsOnlineMatch?owner.placementRevision:Player.PlacementRevision)!=draggedEvolutionPlacementRevision
-                : displayedItemRevision!=draggedItemRevision||!visibleInventory.Contains(draggedItem))))CancelItemDrag();
-            itemPage=Math.Min(itemPage,Math.Max(0,(visibleInventory.Length-1)/5));
-            bool own=IsOnlineMatch?owner.units.Any(u=>u.id==selectedUnitId):Player.Units.Any(u=>u.InstanceId==selectedUnitId);
-            bool canEquip=alive&&ready&&own&&phase==MatchPhase.Preparation;
-            var equipped=IsOnlineMatch?owner.units.FirstOrDefault(u=>u.id==selectedUnitId)?.items:Player.Units.FirstOrDefault(u=>u.InstanceId==selectedUnitId)?.ItemInstanceIds.ToArray();
-            itemInventoryTitle.text=phase==MatchPhase.Preparation?"유닛에 드래그하여 사용":"준비 단계에서 사용 가능";
-            for(int i=0;i<6;i++){
+                : displayedItemRevision!=draggedItemRevision||draggedItem!=ReturnDragId&&!visibleInventory.Contains(draggedItem))))CancelItemDrag();
+            itemInventoryTitle.text=visibleInventory.Length>8?"+"+(visibleInventory.Length-8)+" 보관":"도구";
+            for(int i=0;i<10;i++){
                 var button=inventoryChoices[i];
                 if(i==0){button.gameObject.SetActive(true);button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().sprite=itemIcons?.evolutionPoint;button.transform.Find("Count").GetComponent<UnityEngine.UI.Text>().text=CurrentEvolutionPoints.ToString();button.interactable=alive&&ready&&!selecting&&phase==MatchPhase.Preparation&&CurrentEvolutionPoints>0;continue;}
-                int index=InventoryIndex(i);button.gameObject.SetActive(index<visibleInventory.Length);
-                if(index>=visibleInventory.Length)continue;
+                if(i==1){button.gameObject.SetActive(true);button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().enabled=false;button.interactable=CanDragItems()&&!selecting;continue;}
+                int index=InventoryIndex(i);button.gameObject.SetActive(true);
+                if(index<0||index>=visibleInventory.Length){button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().enabled=false;button.interactable=false;continue;}
+                button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().enabled=true;
                 string key=ItemCatalog.DefinitionId(visibleInventory[index]);var d=key==null?null:ItemCatalog.Get(key);
                 button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().sprite=d==null?null:itemIcons?.Get(key);button.interactable=alive&&ready&&!selecting&&phase==MatchPhase.Preparation&&d!=null;
             }
-            itemPrevious.interactable=itemPage>0;itemNext.interactable=(itemPage+1)*5<visibleInventory.Length;
-            itemPrevious.gameObject.SetActive(visibleInventory.Length>5);itemNext.gameObject.SetActive(visibleInventory.Length>5);
-            itemReturnButton.interactable=canEquip&&equipped?.Length>0;
+            itemReturnButton.interactable=CanDragItems()&&!selecting;
             if(IsItemDragging)itemDragGhost.SetAsLastSibling();
         }
         private bool CanEvolveTarget(string id)
@@ -202,5 +208,9 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
+
+
 
 

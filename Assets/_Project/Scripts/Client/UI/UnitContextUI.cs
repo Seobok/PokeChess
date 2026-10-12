@@ -86,10 +86,11 @@ namespace PokeChess.Client.UI
                 vitals+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+state+"\n"+ContextSkill(definition,rank,stats)+
                 "\nItems ("+selected.ItemInstanceIds.Count+"): "+(selected.ItemInstanceIds.Count==0?"None":string.Join(", ",selected.ItemInstanceIds.Select(ItemCatalog.DisplayName)))+
                 "\n"+(RankFeedbackText.Length>0?RankFeedbackText:selected.ItemInstanceIds.Count>0?"Sale returns equipped items":"");
-            bool allowed=localViewedPlayerId=="p1"&&commands.CanTrade&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
+            bool allowed=localViewedPlayerId=="p1"&&commands.CanSell(selectedUnitId)&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
             RenderUnitInfoIcons(definition,rank,stats,fighter?.CurrentHP??stats.MaxHP,stats.MaxHP,fighter?.CurrentEnergy??stats.StartingEnergy,stats.MaxEnergy,fighter?.CurrentShield??0,selected.ItemInstanceIds.ToArray());
             sellButton.interactable=allowed;ButtonText(sellButton,allowed?"판매 / +"+commands.SalePrice(selectedUnitId)+"G":"판매 불가");
         }
     }
 }
+
 

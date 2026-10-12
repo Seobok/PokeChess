@@ -58,7 +58,7 @@ namespace PokeChess.Client.UI
         private Vector2 CombatPoint(BoardPosition position) {
             bool reversed=IsOnlineMatch ? onlineService?.Combat.Current?.two==onlineService?.WatchingPlayerId && onlineService?.Combat.Current!=null : RoundLoop?.GetBattleFor(localViewedPlayerId)?.Pairing.PlayerTwoId==localViewedPlayerId;
             if(reversed)position=new BoardPosition(6-position.Column,7-position.Row);
-            return new Vector2(-165+position.Column*48+(position.Row%2)*24,-18+position.Row*38);
+            return TablePoint(position);
         }
         private void AttachRoundLoop()
         {
@@ -239,10 +239,11 @@ namespace PokeChess.Client.UI
             RenderSimulationUI();
             RenderItemWildUI();
             RenderUnitCryAudio();
-            RenderCombatAudio();
+            RenderCombatAudio();UpdateTablePresentation();
         }
     }
 }
+
 
 
 
