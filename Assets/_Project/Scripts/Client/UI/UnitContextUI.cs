@@ -10,8 +10,10 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
-        private readonly SkillCatalog contextSkills=PrototypeRoster.CreateSkills();
-        private readonly StatusCatalog contextStatuses=PrototypeRoster.CreateStatuses();
+        private SkillCatalog cachedContextSkills;
+        private StatusCatalog cachedContextStatuses;
+        private SkillCatalog contextSkills=>cachedContextSkills??(cachedContextSkills=PokeChess.Content.GameContent.CreateSkills());
+        private StatusCatalog contextStatuses=>cachedContextStatuses??(cachedContextStatuses=PokeChess.Content.GameContent.CreateStatuses());
         private MatchState contextMatch;
         private readonly HashSet<string> contextItems=new HashSet<string>();
         private string rankNotice="",itemNotice="";

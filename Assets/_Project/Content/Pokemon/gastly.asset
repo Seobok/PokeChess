@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: gastly
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: gastly
+  DisplayName: Gastly
+  LocalizedName: "\uACE0\uC624\uC2A4"
+  RoleId: caster
+  Cost: 2
+  Stats:
+    MaxHP: 500
+    Attack: 40
+    SpellPower: 0
+    AttackSpeed: 0.6
+    Armor: 15
+    MagicResistance: 20
+    AttackRange: 3
+    MoveSpeed: 2
+    MaxEnergy: 70
+    StartingEnergy: 0
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  TypeIds:
+  - ghost
+  - poison
+  TraitIds:
+  - focus
+  Skill: {fileID: 11400000, guid: 9d218ddbad3cf0344afe2393711a857d, type: 2}
+  Visual: {fileID: 11400000, guid: 07254d403ce9e884baebafcd55828ff0, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: 5b8cc749cf2f788488de590b672604f8, type: 2}
+    PointCost: 1

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: growth
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: growth
+  DisplayName: "\uC131\uC7A5"
+  CastTime: 0.3
+  PostCastTime: 0.4
+  TargetRule: 1
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  Effects:
+  - Type: 4
+    TargetSelector: 1
+    BaseValue: 0
+    SpellPowerScalable: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: b487b995018fea34a8caf73b73811f65, type: 2}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: b487b995018fea34a8caf73b73811f65, type: 2}
+    - {fileID: 11400000, guid: 1212a8075b40486438133de9588daa36, type: 2}
+    - {fileID: 11400000, guid: 8cfda49836851fa42b98f5765c06b023, type: 2}

@@ -16,7 +16,7 @@ public static class GeneratePokemonAnimations
         if(EditorApplication.isPlaying)throw new InvalidOperationException("Stop Play mode before generating assets.");
         var animations=new List<PokemonSpriteAnimation>();
         var factories=new SpriteDataProviderFactories();factories.Init();
-        foreach(string folder in Directory.GetDirectories("Assets/_Project/Sprites").OrderBy(p=>p))
+        foreach(string folder in Directory.GetDirectories("Assets/_Project/Sprites/Pokemons/1gen").OrderBy(p=>p))
         {
             string xml=Path.Combine(folder,"AnimData.xml");if(!File.Exists(xml))continue;
             string species=Path.GetFileName(folder).ToLowerInvariant();
@@ -73,11 +73,15 @@ public static class GeneratePokemonAnimations
                     HitFrame=(int?)node.Element("HitFrame")??-1,Durations=durations,
                     Frames=rects.Select(r=>sprites[r.name]).ToArray(),GroundOffsets=offsets.ToArray()});
             }
-            foreach(var node in nodes.Where(n=>n.Element("CopyOf")!=null))
+            var aliases=nodes.Where(n=>n.Element("CopyOf")!=null).ToList();
+            while(aliases.Count>0)
             {
+                var node=aliases.FirstOrDefault(n=>animations.Any(a=>a.PokemonId==species&&a.Name==(string)n.Element("CopyOf")));
+                if(node==null)throw new Exception("Unresolved animation aliases in "+folder);
                 var source=animations.Single(a=>a.PokemonId==species&&a.Name==(string)node.Element("CopyOf"));
                 animations.Add(new PokemonSpriteAnimation{PokemonId=species,Name=(string)node.Element("Name"),Directions=source.Directions,
                     FrameCount=source.FrameCount,HitFrame=source.HitFrame,Durations=source.Durations,Frames=source.Frames,GroundOffsets=source.GroundOffsets});
+                aliases.Remove(node);
             }
         }
         if(!AssetDatabase.IsValidFolder("Assets/_Project/Resources"))AssetDatabase.CreateFolder("Assets/_Project","Resources");

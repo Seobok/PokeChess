@@ -126,13 +126,13 @@ namespace PokeChess.Network.Session
                 foreach(var id in boundPlayers.Keys.Where(id=>!manager.ConnectedClientsIds.Contains(id)).ToArray())HostPlayerDisconnected(id);
                 if(challenges.Count>0&&!bindingRefreshing&&!IsBusy&&!lobbyPublishing&&Time.realtimeSinceStartupAsDouble>=nextBindingRefresh)RefreshBindings();
                 if(StartInfo!=null&&LobbyState==LobbyPhase.Started&&hostCommands==null){
-                    var catalog=PrototypeRoster.CreateCatalog();var roster=StartInfo.players;
+                    var catalog=PokeChess.Content.GameContent.CreateCatalog();var roster=StartInfo.players;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                     if(QAExtraPlayers>0)roster=roster.Concat(Enumerable.Range(1,Math.Min(6,QAExtraPlayers)).Select(i=>"qa-bot-"+i)).ToArray();
 #endif
-                    var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,roster,catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:hostMatchSeed);
+                    var match=MatchStateFactory.CreateWithPool(StartInfo.matchId,roster,catalog,PokeChess.Content.GameContent.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:hostMatchSeed);
                     match.TransitionTo(MatchPhase.Starting);match.TransitionTo(MatchPhase.Preparation);foreach(var id in roster)new ShopSystem().RefreshForRound(match,id);
-                    var rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
+                    var rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:PokeChess.Content.GameContent.CreateSkills(),statusCatalog:PokeChess.Content.GameContent.CreateStatuses());
                     hostCommands=new HostCommandProcessor(match,catalog,rounds);CreateCombatRuntime(rounds);BroadcastOwnerStates(true);
                 }
                 // Deduplicates unchanged projections; also publishes non-command Host writes.

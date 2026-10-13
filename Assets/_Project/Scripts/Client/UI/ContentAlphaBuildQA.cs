@@ -75,7 +75,7 @@ namespace PokeChess.Client.UI
         private void CheckItems()
         {
             view.ShowLocalMatch();view.ResetMatchUI();view.enabled=false;
-            var p=view.Player;var catalog=PrototypeRoster.CreateCatalog();p.SetProgress(100,0,3);
+            var p=view.Player;var catalog=PokeChess.Content.GameContent.CreateCatalog();p.SetProgress(100,0,3);
             for(int i=0;i<3;i++)SharedPoolSystem.RegisterUnit(view.Match,catalog.CreateUnit("items-qa-"+i,"geodude","p1",UnitRank.Two,0,UnitPlacement.OnBoard(new BoardPosition(1+i*2,3))),"geodude");
             if(!view.RoundLoop.StartCombat(1))throw new Exception("Wild battle rejected.");
             for(int i=0;i<1400&&view.Match.Phase==MatchPhase.Combat;i++)view.RoundLoop.Step();

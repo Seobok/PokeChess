@@ -27,23 +27,14 @@ namespace PokeChess.Client.UI
         private readonly string[] statNames={"체력","공격력","공격속도","방어력","마법저항","사거리","에너지"};
         private static string KoreanInfo(string id)
         {
+            var contentName=PokeChess.Content.GameContent.DisplayName(id);
+            if(contentName!=null)return contentName;
             switch(id){
-                case "slowbro":return "야도란";case "primeape":return "성원숭";
-                case "kakuna":return "딱충이";case "beedrill":return "독침붕";
-                case "graveler":return "데구리";case "golem":return "딱구리";
-                case "haunter":return "고우스트";case "gengar":return "팬텀";
-                case "metapod":return "단데기";case "butterfree":return "버터플";
-                case "magneton":return "레어코일";case "kadabra":return "윤겔라";case "alakazam":return "후딘";
-                case "ivysaur":return "이상해풀";case "venusaur":return "이상해꽃";
-                case "wartortle":return "어니부기";case "blastoise":return "거북왕";
-                case "charmeleon":return "리자드";case "charizard":return "리자몽";
-                case "bulbasaur":return "이상해씨";case "charmander":return "파이리";case "squirtle":return "꼬부기";case "caterpie":return "캐터피";case "weedle":return "뿔충이";case "mankey":return "망키";case "abra":return "캐이시";case "geodude":return "삐삐";case "slowpoke":return "야돈";case "magnemite":return "코일";case "gastly":return "고오스";case "chansey":return "럭키";
                 case "normal":return "노말";case "fire":return "불꽃";case "water":return "물";case "grass":return "풀";case "poison":return "독";case "bug":return "벌레";case "fighting":return "격투";case "psychic":return "에스퍼";case "rock":return "바위";case "ground":return "땅";case "electric":return "전기";case "steel":return "강철";case "ghost":return "고스트";
                 case "tank":return "탱커";case "support":return "지원";case "carry":return "딜러";case "caster":return "기술 딜러";
                 case "guardian":return "수호";case "assault":return "돌격";case "focus":return "집중";case "link":return "연결";
                 case "bruiser":return "전사";
                 case "growth":return "성장";
-                case "harden":return "단단해지기";case "fury-swipes":return "마구할퀴기";case "pin-missile":return "바늘미사일";case "soft-boiled":return "알낳기";case "follow-me":return "날따름";case "shadow-ball":return "섀도볼";case "string-shot":return "실뿜기";case "magnet-bomb":return "자석 폭탄";case "aqua-guard":return "물의 수호";case "psychic-burst":return "초능력 폭발";case "flame-drive":return "불꽃 돌진";
                 default:return Readable(id);
             }
         }
@@ -83,7 +74,7 @@ namespace PokeChess.Client.UI
         }
         private void RenderUnitPanelImages(PokemonDefinition definition,PokemonStats stats,string[] items)
         {
-            var idle=unitPortraitLibrary?.Find(definition.Id,"Idle")??unitPortraitLibrary?.Find(PrototypeEvolutionRoster.BaseForm(definition.Id),"Idle");
+            var idle=unitPortraitLibrary?.Find(definition.Id,"Idle")??unitPortraitLibrary?.Find(PokeChess.Content.GameContent.BaseForm(definition.Id),"Idle");
             unitPortrait.sprite=idle?.Frames?.FirstOrDefault();unitPortrait.enabled=unitPortrait.sprite!=null;
             unitSkillImage.sprite=unitPanelLibrary?.GetSkillIcon(definition.SkillId)??Resources.Load<Sprite>("SkillIcons/"+definition.SkillId);
             unitSkillImage.enabled=unitSkillImage.sprite!=null;unitSkillMark.gameObject.SetActive(!unitSkillImage.enabled);

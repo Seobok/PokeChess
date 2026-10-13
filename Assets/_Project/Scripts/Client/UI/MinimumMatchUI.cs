@@ -113,8 +113,8 @@ namespace PokeChess.Client.UI
         }
         public void ResetMatchUI()
         {
-            CancelDrag("Reset.");catalog=PrototypeRoster.CreateCatalog();
-            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PrototypeRoster.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:123);
+            CancelDrag("Reset.");catalog=PokeChess.Content.GameContent.CreateCatalog();
+            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PokeChess.Content.GameContent.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:123);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
             ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
         }
@@ -126,7 +126,7 @@ namespace PokeChess.Client.UI
             => ResetRosterGroup(rank,8);
         private void ResetRosterGroup(UnitRank rank,int first)
         {
-            CancelDrag("Roster demo.");catalog=PrototypeRoster.CreateCatalog();var all=PrototypeRoster.CreateDefinitions();
+            CancelDrag("Roster demo.");catalog=PokeChess.Content.GameContent.CreateCatalog();var all=PokeChess.Content.GameContent.CreateDefinitions();
             var definitions=all.Skip(first).Take(4).ToArray();
             Match=MatchStateFactory.CreateWithPool("roster-demo",new[]{"p1","p2"},catalog,all.Select(d=>d.Id),matchSeed:123);
             var positions=new[]{new BoardPosition(2,3),new BoardPosition(4,3),new BoardPosition(1,1),new BoardPosition(4,0)};

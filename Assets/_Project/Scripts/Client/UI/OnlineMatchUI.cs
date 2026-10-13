@@ -26,7 +26,7 @@ namespace PokeChess.Client.UI
         {
             if(IsOnlineMatch&&onlineMatchId==connection.StartInfo?.matchId)return;
             CancelDrag("Online match starting.");Simulation?.Cancel();Simulation=null;
-            savedLocalCatalog=catalog;catalog=PrototypeRoster.CreateCatalog();onlineService=connection;onlineMatchId=connection.StartInfo.matchId;
+            savedLocalCatalog=catalog;catalog=PokeChess.Content.GameContent.CreateCatalog();onlineService=connection;onlineMatchId=connection.StartInfo.matchId;
             IsOnlineMatch=true;enabled=true;canvasRect.gameObject.SetActive(true);previousOwner=null;selectedUnitId=null;shopPhase=null;shopCollapsed=false;presentationRound=-1;eliminationDismissed=false;resultExpanded=false;
             ClearOnlineFighters();foreach(var row in hudProfiles.Values)Destroy(row.Rect.gameObject);hudProfiles.Clear();hudMatch=null;
             if(onlineControls==null)BuildOnlineControls();onlineControls.SetActive(true);
@@ -186,7 +186,7 @@ namespace PokeChess.Client.UI
         {
             if(!tokens.ContainsKey(id))CreateToken(id);var token=tokens[id];token.gameObject.SetActive(true);token.anchoredPosition=FindSlot(placement).Rect.anchoredPosition;groups[id].alpha=id==dragged?.3f:1;
             if(!placementSprites.TryGetValue(id,out var sprite)||sprite==null)placementSprites[id]=sprite=AddSprite(token,definition);if(sprite.PokemonId!=definition)sprite.Initialize(definition);sprite.ShowIdle(Time.unscaledTimeAsDouble);
-            int evolutionStage=PrototypeEvolutionRoster.Stage(definition);
+            int evolutionStage=PokeChess.Content.GameContent.Stage(definition);
             tokenLabels[id].text=new string('★',rank)+(evolutionStage>0?" E"+evolutionStage:"");tokenLabels[id].color=Color.white;tokenLabels[id].fontSize=11;tokenLabels[id].rectTransform.anchoredPosition=new Vector2(0,25);tokenLabels[id].transform.SetAsLastSibling();
         }
         private void RenderOnlineContext(OwnerMatchState owner,PublicMatchState pub)

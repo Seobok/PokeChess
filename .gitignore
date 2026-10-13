@@ -97,3 +97,20 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Local QA outputs, screenshots, test players, and recovery archives.
+# Preserve hand-written QA scripts; generated compiler sources stay ignored.
+/TestResults/**
+!/TestResults/**/
+!/TestResults/**/*.cs
+!/TestResults/**/*.ps1
+!/TestResults/**/*.py
+!/TestResults/**/*.sh
+/TestResults/**/[Bb]in/
+/TestResults/**/[Oo]bj/
+/TestResults/**/Player/
+
+# Local simulation output and editor state.
+/MatchSimulations/
+/.idea/
+/.codex-artifacts/

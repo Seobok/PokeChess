@@ -29,7 +29,7 @@ namespace PokeChess.Client.UI
                     id=round==1||round==2?"magikarp":round==3?"rattata":id;
             }
             pokemon=id;library=PokemonAnimationLibrary.Load();
-            animationPokemon=library?.Find(id,"Idle")!=null ? id : PrototypeEvolutionRoster.BaseForm(id);
+            animationPokemon=library?.Find(id,"Idle")!=null ? id : PokeChess.Content.GameContent.BaseForm(id);
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();
             image.raycastTarget=false;image.color=Color.white;
             direction=0;previousHP=-1;deathStart=-1;hurtStart=-1000;
@@ -95,32 +95,15 @@ namespace PokeChess.Client.UI
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);
             image.enabled=true;image.sprite=anim.Frames[index];
-            int stage=PrototypeEvolutionRoster.Stage(pokemon);
-            var tint=animationPokemon==pokemon?Color.white:stage==1?new Color(.7f,1,.75f):new Color(1,.8f,.45f);
+            var tint=PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Tint ?? Color.white;
             image.color=new Color(tint.r,tint.g,tint.b,alpha);
             image.rectTransform.sizeDelta=anim.Frames[index].rect.size*scale;
             image.rectTransform.anchoredPosition=anim.GroundOffsets[index]*scale;
             return true;
         }
         private string AttackAnimation()
-        {
-            switch(PrototypeEvolutionRoster.BaseForm(pokemon))
-            {
-                case "weedle":case "chansey":case "gastly":case "caterpie":case "magnemite":case "squirtle":case "abra":return "Shoot";
-                default:return "Attack";
-            }
-        }
+            =>PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Attack ?? "Attack";
         private string SkillAnimation()
-        {
-            switch(PrototypeEvolutionRoster.BaseForm(pokemon))
-            {
-                case "slowpoke":case "geodude":case "bulbasaur":case "charmander":return "Charge";
-                case "mankey":return "MultiStrike";
-                case "weedle":case "gastly":case "caterpie":case "magnemite":return "Shoot";
-                case "squirtle":return "Withdraw";
-                case "abra":return "SpAttack";
-                default:return library?.Find(animationPokemon,"SpAttack")!=null?"SpAttack":"Charge";
-            }
-        }
+            =>PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Skill ?? "Charge";
     }
 }

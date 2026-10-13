@@ -90,7 +90,7 @@ namespace PokeChess.Client.UI
             if (d.Evolutions.Count != 1)
             {
                 ButtonText(evolveButton,"진화 불가");
-                evolutionHint.text = PrototypeEvolutionRoster.Stage(id) == 2 ? "최종 진화체입니다." : "이 포켓몬의 진화는\n아직 지원하지 않습니다.";
+                evolutionHint.text = PokeChess.Content.GameContent.Stage(id) == 2 ? "최종 진화체입니다." : "이 포켓몬의 진화는\n아직 지원하지 않습니다.";
                 return;
             }
             var option = d.Evolutions[0]; var target = catalog.Get(option.TargetDefinitionId);

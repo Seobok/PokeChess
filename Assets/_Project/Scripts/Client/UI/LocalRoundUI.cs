@@ -63,7 +63,7 @@ namespace PokeChess.Client.UI
         private void AttachRoundLoop()
         {
             Simulation?.Cancel();SaveSimulation();Simulation=null;localViewedPlayerId="p1";
-            RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PrototypeRoster.CreateSkills(),statusCatalog:PrototypeRoster.CreateStatuses());
+            RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PokeChess.Content.GameContent.CreateSkills(),statusCatalog:PokeChess.Content.GameContent.CreateStatuses());
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
             foreach(var token in combatTokens.Values){token.transform.parent.gameObject.SetActive(false);Destroy(token.transform.parent.gameObject);}

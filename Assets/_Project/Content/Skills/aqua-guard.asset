@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: aqua-guard
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: aqua-guard
+  DisplayName: "\uBB3C\uC758 \uC218\uD638"
+  CastTime: 0.4
+  PostCastTime: 0.5
+  TargetRule: 1
+  TargetLostPolicy: 2
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  Effects:
+  - Type: 2
+    TargetSelector: 3
+    BaseValue: 180
+    SpellPowerScalable: 1
+    DamageType: 1
+    Radius: 2
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 180
+    - 280
+    - 450
+    RankStatuses: []
+  - Type: 4
+    TargetSelector: 3
+    BaseValue: 0
+    SpellPowerScalable: 0
+    DamageType: 1
+    Radius: 2
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 79f1c8c241a183a468e91252b3d316df, type: 2}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 79f1c8c241a183a468e91252b3d316df, type: 2}
+    - {fileID: 11400000, guid: b3f57be8bb91d5d4eba2cf9c7c36568f, type: 2}
+    - {fileID: 11400000, guid: efc95beaa792e09478a51049c7b2bafd, type: 2}

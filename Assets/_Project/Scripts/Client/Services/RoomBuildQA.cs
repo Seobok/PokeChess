@@ -56,7 +56,7 @@ namespace PokeChess.Client.Services
                     case "holdCombat":s.QAHoldCombat=c.ready;break;
                     case "clearCombat":s.Combat.Clear();break;
                     case "combatFixture":
-                        var match=s.QAHostCommands.Match;var catalog=PrototypeRoster.CreateCatalog();
+                        var match=s.QAHostCommands.Match;var catalog=PokeChess.Content.GameContent.CreateCatalog();
                         foreach(var player in match.Players){bool host=player.PlayerId==s.LocalMatchState.playerId;var definition=host?"mankey":"squirtle";
                             SharedPoolSystem.RegisterUnit(match,catalog.CreateUnit("qa-"+player.PlayerId,definition,player.PlayerId,host?UnitRank.Three:UnitRank.One,0,UnitPlacement.OnBench(0)),definition);}
                         s.QAHostCommands.NotifyHostStateChanged();break;
@@ -73,7 +73,7 @@ namespace PokeChess.Client.Services
                         view.EndDrag(view.ScreenPoint(destination));
                         while(s.PendingCommand!=null)await System.Threading.Tasks.Task.Yield();break;
                     case "clientRankFixture":
-                        var state=s.QAHostCommands.Match;var p=state.GetPlayer(c.targetPlayer);var definitions=PrototypeRoster.CreateCatalog();var trades=new ShopTransactionSystem(definitions);
+                        var state=s.QAHostCommands.Match;var p=state.GetPlayer(c.targetPlayer);var definitions=PokeChess.Content.GameContent.CreateCatalog();var trades=new ShopTransactionSystem(definitions);
                         foreach(var unit in p.Units.ToArray())trades.Sell(state,p.PlayerId,unit.InstanceId);
                         SharedPoolSystem.RegisterUnit(state,definitions.CreateUnit("rank-a","mankey",p.PlayerId,UnitRank.One,0,UnitPlacement.OnBench(0)),"mankey");
                         SharedPoolSystem.RegisterUnit(state,definitions.CreateUnit("rank-b","mankey",p.PlayerId,UnitRank.One,0,UnitPlacement.OnBench(1),new[]{"qa-item"}),"mankey");

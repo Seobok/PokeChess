@@ -87,7 +87,7 @@ namespace PokeChess.Client.UI
             ButtonText(synergyNext,(synergyPage+1)+"/"+Math.Max(1,(lastSynergyCounts.Count+7)/8)+"  >");
             if (synergyHovered != null)
             {
-                var members = PrototypeRoster.CreateDefinitions().Where(d => d.TraitIds.Contains(synergyHovered)).Select(d => d.DisplayName);
+                var members = PokeChess.Content.GameContent.CreateDefinitions().Where(d => d.TraitIds.Contains(synergyHovered)).Select(d => d.DisplayName);
                 synergyHelp.text = TraitName(synergyHovered) + " · different species on board (2/3)\n" + SynergyDescription(synergyHovered) + "\n" + string.Join(" / ", members);
             }
         }
@@ -124,8 +124,8 @@ namespace PokeChess.Client.UI
         public void ResetSynergyDemo()
         {
             if (IsOnlineMatch) return;
-            CancelDrag("Synergy demo."); catalog = PrototypeRoster.CreateCatalog();
-            Match = MatchStateFactory.CreateWithPool("synergy-demo", new[] { "p1", "p2" }, catalog, PrototypeRoster.CreateDefinitions().Select(d => d.Id), matchSeed: 123);
+            CancelDrag("Synergy demo."); catalog = PokeChess.Content.GameContent.CreateCatalog();
+            Match = MatchStateFactory.CreateWithPool("synergy-demo", new[] { "p1", "p2" }, catalog, PokeChess.Content.GameContent.CreateDefinitions().Select(d => d.Id), matchSeed: 123);
             string[] species = { "slowpoke", "geodude", "chansey", "squirtle", "mankey", "bulbasaur" };
             var positions = new[] { new BoardPosition(1,3), new BoardPosition(3,3), new BoardPosition(1,0), new BoardPosition(3,1), new BoardPosition(4,3), new BoardPosition(5,3) };
             foreach (var player in Match.Players)
