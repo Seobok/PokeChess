@@ -94,7 +94,7 @@ namespace PokeChess.Client.UI
             }catch(Exception e){Feedback(e.Message);}
         }
         private void SelectOnlineUnit(string id)
-        {if(IsDragging)return;selectedUnitId=id;RenderOnlineMatch();}
+        {if(IsDragging)return;if(!selectingHover){unitInfoPinned=true;hoveredUnitId=id;hoveredShopSlot=-1;}selectedUnitId=id;RenderOnlineMatch();}
         private bool CanOnlinePlace(OwnerUnit unit,UnitPlacement destination)
         {
             if(!OnlineInputReady||unit==null||onlineService.WatchingPlayerId!=onlineService.LocalMatchState.playerId)return false;
@@ -207,6 +207,7 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
 
 
 

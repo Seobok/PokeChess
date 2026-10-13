@@ -41,7 +41,11 @@ namespace PokeChess.Client.Data
     {
         public PokemonSpriteAnimation[] Animations=Array.Empty<PokemonSpriteAnimation>();
         public PokemonSpriteAnimation Find(string pokemon,string animation)
-            => Array.Find(Animations,a=>a.PokemonId==pokemon&&a.Name==animation);
+        {
+            // Keep the roster identity and combat rules while replacing its presentation.
+            if(pokemon=="geodude")pokemon="clefairy";
+            return Array.Find(Animations,a=>a.PokemonId==pokemon&&a.Name==animation);
+        }
         public static PokemonAnimationLibrary Load()=>Resources.Load<PokemonAnimationLibrary>("PokemonAnimations");
     }
 }

@@ -13,8 +13,8 @@ namespace PokeChess.Core.Pokemon
             Pokemon("mankey","Mankey",500,50,.65f,20,1,50,0,"melee-dps","fury-swipes","fighting"),
             Pokemon("weedle","Weedle",600,65,.65f,25,3,35,0,"ranged-dps","pin-missile","bug","poison"),
             Pokemon("chansey","Chansey",600,40,.65f,20,2,90,50,"support","soft-boiled","normal"),
-            Pokemon("geodude","Geodude",800,45,.5f,45,1,100,30,"tank","rock-guard",2,"rock","ground"),
-            Pokemon("gastly","Gastly",500,40,.6f,15,3,70,0,"caster","shadow-burst",2,"ghost","poison"),
+            Pokemon("geodude","Clefairy",800,45,.5f,45,1,100,30,"tank","follow-me",2,"rock","ground"),
+            Pokemon("gastly","Gastly",500,40,.6f,15,3,70,0,"caster","shadow-ball",2,"ghost","poison"),
             Pokemon("caterpie","Caterpie",550,35,.6f,20,2,60,20,"utility","string-shot",2,"bug"),
             Pokemon("bulbasaur","Bulbasaur",750,65,.7f,30,1,60,0,"melee-dps","growth",3,"grass","poison"),
             HighPokemon("magnemite","Magnemite",650,70,.7f,25,20,4,80,0,"ranged-dps","magnet-bomb",3,"electric","steel"),
@@ -45,12 +45,12 @@ namespace PokeChess.Core.Pokemon
             new SkillDefinition("soft-boiled",.4f,.5f,SkillTargetRule.LowestHPAlly,TargetLostPolicy.RetargetAtEffect,
                 new[]{new SkillEffectDefinition(SkillEffectType.Heal,EffectTargetSelector.CastTarget,175,true,
                     rankValues:new[]{175f,200f,225f})},energyLock:1),
-            new SkillDefinition("rock-guard",.4f,.4f,SkillTargetRule.Self,TargetLostPolicy.ContinueWithoutTarget,
+            new SkillDefinition("follow-me",.4f,.4f,SkillTargetRule.Self,TargetLostPolicy.ContinueWithoutTarget,
                 new[]{new SkillEffectDefinition(SkillEffectType.Shield,EffectTargetSelector.Self,250,true,
                     rankValues:new[]{250f,400f,650f}),
                     new SkillEffectDefinition(SkillEffectType.ApplyStatus,EffectTargetSelector.EnemiesAroundCaster,0,
-                        radius:1,statusId:"rock-guard-taunt")},energyLock:1),
-            new SkillDefinition("shadow-burst",.4f,.3f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
+                        radius:1,statusId:"follow-me-taunt")},energyLock:1),
+            new SkillDefinition("shadow-ball",.4f,.3f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
                 new[]{new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.CastTarget,300,true,
                     DamageType.Magic,rankValues:new[]{300f,450f,700f})},range:3,energyLock:1),
             new SkillDefinition("string-shot",.3f,.3f,SkillTargetRule.Enemy,TargetLostPolicy.RetargetAtEffect,
@@ -87,7 +87,7 @@ namespace PokeChess.Core.Pokemon
             var entries=new List<StatusEffectDefinition>();
             AddBuffs(entries,"harden",5,CombatStat.Armor,new[]{.6f,.7f,.8f});
             AddBuffs(entries,"fury-swipes",4,CombatStat.AttackSpeed,new[]{.4f,.7f,1f});
-            entries.Add(new StatusEffectDefinition("rock-guard-taunt",2,crowdControl:CrowdControlKind.Taunt));
+            entries.Add(new StatusEffectDefinition("follow-me-taunt",2,crowdControl:CrowdControlKind.Taunt));
             var attacks=new[]{20f,35f,55f};var speeds=new[]{.4f,.6f,.9f};var slows=new[]{.3f,.4f,.5f};
             for(int i=0;i<3;i++)
             {

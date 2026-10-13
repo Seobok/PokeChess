@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.EventSystems;
@@ -9,26 +10,33 @@ public static class VerifyUnitHover {
     static void Check(bool ok,string message){if(!ok)throw new Exception(message);}
     public static string Main(){
         EditorApplication.isPaused=true;var v=UnityEngine.Object.FindFirstObjectByType<PlacementSandboxView>();v.ResetRosterDemo();
-        var data=new PointerEventData(EventSystem.current);var unit=v.Player.Units.First();
-        v.SelectUnit(unit.InstanceId);Check(!v.UnitPopupVisible,"Click must not open info");
-        v.Token(unit.InstanceId).OnPointerEnter(data);Check(v.UnitPopupVisible,"Board hover");
-        v.Token(unit.InstanceId).OnPointerExit(data);Check(!v.UnitPopupVisible&&v.SelectedUnitId==null,"Immediate exit hides info");
+        var data=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,eligibleForClick=true};var unit=v.Player.Units.First();
+        v.Token(unit.InstanceId).OnPointerEnter(data);Check(v.UnitPopupVisible&&!v.UnitInfoPinned,"Hover transient");
+        v.Token(unit.InstanceId).OnPointerExit(data);Check(!v.UnitPopupVisible,"Hover exit immediate");
+        v.Token(unit.InstanceId).OnPointerEnter(data);v.Token(unit.InstanceId).OnPointerClick(data);
+        Check(v.UnitInfoPinned&&v.UnitPopupVisible,"Click pins");
+        v.Token(unit.InstanceId).OnPointerExit(data);Check(v.UnitPopupVisible,"Pinned exit stays");
+        var other=v.Player.Units.Skip(1).First();v.Token(other.InstanceId).OnPointerEnter(data);
+        Check(v.SelectedUnitId==unit.InstanceId,"Hover preserves pinned target");
+        v.SelectUnit(other.InstanceId);Check(v.UnitPopupVisible&&v.SelectedUnitId==other.InstanceId,"Click replaces pinned target");
+        typeof(PlacementSandboxView).GetMethod("ShowUnitInfoHint",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(v,new object[]{-1});
+        Check(v.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="UnitInfoTooltip").gameObject.activeSelf,"Skill description readable");
+        v.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="Background").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+        Check(!v.UnitPopupVisible&&!v.UnitInfoPinned,"Background releases pin");
         int slot=Enumerable.Range(0,5).First(i=>!v.Player.Shop.Slots[i].IsEmpty);
-        var target=v.ShopButton(slot).GetComponent<UnitHoverTarget>();
-        target.OnPointerEnter(data);Check(v.UnitPopupVisible&&v.HoveredShopSlot==slot,"Shop hover without click");
-        Check(!v.SellButton.gameObject.activeSelf,"Shop info has no sale action");
-        var title=v.GetComponentsInChildren<UnityEngine.UI.Text>(true).First(t=>t.transform.parent.name=="UnitInfoIcons"&&t.name=="Name").text;
-        Check(title.Length>0&&title.Contains("★"),"Rank one shop info");
-        target.OnPointerExit(data);Check(!v.UnitPopupVisible,"Shop immediate exit");
-        target.OnPointerEnter(data);v.RerollButton.onClick.Invoke();Check(!v.UnitPopupVisible,"Reroll clears stale shop info");
-        slot=Enumerable.Range(0,5).First(i=>!v.Player.Shop.Slots[i].IsEmpty);target=v.ShopButton(slot).GetComponent<UnitHoverTarget>();
-        target.OnPointerEnter(data);v.ShopButton(slot).onClick.Invoke();Check(!v.UnitPopupVisible,"Purchase clears empty offer info");
-        var bench=v.Player.Units.First(u=>u.Placement.Kind==PokeChess.Core.Pokemon.PlacementKind.Bench);
-        v.Token(bench.InstanceId).OnPointerEnter(data);Check(v.UnitPopupVisible&&v.SellButton.gameObject.activeSelf,"Bench hover restores actions");
-        v.Token(bench.InstanceId).OnPointerExit(data);Check(!v.UnitPopupVisible,"Bench immediate exit");
-        v.AdvanceRoundTime(30);var fighter=v.GetComponentsInChildren<UnitHoverTarget>().First(t=>t.ShopSlot<0);
-        fighter.OnPointerEnter(data);Check(v.UnitPopupVisible,"Combat hover");
-        fighter.OnPointerExit(data);Check(!v.UnitPopupVisible,"Combat immediate exit");
-        v.ResetRosterDemo();return "PASS: unit/bench/combat immediate hover exit; shop info and rank; sale hidden; reroll/purchase invalidation.";
+        var shop=v.ShopButton(slot).GetComponent<UnitHoverTarget>();shop.OnPointerEnter(data);Check(v.UnitPopupVisible&&!v.SellButton.gameObject.activeSelf,"Shop hover preserved");
+        shop.OnPointerExit(data);Check(!v.UnitPopupVisible,"Shop exit immediate");
+        v.AdvanceRoundTime(30);
+        var battle=v.RoundLoop.GetBattleFor("p1").Battle;
+        var enemy=battle.Units.First(u=>u.OwnerPlayerId!="p1");
+        var target=v.GetComponentsInChildren<UnitHoverTarget>().First(t=>t.UnitId==enemy.UnitInstanceId);
+        target.OnPointerEnter(data);Check(v.UnitPopupVisible&&!v.UnitInfoPinned&&!v.SellButton.interactable,"Enemy hover read only");
+        target.OnPointerExit(data);Check(!v.UnitPopupVisible,"Enemy hover exit");
+        target.OnPointerEnter(data);target.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();target.OnPointerExit(data);
+        Check(v.UnitPopupVisible&&v.UnitInfoPinned&&v.SelectedUnitId==enemy.UnitInstanceId,"Enemy click pins");
+        typeof(PlacementSandboxView).GetMethod("ShowUnitInfoHint",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(v,new object[]{-1});
+        Check(v.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="UnitInfoTooltip").gameObject.activeSelf,"Enemy skill description");
+        v.DeselectUnit();Check(!v.UnitPopupVisible,"Enemy unpin");v.ResetRosterDemo();
+        return "PASS: transient hover/immediate exit; click pin; stable target and replacement; skill tooltip; background unpin; shop hover; enemy hover/pin/skill and read-only.";
     }
 }

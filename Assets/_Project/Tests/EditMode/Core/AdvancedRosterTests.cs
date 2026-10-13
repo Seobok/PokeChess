@@ -36,7 +36,7 @@ namespace PokeChess.Core.Tests
         public void ShieldPrecedesNearbyTauntAndUsesExplicitRank(int rank,float shield)
         {
             var b=Battle("geodude",(UnitRank)rank);var s=Simulation(b);U(b,"hidden").SetUntargetable(true);
-            Execute(b,"rock-guard");Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(shield));
+            Execute(b,"follow-me");Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(shield));
             Assert.That(b.SkillEffectEventsThisTick.Select(e=>e.EffectIndex),Is.EqualTo(new[]{0,1,1}));
             Assert.That(b.StatusEffects.Active.Select(e=>e.TargetId),Is.EquivalentTo(new[]{"near","second"}));
             Assert.That(new CombatBehaviorPolicy().SelectTarget(b,U(b,"near")),Is.EqualTo("caster"));
@@ -45,7 +45,7 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void ShieldStacksAndAbsorbsDamageBeforeHP()
         {
-            var b=Battle("geodude");Simulation(b);Execute(b,"rock-guard");Execute(b,"rock-guard");
+            var b=Battle("geodude");Simulation(b);Execute(b,"follow-me");Execute(b,"follow-me");
             Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(500));
             new DamageProcessor().Apply(b,new DamageRequest("near","caster",100,DamageType.True));
             Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(400));Assert.That(U(b,"caster").CurrentHP,Is.EqualTo(800));
@@ -54,21 +54,21 @@ namespace PokeChess.Core.Tests
         {
             var b=Battle("geodude");Simulation(b);
             U(b,"near").SetUntargetable(true);U(b,"second").SetUntargetable(true);U(b,"hidden").SetUntargetable(true);
-            Execute(b,"rock-guard");Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(250));Assert.That(b.StatusEffects.Active,Is.Empty);
-            U(b,"near").SetUntargetable(false);Execute(b,"rock-guard");
+            Execute(b,"follow-me");Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(250));Assert.That(b.StatusEffects.Active,Is.Empty);
+            U(b,"near").SetUntargetable(false);Execute(b,"follow-me");
             Assert.That(U(b,"near").EffectiveTauntSource,Is.EqualTo("caster"));
             U(b,"caster").SetVitals(0,0);Assert.That(U(b,"near").EffectiveTauntSource,Is.Null);
         }
         [Test] public void OvertimeScalesNewShieldAndTauntDuration()
         {
-            var b=Battle("geodude");var s=Simulation(b);Step(s,901);Execute(b,"rock-guard");
+            var b=Battle("geodude");var s=Simulation(b);Step(s,901);Execute(b,"follow-me");
             Assert.That(U(b,"caster").CurrentShield,Is.EqualTo(85).Within(.001));
             Assert.That(b.StatusEffects.Active.All(e=>e.ExpireTick-b.CurrentTick==21),Is.True);
         }
         [TestCase(1,300f)][TestCase(2,450f)][TestCase(3,700f)]
         public void BurstUsesExplicitMagicDamageWithNoCritOrProjectile(int rank,float raw)
         {
-            var b=Battle("gastly",(UnitRank)rank);Simulation(b);float hp=U(b,"near").CurrentHP;Execute(b,"shadow-burst");
+            var b=Battle("gastly",(UnitRank)rank);Simulation(b);float hp=U(b,"near").CurrentHP;Execute(b,"shadow-ball");
             Assert.That(U(b,"near").CurrentHP,Is.EqualTo(Math.Max(0,hp-DamageCalculator.Calculate(raw,DamageType.Magic,40,20))).Within(.001));
             Assert.That(U(b,"second").CurrentHP,Is.EqualTo(550));Assert.That(b.Projectiles.Active,Is.Empty);
         }

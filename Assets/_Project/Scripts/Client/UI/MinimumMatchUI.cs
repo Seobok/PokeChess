@@ -109,7 +109,7 @@ namespace PokeChess.Client.UI
         private void AttachMinimumMatch()
         {
             foreach(var player in Match.Players)if(!player.Shop.IsInitialized)new ShopSystem().RefreshForRound(Match,player.PlayerId);
-            commands=new LocalMatchCommandGateway(Match,catalog,"p1");selectedUnitId=null;LastPurchase=null;shopCollapsed=false;shopPhase=null;highlights.Clear();AttachRoundLoop();
+            commands=new LocalMatchCommandGateway(Match,catalog,"p1");selectedUnitId=null;unitInfoPinned=false;hoveredUnitId=null;hoveredShopSlot=-1;LastPurchase=null;shopCollapsed=false;shopPhase=null;highlights.Clear();AttachRoundLoop();
         }
         public void ResetMatchUI()
         {
@@ -208,9 +208,10 @@ namespace PokeChess.Client.UI
         private void RequestLock() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Lock,c=>c.locked=!onlineService.LocalMatchState.locked);return;}long revision=displayedShopRevision;bool locked=!displayedLocked;Perform(()=>commands.Lock(locked,revision)); }
         public void SelectUnit(string id)
         {
+            if(!selectingHover){unitInfoPinned=true;hoveredUnitId=id;hoveredShopSlot=-1;}
             if(IsOnlineMatch){SelectOnlineUnit(id);return;}
             if(IsDragging) return;
-            selectedUnitId=ViewedPlayer.Units.Any(u=>u.InstanceId==id) ? id : null;Render();
+            selectedUnitId=Match.Players.SelectMany(p=>p.Units).Any(u=>u.InstanceId==id)||RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units.Any(u=>u.UnitInstanceId==id)==true ? id : null;Render();
         }
         public void SellSelected()
         {
@@ -267,6 +268,8 @@ namespace PokeChess.Client.UI
         }
     }
 }
+
+
 
 
 

@@ -44,7 +44,7 @@ namespace PokeChess.Core.Pokemon
                         s.MaxEnergy, s.StartingEnergy, s.AttackHitTime, s.AttackDelivery, s.ProjectileSpeed,
                         s.CritChance, s.CritMultiplier, s.EnergyLockSeconds);
                     string id = lineage[i];
-                    string name = char.ToUpperInvariant(id[0]) + id.Substring(1);
+                    string name = i == 0 ? definition.DisplayName : char.ToUpperInvariant(id[0]) + id.Substring(1);
                     yield return new PokemonDefinition(id, name, definition.Cost, stats, definition.RoleId,
                         definition.SkillId, definition.TypeIds, definition.TraitIds,
                         i < lineage.Length - 1 ? new[] { new EvolutionOption(lineage[i + 1], 1) } : null);
