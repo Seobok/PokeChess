@@ -17,28 +17,38 @@ MonoBehaviour:
   LocalizedName: "\uB3C5\uCE68\uBD95"
   RoleId: ranged-dps
   Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 960
-    Attack: 104
-    SpellPower: 0
-    AttackSpeed: 0.65
-    Armor: 25
-    MagicResistance: 20
-    AttackRange: 3
+    MaxHP: 680
+    Attack: 60
+    SpellPower: 100
+    AttackSpeed: 0.8
+    Armor: 22
+    MagicResistance: 25
+    AttackRange: 1
     MoveSpeed: 2
-    MaxEnergy: 35
-    StartingEnergy: 0
+    MaxEnergy: 70
+    StartingEnergy: 10
     AttackHitTime: 0.2
-    AttackDelivery: 1
+    AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 680
+  - 1156
+  - 1972
+  RankAttack:
+  - 60
+  - 78
+  - 102
   TypeIds:
   - bug
   - poison
   TraitIds:
   - assault
-  Skill: {fileID: 11400000, guid: 801a0f4c5c67023479debaca1f67314c, type: 2}
+  Skill: {fileID: 11400000, guid: 90ac892efecc29e4ba4837a0ebfe323e, type: 2}
   Visual: {fileID: 11400000, guid: 24c6d43d197153b4b8bf52b885b3bdfc, type: 2}
   Evolutions: []

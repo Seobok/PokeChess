@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PokeChess.Core.Battle
 {
-    public enum EnergyChangeReason { BasicAttackHit, DamageReceived, SkillCost, LockStarted, Item }
+    public enum EnergyChangeReason { BasicAttackHit, DamageReceived, SkillCost, LockStarted, Item, SkillRefund }
     public enum EnergyBlockReason { None, Unavailable, Casting, Locked, Insufficient }
     public readonly struct EnergyEvent
     {
@@ -40,6 +40,8 @@ namespace PokeChess.Core.Battle
             if(reason!=EnergyChangeReason.BasicAttackHit&&reason!=EnergyChangeReason.DamageReceived&&reason!=EnergyChangeReason.Item)
                 throw new ArgumentOutOfRangeException(nameof(reason));
             if(amount==0)return false;
+            amount=(float)Math.Min(float.MaxValue,(double)amount*unit.EffectiveStats.EnergyGain);
+            if(reason==EnergyChangeReason.DamageReceived)amount=Math.Min(50,amount);
             var block=!unit.IsAlive||!unit.IsOnBoard?EnergyBlockReason.Unavailable:
                 unit.ActionState==CombatActionState.Casting?EnergyBlockReason.Casting:
                 battle.CurrentTick<unit.EnergyLockUntilTick?EnergyBlockReason.Locked:EnergyBlockReason.None;
@@ -48,6 +50,13 @@ namespace PokeChess.Core.Battle
                 unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+amount));
             events.Add(new EnergyEvent(unit,battle.CurrentTick,reason,block,before,amount));
             return block==EnergyBlockReason.None;
+        }
+        public bool Refund(UnitCombatState unit,float amount)
+        {
+            Validate(unit);DamageCalculator.Validate(amount,true);float before=unit.CurrentEnergy;
+            if(!unit.IsAlive||!unit.IsOnBoard)return false;
+            unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+amount));
+            events.Add(new EnergyEvent(unit,battle.CurrentTick,EnergyChangeReason.SkillRefund,EnergyBlockReason.None,before,amount));return true;
         }
         internal bool TryConsumeSkill(UnitCombatState unit)
         {
@@ -66,12 +75,12 @@ namespace PokeChess.Core.Battle
         }
         internal void OnDamage(DamageResult result)
         {
-            if(result.Request.Origin==DamageOrigin.Reflection)return;
+            if(result.Missed||result.Request.Origin==DamageOrigin.Reflection||result.Request.Origin==DamageOrigin.FreezeBreak||result.Request.Origin==DamageOrigin.Execution)return;
             if(result.PostMitigationDamage<=0)return;
             var source=battle.Units.Single(u=>u.UnitInstanceId==result.Request.SourceId);
             var target=battle.Units.Single(u=>u.UnitInstanceId==result.Request.TargetId);
             if(result.Request.IsBasicAttack)Gain(source,10,EnergyChangeReason.BasicAttackHit);
-            float received=(float)Math.Min(50,(double)result.PreMitigationDamage*.01+result.PostMitigationDamage*.07);
+            float received=(float)((double)result.PreMitigationDamage*.01+result.PostMitigationDamage*.07);
             Gain(target,received,EnergyChangeReason.DamageReceived);
         }
     }

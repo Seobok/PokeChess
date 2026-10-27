@@ -12,6 +12,9 @@ namespace PokeChess.Core.Battle
 
     public sealed class UnitCombatState
     {
+        internal UnitInstance PersistentUnit { get; }
+        public int BountyStacks=>PersistentUnit.BountyStacks;
+        public int SwordDanceHits { get; internal set; }
         public string UnitInstanceId { get; }
         public string DefinitionId { get; }
         public string SkillId { get; }
@@ -31,11 +34,17 @@ namespace PokeChess.Core.Battle
         public float CurrentEnergy { get; private set; }
         public long EnergyLockUntilTick { get; internal set; }
         internal void SetEnergy(float value) { CurrentEnergy=ModelGuard.Number(value,nameof(value)); }
-        public float CurrentShield { get; private set; }
+        internal ShieldSystem ShieldSystem { get; set; }
+        internal float LegacyShield { get; set; }
+        public float CurrentShield => LegacyShield+(ShieldSystem?.Total(this)??0);
+        public bool IsBoss { get; internal set; }
         public DamageModifiers DamageModifiers { get; private set; } = new DamageModifiers();
         public void SetDamageModifiers(DamageModifiers modifiers)
         { DamageModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers)); }
-        public void SetShield(float shield) { CurrentShield = ModelGuard.Number(shield, nameof(shield)); }
+        public void SetShield(float shield) {
+            ModelGuard.Number(shield,nameof(shield));
+            if(ShieldSystem==null)LegacyShield=shield;else ShieldSystem.SetTotal(this,shield);
+        }
         internal DeathReason DeathCause { get; set; } = DeathReason.StateChange;
         private bool resolvingSimultaneousAttacks;
         public bool IsAlive => CurrentHP > 0 || resolvingSimultaneousAttacks;
@@ -46,11 +55,12 @@ namespace PokeChess.Core.Battle
             if(!IsAlive)ActionState=CombatActionState.Dead;
         }
         public bool IsOnBoard { get; private set; } = true;
-        public bool IsUntargetable { get; private set; }
+        private bool untargetable;
+        public bool IsUntargetable => untargetable||(StatusSystem?.HasBehavior(this,StatusBehavior.Untargetable)??false);
         public string TauntSourceId { get; private set; }
         public bool IsTargetable => IsAlive && IsOnBoard && !IsUntargetable;
         // Status application/duration/stack rules are supplied by WBS 1.15.
-        public void SetUntargetable(bool value) => IsUntargetable = value;
+        public void SetUntargetable(bool value) {untargetable=value;StatusSystem?.NotifyTargetability(this);}
         public void SetTauntSource(string sourceId)
         {
             if(sourceId != null && string.IsNullOrWhiteSpace(sourceId))throw new ArgumentException("Invalid taunt source.");
@@ -62,7 +72,7 @@ namespace PokeChess.Core.Battle
 
         internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId, IReadOnlyList<string> traits)
         {
-            UnitInstanceId = source.InstanceId;
+            PersistentUnit=source;UnitInstanceId = source.InstanceId;
             DefinitionId = source.DefinitionId;
             SkillId = skillId;
             TraitIds = Array.AsReadOnly(traits.ToArray());
@@ -114,7 +124,12 @@ namespace PokeChess.Core.Battle
         public PokeChess.Core.Random.BattleRandomStreams RngStreams { get; }
         public int TickRate { get; }
         public ProjectileSystem Projectiles { get; }
+        public SkillTimelineSystem SkillTimeline { get; }
+        public CombatMovementSystem Movement { get; }
+        public PathProjectileSystem PathProjectiles { get; }
         public EnergySystem Energy { get; }
+        public ShieldSystem Shields { get; }
+        public HealingSystem Healing { get; }
         public StatusEffectSystem StatusEffects { get; }
         public SynergySystem Synergies { get; internal set; }
         public ItemCombatSystem Items { get; }
@@ -123,7 +138,10 @@ namespace PokeChess.Core.Battle
         private readonly List<SkillEffectEvent> skillEffectEvents = new List<SkillEffectEvent>();
         public IReadOnlyList<SkillEffectEvent> SkillEffectEventsThisTick => Array.AsReadOnly(skillEffectEvents.ToArray());
         internal void RecordSkillEffect(SkillEffectEvent signal) => skillEffectEvents.Add(signal);
-        internal void BeginSkillTick() { skillEvents.Clear(); skillEffectEvents.Clear(); }
+        private readonly List<SkillAreaEvent> skillAreaEvents=new List<SkillAreaEvent>();
+        public IReadOnlyList<SkillAreaEvent> SkillAreasThisTick=>Array.AsReadOnly(skillAreaEvents.ToArray());
+        internal void RecordSkillArea(SkillAreaEvent area)=>skillAreaEvents.Add(area);
+        internal void BeginSkillTick() { skillEvents.Clear(); skillEffectEvents.Clear();skillAreaEvents.Clear(); }
         internal void RecordSkill(SkillEvent signal) => skillEvents.Add(signal);
         internal bool HasSimulation { get; set; }
         public long CurrentTick { get; internal set; }
@@ -138,6 +156,8 @@ namespace PokeChess.Core.Battle
         internal void RecordLifecycle(BattleLifecycleEvent value) => lifecycleEvents.Add(value);
         public BattleResult Result { get; internal set; } = BattleResult.InProgress;
         public BattleEndReason EndReason { get; internal set; } = BattleEndReason.None;
+        public SkillProcSystem SkillProcs { get; }
+        public SkillWorldEffects WorldEffects { get; }
         public IReadOnlyList<UnitCombatState> Units { get; }
         private readonly List<DamageResult> damageResults = new List<DamageResult>();
         public IReadOnlyList<DamageResult> DamageResultsThisTick => Array.AsReadOnly(damageResults.ToArray());
@@ -171,13 +191,17 @@ namespace PokeChess.Core.Battle
             RngStreams = new PokeChess.Core.Random.BattleRandomStreams(seed);
             TickRate = tickRate;
             Projectiles = new ProjectileSystem(this);
+            SkillTimeline = new SkillTimelineSystem(this);
             Energy = new EnergySystem(this);
-            StatusEffects = new StatusEffectSystem(this);
-            foreach(var unit in units)unit.StatusSystem=StatusEffects;
+            StatusEffects = new StatusEffectSystem(this);SkillProcs=new SkillProcSystem(this);WorldEffects=new SkillWorldEffects(this);
+            Shields=new ShieldSystem(this);Healing=new HealingSystem(this);
+            foreach(var unit in units){unit.StatusSystem=StatusEffects;unit.ShieldSystem=Shields;}
             this.board = board ?? throw new ArgumentNullException(nameof(board));
             unitsById = units.ToDictionary(u => u.UnitInstanceId, StringComparer.Ordinal);
             Units = Array.AsReadOnly(units);
             Items = new ItemCombatSystem(this);
+            Movement = new CombatMovementSystem(this);
+            PathProjectiles = new PathProjectileSystem(this);
         }
     }
 
@@ -206,10 +230,10 @@ namespace PokeChess.Core.Battle
             var states = entries.Select(e =>
             {
                 var definition = catalog.Get(e.Unit.DefinitionId);
-                var stats = resolveStats == null ? RankRules.Default.Apply(definition.BaseStats,e.Unit.Rank) : resolveStats(e.Unit, definition);
+                var stats = resolveStats == null ? RankRules.Default.Apply(definition,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
                 stats = ItemCombatSystem.ApplyStats(e.Unit,stats);
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, definition.TraitIds);
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, definition.TraitIds){IsBoss=definition.IsBoss};
             }).ToArray();
             var battle = new BattleState(battleId, roundNumber, seed, tickRate, states, board);
             battle.Synergies = new SynergySystem(battle, synergyRules);

@@ -16,29 +16,39 @@ MonoBehaviour:
   DisplayName: Butterfree
   LocalizedName: "\uBC84\uD130\uD50C"
   RoleId: utility
-  Cost: 2
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 880
-    Attack: 56
-    SpellPower: 0
-    AttackSpeed: 0.6
+    MaxHP: 650
+    Attack: 46
+    SpellPower: 100
+    AttackSpeed: 0.68
     Armor: 20
-    MagicResistance: 20
-    AttackRange: 2
+    MagicResistance: 35
+    AttackRange: 4
     MoveSpeed: 2
-    MaxEnergy: 60
-    StartingEnergy: 20
+    MaxEnergy: 105
+    StartingEnergy: 30
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 650
+  - 1105
+  - 1885
+  RankAttack:
+  - 46
+  - 60
+  - 78
   TypeIds:
   - bug
   TraitIds:
   - focus
   - link
-  Skill: {fileID: 11400000, guid: 696ba0f78535ea247892a72916f67dca, type: 2}
+  Skill: {fileID: 11400000, guid: 8210eba7ffdd47944b32d63fddf31d3a, type: 2}
   Visual: {fileID: 11400000, guid: f7407de3e26ee36499956b4e83328877, type: 2}
   Evolutions: []

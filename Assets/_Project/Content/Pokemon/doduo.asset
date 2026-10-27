@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: doduo
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: doduo
+  DisplayName: Doduo
+  LocalizedName: "\uB450\uB450"
+  RoleId: melee-dps
+  Cost: 2
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 730
+    Attack: 70
+    SpellPower: 100
+    AttackSpeed: 0.83
+    Armor: 28
+    MagicResistance: 22
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 75
+    StartingEnergy: 0
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 730
+  - 1241
+  - 2117
+  RankAttack:
+  - 70
+  - 91
+  - 119
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 297cbbfad0d1f7a49be2734b85bf6d87, type: 2}
+  Visual: {fileID: 11400000, guid: c3d509a39c8340644883bb9d931211ec, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: 44e82dd2e05c4734d80cb386230a4628, type: 2}
+    PointCost: 1

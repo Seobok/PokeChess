@@ -17,27 +17,37 @@ MonoBehaviour:
   LocalizedName: "\uD6C4\uB518"
   RoleId: caster
   Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1040
-    Attack: 72
-    SpellPower: 0
-    AttackSpeed: 0.6
-    Armor: 20
-    MagicResistance: 25
-    AttackRange: 3
+    MaxHP: 990
+    Attack: 88
+    SpellPower: 100
+    AttackSpeed: 0.8
+    Armor: 28
+    MagicResistance: 65
+    AttackRange: 4
     MoveSpeed: 2
-    MaxEnergy: 100
-    StartingEnergy: 20
+    MaxEnergy: 105
+    StartingEnergy: 30
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 990
+  - 1683
+  - 2871
+  RankAttack:
+  - 88
+  - 114
+  - 150
   TypeIds:
   - psychic
   TraitIds:
   - focus
-  Skill: {fileID: 11400000, guid: d5cc815834815ab43a032e8104d8551b, type: 2}
+  Skill: {fileID: 11400000, guid: 62d4bfab38bcb464681e27578740f056, type: 2}
   Visual: {fileID: 11400000, guid: 6d5078343a9479840aa0444d7a55b0b8, type: 2}
   Evolutions: []

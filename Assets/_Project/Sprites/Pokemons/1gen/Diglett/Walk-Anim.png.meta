@@ -106,7 +106,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -120,7 +120,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -144,7 +144,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -182,529 +182,529 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walk-Anim_0
+      name: diglett_Walk_d0_f0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 289
-        width: 20
-        height: 23
+        x: 0
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7cab3b30908c29120800000000000000
-      internalID: 2419215890893748935
+      spriteID: 0f7d03aadfe35b2438004aab3bfc61ea
+      internalID: -1797256751
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_1
+      name: diglett_Walk_d0_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 290
-        width: 18
-        height: 23
+        x: 40
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3a48093a3dd949760800000000000000
-      internalID: 7463764014767572131
+      spriteID: 65327f52f1662a942acf2aac2c5672aa
+      internalID: 870988769
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_2
+      name: diglett_Walk_d0_f2
       rect:
         serializedVersion: 2
-        x: 91
-        y: 291
-        width: 18
-        height: 23
+        x: 80
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30580e1929a1011e0800000000000000
-      internalID: -2229252598733437693
+      spriteID: 246858a391a05834392a7086cbf30214
+      internalID: 1248897368
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_3
+      name: diglett_Walk_d1_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 250
-        width: 27
-        height: 23
+        x: 0
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67aed1dbf084d9200800000000000000
-      internalID: 188385991853992566
+      spriteID: 8dd80c40fa33a27428dddb10872b75e5
+      internalID: -1065078867
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_4
+      name: diglett_Walk_d1_f1
       rect:
         serializedVersion: 2
-        x: 45
-        y: 251
-        width: 27
-        height: 22
+        x: 40
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e117f4444ca3fd5d0800000000000000
-      internalID: -3035643009190366946
+      spriteID: 6a225c5ea7683ae4da134e969d5c7673
+      internalID: 92520140
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_5
+      name: diglett_Walk_d1_f2
       rect:
         serializedVersion: 2
-        x: 84
-        y: 252
-        width: 29
-        height: 22
+        x: 80
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a75976869469fa6f0800000000000000
-      internalID: -671152577426516614
+      spriteID: 08745fdf7b528c448ac88f338db689a4
+      internalID: 1986104031
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_6
+      name: diglett_Walk_d2_f0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 213
-        width: 31
-        height: 11
+        x: 0
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5203eceea7a192b30800000000000000
-      internalID: 4262967637577707557
+      spriteID: 4f1c56c6af96f804e8f78509c1e24050
+      internalID: 310630644
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_7
+      name: diglett_Walk_d2_f1
       rect:
         serializedVersion: 2
-        x: 42
-        y: 214
-        width: 31
-        height: 9
+        x: 40
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 615b90b2c35915f20800000000000000
-      internalID: 3409670478548808982
+      spriteID: bd7ecb3c1b33eeb4b8b7cbf5ef0da4df
+      internalID: -2060458681
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_8
+      name: diglett_Walk_d2_f2
       rect:
         serializedVersion: 2
-        x: 81
-        y: 213
-        width: 32
-        height: 10
+        x: 80
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 742da2342b28cd6b0800000000000000
-      internalID: -5270193761787653561
+      spriteID: dc71bf5715866da41a385798eeff1bf7
+      internalID: 803796939
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_9
+      name: diglett_Walk_d3_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 165
-        width: 28
-        height: 21
+        x: 0
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 252c09ccd3869b9d0800000000000000
-      internalID: -2758058682153385390
+      spriteID: 4290d60d2e6569541b8d149ff5256edc
+      internalID: -1392967140
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_10
+      name: diglett_Walk_d3_f1
       rect:
         serializedVersion: 2
-        x: 43
-        y: 164
-        width: 31
-        height: 22
+        x: 40
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1d7a394dce5501260800000000000000
-      internalID: 7066242291011397585
+      spriteID: 64ce6ae05f74f2844a431911b200d958
+      internalID: -285656332
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_11
+      name: diglett_Walk_d3_f2
       rect:
         serializedVersion: 2
-        x: 81
-        y: 162
-        width: 33
-        height: 23
+        x: 80
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dd6b0dbfd4da1d1b0800000000000000
-      internalID: -5633531108414933283
+      spriteID: 09ec8ef213b90094aa0a625ae4782369
+      internalID: 1517516757
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_12
+      name: diglett_Walk_d4_f0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 124
-        width: 20
-        height: 23
+        x: 0
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7edcb1a9b64d57d0800000000000000
-      internalID: -2928106419624550788
+      spriteID: b7f40ace87451ef448d5133723cad90d
+      internalID: 1266172961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_13
+      name: diglett_Walk_d4_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 123
-        width: 18
-        height: 23
+        x: 40
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2e497025bf8179830800000000000000
-      internalID: 4077755455299359970
+      spriteID: d0a66135ac7e3e24d8d8bd76e8658114
+      internalID: -322072436
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_14
+      name: diglett_Walk_d4_f2
       rect:
         serializedVersion: 2
-        x: 91
-        y: 122
-        width: 18
-        height: 23
+        x: 80
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aae474e74fd09e340800000000000000
-      internalID: 4893457813856538282
+      spriteID: e57bf69ef8553ed4ea367f2a94fa71d7
+      internalID: 317070870
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_15
+      name: diglett_Walk_d5_f0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 85
-        width: 28
-        height: 21
+        x: 0
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cb3e88a1e5811630800000000000000
-      internalID: 3896042356894219205
+      spriteID: 22a71694caab42843b9587c14d95deef
+      internalID: -476647779
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_16
+      name: diglett_Walk_d5_f1
       rect:
         serializedVersion: 2
-        x: 46
-        y: 84
-        width: 31
-        height: 22
+        x: 40
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4767ae0f0d15e030800000000000000
-      internalID: 3523254233994848077
+      spriteID: ec8fd269f01f9224ca239b3bb02e4dd5
+      internalID: 1736150782
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_17
+      name: diglett_Walk_d5_f2
       rect:
         serializedVersion: 2
-        x: 86
-        y: 82
-        width: 33
-        height: 23
+        x: 80
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce1dd343b6792e8d0800000000000000
-      internalID: -2818523930086747668
+      spriteID: 98883028d63c0ae4690b8f9e6dc87e27
+      internalID: 1695488256
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_18
+      name: diglett_Walk_d6_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 53
-        width: 31
-        height: 11
+        x: 0
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b435011656ae03140800000000000000
-      internalID: 4697512132488483659
+      spriteID: 7e8d695ee06161849bc8bd4c84f411f5
+      internalID: 938647456
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_19
+      name: diglett_Walk_d6_f1
       rect:
         serializedVersion: 2
-        x: 47
-        y: 54
-        width: 31
-        height: 9
+        x: 40
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cc69eff34aca25330800000000000000
-      internalID: 3698208065472861900
+      spriteID: f6d2709b2109ab241889d6910380a5b1
+      internalID: -1853608836
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_20
+      name: diglett_Walk_d6_f2
       rect:
         serializedVersion: 2
-        x: 87
-        y: 53
-        width: 32
-        height: 10
+        x: 80
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0936e288eed8c950800000000000000
-      internalID: 6469665954927622411
+      spriteID: fcc76270757c2d74ea58f119e3630a9c
+      internalID: 1044611548
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_21
+      name: diglett_Walk_d7_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 10
-        width: 27
-        height: 23
+        x: 0
+        y: 0
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 457894c4c85dc6180800000000000000
-      internalID: -9120680346780072108
+      spriteID: 83770307ef160a7428f390c09e78f52a
+      internalID: 412512149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_22
+      name: diglett_Walk_d7_f1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 11
-        width: 27
-        height: 22
+        x: 40
+        y: 0
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7f860db50f24fddd0800000000000000
-      internalID: -2459173271421032201
+      spriteID: 007e1ac1521f9ca489861de68014a73e
+      internalID: 1535817773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_23
+      name: diglett_Walk_d7_f2
       rect:
         serializedVersion: 2
-        x: 87
-        y: 12
-        width: 29
-        height: 22
+        x: 80
+        y: 0
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4625d4a7093744c0800000000000000
-      internalID: -4303408213936232882
+      spriteID: 7ff73a9b698b9b64ebe80a7f57b1672c
+      internalID: 754919662
       vertices: []
       indices: 
       edges: []
@@ -713,7 +713,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8605e6d0d1563aa478c6244bbdd02bc2
     internalID: 0
     vertices: []
     indices: 
@@ -723,30 +723,30 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Walk-Anim_0: 2419215890893748935
-      Walk-Anim_1: 7463764014767572131
-      Walk-Anim_10: 7066242291011397585
-      Walk-Anim_11: -5633531108414933283
-      Walk-Anim_12: -2928106419624550788
-      Walk-Anim_13: 4077755455299359970
-      Walk-Anim_14: 4893457813856538282
-      Walk-Anim_15: 3896042356894219205
-      Walk-Anim_16: 3523254233994848077
-      Walk-Anim_17: -2818523930086747668
-      Walk-Anim_18: 4697512132488483659
-      Walk-Anim_19: 3698208065472861900
-      Walk-Anim_2: -2229252598733437693
-      Walk-Anim_20: 6469665954927622411
-      Walk-Anim_21: -9120680346780072108
-      Walk-Anim_22: -2459173271421032201
-      Walk-Anim_23: -4303408213936232882
-      Walk-Anim_3: 188385991853992566
-      Walk-Anim_4: -3035643009190366946
-      Walk-Anim_5: -671152577426516614
-      Walk-Anim_6: 4262967637577707557
-      Walk-Anim_7: 3409670478548808982
-      Walk-Anim_8: -5270193761787653561
-      Walk-Anim_9: -2758058682153385390
+      diglett_Walk_d0_f0: -1797256751
+      diglett_Walk_d0_f1: 870988769
+      diglett_Walk_d0_f2: 1248897368
+      diglett_Walk_d1_f0: -1065078867
+      diglett_Walk_d1_f1: 92520140
+      diglett_Walk_d1_f2: 1986104031
+      diglett_Walk_d2_f0: 310630644
+      diglett_Walk_d2_f1: -2060458681
+      diglett_Walk_d2_f2: 803796939
+      diglett_Walk_d3_f0: -1392967140
+      diglett_Walk_d3_f1: -285656332
+      diglett_Walk_d3_f2: 1517516757
+      diglett_Walk_d4_f0: 1266172961
+      diglett_Walk_d4_f1: -322072436
+      diglett_Walk_d4_f2: 317070870
+      diglett_Walk_d5_f0: -476647779
+      diglett_Walk_d5_f1: 1736150782
+      diglett_Walk_d5_f2: 1695488256
+      diglett_Walk_d6_f0: 938647456
+      diglett_Walk_d6_f1: -1853608836
+      diglett_Walk_d6_f2: 1044611548
+      diglett_Walk_d7_f0: 412512149
+      diglett_Walk_d7_f1: 1535817773
+      diglett_Walk_d7_f2: 754919662
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

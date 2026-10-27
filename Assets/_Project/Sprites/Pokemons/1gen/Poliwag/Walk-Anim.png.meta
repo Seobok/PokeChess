@@ -154,7 +154,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -168,7 +168,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -192,7 +192,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -230,881 +230,881 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walk-Anim_0
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 293
-        width: 18
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7cab3b30908c29120800000000000000
-      internalID: 2419215890893748935
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_1
-      rect:
-        serializedVersion: 2
-        x: 39
-        y: 296
-        width: 18
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3a48093a3dd949760800000000000000
-      internalID: 7463764014767572131
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_2
-      rect:
-        serializedVersion: 2
-        x: 71
-        y: 295
-        width: 18
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 30580e1929a1011e0800000000000000
-      internalID: -2229252598733437693
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_3
-      rect:
-        serializedVersion: 2
-        x: 103
-        y: 293
-        width: 18
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 67aed1dbf084d9200800000000000000
-      internalID: 188385991853992566
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_4
-      rect:
-        serializedVersion: 2
-        x: 135
-        y: 291
-        width: 18
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e117f4444ca3fd5d0800000000000000
-      internalID: -3035643009190366946
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_5
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 253
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a75976869469fa6f0800000000000000
-      internalID: -671152577426516614
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_6
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 255
-        width: 24
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5203eceea7a192b30800000000000000
-      internalID: 4262967637577707557
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_7
-      rect:
-        serializedVersion: 2
-        x: 67
-        y: 255
-        width: 24
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 615b90b2c35915f20800000000000000
-      internalID: 3409670478548808982
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_8
-      rect:
-        serializedVersion: 2
-        x: 100
-        y: 254
-        width: 24
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 742da2342b28cd6b0800000000000000
-      internalID: -5270193761787653561
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_9
-      rect:
-        serializedVersion: 2
-        x: 136
-        y: 250
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 252c09ccd3869b9d0800000000000000
-      internalID: -2758058682153385390
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_10
+      name: poliwag_Walk_d0_f0
       rect:
         serializedVersion: 2
         x: 0
-        y: 213
-        width: 25
-        height: 20
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1d7a394dce5501260800000000000000
-      internalID: 7066242291011397585
+      spriteID: 2abc7c117a93ca84d8357e3e77becba8
+      internalID: 125195283
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_11
+      name: poliwag_Walk_d0_f1
       rect:
         serializedVersion: 2
-        x: 31
-        y: 215
-        width: 27
-        height: 23
+        x: 32
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dd6b0dbfd4da1d1b0800000000000000
-      internalID: -5633531108414933283
+      spriteID: a550546b100260c4a9253712eeee809d
+      internalID: 1774468327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_12
+      name: poliwag_Walk_d0_f2
       rect:
         serializedVersion: 2
         x: 64
-        y: 216
-        width: 27
-        height: 23
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7edcb1a9b64d57d0800000000000000
-      internalID: -2928106419624550788
+      spriteID: 0502d4dfd641a114e9804295c7953ceb
+      internalID: -1835351449
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_13
+      name: poliwag_Walk_d0_f3
       rect:
         serializedVersion: 2
         x: 96
-        y: 215
-        width: 27
-        height: 23
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2e497025bf8179830800000000000000
-      internalID: 4077755455299359970
+      spriteID: e7cdfa9c1e1bebc479a0e3af3232ba0e
+      internalID: -309225857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_14
+      name: poliwag_Walk_d0_f4
       rect:
         serializedVersion: 2
-        x: 132
-        y: 213
-        width: 24
-        height: 20
+        x: 128
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aae474e74fd09e340800000000000000
-      internalID: 4893457813856538282
+      spriteID: 8ff7b19930151fb47b9bfc5f50c93944
+      internalID: -1513143603
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_15
+      name: poliwag_Walk_d1_f0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 172
-        width: 23
-        height: 21
+        x: 0
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cb3e88a1e5811630800000000000000
-      internalID: 3896042356894219205
+      spriteID: 206809c0cf4a3c34396f83d12ca5f15b
+      internalID: 1448607579
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_16
+      name: poliwag_Walk_d1_f1
       rect:
         serializedVersion: 2
-        x: 36
-        y: 172
-        width: 22
-        height: 24
+        x: 32
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4767ae0f0d15e030800000000000000
-      internalID: 3523254233994848077
+      spriteID: c76fd357c7f59704d8b9099d57588694
+      internalID: -1984347860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_17
+      name: poliwag_Walk_d1_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 174
-        width: 22
-        height: 24
+        x: 64
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce1dd343b6792e8d0800000000000000
-      internalID: -2818523930086747668
+      spriteID: 4cdd5e88bc960f241893ed8afd7bdb52
+      internalID: -39809195
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_18
+      name: poliwag_Walk_d1_f3
       rect:
         serializedVersion: 2
-        x: 102
-        y: 174
-        width: 22
-        height: 24
+        x: 96
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b435011656ae03140800000000000000
-      internalID: 4697512132488483659
+      spriteID: 6eaadde479c36c944b0a9531e1bc4f2e
+      internalID: 19131651
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_19
+      name: poliwag_Walk_d1_f4
       rect:
         serializedVersion: 2
-        x: 134
-        y: 174
-        width: 21
-        height: 20
+        x: 128
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cc69eff34aca25330800000000000000
-      internalID: 3698208065472861900
+      spriteID: 08edb41ee0393d84d8a9a07fc218dedc
+      internalID: -1897622573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_20
+      name: poliwag_Walk_d2_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 130
-        width: 18
-        height: 23
+        x: 0
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0936e288eed8c950800000000000000
-      internalID: 6469665954927622411
+      spriteID: 1c9ba9169dc9088438b8f95b4454b06f
+      internalID: -1436661345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_21
+      name: poliwag_Walk_d2_f1
       rect:
         serializedVersion: 2
-        x: 39
-        y: 132
-        width: 18
-        height: 27
+        x: 32
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 457894c4c85dc6180800000000000000
-      internalID: -9120680346780072108
+      spriteID: 4bf143012d865c240b97790915753381
+      internalID: 941376039
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_22
+      name: poliwag_Walk_d2_f2
       rect:
         serializedVersion: 2
-        x: 71
-        y: 133
-        width: 18
-        height: 27
+        x: 64
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7f860db50f24fddd0800000000000000
-      internalID: -2459173271421032201
+      spriteID: 37bdda51dec76324b9799fd083dc1537
+      internalID: -1028586899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_23
+      name: poliwag_Walk_d2_f3
       rect:
         serializedVersion: 2
-        x: 103
-        y: 132
-        width: 18
-        height: 27
+        x: 96
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4625d4a7093744c0800000000000000
-      internalID: -4303408213936232882
+      spriteID: 05055cc3b6b09794cbbf7ac6465f5f8a
+      internalID: 1165921219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_24
+      name: poliwag_Walk_d2_f4
       rect:
         serializedVersion: 2
-        x: 135
-        y: 134
-        width: 18
-        height: 20
+        x: 128
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1de7deeee77769220800000000000000
-      internalID: 2492310830854274769
+      spriteID: 30cbb12f6d3b21645a0df927970956d4
+      internalID: 182798785
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_25
+      name: poliwag_Walk_d3_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 92
-        width: 23
-        height: 21
+        x: 0
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c0e5ba7be8cbc0560800000000000000
-      internalID: 7281402018704088588
+      spriteID: 15c8a65e8a8c9c544871a1c1634984e0
+      internalID: -59628409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_26
+      name: poliwag_Walk_d3_f1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 92
-        width: 22
-        height: 24
+        x: 32
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a53ce009a2cc78a20800000000000000
-      internalID: 3064642554626491226
+      spriteID: 78f2a3ccab869584dafce717a9db68e5
+      internalID: -1555905574
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_27
+      name: poliwag_Walk_d3_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 94
-        width: 22
-        height: 24
+        x: 64
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 834dd15d602556530800000000000000
-      internalID: 3847571645956740152
+      spriteID: a9dcb68f00c6eb747a1d4a502374c3f8
+      internalID: 816931355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_28
+      name: poliwag_Walk_d3_f3
       rect:
         serializedVersion: 2
-        x: 100
-        y: 94
-        width: 22
-        height: 24
+        x: 96
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d18d6a02b89710740800000000000000
-      internalID: 5116504290124814365
+      spriteID: c5f7ab635df38f348b29228ce8c04b14
+      internalID: -95088777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_29
+      name: poliwag_Walk_d3_f4
       rect:
         serializedVersion: 2
-        x: 133
-        y: 94
-        width: 21
-        height: 20
+        x: 128
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bdb6c13e976500d90800000000000000
-      internalID: -7133606728253543461
+      spriteID: d95614916061b8a478f80b436a63382f
+      internalID: -207821246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_30
+      name: poliwag_Walk_d4_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 53
-        width: 26
-        height: 20
+        x: 0
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a858f20c53b446e20800000000000000
-      internalID: 3342879517645440394
+      spriteID: 0a324b112cfd3a241b52f97ef7328da5
+      internalID: -1002915152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_31
+      name: poliwag_Walk_d4_f1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 55
-        width: 27
-        height: 23
+        x: 32
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 10aef10e6b7cda0b0800000000000000
-      internalID: -5715692763805128191
+      spriteID: 338943ef4cd6428468a56b6d41482607
+      internalID: -2112983703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_32
+      name: poliwag_Walk_d4_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 56
-        width: 27
-        height: 23
+        x: 64
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26465989a1b905e10800000000000000
-      internalID: 2184416357806072930
+      spriteID: 6e0e7cbfe3fb0c64f973ecc40359337f
+      internalID: 466142003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_33
+      name: poliwag_Walk_d4_f3
       rect:
         serializedVersion: 2
-        x: 101
-        y: 55
-        width: 27
-        height: 23
+        x: 96
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4f22b539e8b27bcc0800000000000000
-      internalID: -3695437077876628748
+      spriteID: ea4be56cb20fd0948bec664b30d28f28
+      internalID: 504633070
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_34
+      name: poliwag_Walk_d4_f4
       rect:
         serializedVersion: 2
-        x: 132
-        y: 53
-        width: 24
-        height: 20
+        x: 128
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3c875da1e2fc1c090800000000000000
-      internalID: -8015898064817129277
+      spriteID: a9951b3fd2e9e0948b57d65e6a7ef0e8
+      internalID: 1722269801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_35
+      name: poliwag_Walk_d5_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 13
-        width: 22
-        height: 23
+        x: 0
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4a40dd0637f807a50800000000000000
-      internalID: 6516866386514216100
+      spriteID: 9984a656ad0cc6a4498e04841ced4877
+      internalID: 690893594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_36
+      name: poliwag_Walk_d5_f1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 15
-        width: 24
-        height: 21
+        x: 32
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f3fc9392a591fb20800000000000000
-      internalID: 3166476538511946738
+      spriteID: ab9cf2102dfc8d546a4cd4daa109e6d1
+      internalID: -1778870828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_37
+      name: poliwag_Walk_d5_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 15
-        width: 24
-        height: 21
+        x: 64
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b02c9cd7207bb7cf0800000000000000
-      internalID: -253407732688109045
+      spriteID: 11f61201ed95ab14e97bc7f5c4d83df5
+      internalID: -1631851607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_38
+      name: poliwag_Walk_d5_f3
       rect:
         serializedVersion: 2
-        x: 100
-        y: 14
-        width: 24
-        height: 21
+        x: 96
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3814fdc68ea9e13b0800000000000000
-      internalID: -5539820168569470589
+      spriteID: ebdca231cf8049d47a927fadf985bdb5
+      internalID: -1991078482
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_39
+      name: poliwag_Walk_d5_f4
       rect:
         serializedVersion: 2
-        x: 132
-        y: 10
-        width: 20
-        height: 25
+        x: 128
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84787f9dfcefb7eb0800000000000000
-      internalID: -4720899615699269816
+      spriteID: 274e56cccaecbac419dc2cccfae7b5d1
+      internalID: -1462939748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a44372742eb36494c921ce05f051f627
+      internalID: -721932285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7244828580ebda3469a9662bdec35b16
+      internalID: -50771552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42e5939faf476984da4400eae0cbf4a5
+      internalID: 988389681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe2ed72e279900942b6fdf5173017143
+      internalID: 1017701972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f334176da72cd604b8aacd4a589268eb
+      internalID: -2001895773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47e5348a218afec4fbbe0b1b6a9622a5
+      internalID: 793051627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81f82c9a7e436a444bc253e2ce99debb
+      internalID: 1345924439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa8de70716ecfb247a95b093f825cd64
+      internalID: -763780785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ed3ff21d225d11468c0532d302e90d6
+      internalID: -1818540869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: poliwag_Walk_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4bec7397d08f5a48a1177666d0bad7c
+      internalID: 503918342
       vertices: []
       indices: 
       edges: []
@@ -1113,7 +1113,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: caf6162cf01832e48a2e861823dbe4f9
     internalID: 0
     vertices: []
     indices: 
@@ -1123,46 +1123,46 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Walk-Anim_0: 2419215890893748935
-      Walk-Anim_1: 7463764014767572131
-      Walk-Anim_10: 7066242291011397585
-      Walk-Anim_11: -5633531108414933283
-      Walk-Anim_12: -2928106419624550788
-      Walk-Anim_13: 4077755455299359970
-      Walk-Anim_14: 4893457813856538282
-      Walk-Anim_15: 3896042356894219205
-      Walk-Anim_16: 3523254233994848077
-      Walk-Anim_17: -2818523930086747668
-      Walk-Anim_18: 4697512132488483659
-      Walk-Anim_19: 3698208065472861900
-      Walk-Anim_2: -2229252598733437693
-      Walk-Anim_20: 6469665954927622411
-      Walk-Anim_21: -9120680346780072108
-      Walk-Anim_22: -2459173271421032201
-      Walk-Anim_23: -4303408213936232882
-      Walk-Anim_24: 2492310830854274769
-      Walk-Anim_25: 7281402018704088588
-      Walk-Anim_26: 3064642554626491226
-      Walk-Anim_27: 3847571645956740152
-      Walk-Anim_28: 5116504290124814365
-      Walk-Anim_29: -7133606728253543461
-      Walk-Anim_3: 188385991853992566
-      Walk-Anim_30: 3342879517645440394
-      Walk-Anim_31: -5715692763805128191
-      Walk-Anim_32: 2184416357806072930
-      Walk-Anim_33: -3695437077876628748
-      Walk-Anim_34: -8015898064817129277
-      Walk-Anim_35: 6516866386514216100
-      Walk-Anim_36: 3166476538511946738
-      Walk-Anim_37: -253407732688109045
-      Walk-Anim_38: -5539820168569470589
-      Walk-Anim_39: -4720899615699269816
-      Walk-Anim_4: -3035643009190366946
-      Walk-Anim_5: -671152577426516614
-      Walk-Anim_6: 4262967637577707557
-      Walk-Anim_7: 3409670478548808982
-      Walk-Anim_8: -5270193761787653561
-      Walk-Anim_9: -2758058682153385390
+      poliwag_Walk_d0_f0: 125195283
+      poliwag_Walk_d0_f1: 1774468327
+      poliwag_Walk_d0_f2: -1835351449
+      poliwag_Walk_d0_f3: -309225857
+      poliwag_Walk_d0_f4: -1513143603
+      poliwag_Walk_d1_f0: 1448607579
+      poliwag_Walk_d1_f1: -1984347860
+      poliwag_Walk_d1_f2: -39809195
+      poliwag_Walk_d1_f3: 19131651
+      poliwag_Walk_d1_f4: -1897622573
+      poliwag_Walk_d2_f0: -1436661345
+      poliwag_Walk_d2_f1: 941376039
+      poliwag_Walk_d2_f2: -1028586899
+      poliwag_Walk_d2_f3: 1165921219
+      poliwag_Walk_d2_f4: 182798785
+      poliwag_Walk_d3_f0: -59628409
+      poliwag_Walk_d3_f1: -1555905574
+      poliwag_Walk_d3_f2: 816931355
+      poliwag_Walk_d3_f3: -95088777
+      poliwag_Walk_d3_f4: -207821246
+      poliwag_Walk_d4_f0: -1002915152
+      poliwag_Walk_d4_f1: -2112983703
+      poliwag_Walk_d4_f2: 466142003
+      poliwag_Walk_d4_f3: 504633070
+      poliwag_Walk_d4_f4: 1722269801
+      poliwag_Walk_d5_f0: 690893594
+      poliwag_Walk_d5_f1: -1778870828
+      poliwag_Walk_d5_f2: -1631851607
+      poliwag_Walk_d5_f3: -1991078482
+      poliwag_Walk_d5_f4: -1462939748
+      poliwag_Walk_d6_f0: -721932285
+      poliwag_Walk_d6_f1: -50771552
+      poliwag_Walk_d6_f2: 988389681
+      poliwag_Walk_d6_f3: 1017701972
+      poliwag_Walk_d6_f4: -2001895773
+      poliwag_Walk_d7_f0: 793051627
+      poliwag_Walk_d7_f1: 1345924439
+      poliwag_Walk_d7_f2: -763780785
+      poliwag_Walk_d7_f3: -1818540869
+      poliwag_Walk_d7_f4: 503918342
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

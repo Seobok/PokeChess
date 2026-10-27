@@ -26,7 +26,7 @@ namespace PokeChess.Core.Pokemon
         }
     }
 
-    // SpellPower is a percentage: 50 means +50%, not 0.5.
+    // SpellPower uses percentage points. Total-power skills have a baseline of 100; legacy skills use bonus power.
     // Speeds use attacks/second and hexes/second. Hit time uses seconds.
     public enum AttackDeliveryType { Melee, Projectile }
 
@@ -91,20 +91,33 @@ namespace PokeChess.Core.Pokemon
 
     public sealed class PokemonDefinition
     {
+        public bool IsBoss { get; }
         public string Id { get; }
         public string DisplayName { get; }
         public int Cost { get; }
         public PokemonStats BaseStats { get; }
+        public IReadOnlyList<float> RankHP { get; }
+        public IReadOnlyList<float> RankAttack { get; }
         public string RoleId { get; }
         public string SkillId { get; }
         public IReadOnlyList<string> TypeIds { get; }
         public IReadOnlyList<string> TraitIds { get; }
         public IReadOnlyList<EvolutionOption> Evolutions { get; }
 
+        private static IReadOnlyList<float> RankValues(IEnumerable<float> values,string name,float minimum)
+        {
+            if(values==null)return null;var copy=values.ToArray();
+            if(copy.Length!=3)throw new ArgumentException("Exactly three rank stats are required.",name);
+            foreach(var value in copy)ModelGuard.Number(value,name,minimum);return Array.AsReadOnly(copy);
+        }
         public PokemonDefinition(string id, string displayName, int cost, PokemonStats baseStats,
             string roleId, string skillId, IEnumerable<string> typeIds = null,
-            IEnumerable<string> traitIds = null, IEnumerable<EvolutionOption> evolutions = null)
+            IEnumerable<string> traitIds = null, IEnumerable<EvolutionOption> evolutions = null,bool isBoss=false,IEnumerable<float> rankHP=null,IEnumerable<float> rankAttack=null)
         {
+            RankHP=RankValues(rankHP,nameof(rankHP),float.Epsilon);RankAttack=RankValues(rankAttack,nameof(rankAttack),0);
+            if((RankHP==null)!=(RankAttack==null))throw new ArgumentException("Both rank stat arrays are required.");
+            if(RankHP!=null&&(RankHP[0]!=baseStats?.MaxHP||RankAttack[0]!=baseStats?.Attack))throw new ArgumentException("Rank one must match base stats.");
+            IsBoss=isBoss;
             Id = ModelGuard.Id(id, nameof(id));
             DisplayName = ModelGuard.Id(displayName, nameof(displayName));
             if (cost < 0) throw new ArgumentOutOfRangeException(nameof(cost));

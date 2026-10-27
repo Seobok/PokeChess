@@ -16,29 +16,39 @@ MonoBehaviour:
   DisplayName: Charizard
   LocalizedName: "\uB9AC\uC790\uBABD"
   RoleId: tank-carry
-  Cost: 5
+  Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1920
-    Attack: 136
-    SpellPower: 0
-    AttackSpeed: 0.7
-    Armor: 45
-    MagicResistance: 35
-    AttackRange: 1
+    MaxHP: 1060
+    Attack: 88
+    SpellPower: 100
+    AttackSpeed: 0.82
+    Armor: 34
+    MagicResistance: 40
+    AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 120
-    StartingEnergy: 40
+    MaxEnergy: 115
+    StartingEnergy: 25
     AttackHitTime: 0.2
-    AttackDelivery: 0
+    AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1060
+  - 1802
+  - 3074
+  RankAttack:
+  - 88
+  - 114
+  - 150
   TypeIds:
   - fire
   TraitIds:
   - guardian
   - assault
-  Skill: {fileID: 11400000, guid: a494c987d10beb647b6199a271fd6199, type: 2}
+  Skill: {fileID: 11400000, guid: 1731b5851790e784099954cf1221b0c9, type: 2}
   Visual: {fileID: 11400000, guid: 1e698534bbe3d5c4fb8798b34ff1a549, type: 2}
   Evolutions: []

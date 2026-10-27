@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-charizard
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-charizard
+  DisplayName: "\uD654\uC5FC\uBC29\uC0AC"
+  VariantIds:
+  - skill-charizard-r1
+  - skill-charizard-r2
+  - skill-charizard-r3
+  VariantMode: 1
+  Description: "\uC804\uBC29 \uBD80\uCC44\uAF34 \uBC94\uC704\uC5D0 155/215/295\uC758
+    \uD2B9\uC218 \uD53C\uD574\uB97C \uC8FC\uACE0 3\uCD08\uAC04 \uD654\uC0C1\uC744
+    \uC785\uD78C\uB2E4."
+  Notes: "\uBD80\uCC44\uAF34 \uAE38\uC774\uB294 3. (3\uCE78 \uAC70\uB9AC\uAE4C\uC9C0
+    \uACF5\uACA9\uC774 \uB2FF\uC74C)"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

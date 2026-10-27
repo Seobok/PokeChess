@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-dratini
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-dratini
+  DisplayName: "\uD798\uAECF\uCE58\uAE30"
+  VariantIds:
+  - skill-dratini-r1
+  - skill-dratini-r2
+  - skill-dratini-r3
+  VariantMode: 1
+  Description: "\uC801\uC5D0\uAC8C 135/190/255\uC758 \uBB3C\uB9AC \uD53C\uD574\uC640
+    0.8\uCD08 \uAE30\uC808\uC744 \uBD80\uC5EC\uD55C\uB2E4. \uB300\uC0C1 \uB4A4\uCABD
+    1\uCE78\uC5D0 70/95/130\uC758 \uCD94\uAC00 \uBB3C\uB9AC \uD53C\uD574\uB97C \uC900\uB2E4."
+  Notes: "\uC2DC\uC804\uC790\u2192\uC8FC \uB300\uC0C1 \uBC29\uD5A5\uC744 \uC5F0\uC7A5\uD55C
+    \uB4A4\uCABD 1\uCE78\uB9CC \uD310\uC815. \uD574\uB2F9 \uCE78\uC758 \uC801\uC5D0\uAC8C
+    \uCD94\uAC00 \uD53C\uD574, \uC8FC \uB300\uC0C1\uC740 \uC911\uBCF5 \uD53C\uD574
+    \uC5C6\uC74C"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

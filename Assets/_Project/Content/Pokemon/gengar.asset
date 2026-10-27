@@ -16,29 +16,39 @@ MonoBehaviour:
   DisplayName: Gengar
   LocalizedName: "\uD32C\uD140"
   RoleId: caster
-  Cost: 2
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 800
-    Attack: 64
-    SpellPower: 0
-    AttackSpeed: 0.6
-    Armor: 15
-    MagicResistance: 20
+    MaxHP: 1090
+    Attack: 92
+    SpellPower: 100
+    AttackSpeed: 0.83
+    Armor: 28
+    MagicResistance: 60
     AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 70
-    StartingEnergy: 0
+    MaxEnergy: 100
+    StartingEnergy: 20
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1090
+  - 1853
+  - 3161
+  RankAttack:
+  - 92
+  - 120
+  - 156
   TypeIds:
   - ghost
   - poison
   TraitIds:
   - focus
-  Skill: {fileID: 11400000, guid: 9d218ddbad3cf0344afe2393711a857d, type: 2}
+  Skill: {fileID: 11400000, guid: aecb47dbc5cdc9f4dbbf51d5c7645fa6, type: 2}
   Visual: {fileID: 11400000, guid: 2bf9297d3fbae574d8649690d1b8ca67, type: 2}
   Evolutions: []

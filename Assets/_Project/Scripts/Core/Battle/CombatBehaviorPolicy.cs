@@ -16,7 +16,13 @@ namespace PokeChess.Core.Battle
         public virtual bool CanUseSkill(BattleState battle,UnitCombatState unit) => true;
         public virtual bool TryGetSkillDefinition(BattleState battle,UnitCombatState unit,out SkillDefinition skill)
         { skill=null; return false; }
+        public virtual bool TryGetSkillById(string id,out SkillDefinition skill) {skill=null;return false;}
         public virtual void ExecuteSkillEffect(BattleState battle,UnitCombatState unit,UnitCombatState target,SkillDefinition skill) { }
+        public virtual void ExecuteSkillStep(BattleState battle,UnitCombatState unit,UnitCombatState target,SkillDefinition skill,
+            SkillStepDefinition step,long castId,int index,int iteration) => ExecuteSkillEffect(battle,unit,target,skill);
+        public virtual PreparedSkillStep PrepareSkillStep(BattleState battle,UnitCombatState unit,UnitCombatState target,
+            SkillDefinition skill,SkillStepDefinition step,long castId,int index) =>
+            throw new InvalidOperationException("This policy does not support independent skill effects.");
         public virtual bool TryGetSkillTiming(BattleState battle, UnitCombatState unit, UnitCombatState target,
             out CombatActionTiming timing) { timing = default; return false; }
         public virtual bool CanContinueSkill(BattleState battle, UnitCombatState unit, UnitCombatState target) =>

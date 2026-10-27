@@ -130,7 +130,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -144,7 +144,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -168,7 +168,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walk-Anim_0
+      name: meowth_Walk_d0_f0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 234
-        width: 22
-        height: 22
+        x: 0
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7cab3b30908c29120800000000000000
-      internalID: 2419215890893748935
+      spriteID: 68aae59e271247c478ad3714f0a61e2b
+      internalID: 464784384
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_1
-      rect:
-        serializedVersion: 2
-        x: 26
-        y: 233
-        width: 22
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3a48093a3dd949760800000000000000
-      internalID: 7463764014767572131
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_2
-      rect:
-        serializedVersion: 2
-        x: 49
-        y: 234
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 30580e1929a1011e0800000000000000
-      internalID: -2229252598733437693
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_3
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 233
-        width: 22
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 67aed1dbf084d9200800000000000000
-      internalID: 188385991853992566
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_4
-      rect:
-        serializedVersion: 2
-        x: 2
-        y: 201
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e117f4444ca3fd5d0800000000000000
-      internalID: -3035643009190366946
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_5
-      rect:
-        serializedVersion: 2
-        x: 25
-        y: 201
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a75976869469fa6f0800000000000000
-      internalID: -671152577426516614
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_6
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 201
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5203eceea7a192b30800000000000000
-      internalID: 4262967637577707557
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_7
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 202
-        width: 20
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 615b90b2c35915f20800000000000000
-      internalID: 3409670478548808982
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_8
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 169
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 742da2342b28cd6b0800000000000000
-      internalID: -5270193761787653561
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_9
-      rect:
-        serializedVersion: 2
-        x: 27
-        y: 170
-        width: 18
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 252c09ccd3869b9d0800000000000000
-      internalID: -2758058682153385390
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_10
-      rect:
-        serializedVersion: 2
-        x: 49
-        y: 169
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1d7a394dce5501260800000000000000
-      internalID: 7066242291011397585
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_11
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 170
-        width: 19
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dd6b0dbfd4da1d1b0800000000000000
-      internalID: -5633531108414933283
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_12
-      rect:
-        serializedVersion: 2
-        x: 2
-        y: 138
-        width: 20
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c7edcb1a9b64d57d0800000000000000
-      internalID: -2928106419624550788
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_13
-      rect:
-        serializedVersion: 2
-        x: 25
-        y: 136
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2e497025bf8179830800000000000000
-      internalID: 4077755455299359970
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_14
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 138
-        width: 20
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: aae474e74fd09e340800000000000000
-      internalID: 4893457813856538282
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_15
-      rect:
-        serializedVersion: 2
-        x: 73
-        y: 137
-        width: 20
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5cb3e88a1e5811630800000000000000
-      internalID: 3896042356894219205
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_16
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 106
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d4767ae0f0d15e030800000000000000
-      internalID: 3523254233994848077
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Walk-Anim_17
+      name: meowth_Walk_d0_f1
       rect:
         serializedVersion: 2
         x: 24
-        y: 104
-        width: 22
-        height: 22
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce1dd343b6792e8d0800000000000000
-      internalID: -2818523930086747668
+      spriteID: fafc2f12704ef0e4a8962b5587107446
+      internalID: -568417154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_18
+      name: meowth_Walk_d0_f2
       rect:
         serializedVersion: 2
-        x: 49
-        y: 106
-        width: 22
-        height: 23
+        x: 48
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b435011656ae03140800000000000000
-      internalID: 4697512132488483659
+      spriteID: b510363fe88f064469d4456b1ad05cae
+      internalID: 1497436910
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_19
+      name: meowth_Walk_d0_f3
       rect:
         serializedVersion: 2
-        x: 74
-        y: 104
-        width: 22
-        height: 22
+        x: 72
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cc69eff34aca25330800000000000000
-      internalID: 3698208065472861900
+      spriteID: eb8d497e3729c4041ab530022b6bf2ed
+      internalID: 1477622658
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_20
+      name: meowth_Walk_d1_f0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 74
-        width: 20
-        height: 23
+        x: 0
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0936e288eed8c950800000000000000
-      internalID: 6469665954927622411
+      spriteID: 3ee03632c517b004993b807b99dbe2bd
+      internalID: -884624553
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_21
+      name: meowth_Walk_d1_f1
       rect:
         serializedVersion: 2
-        x: 25
-        y: 72
-        width: 22
-        height: 23
+        x: 24
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 457894c4c85dc6180800000000000000
-      internalID: -9120680346780072108
+      spriteID: 65c97800050ddff4aabb4e7f22226326
+      internalID: -1882000818
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_22
+      name: meowth_Walk_d1_f2
       rect:
         serializedVersion: 2
-        x: 50
-        y: 74
-        width: 20
-        height: 23
+        x: 48
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7f860db50f24fddd0800000000000000
-      internalID: -2459173271421032201
+      spriteID: e8ee985b420425640947fc40256ae5d7
+      internalID: -690488224
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_23
+      name: meowth_Walk_d1_f3
       rect:
         serializedVersion: 2
-        x: 75
-        y: 73
-        width: 20
-        height: 22
+        x: 72
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4625d4a7093744c0800000000000000
-      internalID: -4303408213936232882
+      spriteID: 1a6884d429b68ed4998dee874ae65f47
+      internalID: -250106746
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_24
+      name: meowth_Walk_d2_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 41
-        width: 19
-        height: 24
+        x: 0
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1de7deeee77769220800000000000000
-      internalID: 2492310830854274769
+      spriteID: ec56552901e4a614d9da4b8f158a20ec
+      internalID: 650982086
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_25
+      name: meowth_Walk_d2_f1
       rect:
         serializedVersion: 2
-        x: 29
-        y: 42
-        width: 18
-        height: 22
+        x: 24
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c0e5ba7be8cbc0560800000000000000
-      internalID: 7281402018704088588
+      spriteID: d7dff0af357c45d468c46044307f5357
+      internalID: -569260873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_26
+      name: meowth_Walk_d2_f2
       rect:
         serializedVersion: 2
-        x: 52
-        y: 41
-        width: 19
-        height: 24
+        x: 48
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a53ce009a2cc78a20800000000000000
-      internalID: 3064642554626491226
+      spriteID: 4c766738419101e48bd11412433dc620
+      internalID: 275505868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_27
+      name: meowth_Walk_d2_f3
       rect:
         serializedVersion: 2
-        x: 75
-        y: 42
-        width: 19
-        height: 22
+        x: 72
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 834dd15d602556530800000000000000
-      internalID: 3847571645956740152
+      spriteID: 9b6c2bb373c17f140b13ce4a3da8fa97
+      internalID: 1315395201
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_28
+      name: meowth_Walk_d3_f0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 9
-        width: 19
-        height: 24
+        x: 0
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d18d6a02b89710740800000000000000
-      internalID: 5116504290124814365
+      spriteID: 9cedfbd23fd94734c9316f7e898f9255
+      internalID: -1691150734
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_29
+      name: meowth_Walk_d3_f1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 9
-        width: 19
-        height: 21
+        x: 24
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bdb6c13e976500d90800000000000000
-      internalID: -7133606728253543461
+      spriteID: bcdaa0fdc1ca92a45b92bad5fe891d41
+      internalID: 2024663157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_30
+      name: meowth_Walk_d3_f2
       rect:
         serializedVersion: 2
-        x: 51
-        y: 9
-        width: 19
-        height: 24
+        x: 48
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a858f20c53b446e20800000000000000
-      internalID: 3342879517645440394
+      spriteID: 67dc2c7df7f8420488d3306063b283c5
+      internalID: -1814657929
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk-Anim_31
+      name: meowth_Walk_d3_f3
       rect:
         serializedVersion: 2
-        x: 73
-        y: 10
-        width: 20
-        height: 22
+        x: 72
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 10aef10e6b7cda0b0800000000000000
-      internalID: -5715692763805128191
+      spriteID: aa491e72a75acf3478180c61dd3a614d
+      internalID: -960526802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21df449e2cbea5941ae4d6b93dbfb6c5
+      internalID: -1316527418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 96
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68f70660db379e74f96b160a83671ca1
+      internalID: 635768080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 96
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 698701e759159f747b44f4309c7afb02
+      internalID: 795629713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 96
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbcb71cbe1cbe394f8addbcf37263cff
+      internalID: 492803581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a306028907f48f4a87bed0ac156ff3b
+      internalID: 707820378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96de64119f820734391bd9a0204c6b25
+      internalID: 1882285409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a27bb4b1b8586ce4692291fea66c51a2
+      internalID: -781183411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd1e294ebe6ae9b428d84fac07ea15c4
+      internalID: -2044304392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 619d396db5ad7664791fd239262bfc1f
+      internalID: 710093820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6c9abdc6796c0b42bec84c61fdac35c
+      internalID: 1574037595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d93cb8533bec18940837fc3bb1ed8fdd
+      internalID: 1046904001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b503d170251935a4bbe3eb574653a38a
+      internalID: 785259470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f24c6c5cf67ca4546b788a7abd876f6b
+      internalID: 824697465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02632a36ee095b34ab33320c19a63442
+      internalID: 527271757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f2a659494180884a9e33962b63e5741
+      internalID: -1236588091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meowth_Walk_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76e927640dea3ae478bc2430d55e79f4
+      internalID: 519008533
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 819941265e9978a46bdaade44a363eb6
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Walk-Anim_0: 2419215890893748935
-      Walk-Anim_1: 7463764014767572131
-      Walk-Anim_10: 7066242291011397585
-      Walk-Anim_11: -5633531108414933283
-      Walk-Anim_12: -2928106419624550788
-      Walk-Anim_13: 4077755455299359970
-      Walk-Anim_14: 4893457813856538282
-      Walk-Anim_15: 3896042356894219205
-      Walk-Anim_16: 3523254233994848077
-      Walk-Anim_17: -2818523930086747668
-      Walk-Anim_18: 4697512132488483659
-      Walk-Anim_19: 3698208065472861900
-      Walk-Anim_2: -2229252598733437693
-      Walk-Anim_20: 6469665954927622411
-      Walk-Anim_21: -9120680346780072108
-      Walk-Anim_22: -2459173271421032201
-      Walk-Anim_23: -4303408213936232882
-      Walk-Anim_24: 2492310830854274769
-      Walk-Anim_25: 7281402018704088588
-      Walk-Anim_26: 3064642554626491226
-      Walk-Anim_27: 3847571645956740152
-      Walk-Anim_28: 5116504290124814365
-      Walk-Anim_29: -7133606728253543461
-      Walk-Anim_3: 188385991853992566
-      Walk-Anim_30: 3342879517645440394
-      Walk-Anim_31: -5715692763805128191
-      Walk-Anim_4: -3035643009190366946
-      Walk-Anim_5: -671152577426516614
-      Walk-Anim_6: 4262967637577707557
-      Walk-Anim_7: 3409670478548808982
-      Walk-Anim_8: -5270193761787653561
-      Walk-Anim_9: -2758058682153385390
+      meowth_Walk_d0_f0: 464784384
+      meowth_Walk_d0_f1: -568417154
+      meowth_Walk_d0_f2: 1497436910
+      meowth_Walk_d0_f3: 1477622658
+      meowth_Walk_d1_f0: -884624553
+      meowth_Walk_d1_f1: -1882000818
+      meowth_Walk_d1_f2: -690488224
+      meowth_Walk_d1_f3: -250106746
+      meowth_Walk_d2_f0: 650982086
+      meowth_Walk_d2_f1: -569260873
+      meowth_Walk_d2_f2: 275505868
+      meowth_Walk_d2_f3: 1315395201
+      meowth_Walk_d3_f0: -1691150734
+      meowth_Walk_d3_f1: 2024663157
+      meowth_Walk_d3_f2: -1814657929
+      meowth_Walk_d3_f3: -960526802
+      meowth_Walk_d4_f0: -1316527418
+      meowth_Walk_d4_f1: 635768080
+      meowth_Walk_d4_f2: 795629713
+      meowth_Walk_d4_f3: 492803581
+      meowth_Walk_d5_f0: 707820378
+      meowth_Walk_d5_f1: 1882285409
+      meowth_Walk_d5_f2: -781183411
+      meowth_Walk_d5_f3: -2044304392
+      meowth_Walk_d6_f0: 710093820
+      meowth_Walk_d6_f1: 1574037595
+      meowth_Walk_d6_f2: 1046904001
+      meowth_Walk_d6_f3: 785259470
+      meowth_Walk_d7_f0: 824697465
+      meowth_Walk_d7_f1: 527271757
+      meowth_Walk_d7_f2: -1236588091
+      meowth_Walk_d7_f3: 519008533
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

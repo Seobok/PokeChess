@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-arcanine
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-arcanine
+  DisplayName: "\uBD88\uB300\uBB38\uC790"
+  VariantIds:
+  - skill-arcanine-r1
+  - skill-arcanine-r2
+  - skill-arcanine-r3
+  VariantMode: 1
+  Description: "\uB300\uC0C1 \uC911\uC2EC 1/1/2\uCE78 \uC2ED\uC790\uD615 \uBC94\uC704\uC5D0
+    190/270/360\uC758 \uD2B9\uC218 \uD53C\uD574\uB97C \uC8FC\uACE0 4\uCD08\uAC04
+    \uD654\uC0C1\uC744 \uC785\uD78C\uB2E4."
+  Notes: 
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

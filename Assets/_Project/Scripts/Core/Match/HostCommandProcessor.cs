@@ -22,7 +22,7 @@ namespace PokeChess.Core.Match
         public bool SamePayload(MatchCommand b)=>b!=null&&evolutionRevision==b.evolutionRevision&&itemId==b.itemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
     }
     [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId; }
-    [Serializable] public sealed class OwnerUnit { public string id,definitionId;public int rank,column,row,bench,saleGold,evolutionStage;public PlacementKind placement;public string[] items; }
+    [Serializable] public sealed class OwnerUnit { public string id,definitionId;public int rank,column,row,bench,saleGold,evolutionStage,bountyStacks;public PlacementKind placement;public string[] items; }
     [Serializable] public sealed class OwnerShopEvolution { public string rootDefinitionId,definitionId;public int stage; }
     [Serializable] public sealed class OwnerMatchState
     {
@@ -74,7 +74,7 @@ namespace PokeChess.Core.Match
             return new OwnerMatchState{matchId=match.MatchId,playerId=playerId,round=match.RoundNumber,phase=match.Phase,revision=revision,playerRevision=ledger.revision,nextSequence=ledger.sequence+1,
                 gold=p.Gold,xp=p.XP,level=p.Level,hp=p.HP,winStreak=p.WinStreak,loseStreak=p.LoseStreak,eliminated=p.IsEliminated,locked=p.Shop.IsLocked,shopRevision=p.Shop.Revision,placementRevision=p.PlacementRevision,
                 shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId}).ToArray(),
-                units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
+                units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,bountyStacks=u.BountyStacks,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
                 inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
                 itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>(),
                 evolutionPoints=p.EvolutionPoints,lastEvolutionPointRound=p.LastEvolutionPointRound,nextEvolutionPointRound=EvolutionPointRules.NextGrantRound(match.RoundNumber),evolutionRevision=p.EvolutionRevision,

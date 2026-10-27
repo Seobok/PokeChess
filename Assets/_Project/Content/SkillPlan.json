@@ -1,0 +1,4321 @@
+{
+  "Source": "포켓몬_오토체스_코스트_스킬표_v0.7.xlsx",
+  "Formula": "BaseDamage * SpellPower / 100",
+  "Rows": [
+    {
+      "Dex": 10,
+      "Id": "caterpie",
+      "Name": "캐터피",
+      "Cost": 1,
+      "Skill": "실뿜기",
+      "Effect": "적을 3초간 속박하고 공격속도를 25/35/45% 감소시킨다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.25,
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "HP": [
+        530,
+        901,
+        1537
+      ],
+      "Attack": [
+        42,
+        55,
+        71
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 70,
+      "StartingEnergy": 10,
+      "Armor": 20,
+      "MagicResistance": 20,
+      "AttackRange": 2,
+      "Role": "제어 서포터"
+    },
+    {
+      "Dex": 11,
+      "Id": "metapod",
+      "Name": "단데기",
+      "Cost": 1,
+      "Skill": "단단해지기",
+      "Effect": "4초간 방어력이 60/80/100% 증가하고 받는 피해가 15/20/25% 감소한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.6,
+            0.8,
+            1.0
+          ]
+        },
+        {
+          "Values": [
+            0.15,
+            0.2,
+            0.25
+          ]
+        }
+      ],
+      "HP": [
+        820,
+        1394,
+        2378
+      ],
+      "Attack": [
+        30,
+        39,
+        51
+      ],
+      "AttackSpeed": 0.5,
+      "MaxEnergy": 65,
+      "StartingEnergy": 20,
+      "Armor": 42,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "방어 탱커"
+    },
+    {
+      "Dex": 12,
+      "Id": "butterfree",
+      "Name": "버터플",
+      "Cost": 1,
+      "Skill": "수면가루",
+      "Effect": "주변 2칸의 적을 1.5/1.75/2초간 수면 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        46,
+        60,
+        78
+      ],
+      "AttackSpeed": 0.68,
+      "MaxEnergy": 105,
+      "StartingEnergy": 30,
+      "Armor": 20,
+      "MagicResistance": 35,
+      "AttackRange": 4,
+      "Role": "광역 제어"
+    },
+    {
+      "Dex": 13,
+      "Id": "weedle",
+      "Name": "뿔충이",
+      "Cost": 1,
+      "Skill": "독침",
+      "Effect": "적에게 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            50.0,
+            70.0,
+            95.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        540,
+        918,
+        1566
+      ],
+      "Attack": [
+        45,
+        59,
+        77
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 65,
+      "StartingEnergy": 0,
+      "Armor": 20,
+      "MagicResistance": 20,
+      "AttackRange": 1,
+      "Role": "독 지속딜러"
+    },
+    {
+      "Dex": 14,
+      "Id": "kakuna",
+      "Name": "딱충이",
+      "Cost": 1,
+      "Skill": "단단해지기",
+      "Effect": "4초간 방어력이 60/80/100% 증가하고 받는 피해가 15/20/25% 감소한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.6,
+            0.8,
+            1.0
+          ]
+        },
+        {
+          "Values": [
+            0.15,
+            0.2,
+            0.25
+          ]
+        }
+      ],
+      "HP": [
+        830,
+        1411,
+        2407
+      ],
+      "Attack": [
+        30,
+        39,
+        51
+      ],
+      "AttackSpeed": 0.5,
+      "MaxEnergy": 65,
+      "StartingEnergy": 20,
+      "Armor": 42,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "방어 탱커"
+    },
+    {
+      "Dex": 15,
+      "Id": "beedrill",
+      "Name": "독침붕",
+      "Cost": 1,
+      "Skill": "더블니들",
+      "Effect": "적을 2회 연속 찔러 타격당 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.",
+      "Notes": "공격 간격은 0.2초",
+      "Damage": [
+        {
+          "Values": [
+            50.0,
+            70.0,
+            95.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        680,
+        1156,
+        1972
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.8,
+      "MaxEnergy": 70,
+      "StartingEnergy": 10,
+      "Armor": 22,
+      "MagicResistance": 25,
+      "AttackRange": 1,
+      "Role": "연속 공격"
+    },
+    {
+      "Dex": 16,
+      "Id": "pidgey",
+      "Name": "구구",
+      "Cost": 1,
+      "Skill": "바람일으키기",
+      "Effect": "전방 2칸의 적에게 55/80/105의 특수 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            55.0,
+            80.0,
+            105.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        560,
+        952,
+        1624
+      ],
+      "Attack": [
+        45,
+        59,
+        77
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 65,
+      "StartingEnergy": 0,
+      "Armor": 20,
+      "MagicResistance": 20,
+      "AttackRange": 3,
+      "Role": "원거리 딜러"
+    },
+    {
+      "Dex": 17,
+      "Id": "pidgeotto",
+      "Name": "피죤",
+      "Cost": 1,
+      "Skill": "날개치기",
+      "Effect": "전방 3칸의 적에게 75/105/140의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            75.0,
+            105.0,
+            140.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        52,
+        68,
+        88
+      ],
+      "AttackSpeed": 0.73,
+      "MaxEnergy": 75,
+      "StartingEnergy": 10,
+      "Armor": 22,
+      "MagicResistance": 23,
+      "AttackRange": 3,
+      "Role": "원거리 딜러"
+    },
+    {
+      "Dex": 18,
+      "Id": "pidgeot",
+      "Name": "피죤투",
+      "Cost": 1,
+      "Skill": "고속이동",
+      "Effect": "5초간 공격속도가 50/65/80% 증가하고 사거리가 1 증가한다. 이후 뒤로 1칸 이동한다.",
+      "Notes": "버프 직후 현재 대상 반대 방향으로 1칸 후퇴. 막히면 이동만 생략. 사거리 +1은 5초간 유지",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.5,
+            0.65,
+            0.8
+          ]
+        }
+      ],
+      "HP": [
+        730,
+        1241,
+        2117
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.85,
+      "MaxEnergy": 80,
+      "StartingEnergy": 25,
+      "Armor": 27,
+      "MagicResistance": 27,
+      "AttackRange": 3,
+      "Role": "공속 강화 딜러"
+    },
+    {
+      "Dex": 23,
+      "Id": "ekans",
+      "Name": "아보",
+      "Cost": 1,
+      "Skill": "뱀눈초리",
+      "Effect": "적을 3초간 마비시키고 공격력을 15/20/25% 감소시킨다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.15,
+            0.2,
+            0.25
+          ]
+        }
+      ],
+      "HP": [
+        600,
+        1020,
+        1740
+      ],
+      "Attack": [
+        50,
+        65,
+        85
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 90,
+      "StartingEnergy": 20,
+      "Armor": 25,
+      "MagicResistance": 25,
+      "AttackRange": 2,
+      "Role": "제어 서포터"
+    },
+    {
+      "Dex": 24,
+      "Id": "arbok",
+      "Name": "아보크",
+      "Cost": 1,
+      "Skill": "용해액",
+      "Effect": "전방 3칸에 80/115/150의 특수 피해를 주고 방어력을 3초간 25% 감소시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            80.0,
+            115.0,
+            150.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        790,
+        1343,
+        2291
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.68,
+      "MaxEnergy": 90,
+      "StartingEnergy": 10,
+      "Armor": 32,
+      "MagicResistance": 27,
+      "AttackRange": 2,
+      "Role": "방어 감소 딜러"
+    },
+    {
+      "Dex": 27,
+      "Id": "sandshrew",
+      "Name": "모래두지",
+      "Cost": 1,
+      "Skill": "모래뿌리기",
+      "Effect": "적을 2/3/4초간 실명 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        690,
+        1173,
+        2001
+      ],
+      "Attack": [
+        48,
+        62,
+        82
+      ],
+      "AttackSpeed": 0.62,
+      "MaxEnergy": 70,
+      "StartingEnergy": 20,
+      "Armor": 40,
+      "MagicResistance": 25,
+      "AttackRange": 1,
+      "Role": "근접 방해"
+    },
+    {
+      "Dex": 28,
+      "Id": "sandslash",
+      "Name": "고지",
+      "Cost": 1,
+      "Skill": "베어가르기",
+      "Effect": "적에게 95/135/180의 물리 피해를 주며 4초간 출혈 상태로 만든다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            95.0,
+            135.0,
+            180.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        900,
+        1530,
+        2610
+      ],
+      "Attack": [
+        70,
+        91,
+        119
+      ],
+      "AttackSpeed": 0.72,
+      "MaxEnergy": 85,
+      "StartingEnergy": 10,
+      "Armor": 42,
+      "MagicResistance": 28,
+      "AttackRange": 1,
+      "Role": "근접 지속딜러"
+    },
+    {
+      "Dex": 46,
+      "Id": "paras",
+      "Name": "파라스",
+      "Cost": 1,
+      "Skill": "버섯포자",
+      "Effect": "적 1명을 2.5/2.75/3초간 수면 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        620,
+        1054,
+        1798
+      ],
+      "Attack": [
+        42,
+        55,
+        71
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 100,
+      "StartingEnergy": 30,
+      "Armor": 28,
+      "MagicResistance": 30,
+      "AttackRange": 2,
+      "Role": "수면 제어"
+    },
+    {
+      "Dex": 47,
+      "Id": "parasect",
+      "Name": "파라섹트",
+      "Cost": 1,
+      "Skill": "베어가르기",
+      "Effect": "적에게 95/135/180의 물리 피해를 주며 4초간 출혈 상태로 만든다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            95.0,
+            135.0,
+            180.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        820,
+        1394,
+        2378
+      ],
+      "Attack": [
+        63,
+        82,
+        107
+      ],
+      "AttackSpeed": 0.67,
+      "MaxEnergy": 85,
+      "StartingEnergy": 10,
+      "Armor": 35,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "근접 지속딜러"
+    },
+    {
+      "Dex": 50,
+      "Id": "diglett",
+      "Name": "디그다",
+      "Cost": 1,
+      "Skill": "구멍파기",
+      "Effect": "땅속으로 숨어 대상 지정 불가 상태가 된 후 적 뒤에서 나타나 85/120/160의 물리 피해를 준다.",
+      "Notes": "잠복 시간은 1초. 뒤쪽 빈칸이 없다면 가능한 위치중 대상과 가까운 위치",
+      "Damage": [
+        {
+          "Values": [
+            85.0,
+            120.0,
+            160.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        580,
+        986,
+        1682
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.75,
+      "MaxEnergy": 65,
+      "StartingEnergy": 15,
+      "Armor": 20,
+      "MagicResistance": 20,
+      "AttackRange": 1,
+      "Role": "후방 기습"
+    },
+    {
+      "Dex": 51,
+      "Id": "dugtrio",
+      "Name": "닥트리오",
+      "Cost": 1,
+      "Skill": "지진",
+      "Effect": "주변 2칸의 적에게 95/135/180의 물리 피해를 주고 1초간 기절시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            95.0,
+            135.0,
+            180.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        720,
+        1224,
+        2088
+      ],
+      "Attack": [
+        70,
+        91,
+        119
+      ],
+      "AttackSpeed": 0.83,
+      "MaxEnergy": 100,
+      "StartingEnergy": 10,
+      "Armor": 25,
+      "MagicResistance": 23,
+      "AttackRange": 1,
+      "Role": "근접 광역 제어"
+    },
+    {
+      "Dex": 54,
+      "Id": "psyduck",
+      "Name": "고라파덕",
+      "Cost": 1,
+      "Skill": "염동력",
+      "Effect": "적에게 75/105/140의 특수 피해를 주고 1/1.5/2초간 혼란시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            75.0,
+            105.0,
+            140.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        610,
+        1037,
+        1769
+      ],
+      "Attack": [
+        48,
+        62,
+        82
+      ],
+      "AttackSpeed": 0.66,
+      "MaxEnergy": 80,
+      "StartingEnergy": 0,
+      "Armor": 24,
+      "MagicResistance": 28,
+      "AttackRange": 3,
+      "Role": "혼란 제어"
+    },
+    {
+      "Dex": 55,
+      "Id": "golduck",
+      "Name": "골덕",
+      "Cost": 1,
+      "Skill": "하이드로펌프",
+      "Effect": "직선 4칸에 120/170/225의 특수 피해를 주고 적을 1칸 밀어낸다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            225.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        770,
+        1309,
+        2233
+      ],
+      "Attack": [
+        62,
+        81,
+        105
+      ],
+      "AttackSpeed": 0.72,
+      "MaxEnergy": 100,
+      "StartingEnergy": 15,
+      "Armor": 30,
+      "MagicResistance": 35,
+      "AttackRange": 3,
+      "Role": "직선 광역딜러"
+    },
+    {
+      "Dex": 56,
+      "Id": "mankey",
+      "Name": "망키",
+      "Cost": 1,
+      "Skill": "태권당수",
+      "Effect": "적에게 80/115/150의 물리 피해를 주며 다음 일반 공격은 반드시 치명타가 발생한다.",
+      "Notes": "다음 기본 공격 1회, 전투 종료까지 유지, 중복해도 1회만 저장. 성공적으로 적중한 기본 공격에서 소모",
+      "Damage": [
+        {
+          "Values": [
+            80.0,
+            115.0,
+            150.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        62,
+        81,
+        105
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 65,
+      "StartingEnergy": 0,
+      "Armor": 24,
+      "MagicResistance": 20,
+      "AttackRange": 1,
+      "Role": "물리 근접딜러"
+    },
+    {
+      "Dex": 57,
+      "Id": "primeape",
+      "Name": "성원숭",
+      "Cost": 1,
+      "Skill": "지구던지기",
+      "Effect": "적을 붙잡아 던져 100/140/190의 물리 피해를 주고 착지 지점 주변 1칸에 40/55/75의 광역 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            100.0,
+            140.0,
+            190.0
+          ]
+        },
+        {
+          "Values": [
+            40.0,
+            55.0,
+            75.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        78,
+        101,
+        133
+      ],
+      "AttackSpeed": 0.88,
+      "MaxEnergy": 85,
+      "StartingEnergy": 0,
+      "Armor": 30,
+      "MagicResistance": 25,
+      "AttackRange": 1,
+      "Role": "근접 제어 딜러"
+    },
+    {
+      "Dex": 72,
+      "Id": "tentacool",
+      "Name": "왕눈해",
+      "Cost": 1,
+      "Skill": "독침",
+      "Effect": "적에게 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            50.0,
+            70.0,
+            95.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        600,
+        1020,
+        1740
+      ],
+      "Attack": [
+        43,
+        56,
+        73
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 65,
+      "StartingEnergy": 10,
+      "Armor": 22,
+      "MagicResistance": 35,
+      "AttackRange": 3,
+      "Role": "원거리 독 딜러"
+    },
+    {
+      "Dex": 73,
+      "Id": "tentacruel",
+      "Name": "독파리",
+      "Cost": 1,
+      "Skill": "휘감기",
+      "Effect": "촉수로 최대 2명의 적에게 60/85/115의 물리 피해를 주고 2초간 속박한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            60.0,
+            85.0,
+            115.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        890,
+        1513,
+        2581
+      ],
+      "Attack": [
+        58,
+        75,
+        99
+      ],
+      "AttackSpeed": 0.63,
+      "MaxEnergy": 95,
+      "StartingEnergy": 25,
+      "Armor": 38,
+      "MagicResistance": 45,
+      "AttackRange": 2,
+      "Role": "전방 제어 탱커"
+    },
+    {
+      "Dex": 83,
+      "Id": "farfetchd",
+      "Name": "파오리",
+      "Cost": 1,
+      "Skill": "칼춤",
+      "Effect": "6초간 공격속도 30/45/60% 증가. 기본 공격 3회마다 주변 1칸에 100/140/190% 추가 물리피해. 적 처치 관여 시 지속시간 2초 연장, 최대 2회.",
+      "Notes": "성공한 기본 공격 적중을 계산. 실명·회피 제외, 보호막 적중 포함. 본인 중심 반경 1칸에 공격력 기반 추가 피해. 재시전 시 횟수 유지\n시전당 최대 2회, 총 최대 10초. 재시전은 새 버프로 갱신\n연장 가능 횟수는 새 시전마다 초기화",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.3,
+            0.45,
+            0.6
+          ]
+        },
+        {
+          "Values": [
+            1.0,
+            1.4,
+            1.9
+          ]
+        }
+      ],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 85,
+      "StartingEnergy": 15,
+      "Armor": 23,
+      "MagicResistance": 23,
+      "AttackRange": 1,
+      "Role": "공속 연계딜러"
+    },
+    {
+      "Dex": 95,
+      "Id": "onix",
+      "Name": "롱스톤",
+      "Cost": 1,
+      "Skill": "조이기",
+      "Effect": "적을 휘감아 60/85/115의 물리 피해를 주고 2초간 속박한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            60.0,
+            85.0,
+            115.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "Attack": [
+        48,
+        62,
+        82
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 85,
+      "StartingEnergy": 25,
+      "Armor": 55,
+      "MagicResistance": 24,
+      "AttackRange": 1,
+      "Role": "물리 탱커"
+    },
+    {
+      "Dex": 100,
+      "Id": "voltorb",
+      "Name": "찌리리공",
+      "Cost": 1,
+      "Skill": "자폭",
+      "Effect": "최대 HP 20%를 소모해 주변 1칸에 110/155/210의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            110.0,
+            155.0,
+            210.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        560,
+        952,
+        1624
+      ],
+      "Attack": [
+        45,
+        59,
+        77
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 85,
+      "StartingEnergy": 25,
+      "Armor": 26,
+      "MagicResistance": 26,
+      "AttackRange": 2,
+      "Role": "자폭형 광역딜러"
+    },
+    {
+      "Dex": 101,
+      "Id": "electrode",
+      "Name": "붐볼",
+      "Cost": 1,
+      "Skill": "대폭발",
+      "Effect": "최대 HP 30%를 소모하고 주변 2칸에 150/210/280의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            150.0,
+            210.0,
+            280.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        680,
+        1156,
+        1972
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.9,
+      "MaxEnergy": 100,
+      "StartingEnergy": 30,
+      "Armor": 25,
+      "MagicResistance": 30,
+      "AttackRange": 2,
+      "Role": "고속 자폭딜러"
+    },
+    {
+      "Dex": 25,
+      "Id": "pikachu",
+      "Name": "피카츄",
+      "Cost": 2,
+      "Skill": "전기쇼크",
+      "Effect": "적에게 85/115/155의 특수 피해를 주고 2초간 마비시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            85.0,
+            115.0,
+            155.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 75,
+      "StartingEnergy": 10,
+      "Armor": 22,
+      "MagicResistance": 25,
+      "AttackRange": 3,
+      "Role": "원거리 제어딜러"
+    },
+    {
+      "Dex": 26,
+      "Id": "raichu",
+      "Name": "라이츄",
+      "Cost": 2,
+      "Skill": "10만볼트",
+      "Effect": "대상에게 140/190/260의 특수 피해를 주고 주변 적 2명에게 70/100/130의 연쇄 특수 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            140.0,
+            190.0,
+            260.0
+          ]
+        },
+        {
+          "Values": [
+            70.0,
+            100.0,
+            130.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        760,
+        1292,
+        2204
+      ],
+      "Attack": [
+        70,
+        91,
+        119
+      ],
+      "AttackSpeed": 0.84,
+      "MaxEnergy": 95,
+      "StartingEnergy": 20,
+      "Armor": 25,
+      "MagicResistance": 30,
+      "AttackRange": 3,
+      "Role": "연쇄 광역딜러"
+    },
+    {
+      "Dex": 35,
+      "Id": "clefairy",
+      "Name": "삐삐",
+      "Cost": 2,
+      "Skill": "손가락흔들기",
+      "Effect": "5코스트를 제외한 전체 유닛의 스킬중 랜덤한 1종의 스킬을 사용한다.",
+      "Notes": "손가락흔들기 자체를 제외하고 중복되지 않는 기술 목록에서 균등 추첨\n시너지는 복사하지 않으며 액티브 기술에 포함된 효과는 전부 실행.",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        720,
+        1224,
+        2088
+      ],
+      "Attack": [
+        49,
+        64,
+        83
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 110,
+      "StartingEnergy": 35,
+      "Armor": 27,
+      "MagicResistance": 35,
+      "AttackRange": 3,
+      "Role": "변칙 지원"
+    },
+    {
+      "Dex": 36,
+      "Id": "clefable",
+      "Name": "픽시",
+      "Cost": 2,
+      "Skill": "작아지기",
+      "Effect": "4초간 회피율이 40/50/60% 증가한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.4,
+            0.5,
+            0.6
+          ]
+        }
+      ],
+      "HP": [
+        830,
+        1411,
+        2407
+      ],
+      "Attack": [
+        57,
+        74,
+        97
+      ],
+      "AttackSpeed": 0.66,
+      "MaxEnergy": 85,
+      "StartingEnergy": 20,
+      "Armor": 30,
+      "MagicResistance": 40,
+      "AttackRange": 2,
+      "Role": "회피형 탱커"
+    },
+    {
+      "Dex": 39,
+      "Id": "jigglypuff",
+      "Name": "푸린",
+      "Cost": 2,
+      "Skill": "노래하기",
+      "Effect": "주변 2칸의 적을 2/2.25/2.5초간 수면 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        42,
+        55,
+        71
+      ],
+      "AttackSpeed": 0.58,
+      "MaxEnergy": 120,
+      "StartingEnergy": 40,
+      "Armor": 29,
+      "MagicResistance": 32,
+      "AttackRange": 2,
+      "Role": "광역 수면 제어"
+    },
+    {
+      "Dex": 40,
+      "Id": "wigglytuff",
+      "Name": "푸크린",
+      "Cost": 2,
+      "Skill": "연속뺨치기",
+      "Effect": "적을 3~5회 공격해 타격당 25/40/55의 물리 피해를 주고 마지막 타격에 1칸 넉백을 부여한다.",
+      "Notes": "공격 간격은 0.2초",
+      "Damage": [
+        {
+          "Values": [
+            25.0,
+            40.0,
+            55.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1080,
+        1836,
+        3132
+      ],
+      "Attack": [
+        62,
+        81,
+        105
+      ],
+      "AttackSpeed": 0.66,
+      "MaxEnergy": 85,
+      "StartingEnergy": 10,
+      "Armor": 40,
+      "MagicResistance": 40,
+      "AttackRange": 1,
+      "Role": "전방 제압"
+    },
+    {
+      "Dex": 43,
+      "Id": "oddish",
+      "Name": "뚜벅쵸",
+      "Cost": 2,
+      "Skill": "흡수",
+      "Effect": "적에게 70/100/140의 특수 피해를 주고 가한 피해의 60%만큼 HP를 회복한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            70.0,
+            100.0,
+            140.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        750,
+        1275,
+        2175
+      ],
+      "Attack": [
+        50,
+        65,
+        85
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 80,
+      "StartingEnergy": 10,
+      "Armor": 26,
+      "MagicResistance": 35,
+      "AttackRange": 3,
+      "Role": "자힐 원거리딜러"
+    },
+    {
+      "Dex": 44,
+      "Id": "gloom",
+      "Name": "냄새꼬",
+      "Cost": 2,
+      "Skill": "용해액",
+      "Effect": "전방 3칸에 95/135/180의 특수 피해를 주고 방어력을 3초간 25% 감소시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            95.0,
+            135.0,
+            180.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        900,
+        1530,
+        2610
+      ],
+      "Attack": [
+        57,
+        74,
+        97
+      ],
+      "AttackSpeed": 0.66,
+      "MaxEnergy": 95,
+      "StartingEnergy": 25,
+      "Armor": 35,
+      "MagicResistance": 40,
+      "AttackRange": 3,
+      "Role": "방어 감소 지원"
+    },
+    {
+      "Dex": 45,
+      "Id": "vileplume",
+      "Name": "라플레시아",
+      "Cost": 2,
+      "Skill": "꽃잎댄스",
+      "Effect": "3초간 주변 2칸에 꽃잎을 회전시켜 매초 50/65/90의 특수 피해를 준다. 사용 후 1초간 행동 불가.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            50.0,
+            65.0,
+            90.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "Attack": [
+        67,
+        87,
+        114
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 115,
+      "StartingEnergy": 35,
+      "Armor": 35,
+      "MagicResistance": 45,
+      "AttackRange": 3,
+      "Role": "근접 광역마법"
+    },
+    {
+      "Dex": 52,
+      "Id": "meowth",
+      "Name": "나옹",
+      "Cost": 2,
+      "Skill": "고양이돈받기",
+      "Effect": "적에게 80/110/145의 물리 피해를 준다. 이 기술로 적 처치에 5회 관여하면 1골드를 추가 획득한다.",
+      "Notes": "기술로 피해를 준 적이 같은 전투에서 사망하면 1회. 각 유닛 마다 개별 스택 적용. 5회마다 즉시 스택을 소모하며 1골드. 라운드 종료 시에도 스택 유지\n합성시 재료 스택 합산 후 5회 단위 정산, 진화 시 스킬이 변경되므로 소멸, 판매시 소멸.",
+      "Damage": [
+        {
+          "Values": [
+            80.0,
+            110.0,
+            145.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        690,
+        1173,
+        2001
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.85,
+      "MaxEnergy": 65,
+      "StartingEnergy": 0,
+      "Armor": 25,
+      "MagicResistance": 25,
+      "AttackRange": 1,
+      "Role": "경제형 처치 딜러"
+    },
+    {
+      "Dex": 53,
+      "Id": "persian",
+      "Name": "페르시온",
+      "Cost": 2,
+      "Skill": "베어가르기",
+      "Effect": "적에게 120/170/230의 물리 피해를 주며 4초간 출혈 상태로 만든다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            230.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        760,
+        1292,
+        2204
+      ],
+      "Attack": [
+        75,
+        98,
+        128
+      ],
+      "AttackSpeed": 0.95,
+      "MaxEnergy": 70,
+      "StartingEnergy": 10,
+      "Armor": 27,
+      "MagicResistance": 28,
+      "AttackRange": 1,
+      "Role": "고속 출혈딜러"
+    },
+    {
+      "Dex": 77,
+      "Id": "ponyta",
+      "Name": "포니타",
+      "Cost": 2,
+      "Skill": "짓밟기",
+      "Effect": "적에게 90/125/170의 물리 피해를 주고 0.8초간 기절시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            90.0,
+            125.0,
+            170.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        790,
+        1343,
+        2291
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.8,
+      "MaxEnergy": 80,
+      "StartingEnergy": 20,
+      "Armor": 30,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "돌격 제어"
+    },
+    {
+      "Dex": 78,
+      "Id": "rapidash",
+      "Name": "날쌩마",
+      "Cost": 2,
+      "Skill": "회오리불꽃",
+      "Effect": "적 위치에 3초간 반경 1/1/2칸의 불꽃 소용돌이를 생성해 매초 40/60/80의 특수 피해를 주고 이동속도를 30%감소시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            40.0,
+            60.0,
+            80.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        940,
+        1598,
+        2726
+      ],
+      "Attack": [
+        78,
+        101,
+        133
+      ],
+      "AttackSpeed": 0.95,
+      "MaxEnergy": 95,
+      "StartingEnergy": 15,
+      "Armor": 33,
+      "MagicResistance": 33,
+      "AttackRange": 1,
+      "Role": "근접 광역딜러"
+    },
+    {
+      "Dex": 81,
+      "Id": "magnemite",
+      "Name": "코일",
+      "Cost": 2,
+      "Skill": "전기자석파",
+      "Effect": "대상과 인접한 적 1명을 3/3.25/3.5초간 마비 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        50,
+        65,
+        85
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 95,
+      "StartingEnergy": 25,
+      "Armor": 35,
+      "MagicResistance": 40,
+      "AttackRange": 3,
+      "Role": "연쇄 마비 제어"
+    },
+    {
+      "Dex": 82,
+      "Id": "magneton",
+      "Name": "레어코일",
+      "Cost": 2,
+      "Skill": "소닉붐",
+      "Effect": "직선 3칸에 음파를 발사해 90/125/170의 특수 피해를 주며 대상 특수방어력의 30%를 무시한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            90.0,
+            125.0,
+            170.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 80,
+      "StartingEnergy": 15,
+      "Armor": 38,
+      "MagicResistance": 45,
+      "AttackRange": 3,
+      "Role": "직선 마법딜러"
+    },
+    {
+      "Dex": 84,
+      "Id": "doduo",
+      "Name": "두두",
+      "Cost": 2,
+      "Skill": "회전부리",
+      "Effect": "적에게 돌진해 120/170/230의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            230.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        730,
+        1241,
+        2117
+      ],
+      "Attack": [
+        70,
+        91,
+        119
+      ],
+      "AttackSpeed": 0.83,
+      "MaxEnergy": 75,
+      "StartingEnergy": 0,
+      "Armor": 28,
+      "MagicResistance": 22,
+      "AttackRange": 1,
+      "Role": "돌진 근접딜러"
+    },
+    {
+      "Dex": 85,
+      "Id": "dodrio",
+      "Name": "두트리오",
+      "Cost": 2,
+      "Skill": "트라이어택",
+      "Effect": "3개의 공격을 날려 타격당 45/65/85의 특수 피해를 준다. 30% 확률로 화상·빙결·마비 중 하나를 1/1.5/2초간 부여한다.",
+      "Notes": "공격 간격은 0.2초\n상태는 마지막에 한 번 판정",
+      "Damage": [
+        {
+          "Values": [
+            45.0,
+            65.0,
+            85.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        850,
+        1445,
+        2465
+      ],
+      "Attack": [
+        82,
+        107,
+        139
+      ],
+      "AttackSpeed": 0.92,
+      "MaxEnergy": 100,
+      "StartingEnergy": 10,
+      "Armor": 30,
+      "MagicResistance": 25,
+      "AttackRange": 1,
+      "Role": "다단히트 디버퍼"
+    },
+    {
+      "Dex": 90,
+      "Id": "shellder",
+      "Name": "셀러",
+      "Cost": 2,
+      "Skill": "껍질끼우기",
+      "Effect": "적을 집어 70/100/140의 물리 피해를 주고 2초간 속박한다. 속박 중 매초 25/35/45의 추가 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            70.0,
+            100.0,
+            140.0
+          ]
+        },
+        {
+          "Values": [
+            25.0,
+            35.0,
+            45.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        750,
+        1275,
+        2175
+      ],
+      "Attack": [
+        47,
+        61,
+        80
+      ],
+      "AttackSpeed": 0.62,
+      "MaxEnergy": 85,
+      "StartingEnergy": 25,
+      "Armor": 45,
+      "MagicResistance": 30,
+      "AttackRange": 2,
+      "Role": "방어 속박"
+    },
+    {
+      "Dex": 91,
+      "Id": "cloyster",
+      "Name": "파르셀",
+      "Cost": 2,
+      "Skill": "가시대포",
+      "Effect": "가시 4발을 연속 발사해 각각 40/55/70의 물리 피해를 준다. 다른 적에게 분산될 수 있다.",
+      "Notes": "공격 간격은 0.2초",
+      "Damage": [
+        {
+          "Values": [
+            40.0,
+            55.0,
+            70.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1140,
+        1938,
+        3306
+      ],
+      "Attack": [
+        63,
+        82,
+        107
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 105,
+      "StartingEnergy": 20,
+      "Armor": 55,
+      "MagicResistance": 38,
+      "AttackRange": 3,
+      "Role": "물리 탱커형 포격"
+    },
+    {
+      "Dex": 104,
+      "Id": "cubone",
+      "Name": "탕구리",
+      "Cost": 2,
+      "Skill": "뼈다귀치기",
+      "Effect": "적에게 95/135/180의 물리 피해를 주고 0.8초간 기절시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            95.0,
+            135.0,
+            180.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        63,
+        82,
+        107
+      ],
+      "AttackSpeed": 0.67,
+      "MaxEnergy": 75,
+      "StartingEnergy": 0,
+      "Armor": 35,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "근접 기절"
+    },
+    {
+      "Dex": 105,
+      "Id": "marowak",
+      "Name": "텅구리",
+      "Cost": 2,
+      "Skill": "뼈다귀부메랑",
+      "Effect": "뼈다귀를 던져 직선 경로에 80/110/145의 물리 피해를 주고 돌아올 때 다시 같은 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            80.0,
+            110.0,
+            145.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        980,
+        1666,
+        2842
+      ],
+      "Attack": [
+        80,
+        104,
+        136
+      ],
+      "AttackSpeed": 0.73,
+      "MaxEnergy": 85,
+      "StartingEnergy": 0,
+      "Armor": 42,
+      "MagicResistance": 35,
+      "AttackRange": 2,
+      "Role": "왕복 투사체 딜러"
+    },
+    {
+      "Dex": 109,
+      "Id": "koffing",
+      "Name": "또가스",
+      "Cost": 2,
+      "Skill": "스모그",
+      "Effect": "대상 중심 2칸에 연기를 퍼뜨려 55/75/100의 특수 피해를 주고 4초간 독을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            55.0,
+            75.0,
+            100.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        920,
+        1564,
+        2668
+      ],
+      "Attack": [
+        49,
+        64,
+        83
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 85,
+      "StartingEnergy": 25,
+      "Armor": 40,
+      "MagicResistance": 35,
+      "AttackRange": 2,
+      "Role": "독 광역 탱커"
+    },
+    {
+      "Dex": 110,
+      "Id": "weezing",
+      "Name": "또도가스",
+      "Cost": 2,
+      "Skill": "오물공격",
+      "Effect": "적에게 115/160/215의 특수 피해를 주고 주변 1칸의 적들에게도 4초간 독을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            115.0,
+            160.0,
+            215.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1120,
+        1904,
+        3248
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.61,
+      "MaxEnergy": 115,
+      "StartingEnergy": 30,
+      "Armor": 45,
+      "MagicResistance": 40,
+      "AttackRange": 2,
+      "Role": "독 광역 탱커"
+    },
+    {
+      "Dex": 114,
+      "Id": "tangela",
+      "Name": "덩쿠리",
+      "Cost": 2,
+      "Skill": "휘감기",
+      "Effect": "덩굴로 최대 2명의 적을 2초간 속박하고 매초 35/50/70의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            35.0,
+            50.0,
+            70.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        960,
+        1632,
+        2784
+      ],
+      "Attack": [
+        52,
+        68,
+        88
+      ],
+      "AttackSpeed": 0.62,
+      "MaxEnergy": 100,
+      "StartingEnergy": 25,
+      "Armor": 39,
+      "MagicResistance": 37,
+      "AttackRange": 2,
+      "Role": "속박형 탱커"
+    },
+    {
+      "Dex": 116,
+      "Id": "horsea",
+      "Name": "쏘드라",
+      "Cost": 2,
+      "Skill": "연막",
+      "Effect": "대상 중심 2칸에 연막을 펼쳐 1.5/2/2.5초간 범위 내의 적을 실명 상태로 만든다.",
+      "Notes": "지속 장판. 장판 수명이 1.5/2/2.5 이며 해당 장판 진입시 다음 틱 실명, 벗어 날시 다음 틱 해제",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        650,
+        1105,
+        1885
+      ],
+      "Attack": [
+        52,
+        68,
+        88
+      ],
+      "AttackSpeed": 0.73,
+      "MaxEnergy": 80,
+      "StartingEnergy": 10,
+      "Armor": 22,
+      "MagicResistance": 30,
+      "AttackRange": 3,
+      "Role": "실명 서포터"
+    },
+    {
+      "Dex": 117,
+      "Id": "seadra",
+      "Name": "시드라",
+      "Cost": 2,
+      "Skill": "하이드로펌프",
+      "Effect": "직선 4칸에 145/200/270의 특수 피해를 주고 적을 1칸 밀어낸다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            145.0,
+            200.0,
+            270.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        810,
+        1377,
+        2349
+      ],
+      "Attack": [
+        68,
+        88,
+        116
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 100,
+      "StartingEnergy": 15,
+      "Armor": 26,
+      "MagicResistance": 37,
+      "AttackRange": 3,
+      "Role": "직선 광역딜러"
+    },
+    {
+      "Dex": 1,
+      "Id": "bulbasaur",
+      "Name": "이상해씨",
+      "Cost": 3,
+      "Skill": "덩굴채찍",
+      "Effect": "덩굴로 적 1명에게 90/125/170의 물리 피해를 주고 1초간 속박한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            90.0,
+            125.0,
+            170.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        59,
+        77,
+        100
+      ],
+      "AttackSpeed": 0.68,
+      "MaxEnergy": 75,
+      "StartingEnergy": 10,
+      "Armor": 32,
+      "MagicResistance": 38,
+      "AttackRange": 2,
+      "Role": "근중거리 제어"
+    },
+    {
+      "Dex": 2,
+      "Id": "ivysaur",
+      "Name": "이상해풀",
+      "Cost": 3,
+      "Skill": "잎날가르기",
+      "Effect": "직선으로 잎을 날려 최대 3명의 적에게 110/155/210의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            110.0,
+            155.0,
+            210.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        930,
+        1581,
+        2697
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.71,
+      "MaxEnergy": 95,
+      "StartingEnergy": 15,
+      "Armor": 35,
+      "MagicResistance": 42,
+      "AttackRange": 2,
+      "Role": "관통 물리딜러"
+    },
+    {
+      "Dex": 3,
+      "Id": "venusaur",
+      "Name": "이상해꽃",
+      "Cost": 3,
+      "Skill": "솔라빔",
+      "Effect": "1초간 충전한 후 직선 4칸에 210/295/390의 특수 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            210.0,
+            295.0,
+            390.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "Attack": [
+        75,
+        98,
+        128
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 115,
+      "StartingEnergy": 35,
+      "Armor": 42,
+      "MagicResistance": 48,
+      "AttackRange": 3,
+      "Role": "광역 특수딜러"
+    },
+    {
+      "Dex": 4,
+      "Id": "charmander",
+      "Name": "파이리",
+      "Cost": 3,
+      "Skill": "불꽃세례",
+      "Effect": "적에게 90/125/170의 특수 피해를 주고 3초간 화상을 입힌다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            90.0,
+            125.0,
+            170.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        740,
+        1258,
+        2146
+      ],
+      "Attack": [
+        68,
+        88,
+        116
+      ],
+      "AttackSpeed": 0.77,
+      "MaxEnergy": 70,
+      "StartingEnergy": 0,
+      "Armor": 28,
+      "MagicResistance": 27,
+      "AttackRange": 3,
+      "Role": "화상 원거리딜러"
+    },
+    {
+      "Dex": 5,
+      "Id": "charmeleon",
+      "Name": "리자드",
+      "Cost": 3,
+      "Skill": "베어가르기",
+      "Effect": "적에게 125/175/240의 물리 피해를 주며 4초간 출혈 상태로 만든다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            125.0,
+            175.0,
+            240.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        870,
+        1479,
+        2523
+      ],
+      "Attack": [
+        78,
+        101,
+        133
+      ],
+      "AttackSpeed": 0.8,
+      "MaxEnergy": 80,
+      "StartingEnergy": 10,
+      "Armor": 32,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "출혈 근접딜러"
+    },
+    {
+      "Dex": 6,
+      "Id": "charizard",
+      "Name": "리자몽",
+      "Cost": 3,
+      "Skill": "화염방사",
+      "Effect": "전방 부채꼴 범위에 155/215/295의 특수 피해를 주고 3초간 화상을 입힌다.",
+      "Notes": "부채꼴 길이는 3. (3칸 거리까지 공격이 닿음)",
+      "Damage": [
+        {
+          "Values": [
+            155.0,
+            215.0,
+            295.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1060,
+        1802,
+        3074
+      ],
+      "Attack": [
+        88,
+        114,
+        150
+      ],
+      "AttackSpeed": 0.82,
+      "MaxEnergy": 115,
+      "StartingEnergy": 25,
+      "Armor": 34,
+      "MagicResistance": 40,
+      "AttackRange": 3,
+      "Role": "광역 화상딜러"
+    },
+    {
+      "Dex": 7,
+      "Id": "squirtle",
+      "Name": "꼬부기",
+      "Cost": 3,
+      "Skill": "물대포",
+      "Effect": "적에게 100/140/190의 특수 피해를 주고 1칸 밀어낸다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            100.0,
+            140.0,
+            190.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        57,
+        74,
+        97
+      ],
+      "AttackSpeed": 0.63,
+      "MaxEnergy": 80,
+      "StartingEnergy": 20,
+      "Armor": 43,
+      "MagicResistance": 38,
+      "AttackRange": 2,
+      "Role": "방어 제어"
+    },
+    {
+      "Dex": 8,
+      "Id": "wartortle",
+      "Name": "어니부기",
+      "Cost": 3,
+      "Skill": "로켓박치기",
+      "Effect": "1초간 방어력이 40% 증가한 후 돌진해 125/175/240의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            125.0,
+            175.0,
+            240.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1100,
+        1870,
+        3190
+      ],
+      "Attack": [
+        64,
+        83,
+        109
+      ],
+      "AttackSpeed": 0.64,
+      "MaxEnergy": 90,
+      "StartingEnergy": 30,
+      "Armor": 46,
+      "MagicResistance": 44,
+      "AttackRange": 1,
+      "Role": "돌진 탱커"
+    },
+    {
+      "Dex": 9,
+      "Id": "blastoise",
+      "Name": "거북왕",
+      "Cost": 3,
+      "Skill": "하이드로펌프",
+      "Effect": "직선 4칸에 180/250/335의 특수 피해를 주고 적을 1칸 밀어낸다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            180.0,
+            250.0,
+            335.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1350,
+        2295,
+        3915
+      ],
+      "Attack": [
+        73,
+        95,
+        124
+      ],
+      "AttackSpeed": 0.61,
+      "MaxEnergy": 125,
+      "StartingEnergy": 45,
+      "Armor": 55,
+      "MagicResistance": 50,
+      "AttackRange": 3,
+      "Role": "전방 광역탱커"
+    },
+    {
+      "Dex": 60,
+      "Id": "poliwag",
+      "Name": "발챙이",
+      "Cost": 3,
+      "Skill": "최면술",
+      "Effect": "적 1명을 2/2.25/2.5초간 수면 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.67,
+      "MaxEnergy": 100,
+      "StartingEnergy": 30,
+      "Armor": 29,
+      "MagicResistance": 38,
+      "AttackRange": 2,
+      "Role": "수면 제어"
+    },
+    {
+      "Dex": 61,
+      "Id": "poliwhirl",
+      "Name": "슈륙챙이",
+      "Cost": 3,
+      "Skill": "망각술",
+      "Effect": "5초간 특수방어력이 50/65/80% 증가한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.5,
+            0.65,
+            0.8
+          ]
+        }
+      ],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 85,
+      "StartingEnergy": 20,
+      "Armor": 37,
+      "MagicResistance": 42,
+      "AttackRange": 2,
+      "Role": "마법저항 탱커"
+    },
+    {
+      "Dex": 62,
+      "Id": "poliwrath",
+      "Name": "강챙이",
+      "Cost": 3,
+      "Skill": "지옥의바퀴",
+      "Effect": "적을 붙잡고 돌진해 170/235/315의 물리 피해를 주고 1초간 기절시킨다. 자신의 최대 HP 8%를 소모한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            170.0,
+            235.0,
+            315.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "Attack": [
+        84,
+        109,
+        143
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 100,
+      "StartingEnergy": 20,
+      "Armor": 50,
+      "MagicResistance": 45,
+      "AttackRange": 1,
+      "Role": "근접 기절 탱커"
+    },
+    {
+      "Dex": 79,
+      "Id": "slowpoke",
+      "Name": "야돈",
+      "Cost": 3,
+      "Skill": "망각술",
+      "Effect": "5초간 특수방어력이 50/65/80% 증가한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.5,
+            0.65,
+            0.8
+          ]
+        }
+      ],
+      "HP": [
+        1000,
+        1700,
+        2900
+      ],
+      "Attack": [
+        55,
+        72,
+        94
+      ],
+      "AttackSpeed": 0.55,
+      "MaxEnergy": 90,
+      "StartingEnergy": 20,
+      "Armor": 35,
+      "MagicResistance": 55,
+      "AttackRange": 2,
+      "Role": "마법저항 탱커"
+    },
+    {
+      "Dex": 80,
+      "Id": "slowbro",
+      "Name": "야도란",
+      "Cost": 3,
+      "Skill": "사이코키네시스",
+      "Effect": "적에게 155/215/285의 특수 피해를 주고 3초간 특수방어력을 25% 감소시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            155.0,
+            215.0,
+            285.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1350,
+        2295,
+        3915
+      ],
+      "Attack": [
+        68,
+        88,
+        116
+      ],
+      "AttackSpeed": 0.6,
+      "MaxEnergy": 105,
+      "StartingEnergy": 30,
+      "Armor": 53,
+      "MagicResistance": 65,
+      "AttackRange": 3,
+      "Role": "전방 특수디버퍼"
+    },
+    {
+      "Dex": 106,
+      "Id": "hitmonlee",
+      "Name": "시라소몬",
+      "Cost": 3,
+      "Skill": "무릎차기",
+      "Effect": "후방의 적에게 뛰어들어 180/250/335의 물리 피해를 준다. 사용 후 최대 HP 8%를 소모한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            180.0,
+            250.0,
+            335.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        900,
+        1530,
+        2610
+      ],
+      "Attack": [
+        94,
+        122,
+        160
+      ],
+      "AttackSpeed": 0.87,
+      "MaxEnergy": 90,
+      "StartingEnergy": 10,
+      "Armor": 33,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "후방 돌진 암살"
+    },
+    {
+      "Dex": 113,
+      "Id": "chansey",
+      "Name": "럭키",
+      "Cost": 3,
+      "Skill": "빛의장막",
+      "Effect": "모든 아군에게 4초간 특수방어력 35/45/60% 증가 효과를 부여한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.35,
+            0.45,
+            0.6
+          ]
+        }
+      ],
+      "HP": [
+        1700,
+        2890,
+        4930
+      ],
+      "Attack": [
+        45,
+        59,
+        77
+      ],
+      "AttackSpeed": 0.55,
+      "MaxEnergy": 125,
+      "StartingEnergy": 45,
+      "Armor": 25,
+      "MagicResistance": 57,
+      "AttackRange": 3,
+      "Role": "극체력 전역 지원"
+    },
+    {
+      "Dex": 115,
+      "Id": "kangaskhan",
+      "Name": "캥카",
+      "Cost": 3,
+      "Skill": "잼잼펀치",
+      "Effect": "적에게 155/215/285의 물리 피해를 주고 1/1.5/2초간 혼란시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            155.0,
+            215.0,
+            285.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "Attack": [
+        87,
+        113,
+        148
+      ],
+      "AttackSpeed": 0.76,
+      "MaxEnergy": 90,
+      "StartingEnergy": 25,
+      "Armor": 45,
+      "MagicResistance": 38,
+      "AttackRange": 1,
+      "Role": "근접 혼란 딜러"
+    },
+    {
+      "Dex": 122,
+      "Id": "mr-mime",
+      "Name": "마임맨",
+      "Cost": 3,
+      "Skill": "배리어",
+      "Effect": "가장 가까운 아군 2명에게 각 대상 최대 HP의 20/27/35%에 해당하는 보호막을 4초간 부여한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.2,
+            0.27,
+            0.35
+          ]
+        }
+      ],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.65,
+      "MaxEnergy": 110,
+      "StartingEnergy": 40,
+      "Armor": 33,
+      "MagicResistance": 55,
+      "AttackRange": 3,
+      "Role": "보호막 지원"
+    },
+    {
+      "Dex": 124,
+      "Id": "jynx",
+      "Name": "루주라",
+      "Cost": 3,
+      "Skill": "악마의키스",
+      "Effect": "적 1명을 2.5/2.75/3초간 수면 상태로 만들고 자신의 최대 HP 10/15/20%를 회복한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.1,
+            0.15,
+            0.2
+          ]
+        }
+      ],
+      "HP": [
+        820,
+        1394,
+        2378
+      ],
+      "Attack": [
+        60,
+        78,
+        102
+      ],
+      "AttackSpeed": 0.73,
+      "MaxEnergy": 110,
+      "StartingEnergy": 35,
+      "Armor": 23,
+      "MagicResistance": 50,
+      "AttackRange": 3,
+      "Role": "단일 수면지원"
+    },
+    {
+      "Dex": 125,
+      "Id": "electabuzz",
+      "Name": "에레브",
+      "Cost": 3,
+      "Skill": "번개펀치",
+      "Effect": "적에게 140/195/265의 물리 피해를 주고 1/1.5/2초간 마비시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            140.0,
+            195.0,
+            265.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        920,
+        1564,
+        2668
+      ],
+      "Attack": [
+        90,
+        117,
+        153
+      ],
+      "AttackSpeed": 0.9,
+      "MaxEnergy": 85,
+      "StartingEnergy": 10,
+      "Armor": 35,
+      "MagicResistance": 33,
+      "AttackRange": 1,
+      "Role": "근접 마비딜러"
+    },
+    {
+      "Dex": 140,
+      "Id": "kabuto",
+      "Name": "투구",
+      "Cost": 3,
+      "Skill": "흡수",
+      "Effect": "적에게 85/120/160의 특수 피해를 주고 가한 피해의 60%만큼 HP를 회복한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            85.0,
+            120.0,
+            160.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        65,
+        85,
+        111
+      ],
+      "AttackSpeed": 0.68,
+      "MaxEnergy": 75,
+      "StartingEnergy": 10,
+      "Armor": 50,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "근접 흡혈탱커"
+    },
+    {
+      "Dex": 141,
+      "Id": "kabutops",
+      "Name": "투구푸스",
+      "Cost": 3,
+      "Skill": "베어가르기",
+      "Effect": "적에게 155/215/285의 물리 피해를 주며 4초간 출혈 상태로 만든다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            155.0,
+            215.0,
+            285.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "Attack": [
+        95,
+        124,
+        162
+      ],
+      "AttackSpeed": 0.87,
+      "MaxEnergy": 90,
+      "StartingEnergy": 10,
+      "Armor": 42,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "근접 출혈딜러"
+    },
+    {
+      "Dex": 142,
+      "Id": "aerodactyl",
+      "Name": "프테라",
+      "Cost": 3,
+      "Skill": "파괴광선",
+      "Effect": "0.8초간 충전 후 직선 3칸에 210/295/390의 특수 피해를 준다. 사용 후 1초간 공격할 수 없다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            210.0,
+            295.0,
+            390.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1000,
+        1700,
+        2900
+      ],
+      "Attack": [
+        92,
+        120,
+        156
+      ],
+      "AttackSpeed": 0.9,
+      "MaxEnergy": 130,
+      "StartingEnergy": 20,
+      "Armor": 37,
+      "MagicResistance": 32,
+      "AttackRange": 3,
+      "Role": "고속 직선포격"
+    },
+    {
+      "Dex": 29,
+      "Id": "nidoran-f",
+      "Name": "니드런♀",
+      "Cost": 4,
+      "Skill": "독침",
+      "Effect": "80/110/150의 물리 피해를 주고 4초간 독을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            80.0,
+            110.0,
+            150.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1030,
+        1751,
+        2987
+      ],
+      "Attack": [
+        75,
+        98,
+        128
+      ],
+      "AttackSpeed": 0.72,
+      "MaxEnergy": 75,
+      "StartingEnergy": 15,
+      "Armor": 42,
+      "MagicResistance": 39,
+      "AttackRange": 2,
+      "Role": "독 제어"
+    },
+    {
+      "Dex": 30,
+      "Id": "nidorina",
+      "Name": "니드리나",
+      "Cost": 4,
+      "Skill": "두번차기",
+      "Effect": "적을 2회 공격하여 타격당 70/100/135의 물리 피해를 준다.",
+      "Notes": "공격 간격은 0.2초",
+      "Damage": [
+        {
+          "Values": [
+            70.0,
+            100.0,
+            135.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1230,
+        2091,
+        3567
+      ],
+      "Attack": [
+        82,
+        107,
+        139
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 90,
+      "StartingEnergy": 15,
+      "Armor": 46,
+      "MagicResistance": 42,
+      "AttackRange": 1,
+      "Role": "근접 연타"
+    },
+    {
+      "Dex": 31,
+      "Id": "nidoqueen",
+      "Name": "니드퀸",
+      "Cost": 4,
+      "Skill": "누르기",
+      "Effect": "적이 밀집한 지역으로 뛰어들어 주변 1칸에 145/200/270의 물리 피해를 주고 1초간 기절시킨다. 이후 최대 HP의 15/20/25% 보호막을 4초간 얻는다.",
+      "Notes": "착지 성공 후 피해·기절·자신 보호막 지급. 착지 실패 시 모두 생략",
+      "Damage": [
+        {
+          "Values": [
+            145.0,
+            200.0,
+            270.0
+          ]
+        }
+      ],
+      "Ratios": [
+        {
+          "Values": [
+            0.15,
+            0.2,
+            0.25
+          ]
+        }
+      ],
+      "HP": [
+        1550,
+        2635,
+        4495
+      ],
+      "Attack": [
+        88,
+        114,
+        150
+      ],
+      "AttackSpeed": 0.68,
+      "MaxEnergy": 120,
+      "StartingEnergy": 45,
+      "Armor": 58,
+      "MagicResistance": 52,
+      "AttackRange": 1,
+      "Role": "광역 기절탱커"
+    },
+    {
+      "Dex": 32,
+      "Id": "nidoran-m",
+      "Name": "니드런♂",
+      "Cost": 4,
+      "Skill": "뿔찌르기",
+      "Effect": "적에게 120/170/225의 물리 피해를 주고 1칸 밀어낸다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            225.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        84,
+        109,
+        143
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 75,
+      "StartingEnergy": 5,
+      "Armor": 36,
+      "MagicResistance": 34,
+      "AttackRange": 1,
+      "Role": "근접 돌진딜러"
+    },
+    {
+      "Dex": 33,
+      "Id": "nidorino",
+      "Name": "니드리노",
+      "Cost": 4,
+      "Skill": "뿔드릴",
+      "Effect": "적에게 160/225/305의 물리 피해를 준다. HP가 25% 이하인 적에게는 280/390/530의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            160.0,
+            225.0,
+            305.0
+          ]
+        },
+        {
+          "Values": [
+            280.0,
+            390.0,
+            530.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1100,
+        1870,
+        3190
+      ],
+      "Attack": [
+        98,
+        127,
+        167
+      ],
+      "AttackSpeed": 0.85,
+      "MaxEnergy": 85,
+      "StartingEnergy": 5,
+      "Armor": 40,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "처형 연계딜러"
+    },
+    {
+      "Dex": 34,
+      "Id": "nidoking",
+      "Name": "니드킹",
+      "Cost": 4,
+      "Skill": "난동부리기",
+      "Effect": "3초간 공격속도가 60/80/100% 증가하고 기본 공격이 주변 1칸의 적에게도 50% 물리피해를 준다.",
+      "Notes": "주 대상 중심 반경 1칸, 원래 기본 공격의 치명타 등을 반영한 방어 계산 전 피해 50%를 각 적의 방어력으로 계산",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.6,
+            0.8,
+            1.0
+          ]
+        }
+      ],
+      "HP": [
+        1280,
+        2176,
+        3712
+      ],
+      "Attack": [
+        105,
+        137,
+        179
+      ],
+      "AttackSpeed": 0.87,
+      "MaxEnergy": 110,
+      "StartingEnergy": 25,
+      "Armor": 46,
+      "MagicResistance": 40,
+      "AttackRange": 1,
+      "Role": "공속 확산딜러"
+    },
+    {
+      "Dex": 58,
+      "Id": "growlithe",
+      "Name": "가디",
+      "Cost": 4,
+      "Skill": "불꽃세례",
+      "Effect": "적에게 105/145/190의 특수 피해를 주고 3초간 화상을 입힌다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            105.0,
+            145.0,
+            190.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        75,
+        98,
+        128
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 80,
+      "StartingEnergy": 10,
+      "Armor": 35,
+      "MagicResistance": 38,
+      "AttackRange": 2,
+      "Role": "화상 원거리"
+    },
+    {
+      "Dex": 59,
+      "Id": "arcanine",
+      "Name": "윈디",
+      "Cost": 4,
+      "Skill": "불대문자",
+      "Effect": "대상 중심 1/1/2칸 십자형 범위에 190/270/360의 특수 피해를 주고 4초간 화상을 입힌다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            190.0,
+            270.0,
+            360.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "Attack": [
+        102,
+        133,
+        173
+      ],
+      "AttackSpeed": 0.82,
+      "MaxEnergy": 130,
+      "StartingEnergy": 35,
+      "Armor": 42,
+      "MagicResistance": 44,
+      "AttackRange": 3,
+      "Role": "십자형 광역딜러"
+    },
+    {
+      "Dex": 63,
+      "Id": "abra",
+      "Name": "캐이시",
+      "Cost": 4,
+      "Skill": "순간이동",
+      "Effect": "2초 동안 집중 상태가 된다. 해당 상태에서도 이동/공격은 자유롭게 가능하다. 만약 집중상태일때 피해를 입었다면 가장 멀리 있는 안전한 칸으로 순간이동하고 마나를 30/40/50% 회복한다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.3,
+            0.4,
+            0.5
+          ]
+        }
+      ],
+      "HP": [
+        800,
+        1360,
+        2320
+      ],
+      "Attack": [
+        50,
+        65,
+        85
+      ],
+      "AttackSpeed": 0.64,
+      "MaxEnergy": 60,
+      "StartingEnergy": 30,
+      "Armor": 25,
+      "MagicResistance": 55,
+      "AttackRange": 3,
+      "Role": "회피 지원"
+    },
+    {
+      "Dex": 64,
+      "Id": "kadabra",
+      "Name": "윤겔라",
+      "Cost": 4,
+      "Skill": "환상빔",
+      "Effect": "적에게 135/190/255의 특수 피해를 주고 1/2/3초간 혼란시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            135.0,
+            190.0,
+            255.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        870,
+        1479,
+        2523
+      ],
+      "Attack": [
+        70,
+        91,
+        119
+      ],
+      "AttackSpeed": 0.72,
+      "MaxEnergy": 85,
+      "StartingEnergy": 15,
+      "Armor": 25,
+      "MagicResistance": 60,
+      "AttackRange": 4,
+      "Role": "원거리 혼란딜러"
+    },
+    {
+      "Dex": 65,
+      "Id": "alakazam",
+      "Name": "후딘",
+      "Cost": 4,
+      "Skill": "사이코키네시스",
+      "Effect": "적에게 200/280/375의 특수 피해를 주고 3초간 특수방어력을 25% 감소시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            200.0,
+            280.0,
+            375.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        990,
+        1683,
+        2871
+      ],
+      "Attack": [
+        88,
+        114,
+        150
+      ],
+      "AttackSpeed": 0.8,
+      "MaxEnergy": 105,
+      "StartingEnergy": 30,
+      "Armor": 28,
+      "MagicResistance": 65,
+      "AttackRange": 4,
+      "Role": "원거리 디버프딜러"
+    },
+    {
+      "Dex": 66,
+      "Id": "machop",
+      "Name": "알통몬",
+      "Cost": 4,
+      "Skill": "태권당수",
+      "Effect": "적에게 130/180/240의 물리 피해를 주며 다음 일반 공격은 반드시 치명타가 발생한다.",
+      "Notes": "다음 기본 공격 1회, 전투 종료까지 유지, 중복해도 1회만 저장. 성공적으로 적중한 기본 공격에서 소모",
+      "Damage": [
+        {
+          "Values": [
+            130.0,
+            180.0,
+            240.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "Attack": [
+        87,
+        113,
+        148
+      ],
+      "AttackSpeed": 0.73,
+      "MaxEnergy": 75,
+      "StartingEnergy": 15,
+      "Armor": 43,
+      "MagicResistance": 30,
+      "AttackRange": 1,
+      "Role": "치명타 연계딜러"
+    },
+    {
+      "Dex": 67,
+      "Id": "machoke",
+      "Name": "근육몬",
+      "Cost": 4,
+      "Skill": "안다리걸기",
+      "Effect": "적에게 120/170/225의 물리 피해를 준다. 대상의 최대 HP가 자신보다 높으면 1초간 넘어뜨려 기절시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            225.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "Attack": [
+        95,
+        124,
+        162
+      ],
+      "AttackSpeed": 0.76,
+      "MaxEnergy": 90,
+      "StartingEnergy": 15,
+      "Armor": 50,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "근접 제압"
+    },
+    {
+      "Dex": 68,
+      "Id": "machamp",
+      "Name": "괴력몬",
+      "Cost": 4,
+      "Skill": "지옥의바퀴",
+      "Effect": "적에게 210/290/385의 물리 피해를 주고 1초간 기절시킨다. 자신의 최대 HP 8%를 소모한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            210.0,
+            290.0,
+            385.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1500,
+        2550,
+        4350
+      ],
+      "Attack": [
+        112,
+        146,
+        190
+      ],
+      "AttackSpeed": 0.83,
+      "MaxEnergy": 110,
+      "StartingEnergy": 25,
+      "Armor": 55,
+      "MagicResistance": 43,
+      "AttackRange": 1,
+      "Role": "근접 기절딜러"
+    },
+    {
+      "Dex": 74,
+      "Id": "geodude",
+      "Name": "꼬마돌",
+      "Cost": 4,
+      "Skill": "돌떨구기",
+      "Effect": "바위를 던져 120/170/225의 물리 피해를 주고 25% 확률로 1초간 기절시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            120.0,
+            170.0,
+            225.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "Attack": [
+        72,
+        94,
+        122
+      ],
+      "AttackSpeed": 0.58,
+      "MaxEnergy": 85,
+      "StartingEnergy": 30,
+      "Armor": 57,
+      "MagicResistance": 32,
+      "AttackRange": 1,
+      "Role": "기절 탱커"
+    },
+    {
+      "Dex": 75,
+      "Id": "graveler",
+      "Name": "데구리",
+      "Cost": 4,
+      "Skill": "자폭",
+      "Effect": "최대 HP 20%를 소모하고 주변 1칸에 175/250/335의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            175.0,
+            250.0,
+            335.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "Attack": [
+        85,
+        111,
+        145
+      ],
+      "AttackSpeed": 0.56,
+      "MaxEnergy": 105,
+      "StartingEnergy": 40,
+      "Armor": 65,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "자폭 탱커"
+    },
+    {
+      "Dex": 76,
+      "Id": "golem",
+      "Name": "딱구리",
+      "Cost": 4,
+      "Skill": "대폭발",
+      "Effect": "최대 HP 30%를 소모하고 주변 2칸에 240/335/450의 물리 피해를 준다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            240.0,
+            335.0,
+            450.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1650,
+        2805,
+        4785
+      ],
+      "Attack": [
+        95,
+        124,
+        162
+      ],
+      "AttackSpeed": 0.58,
+      "MaxEnergy": 125,
+      "StartingEnergy": 45,
+      "Armor": 70,
+      "MagicResistance": 40,
+      "AttackRange": 1,
+      "Role": "자폭 광역탱커"
+    },
+    {
+      "Dex": 92,
+      "Id": "gastly",
+      "Name": "고오스",
+      "Cost": 4,
+      "Skill": "이상한빛",
+      "Effect": "대상과 주변 1칸 이내의 적 최대 2명, 총 3명에게 기묘한 빛을 발사하여 2/2.5/3초간 혼란 상태로 만든다. 혼란 상태의 적은 받는 스킬 피해가 10/15/20% 증가한다.",
+      "Notes": "주 대상 포함 총 3명, 이번 기술로 부여한 혼란이 유지되는 동안 적용. 직접·반복 스킬 피해에 적용하고 기본 공격·독·화상·반사는 제외",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.1,
+            0.15,
+            0.2
+          ]
+        }
+      ],
+      "HP": [
+        880,
+        1496,
+        2552
+      ],
+      "Attack": [
+        68,
+        88,
+        116
+      ],
+      "AttackSpeed": 0.7,
+      "MaxEnergy": 100,
+      "StartingEnergy": 35,
+      "Armor": 22,
+      "MagicResistance": 55,
+      "AttackRange": 3,
+      "Role": "혼란 디버퍼"
+    },
+    {
+      "Dex": 93,
+      "Id": "haunter",
+      "Name": "고우스트",
+      "Cost": 4,
+      "Skill": "최면술",
+      "Effect": "적 1명을 2/2.25/2.5초간 수면 상태로 만든다.",
+      "Notes": "",
+      "Damage": [],
+      "Ratios": [],
+      "HP": [
+        960,
+        1632,
+        2784
+      ],
+      "Attack": [
+        76,
+        99,
+        129
+      ],
+      "AttackSpeed": 0.74,
+      "MaxEnergy": 105,
+      "StartingEnergy": 30,
+      "Armor": 25,
+      "MagicResistance": 58,
+      "AttackRange": 3,
+      "Role": "원거리 수면제어"
+    },
+    {
+      "Dex": 94,
+      "Id": "gengar",
+      "Name": "팬텀",
+      "Cost": 4,
+      "Skill": "꿈먹기",
+      "Effect": "적에게 130/180/240의 특수 피해를 주고 수면 중인 대상에게는 240/335/450의 특수 피해를 준다. 가한 피해의 60%만큼 HP를 회복한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            130.0,
+            180.0,
+            240.0
+          ]
+        },
+        {
+          "Values": [
+            240.0,
+            335.0,
+            450.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1090,
+        1853,
+        3161
+      ],
+      "Attack": [
+        92,
+        120,
+        156
+      ],
+      "AttackSpeed": 0.83,
+      "MaxEnergy": 100,
+      "StartingEnergy": 20,
+      "Armor": 28,
+      "MagicResistance": 60,
+      "AttackRange": 3,
+      "Role": "조건부 흡혈딜러"
+    },
+    {
+      "Dex": 123,
+      "Id": "scyther",
+      "Name": "스라크",
+      "Cost": 4,
+      "Skill": "칼춤",
+      "Effect": "6초간 공격속도 30/45/60% 증가. 기본 공격 3회마다 주변 1칸에 100/140/190% 추가 물리피해. 적 처치 관여시 지속시간 2초 연장, 최대 2회.",
+      "Notes": "성공한 기본 공격 적중을 계산. 실명·회피 제외, 보호막 적중 포함. 본인 중심 반경 1칸에 공격력 기반 추가 피해. 재시전 시 횟수 유지\n시전당 최대 2회, 총 최대 10초. 재시전은 새 버프로 갱신\n연장 가능 횟수는 새 시전마다 초기화",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.3,
+            0.45,
+            0.6
+          ]
+        },
+        {
+          "Values": [
+            1.0,
+            1.4,
+            1.9
+          ]
+        }
+      ],
+      "HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "Attack": [
+        112,
+        146,
+        190
+      ],
+      "AttackSpeed": 0.95,
+      "MaxEnergy": 100,
+      "StartingEnergy": 20,
+      "Armor": 40,
+      "MagicResistance": 35,
+      "AttackRange": 1,
+      "Role": "고속 기본 공격 캐리"
+    },
+    {
+      "Dex": 127,
+      "Id": "pinsir",
+      "Name": "쁘사이저",
+      "Cost": 4,
+      "Skill": "가위자르기",
+      "Effect": "적에게 145/200/270의 물리 피해를 준다. 대상의 HP가 25% 이하라면 즉시 처형한다.",
+      "Notes": "보스 예외 만들지 말고 일관성있게 처형",
+      "Damage": [
+        {
+          "Values": [
+            145.0,
+            200.0,
+            270.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1430,
+        2431,
+        4147
+      ],
+      "Attack": [
+        112,
+        146,
+        190
+      ],
+      "AttackSpeed": 0.78,
+      "MaxEnergy": 110,
+      "StartingEnergy": 25,
+      "Armor": 56,
+      "MagicResistance": 40,
+      "AttackRange": 1,
+      "Role": "근접 처형자"
+    },
+    {
+      "Dex": 147,
+      "Id": "dratini",
+      "Name": "미뇽",
+      "Cost": 4,
+      "Skill": "힘껏치기",
+      "Effect": "적에게 135/190/255의 물리 피해와 0.8초 기절을 부여한다. 대상 뒤쪽 1칸에 70/95/130의 추가 물리 피해를 준다.",
+      "Notes": "시전자→주 대상 방향을 연장한 뒤쪽 1칸만 판정. 해당 칸의 적에게 추가 피해, 주 대상은 중복 피해 없음",
+      "Damage": [
+        {
+          "Values": [
+            135.0,
+            190.0,
+            255.0
+          ]
+        },
+        {
+          "Values": [
+            70.0,
+            95.0,
+            130.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        950,
+        1615,
+        2755
+      ],
+      "Attack": [
+        72,
+        94,
+        122
+      ],
+      "AttackSpeed": 0.77,
+      "MaxEnergy": 80,
+      "StartingEnergy": 10,
+      "Armor": 30,
+      "MagicResistance": 45,
+      "AttackRange": 2,
+      "Role": "기절 근중거리딜러"
+    },
+    {
+      "Dex": 148,
+      "Id": "dragonair",
+      "Name": "신뇽",
+      "Cost": 4,
+      "Skill": "파도타기",
+      "Effect": "전방으로 거대한 파도를 일으켜 가로 3칸, 세로 3칸 범위의 적에게 145/200/270의 특수 피해를 준다. 적을 1칸 밀어내고, 3초간 공격속도를 20/25/30% 감소시킨다.",
+      "Notes": "탭의 참고 그림 우선",
+      "Damage": [
+        {
+          "Values": [
+            145.0,
+            200.0,
+            270.0
+          ]
+        }
+      ],
+      "Ratios": [
+        {
+          "Values": [
+            0.2,
+            0.25,
+            0.3
+          ]
+        }
+      ],
+      "HP": [
+        1110,
+        1887,
+        3219
+      ],
+      "Attack": [
+        82,
+        107,
+        139
+      ],
+      "AttackSpeed": 0.75,
+      "MaxEnergy": 120,
+      "StartingEnergy": 40,
+      "Armor": 37,
+      "MagicResistance": 52,
+      "AttackRange": 3,
+      "Role": "광역 넉백 제어"
+    },
+    {
+      "Dex": 149,
+      "Id": "dragonite",
+      "Name": "망나뇽",
+      "Cost": 4,
+      "Skill": "파괴광선",
+      "Effect": "0.8초간 충전 후 직선 4칸에 280/390/530의 특수 피해를 준다. 사용 후 1초간 공격할 수 없다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            280.0,
+            390.0,
+            530.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1480,
+        2516,
+        4292
+      ],
+      "Attack": [
+        113,
+        147,
+        192
+      ],
+      "AttackSpeed": 0.82,
+      "MaxEnergy": 150,
+      "StartingEnergy": 50,
+      "Armor": 53,
+      "MagicResistance": 52,
+      "AttackRange": 3,
+      "Role": "후반 직선 폭딜러"
+    },
+    {
+      "Dex": 131,
+      "Id": "lapras",
+      "Name": "라프라스",
+      "Cost": 5,
+      "Skill": "냉동빔",
+      "Effect": "적에게 190/265/4000의 특수 피해를 주고 2/4/99초간 빙결시킨다.",
+      "Notes": "3성 전용: 공격 대상이 모든 상대 유닛으로 확장",
+      "Damage": [
+        {
+          "Values": [
+            190.0,
+            265.0,
+            4000.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1650,
+        2805,
+        4785
+      ],
+      "Attack": [
+        92,
+        120,
+        156
+      ],
+      "AttackSpeed": 0.69,
+      "MaxEnergy": 125,
+      "StartingEnergy": 40,
+      "Armor": 60,
+      "MagicResistance": 65,
+      "AttackRange": 3,
+      "Role": "빙결 탱커형딜러"
+    },
+    {
+      "Dex": 137,
+      "Id": "porygon",
+      "Name": "폴리곤",
+      "Cost": 5,
+      "Skill": "트라이어택",
+      "Effect": "대상에게 에너지 공격을 3회 발사하여 타격당 70/95/1000의 특수 피해를 준다. 모든 공격이 끝난 후 화상·빙결·마비 중 하나를 2/3/99초간 부여한다.",
+      "Notes": "3성 전용: 공격 대상이 모든 상대 유닛으로 확장 / 상태이상 3종 모두 부여\n공격 간격은 0.2초",
+      "Damage": [
+        {
+          "Values": [
+            70.0,
+            95.0,
+            1000.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "Attack": [
+        88,
+        114,
+        150
+      ],
+      "AttackSpeed": 0.79,
+      "MaxEnergy": 110,
+      "StartingEnergy": 35,
+      "Armor": 35,
+      "MagicResistance": 58,
+      "AttackRange": 3,
+      "Role": "범용 시너지 서포터"
+    },
+    {
+      "Dex": 143,
+      "Id": "snorlax",
+      "Name": "잠만보",
+      "Cost": 5,
+      "Skill": "잠자기",
+      "Effect": "2초간 수면 상태가 되어 최대 HP의 40/50/400%를 회복한다. 수면 중 받는 피해가 30/30/99% 감소한다.",
+      "Notes": "3성 전용: 방어 전 피해의 999% 고정 피해 반사 (때린 적을 죽게 하는 의도, 기본 공격/직접 스킬 타격만 반사, 지속 피해/반사는 제외)\n연장전시 단축된 수면 시간 안에 네 번 균등 회복 및 피해 감소/반사도 같은 시점에 종료",
+      "Damage": [],
+      "Ratios": [
+        {
+          "Values": [
+            0.4,
+            0.5,
+            4.0
+          ]
+        },
+        {
+          "Values": [
+            0.3,
+            0.3,
+            0.99
+          ]
+        }
+      ],
+      "HP": [
+        2200,
+        3740,
+        6380
+      ],
+      "Attack": [
+        110,
+        143,
+        187
+      ],
+      "AttackSpeed": 0.61,
+      "MaxEnergy": 160,
+      "StartingEnergy": 65,
+      "Armor": 75,
+      "MagicResistance": 65,
+      "AttackRange": 1,
+      "Role": "초고체력 탱커"
+    },
+    {
+      "Dex": 144,
+      "Id": "articuno",
+      "Name": "프리져",
+      "Cost": 5,
+      "Skill": "눈보라",
+      "Effect": "적 전체에게 180/250/3000의 특수 피해를 주고 30/30/100% 확률로 1.5/1.5/99초간 빙결시킨다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            180.0,
+            250.0,
+            3000.0
+          ]
+        }
+      ],
+      "Ratios": [
+        {
+          "Values": [
+            0.3,
+            0.3,
+            1.0
+          ]
+        }
+      ],
+      "HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "Attack": [
+        95,
+        124,
+        162
+      ],
+      "AttackSpeed": 0.76,
+      "MaxEnergy": 130,
+      "StartingEnergy": 40,
+      "Armor": 47,
+      "MagicResistance": 70,
+      "AttackRange": 4,
+      "Role": "전역 빙결 제어"
+    },
+    {
+      "Dex": 145,
+      "Id": "zapdos",
+      "Name": "썬더",
+      "Cost": 5,
+      "Skill": "번개",
+      "Effect": "대상에게 250/350/5000의 특수 피해를 주고 주변 2/3/1명의 적에게 125/175/2000의 연쇄 특수 피해를 준다. 3/3/99초간 마비시킨다.",
+      "Notes": "3성 전용: 연쇄가 거리 제한 없이 살아 있는 유효 적을 각각 1회씩 방문한 뒤 종료\n주변 연쇄 관련 추가 설명: 1/2 성에서는 스킬 대상 공격 -> 0.15초 후 주변 2/3명에게 동시에 연쇄 (거리 제한은 없음), 3성에서는 스킬대상 공격 -> 0.15초 후 주변 1명에게 연쇄 -> 0.15초 후 주변 1명에게 연쇄 -> … 살아 있는 유효 적을 전체 방문할 때 까지 반복\n연쇄간 딜레이 : 0.15초",
+      "Damage": [
+        {
+          "Values": [
+            250.0,
+            350.0,
+            5000.0
+          ]
+        },
+        {
+          "Values": [
+            125.0,
+            175.0,
+            2000.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1300,
+        2210,
+        3770
+      ],
+      "Attack": [
+        110,
+        143,
+        187
+      ],
+      "AttackSpeed": 0.91,
+      "MaxEnergy": 140,
+      "StartingEnergy": 30,
+      "Armor": 40,
+      "MagicResistance": 55,
+      "AttackRange": 4,
+      "Role": "연쇄 폭딜러"
+    },
+    {
+      "Dex": 146,
+      "Id": "moltres",
+      "Name": "파이어",
+      "Cost": 5,
+      "Skill": "불새",
+      "Effect": "1.5초간 하늘로 날아올라 공격 대상에서 제외된 후 적 밀집 지역에 착지해 주변 2/3/9칸의 적에게 270/380/9000의 광역 물리 피해를 준다. 3/3/99초간 화상을 부여한다.",
+      "Notes": "",
+      "Damage": [
+        {
+          "Values": [
+            270.0,
+            380.0,
+            9000.0
+          ]
+        }
+      ],
+      "Ratios": [],
+      "HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "Attack": [
+        110,
+        143,
+        187
+      ],
+      "AttackSpeed": 0.77,
+      "MaxEnergy": 170,
+      "StartingEnergy": 65,
+      "Armor": 52,
+      "MagicResistance": 60,
+      "AttackRange": 3,
+      "Role": "밀집 광역 암살"
+    },
+    {
+      "Dex": 150,
+      "Id": "mewtwo",
+      "Name": "뮤츠",
+      "Cost": 5,
+      "Skill": "사이코키네시스",
+      "Effect": "대상과 주변 2/3/9칸의 적에게 270/380/5000의 특수 피해를 주고 4/4/99초간 특수방어력을 30/30/99% 감소시킨다.",
+      "Notes": "적 전체 X",
+      "Damage": [
+        {
+          "Values": [
+            270.0,
+            380.0,
+            5000.0
+          ]
+        }
+      ],
+      "Ratios": [
+        {
+          "Values": [
+            0.3,
+            0.3,
+            0.99
+          ]
+        }
+      ],
+      "HP": [
+        1380,
+        2346,
+        4002
+      ],
+      "Attack": [
+        120,
+        156,
+        204
+      ],
+      "AttackSpeed": 0.84,
+      "MaxEnergy": 160,
+      "StartingEnergy": 65,
+      "Armor": 42,
+      "MagicResistance": 67,
+      "AttackRange": 4,
+      "Role": "광역 마법 캐리"
+    },
+    {
+      "Dex": 151,
+      "Id": "mew",
+      "Name": "뮤",
+      "Cost": 5,
+      "Skill": "손가락흔들기",
+      "Effect": "무작위로 대상 중심 반경 2/2/9칸에 270/380/9000의 광역 특수 피해, 아군 전체 최대 HP 15/20/99% 회복 또는 1.5/1.75/99초 기절 중 하나를 발동한다.",
+      "Notes": "각 확률은 1/3, 적 전체 X",
+      "Damage": [
+        {
+          "Values": [
+            270.0,
+            380.0,
+            9000.0
+          ]
+        }
+      ],
+      "Ratios": [
+        {
+          "Values": [
+            0.15,
+            0.2,
+            0.99
+          ]
+        }
+      ],
+      "HP": [
+        1500,
+        2550,
+        4350
+      ],
+      "Attack": [
+        100,
+        130,
+        170
+      ],
+      "AttackSpeed": 0.84,
+      "MaxEnergy": 160,
+      "StartingEnergy": 55,
+      "Armor": 48,
+      "MagicResistance": 65,
+      "AttackRange": 4,
+      "Role": "무작위 광역 만능"
+    }
+  ],
+  "Families": [
+    {
+      "Ids": [
+        "caterpie",
+        "metapod",
+        "butterfree"
+      ]
+    },
+    {
+      "Ids": [
+        "weedle",
+        "kakuna",
+        "beedrill"
+      ]
+    },
+    {
+      "Ids": [
+        "pidgey",
+        "pidgeotto",
+        "pidgeot"
+      ]
+    },
+    {
+      "Ids": [
+        "ekans",
+        "arbok"
+      ]
+    },
+    {
+      "Ids": [
+        "sandshrew",
+        "sandslash"
+      ]
+    },
+    {
+      "Ids": [
+        "paras",
+        "parasect"
+      ]
+    },
+    {
+      "Ids": [
+        "diglett",
+        "dugtrio"
+      ]
+    },
+    {
+      "Ids": [
+        "psyduck",
+        "golduck"
+      ]
+    },
+    {
+      "Ids": [
+        "mankey",
+        "primeape"
+      ]
+    },
+    {
+      "Ids": [
+        "tentacool",
+        "tentacruel"
+      ]
+    },
+    {
+      "Ids": [
+        "farfetchd"
+      ]
+    },
+    {
+      "Ids": [
+        "onix"
+      ]
+    },
+    {
+      "Ids": [
+        "voltorb",
+        "electrode"
+      ]
+    },
+    {
+      "Ids": [
+        "pikachu",
+        "raichu"
+      ]
+    },
+    {
+      "Ids": [
+        "clefairy",
+        "clefable"
+      ]
+    },
+    {
+      "Ids": [
+        "jigglypuff",
+        "wigglytuff"
+      ]
+    },
+    {
+      "Ids": [
+        "oddish",
+        "gloom",
+        "vileplume"
+      ]
+    },
+    {
+      "Ids": [
+        "meowth",
+        "persian"
+      ]
+    },
+    {
+      "Ids": [
+        "ponyta",
+        "rapidash"
+      ]
+    },
+    {
+      "Ids": [
+        "magnemite",
+        "magneton"
+      ]
+    },
+    {
+      "Ids": [
+        "doduo",
+        "dodrio"
+      ]
+    },
+    {
+      "Ids": [
+        "shellder",
+        "cloyster"
+      ]
+    },
+    {
+      "Ids": [
+        "cubone",
+        "marowak"
+      ]
+    },
+    {
+      "Ids": [
+        "koffing",
+        "weezing"
+      ]
+    },
+    {
+      "Ids": [
+        "tangela"
+      ]
+    },
+    {
+      "Ids": [
+        "horsea",
+        "seadra"
+      ]
+    },
+    {
+      "Ids": [
+        "bulbasaur",
+        "ivysaur",
+        "venusaur"
+      ]
+    },
+    {
+      "Ids": [
+        "charmander",
+        "charmeleon",
+        "charizard"
+      ]
+    },
+    {
+      "Ids": [
+        "squirtle",
+        "wartortle",
+        "blastoise"
+      ]
+    },
+    {
+      "Ids": [
+        "poliwag",
+        "poliwhirl",
+        "poliwrath"
+      ]
+    },
+    {
+      "Ids": [
+        "slowpoke",
+        "slowbro"
+      ]
+    },
+    {
+      "Ids": [
+        "hitmonlee"
+      ]
+    },
+    {
+      "Ids": [
+        "chansey"
+      ]
+    },
+    {
+      "Ids": [
+        "kangaskhan"
+      ]
+    },
+    {
+      "Ids": [
+        "mr-mime"
+      ]
+    },
+    {
+      "Ids": [
+        "jynx"
+      ]
+    },
+    {
+      "Ids": [
+        "electabuzz"
+      ]
+    },
+    {
+      "Ids": [
+        "kabuto",
+        "kabutops"
+      ]
+    },
+    {
+      "Ids": [
+        "aerodactyl"
+      ]
+    },
+    {
+      "Ids": [
+        "nidoran-m",
+        "nidorino",
+        "nidoking"
+      ]
+    },
+    {
+      "Ids": [
+        "growlithe",
+        "arcanine"
+      ]
+    },
+    {
+      "Ids": [
+        "abra",
+        "kadabra",
+        "alakazam"
+      ]
+    },
+    {
+      "Ids": [
+        "machop",
+        "machoke",
+        "machamp"
+      ]
+    },
+    {
+      "Ids": [
+        "geodude",
+        "graveler",
+        "golem"
+      ]
+    },
+    {
+      "Ids": [
+        "gastly",
+        "haunter",
+        "gengar"
+      ]
+    },
+    {
+      "Ids": [
+        "scyther"
+      ]
+    },
+    {
+      "Ids": [
+        "pinsir"
+      ]
+    },
+    {
+      "Ids": [
+        "dratini",
+        "dragonair",
+        "dragonite"
+      ]
+    },
+    {
+      "Ids": [
+        "lapras"
+      ]
+    },
+    {
+      "Ids": [
+        "porygon"
+      ]
+    },
+    {
+      "Ids": [
+        "snorlax"
+      ]
+    },
+    {
+      "Ids": [
+        "articuno"
+      ]
+    },
+    {
+      "Ids": [
+        "zapdos"
+      ]
+    },
+    {
+      "Ids": [
+        "moltres"
+      ]
+    },
+    {
+      "Ids": [
+        "mewtwo"
+      ]
+    },
+    {
+      "Ids": [
+        "mew"
+      ]
+    },
+    {
+      "Ids": [
+        "nidoran-f",
+        "nidorina",
+        "nidoqueen"
+      ]
+    }
+  ]
+}

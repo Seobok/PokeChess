@@ -41,6 +41,9 @@ namespace PokeChess.Core.Pokemon
 
     public sealed class UnitInstance
     {
+        public int BountyStacks { get; private set; }
+        internal int SetBountyStacks(int count) {if(count<0)throw new ArgumentOutOfRangeException();BountyStacks=count%5;return count/5;}
+        internal int AddBountyParticipation()=>SetBountyStacks(checked(BountyStacks+1));
         public string InstanceId { get; }
         public string DefinitionId { get; private set; }
         public string OwnerPlayerId { get; }
@@ -48,7 +51,7 @@ namespace PokeChess.Core.Pokemon
         internal void ApplyRankUnchecked(UnitRank rank) => Rank = rank;
         public int EvolutionStage { get; private set; }
         internal void ApplyEvolution(string definitionId, int stage)
-        { DefinitionId = definitionId; EvolutionStage = stage; }
+        { DefinitionId = definitionId; EvolutionStage = stage;BountyStacks=0; }
         public string PoolOriginDefinitionId { get; private set; }
         internal void SetPoolOrigin(string origin) => PoolOriginDefinitionId = origin;
         public UnitPlacement Placement { get; private set; }

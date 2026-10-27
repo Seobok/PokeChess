@@ -27,12 +27,15 @@ namespace PokeChess.Content
     {
         public string Id, DisplayName, LocalizedName, RoleId;
         public int Cost=1;
+        public bool IsBoss;
+        public bool HasProvisionalStats;
         public PokemonStatsData Stats=new PokemonStatsData();
+        public float[] RankHP=Array.Empty<float>(), RankAttack=Array.Empty<float>();
         public string[] TypeIds=Array.Empty<string>(), TraitIds=Array.Empty<string>();
         public SkillData Skill;
         public PokemonVisualData Visual;
         public EvolutionData[] Evolutions=Array.Empty<EvolutionData>();
         public PokemonDefinition ToCore()=>new PokemonDefinition(Id,DisplayName,Cost,Stats.ToCore(),RoleId,Skill.Id,
-            TypeIds,TraitIds,Evolutions.Select(e=>new EvolutionOption(e.Target.Id,e.PointCost)));
+            TypeIds,TraitIds,Evolutions.Select(e=>new EvolutionOption(e.Target.Id,e.PointCost)),IsBoss,RankHP.Length==0?null:RankHP,RankAttack.Length==0?null:RankAttack);
     }
 }

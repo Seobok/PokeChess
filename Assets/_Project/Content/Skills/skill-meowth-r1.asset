@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-meowth-r1
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-meowth-r1
+  DisplayName: "\uACE0\uC591\uC774\uB3C8\uBC1B\uAE30"
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uC801\uC5D0\uAC8C 80/110/145\uC758 \uBB3C\uB9AC \uD53C\uD574\uB97C
+    \uC900\uB2E4. \uC774 \uAE30\uC220\uB85C \uC801 \uCC98\uCE58\uC5D0 5\uD68C \uAD00\uC5EC\uD558\uBA74
+    1\uACE8\uB4DC\uB97C \uCD94\uAC00 \uD68D\uB4DD\uD55C\uB2E4."
+  Notes: "\uAE30\uC220\uB85C \uD53C\uD574\uB97C \uC900 \uC801\uC774 \uAC19\uC740
+    \uC804\uD22C\uC5D0\uC11C \uC0AC\uB9DD\uD558\uBA74 1\uD68C. \uAC01 \uC720\uB2DB
+    \uB9C8\uB2E4 \uAC1C\uBCC4 \uC2A4\uD0DD \uC801\uC6A9. 5\uD68C\uB9C8\uB2E4 \uC989\uC2DC
+    \uC2A4\uD0DD\uC744 \uC18C\uBAA8\uD558\uBA70 1\uACE8\uB4DC. \uB77C\uC6B4\uB4DC
+    \uC885\uB8CC \uC2DC\uC5D0\uB3C4 \uC2A4\uD0DD \uC720\uC9C0\n\uD569\uC131\uC2DC
+    \uC7AC\uB8CC \uC2A4\uD0DD \uD569\uC0B0 \uD6C4 5\uD68C \uB2E8\uC704 \uC815\uC0B0,
+    \uC9C4\uD654 \uC2DC \uC2A4\uD0AC\uC774 \uBCC0\uACBD\uB418\uBBC0\uB85C \uC18C\uBA78,
+    \uD310\uB9E4\uC2DC \uC18C\uBA78."
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects:
+  - Type: 0
+    TargetSelector: 0
+    BaseValue: 80
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 0
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 80
+    - 80
+    - 80
+    RankStatuses: []
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 1
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 1
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  Steps: []

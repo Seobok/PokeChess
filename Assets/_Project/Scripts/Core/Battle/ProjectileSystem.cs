@@ -19,11 +19,13 @@ namespace PokeChess.Core.Battle
         public long ArrivalTick { get; }
         public DamageRequest? SkillDamage { get; }
         public int? ImpactRadius { get; }
-        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival,DamageRequest? skillDamage=null,int? impactRadius=null)
+        internal Action<UnitCombatState> Impact { get; }
+        internal Action<bool> Completed { get; }
+        internal ProjectileState(long id,UnitCombatState source,UnitCombatState target,long tick,long arrival,DamageRequest? skillDamage=null,int? impactRadius=null,Action<UnitCombatState> impact=null,Action<bool> completed=null)
         {
             Id=id;SourceId=source.UnitInstanceId;TargetId=target.UnitInstanceId;
             LaunchPosition=source.Position;TargetPositionAtLaunch=target.Position;
-            SpawnTick=tick;ArrivalTick=arrival;SkillDamage=skillDamage;ImpactRadius=impactRadius;
+            SpawnTick=tick;ArrivalTick=arrival;SkillDamage=skillDamage;ImpactRadius=impactRadius;Impact=impact;Completed=completed;
         }
     }
     public readonly struct ProjectileEvent
@@ -57,7 +59,7 @@ namespace PokeChess.Core.Battle
             if(source==null||target==null||!battle.Units.Contains(source)||!battle.Units.Contains(target)||
                 !source.IsAlive||!source.IsOnBoard||!target.IsTargetable||source.TeamId==target.TeamId||
                 source.Stats.AttackDelivery!=AttackDeliveryType.Projectile||
-                !HexCoordinates.IsInRange(source.Position,target.Position,source.Stats.AttackRange))return false;
+                !HexCoordinates.IsInRange(source.Position,target.Position,source.StatusSystem.AttackRange(source)))return false;
             int travel=BattleSimulation.ToTicks((double)HexCoordinates.Distance(source.Position,target.Position)/
                 source.Stats.ProjectileSpeed,battle.TickRate);
             var projectile=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,
@@ -66,11 +68,11 @@ namespace PokeChess.Core.Battle
             events.Add(new ProjectileEvent(projectile,battle.CurrentTick,ProjectileEventKind.Spawned));
             return true;
         }
-        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request,int? impactRadius=null)
+        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request,int? impactRadius=null,Action<UnitCombatState> impact=null,Action<bool> completed=null)
         {
             if(!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||source.TeamId==target.TeamId)return false;
             int travel=BattleSimulation.ToTicks((double)HexCoordinates.Distance(source.Position,target.Position)/speed,battle.TickRate);
-            var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request,impactRadius);
+            var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request,impactRadius,impact,completed);
             active.Add(p);events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Spawned));return true;
         }
         internal void Advance(IDamageProcessor damage)
@@ -84,17 +86,25 @@ namespace PokeChess.Core.Battle
                 // Consume before applying; each projectile can resolve at most once.
                 active.Remove(p);
                 if(reason!=ProjectileExpireReason.None)
-                { events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,reason));continue; }
-                var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);
+                { events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Expired,reason));p.Completed?.Invoke(false);continue; }
+                var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);bool hit=false;
                 if(p.ImpactRadius.HasValue) {
                     var request=p.SkillDamage.Value;
                     var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsTargetable&&
                         HexCoordinates.Distance(target.Position,u.Position)<=p.ImpactRadius.Value)
                         .OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
-                    foreach(var victim in victims)
-                        damage.Apply(battle,new DamageRequest(p.SourceId,victim.UnitInstanceId,request.RawDamage,request.Type));
-                } else damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
-                events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Hit));
+                    foreach(var victim in victims) {
+                        var result=damage.Apply(battle,new DamageRequest(p.SourceId,victim.UnitInstanceId,request.RawDamage,request.Type,
+                            request.CanCrit,request.BonusDamage,request.IsBasicAttack,request.Origin,request.SourceSnapshot,request.SkillPolicy));
+                        hit|=!result.Missed&&result.PostMitigationDamage>0;
+                        if(!result.Missed&&victim.CurrentHP>0&&victim.IsOnBoard)p.Impact?.Invoke(victim);
+                    }
+                } else {
+                    var result=damage.Apply(battle,p.SkillDamage??new DamageRequest(p.SourceId,p.TargetId,source.EffectiveStats.Attack,DamageType.Physical,true,isBasicAttack:true));
+                    hit=!result.Missed&&result.PostMitigationDamage>0;
+                    if(!result.Missed&&target.CurrentHP>0&&target.IsOnBoard)p.Impact?.Invoke(target);
+                }
+                p.Completed?.Invoke(hit);events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Hit));
             }
         }
     }

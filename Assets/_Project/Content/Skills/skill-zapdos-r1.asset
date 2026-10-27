@@ -1,0 +1,304 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-zapdos-r1
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-zapdos-r1
+  DisplayName: "\uBC88\uAC1C"
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uB300\uC0C1\uC5D0\uAC8C 250/350/5000\uC758 \uD2B9\uC218 \uD53C\uD574\uB97C
+    \uC8FC\uACE0 \uC8FC\uBCC0 2/3/1\uBA85\uC758 \uC801\uC5D0\uAC8C 125/175/2000\uC758
+    \uC5F0\uC1C4 \uD2B9\uC218 \uD53C\uD574\uB97C \uC900\uB2E4. 3/3/99\uCD08\uAC04
+    \uB9C8\uBE44\uC2DC\uD0A8\uB2E4."
+  Notes: "3\uC131 \uC804\uC6A9: \uC5F0\uC1C4\uAC00 \uAC70\uB9AC \uC81C\uD55C \uC5C6\uC774
+    \uC0B4\uC544 \uC788\uB294 \uC720\uD6A8 \uC801\uC744 \uAC01\uAC01 1\uD68C\uC529
+    \uBC29\uBB38\uD55C \uB4A4 \uC885\uB8CC\n\uC8FC\uBCC0 \uC5F0\uC1C4 \uAD00\uB828
+    \uCD94\uAC00 \uC124\uBA85: 1/2 \uC131\uC5D0\uC11C\uB294 \uC2A4\uD0AC \uB300\uC0C1
+    \uACF5\uACA9 -> 0.15\uCD08 \uD6C4 \uC8FC\uBCC0 2/3\uBA85\uC5D0\uAC8C \uB3D9\uC2DC\uC5D0
+    \uC5F0\uC1C4 (\uAC70\uB9AC \uC81C\uD55C\uC740 \uC5C6\uC74C), 3\uC131\uC5D0\uC11C\uB294
+    \uC2A4\uD0AC\uB300\uC0C1 \uACF5\uACA9 -> 0.15\uCD08 \uD6C4 \uC8FC\uBCC0 1\uBA85\uC5D0\uAC8C
+    \uC5F0\uC1C4 -> 0.15\uCD08 \uD6C4 \uC8FC\uBCC0 1\uBA85\uC5D0\uAC8C \uC5F0\uC1C4
+    -> \u2026 \uC0B4\uC544 \uC788\uB294 \uC720\uD6A8 \uC801\uC744 \uC804\uCCB4 \uBC29\uBB38\uD560
+    \uB54C \uAE4C\uC9C0 \uBC18\uBCF5\n\uC5F0\uC1C4\uAC04 \uB51C\uB808\uC774 : 0.15\uCD08"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects:
+  - Type: 0
+    TargetSelector: 0
+    BaseValue: 250
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 250
+    - 250
+    - 250
+    RankStatuses: []
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  - Type: 4
+    TargetSelector: 0
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 18a1ad1c446a81d4ea0bf0ce63efe4c1, type: 2}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 18a1ad1c446a81d4ea0bf0ce63efe4c1, type: 2}
+    - {fileID: 11400000, guid: 18a1ad1c446a81d4ea0bf0ce63efe4c1, type: 2}
+    - {fileID: 11400000, guid: 18a1ad1c446a81d4ea0bf0ce63efe4c1, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  - Type: 10
+    TargetSelector: 5
+    BaseValue: 125
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 125
+    - 125
+    - 125
+    RankStatuses: []
+    Spatial:
+      Mode: 2
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 2
+      SearchRange: 56
+      ChainRange: 56
+      IncludeSelf: 0
+      IncludePrimary: 0
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects:
+    - Type: 4
+      TargetSelector: 0
+      BaseValue: 0
+      SpellPowerScalable: 0
+      PowerScaling: 0
+      DamageType: 1
+      Radius: 1
+      ProjectileSpeed: 6
+      HasImpactRadius: 0
+      ImpactRadius: 0
+      Status: {fileID: 11400000, guid: aa1457bc9fff78f42bc9a09bed010e09, type: 2}
+      StatusTargetTeam: 1
+      ValueSource: 0
+      RankValues:
+      - 0
+      - 0
+      - 0
+      RankStatuses:
+      - {fileID: 11400000, guid: aa1457bc9fff78f42bc9a09bed010e09, type: 2}
+      - {fileID: 11400000, guid: aa1457bc9fff78f42bc9a09bed010e09, type: 2}
+      - {fileID: 11400000, guid: aa1457bc9fff78f42bc9a09bed010e09, type: 2}
+      Spatial:
+        Mode: 0
+        Shape: 0
+        Center: 0
+        Extent: 1
+        MaxTargets: 0
+        SearchRange: 56
+        ChainRange: 1
+        IncludeSelf: 0
+        IncludePrimary: 1
+      Movement:
+        Kind: 0
+        Distance: 1
+        ClusterRadius: 1
+        Speed: 6
+        HasTravelTime: 0
+        TravelTime: 0
+        ImpactEffects: []
+      Returns: 0
+      HasNumeric: 0
+      Numeric:
+        Condition: 0
+        Threshold: 0.25
+        Lifesteal: 0
+        ArmorPenetration: 0
+        CritBonus: 0
+        Chance: 1
+        ExecuteThreshold: 0
+        BossBonus: 0
+        ConditionalValues:
+        - 0
+        - 0
+        - 0
+        HasDamageCap: 0
+        CanCrit: 0
+        HasShieldDuration: 0
+        DamageCap: 0
+        ShieldDuration: 4
+        MagicPenetration: 0
+        Bounty: 0
+      PathImpactEffects: []
+      ChoiceStatuses: []
+      ChainDelay: 0.15
+      ChainSequential: 0
+      ProjectileGroupSize: 0
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  Steps: []

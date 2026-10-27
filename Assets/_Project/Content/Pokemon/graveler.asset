@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Graveler
   LocalizedName: "\uB370\uAD6C\uB9AC"
   RoleId: tank
-  Cost: 2
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1000
-    Attack: 56.25
-    SpellPower: 0
-    AttackSpeed: 0.5
-    Armor: 45
-    MagicResistance: 20
+    MaxHP: 1450
+    Attack: 85
+    SpellPower: 100
+    AttackSpeed: 0.56
+    Armor: 65
+    MagicResistance: 35
     AttackRange: 1
     MoveSpeed: 2
-    MaxEnergy: 100
-    StartingEnergy: 30
+    MaxEnergy: 105
+    StartingEnergy: 40
     AttackHitTime: 0.2
     AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1450
+  - 2465
+  - 4205
+  RankAttack:
+  - 85
+  - 111
+  - 145
   TypeIds:
   - rock
   - ground
   TraitIds:
   - guardian
-  Skill: {fileID: 11400000, guid: 7e70a839b2d37ce4db8c820a1f0d7755, type: 2}
+  Skill: {fileID: 11400000, guid: b7cda70e087a1be408594838cda6b0fb, type: 2}
   Visual: {fileID: 11400000, guid: 793936d4ab5ec02498a0c04ea940f6ca, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 0ce3cb41d2045764792e1d41b8ed3400, type: 2}

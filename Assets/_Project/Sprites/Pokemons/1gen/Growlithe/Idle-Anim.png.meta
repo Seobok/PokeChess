@@ -106,7 +106,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -120,7 +120,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -144,7 +144,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -182,529 +182,529 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle-Anim_0
+      name: growlithe_Idle_d0_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 353
-        width: 18
-        height: 25
+        x: 0
+        y: 336
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fa864d247f1766b60800000000000000
-      internalID: 7738998316474853551
+      spriteID: c725d64c22c8a17499be40e2ed376b39
+      internalID: 576544157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_1
+      name: growlithe_Idle_d0_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 354
-        width: 18
-        height: 25
+        x: 40
+        y: 336
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30f49f3b6ebff6b10800000000000000
-      internalID: 1977075729719447299
+      spriteID: 8ff5700d05e964848896fde98dd891a7
+      internalID: -432931848
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_2
+      name: growlithe_Idle_d0_f2
       rect:
         serializedVersion: 2
-        x: 91
-        y: 353
-        width: 18
-        height: 25
+        x: 80
+        y: 336
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04047ac9bd83f4f70800000000000000
-      internalID: 9173613481854189632
+      spriteID: 2765201f96bb42145859dbf0544631b4
+      internalID: -1273734625
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_3
+      name: growlithe_Idle_d1_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 305
-        width: 25
-        height: 26
+        x: 0
+        y: 288
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 12fbfb24eb2beff20800000000000000
-      internalID: 3458398094100512545
+      spriteID: 263ca0411395ee44b8e10ec621486186
+      internalID: -546071450
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_4
+      name: growlithe_Idle_d1_f1
       rect:
         serializedVersion: 2
-        x: 46
-        y: 306
-        width: 25
-        height: 26
+        x: 40
+        y: 288
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4adc0a0e11377bae0800000000000000
-      internalID: -1533630627476091484
+      spriteID: 44ea5e358dfb2294cbc315dd45d11caa
+      internalID: -1425661100
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_5
+      name: growlithe_Idle_d1_f2
       rect:
         serializedVersion: 2
-        x: 86
-        y: 305
-        width: 25
-        height: 26
+        x: 80
+        y: 288
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 710667869a1b9d030800000000000000
-      internalID: 3520039924926930967
+      spriteID: 299bf6806acd79a498c915d1c112c1bf
+      internalID: 1032291405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_6
+      name: growlithe_Idle_d2_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 257
-        width: 30
-        height: 27
+        x: 0
+        y: 240
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c93ba9d2f01700380800000000000000
-      internalID: -9007074944737430628
+      spriteID: 016156b8aeb17284ab798f3f42af8a0a
+      internalID: -1266951540
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_7
+      name: growlithe_Idle_d2_f1
       rect:
         serializedVersion: 2
-        x: 44
-        y: 258
-        width: 30
-        height: 27
+        x: 40
+        y: 240
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e4ac36e2dbb6eb40800000000000000
-      internalID: 5469265311968306403
+      spriteID: 246661b9b413afc49898270a7b434178
+      internalID: -1926158733
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_8
+      name: growlithe_Idle_d2_f2
       rect:
         serializedVersion: 2
-        x: 84
-        y: 257
-        width: 30
-        height: 27
+        x: 80
+        y: 240
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: abaf72ac278605a70800000000000000
-      internalID: 8813659312991238842
+      spriteID: b2ee2dbf2d5bcb14387b702acd4b124d
+      internalID: -1775939506
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_9
+      name: growlithe_Idle_d3_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 208
-        width: 22
-        height: 28
+        x: 0
+        y: 192
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 218bfb460cfaffb90800000000000000
-      internalID: -7205847637910636526
+      spriteID: 0813204ab0796bf459df2779b86eee6a
+      internalID: 893333721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_10
+      name: growlithe_Idle_d3_f1
       rect:
         serializedVersion: 2
-        x: 47
-        y: 209
-        width: 22
-        height: 28
+        x: 40
+        y: 192
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9429d91a826ac4dd0800000000000000
-      internalID: -2500440999657106871
+      spriteID: f9521cde088dba345ab5a697c88317d4
+      internalID: 84638758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_11
+      name: growlithe_Idle_d3_f2
       rect:
         serializedVersion: 2
-        x: 87
-        y: 208
-        width: 22
-        height: 28
+        x: 80
+        y: 192
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96cdb23a9847bee20800000000000000
-      internalID: 3380924079768591465
+      spriteID: 5b5d045de12bfc04b948f8c9a27acaf8
+      internalID: -2031024718
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_12
+      name: growlithe_Idle_d4_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 160
-        width: 18
-        height: 30
+        x: 0
+        y: 144
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7fdda996a9f0c9750800000000000000
-      internalID: 6312937933537730039
+      spriteID: 0daf0d68ee91fca4bb651cee3ef6d8dd
+      internalID: 1527957338
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_13
+      name: growlithe_Idle_d4_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 161
-        width: 18
-        height: 30
+        x: 40
+        y: 144
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 77f8961a485984660800000000000000
-      internalID: 7370305187068088183
+      spriteID: 59c59f57b8fc96145b2607c568f339bb
+      internalID: 1254754365
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_14
+      name: growlithe_Idle_d4_f2
       rect:
         serializedVersion: 2
-        x: 91
-        y: 160
-        width: 18
-        height: 30
+        x: 80
+        y: 144
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5035613e1c7abe2c0800000000000000
-      internalID: -4401239759644110075
+      spriteID: b7020bd4462e3d64eb9743d039afa014
+      internalID: 1331190718
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_15
+      name: growlithe_Idle_d5_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 112
-        width: 22
-        height: 28
+        x: 0
+        y: 96
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c808dca5d0f935f40800000000000000
-      internalID: 5716087231770099852
+      spriteID: f11c8bf7d9027514a9eabe33fd7005ce
+      internalID: 1704529507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_16
+      name: growlithe_Idle_d5_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 113
-        width: 22
-        height: 28
+        x: 40
+        y: 96
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c6531675e307f440800000000000000
-      internalID: 4969444997890004679
+      spriteID: da857175afd0dcf47a8589ad130af3d6
+      internalID: -1140829119
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_17
+      name: growlithe_Idle_d5_f2
       rect:
         serializedVersion: 2
-        x: 91
-        y: 112
-        width: 22
-        height: 28
+        x: 80
+        y: 96
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4b444a8c9eda31180800000000000000
-      internalID: -9145775198654151500
+      spriteID: d6f12764cb606f944bc1644424276209
+      internalID: 134338435
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_18
+      name: growlithe_Idle_d6_f0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 65
-        width: 30
-        height: 27
+        x: 0
+        y: 48
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1f1d399fef9e93a0800000000000000
-      internalID: -6656707347790094562
+      spriteID: 33dce437917f6c3419638af8d16f5a46
+      internalID: 1529570406
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_19
+      name: growlithe_Idle_d6_f1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 66
-        width: 30
-        height: 27
+        x: 40
+        y: 48
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a1c5edbf1de43c4b0800000000000000
-      internalID: -5421402862643160038
+      spriteID: 3201e58721778f149a51a5762220ab52
+      internalID: -1925117638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_20
+      name: growlithe_Idle_d6_f2
       rect:
         serializedVersion: 2
-        x: 88
-        y: 65
-        width: 30
-        height: 27
+        x: 80
+        y: 48
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: defdd81d784ed1a00800000000000000
-      internalID: 728989986691342317
+      spriteID: 5c5d2373bece3854da8868ef49c73f5b
+      internalID: 254490519
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_21
+      name: growlithe_Idle_d7_f0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 17
-        width: 25
-        height: 26
+        x: 0
+        y: 0
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bf74809e3bf50810800000000000000
-      internalID: 1731065877924970417
+      spriteID: b9893a2dba48bed4f9f5d64e3a6f4799
+      internalID: -527553380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_22
+      name: growlithe_Idle_d7_f1
       rect:
         serializedVersion: 2
-        x: 49
-        y: 18
-        width: 25
-        height: 26
+        x: 40
+        y: 0
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dcda8cca7f8eeb900800000000000000
-      internalID: 702254742369775053
+      spriteID: 93689b30452f2154e82dab85517bb864
+      internalID: -1531519934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_23
+      name: growlithe_Idle_d7_f2
       rect:
         serializedVersion: 2
-        x: 89
-        y: 17
-        width: 25
-        height: 26
+        x: 80
+        y: 0
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a89579fd543d5bb00800000000000000
-      internalID: 843812802259278218
+      spriteID: 035a142076579b34cae5f8cd50b381f9
+      internalID: 1876291294
       vertices: []
       indices: 
       edges: []
@@ -713,7 +713,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 73a09c640d5c7824eb72a555d10b4ce1
     internalID: 0
     vertices: []
     indices: 
@@ -723,30 +723,30 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Idle-Anim_0: 7738998316474853551
-      Idle-Anim_1: 1977075729719447299
-      Idle-Anim_10: -2500440999657106871
-      Idle-Anim_11: 3380924079768591465
-      Idle-Anim_12: 6312937933537730039
-      Idle-Anim_13: 7370305187068088183
-      Idle-Anim_14: -4401239759644110075
-      Idle-Anim_15: 5716087231770099852
-      Idle-Anim_16: 4969444997890004679
-      Idle-Anim_17: -9145775198654151500
-      Idle-Anim_18: -6656707347790094562
-      Idle-Anim_19: -5421402862643160038
-      Idle-Anim_2: 9173613481854189632
-      Idle-Anim_20: 728989986691342317
-      Idle-Anim_21: 1731065877924970417
-      Idle-Anim_22: 702254742369775053
-      Idle-Anim_23: 843812802259278218
-      Idle-Anim_3: 3458398094100512545
-      Idle-Anim_4: -1533630627476091484
-      Idle-Anim_5: 3520039924926930967
-      Idle-Anim_6: -9007074944737430628
-      Idle-Anim_7: 5469265311968306403
-      Idle-Anim_8: 8813659312991238842
-      Idle-Anim_9: -7205847637910636526
+      growlithe_Idle_d0_f0: 576544157
+      growlithe_Idle_d0_f1: -432931848
+      growlithe_Idle_d0_f2: -1273734625
+      growlithe_Idle_d1_f0: -546071450
+      growlithe_Idle_d1_f1: -1425661100
+      growlithe_Idle_d1_f2: 1032291405
+      growlithe_Idle_d2_f0: -1266951540
+      growlithe_Idle_d2_f1: -1926158733
+      growlithe_Idle_d2_f2: -1775939506
+      growlithe_Idle_d3_f0: 893333721
+      growlithe_Idle_d3_f1: 84638758
+      growlithe_Idle_d3_f2: -2031024718
+      growlithe_Idle_d4_f0: 1527957338
+      growlithe_Idle_d4_f1: 1254754365
+      growlithe_Idle_d4_f2: 1331190718
+      growlithe_Idle_d5_f0: 1704529507
+      growlithe_Idle_d5_f1: -1140829119
+      growlithe_Idle_d5_f2: 134338435
+      growlithe_Idle_d6_f0: 1529570406
+      growlithe_Idle_d6_f1: -1925117638
+      growlithe_Idle_d6_f2: 254490519
+      growlithe_Idle_d7_f0: -527553380
+      growlithe_Idle_d7_f1: -1531519934
+      growlithe_Idle_d7_f2: 1876291294
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

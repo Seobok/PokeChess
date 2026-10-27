@@ -259,7 +259,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -273,7 +273,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -297,7 +297,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -335,1651 +335,1761 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Charge-Anim_0
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2400968f23cc7f350800000000000000
-      internalID: 6050529143683612738
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_1
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 58761210855e94fd0800000000000000
-      internalID: -2357100763812894843
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_2
-      rect:
-        serializedVersion: 2
-        x: 49
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1b028aa22f9822170800000000000000
-      internalID: 8152229948684771505
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_3
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f0137c10bcfffa3b0800000000000000
-      internalID: -5498895372622810865
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_4
-      rect:
-        serializedVersion: 2
-        x: 97
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0962f9135487fe830800000000000000
-      internalID: 4102630024138401424
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_5
-      rect:
-        serializedVersion: 2
-        x: 120
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0f9226cf00d290130800000000000000
-      internalID: 3533404864906406384
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_6
-      rect:
-        serializedVersion: 2
-        x: 145
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2848640407fdf3a70800000000000000
-      internalID: 8809005069367673986
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_7
-      rect:
-        serializedVersion: 2
-        x: 168
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 55aa74ea16683ae20800000000000000
-      internalID: 3360677501042403925
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_8
-      rect:
-        serializedVersion: 2
-        x: 193
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 91e8152a81a18d210800000000000000
-      internalID: 1357863980756995609
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_9
-      rect:
-        serializedVersion: 2
-        x: 216
-        y: 235
-        width: 23
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e186304d1ee82bad0800000000000000
-      internalID: -2687928927010985954
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_10
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 203
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 881f7c9da4b7c6a80800000000000000
-      internalID: -8472261237579189880
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_11
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 202
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8bea2767873910190800000000000000
-      internalID: -7997949317640704328
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_12
-      rect:
-        serializedVersion: 2
-        x: 49
-        y: 203
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 532e97184af3ad800800000000000000
-      internalID: 637892273005781557
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_13
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 202
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cb96e130a20e2b560800000000000000
-      internalID: 7328166014730791356
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_14
-      rect:
-        serializedVersion: 2
-        x: 97
-        y: 203
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f63e80a1f771c5c10800000000000000
-      internalID: 2043534165584438127
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_15
-      rect:
-        serializedVersion: 2
-        x: 120
-        y: 202
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 40787a755423b7a50800000000000000
-      internalID: 6519860158953654020
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_16
-      rect:
-        serializedVersion: 2
-        x: 145
-        y: 203
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0b1b7cc353a500d80800000000000000
-      internalID: -8286524129662226000
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_17
-      rect:
-        serializedVersion: 2
-        x: 168
-        y: 202
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 769ad79f6c75a28a0800000000000000
-      internalID: -6329149814214907545
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_18
-      rect:
-        serializedVersion: 2
-        x: 193
-        y: 203
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3ccd8a7f3c1188100800000000000000
-      internalID: 110357724241910979
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_19
-      rect:
-        serializedVersion: 2
-        x: 216
-        y: 202
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9baf10f5d15c64260800000000000000
-      internalID: 7081564194025372345
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_20
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 172
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7a6ebdb3e0c2e0b10800000000000000
-      internalID: 1949544128343434919
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_21
-      rect:
-        serializedVersion: 2
-        x: 27
-        y: 171
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2b010a3cb045ed0a0800000000000000
-      internalID: -6854949173307895630
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_22
-      rect:
-        serializedVersion: 2
-        x: 51
-        y: 172
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d16fe73a7897543d0800000000000000
-      internalID: -3223036334843169251
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_23
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 171
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4c2e4edfc4eaa02c0800000000000000
-      internalID: -4464564434884042044
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_24
-      rect:
-        serializedVersion: 2
-        x: 99
-        y: 172
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d933ba54d1f68a0a0800000000000000
-      internalID: -6870119060040109155
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_25
-      rect:
-        serializedVersion: 2
-        x: 123
-        y: 171
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0ed51811cfde0d690800000000000000
-      internalID: -7579296505983312416
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_26
-      rect:
-        serializedVersion: 2
-        x: 147
-        y: 172
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 98293440683ca8eb0800000000000000
-      internalID: -4716742679352601975
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_27
-      rect:
-        serializedVersion: 2
-        x: 171
-        y: 171
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cc68b984300e62a00800000000000000
-      internalID: 731518294201960140
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_28
-      rect:
-        serializedVersion: 2
-        x: 195
-        y: 172
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 384b87e4153b16460800000000000000
-      internalID: 7233259638323983491
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_29
-      rect:
-        serializedVersion: 2
-        x: 219
-        y: 171
-        width: 19
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8071c3683392c7380800000000000000
-      internalID: -8972251056356714744
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Charge-Anim_30
+      name: pidgey_Charge_d0_f0
       rect:
         serializedVersion: 2
         x: 0
-        y: 139
-        width: 19
-        height: 21
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4907eb11597918cc0800000000000000
-      internalID: -3710517951472963436
+      spriteID: 0ea9a0fd2c9fd244995c051549543285
+      internalID: -616993965
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_31
+      name: pidgey_Charge_d0_f1
       rect:
         serializedVersion: 2
-        x: 25
-        y: 138
-        width: 19
-        height: 21
+        x: 24
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d0ab81697c868e620800000000000000
-      internalID: 2803605974464117261
+      spriteID: 9aa4c4a733b4e4049be7298306c8a318
+      internalID: 38278539
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_32
+      name: pidgey_Charge_d0_f2
       rect:
         serializedVersion: 2
         x: 48
-        y: 139
-        width: 19
-        height: 21
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8b62126e8d6e46730800000000000000
-      internalID: 3991568989005358776
+      spriteID: 4fafd6573dca75d4482c3ca0580bc5c6
+      internalID: -753807610
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_33
+      name: pidgey_Charge_d0_f3
       rect:
         serializedVersion: 2
-        x: 73
-        y: 138
-        width: 19
-        height: 21
+        x: 72
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f416c97da766219e0800000000000000
-      internalID: -1652145435502157489
+      spriteID: fbac34921a9f7e74899d362a4dfa718c
+      internalID: -1698047842
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_34
+      name: pidgey_Charge_d0_f4
       rect:
         serializedVersion: 2
         x: 96
-        y: 139
-        width: 19
-        height: 21
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0c1098cb9cf1a060800000000000000
-      internalID: 6963124244906515467
+      spriteID: 9e7e320e9c972414c8a6b96478ef14f9
+      internalID: -653022617
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_35
+      name: pidgey_Charge_d0_f5
       rect:
         serializedVersion: 2
-        x: 121
-        y: 138
-        width: 19
-        height: 21
+        x: 120
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bea5335bbd65a43b0800000000000000
-      internalID: -5527510091005994261
+      spriteID: cf3cb30280c70534ca0a9ef1b63ba7a0
+      internalID: 1682110227
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_36
+      name: pidgey_Charge_d0_f6
       rect:
         serializedVersion: 2
         x: 144
-        y: 139
-        width: 19
-        height: 21
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cee79d7a76085f3b0800000000000000
-      internalID: -5479332188940304660
+      spriteID: fa0bff03f22daac4bb18db7853e1a42b
+      internalID: -1776300914
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_37
+      name: pidgey_Charge_d0_f7
       rect:
         serializedVersion: 2
-        x: 169
-        y: 138
-        width: 19
-        height: 21
+        x: 168
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 787401d70023d7f60800000000000000
-      internalID: 8033632287978440583
+      spriteID: d56470d9905a6e840803d1d51cdb1029
+      internalID: 1021289713
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_38
+      name: pidgey_Charge_d0_f8
       rect:
         serializedVersion: 2
         x: 192
-        y: 139
-        width: 19
-        height: 21
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f7722546597224de0800000000000000
-      internalID: -1350473415671011457
+      spriteID: b1033d7df08c6c548950662503389d09
+      internalID: -1424188072
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_39
+      name: pidgey_Charge_d0_f9
       rect:
         serializedVersion: 2
-        x: 217
-        y: 138
-        width: 19
-        height: 21
+        x: 216
+        y: 224
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d8a33ee6b471bdf60800000000000000
-      internalID: 8060061570860006029
+      spriteID: c33e5c42d2b4fb046b51ec30e0c7a4e5
+      internalID: 739830609
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_40
+      name: pidgey_Charge_d1_f0
       rect:
         serializedVersion: 2
         x: 0
-        y: 106
-        width: 48
-        height: 21
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a0ab501f3989cfb30800000000000000
-      internalID: 4322497503540132362
+      spriteID: ce22166e942729b4ba0d36fc24e3164d
+      internalID: 1253290768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_41
+      name: pidgey_Charge_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 192
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84acaa60cc728314ea5aa58089ed3a08
+      internalID: 792122090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d1_f2
       rect:
         serializedVersion: 2
         x: 48
-        y: 106
-        width: 48
-        height: 21
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c39611306ee2b9ab0800000000000000
-      internalID: -5000351395835975364
+      spriteID: 720ab5977a9ffe345b010f1bc8c12d17
+      internalID: 1388496841
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_42
+      name: pidgey_Charge_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 192
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e22b66664bf2994fbce4828dcd48db8
+      internalID: -2076605433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d1_f4
       rect:
         serializedVersion: 2
         x: 96
-        y: 106
-        width: 48
-        height: 21
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4d568186c9ecf420800000000000000
-      internalID: 2665262118282353995
+      spriteID: 8209652184db8794994b1b3c2bfdea73
+      internalID: -494724809
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_43
+      name: pidgey_Charge_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 192
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e80ae0e3ae5e9d4b8d4f42d3a9eea45
+      internalID: 1365396818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d1_f6
       rect:
         serializedVersion: 2
         x: 144
-        y: 106
-        width: 48
-        height: 21
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ae5ee86530e015ac0800000000000000
-      internalID: -3868295197434649110
+      spriteID: 36eb3e85325d0824fb34c68e5423ece7
+      internalID: 1778975018
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_44
+      name: pidgey_Charge_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 192
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e8a76b2da68d01438d3dddb19d4894f
+      internalID: 1404378812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d1_f8
       rect:
         serializedVersion: 2
         x: 192
-        y: 106
-        width: 48
-        height: 21
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 900e7a8c6e2998690800000000000000
-      internalID: -7599381376304422903
+      spriteID: 80af5d81e6fd39d499b6db6aab8aeab5
+      internalID: 929361617
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_45
+      name: pidgey_Charge_d1_f9
       rect:
         serializedVersion: 2
-        x: 5
-        y: 75
-        width: 19
-        height: 21
+        x: 216
+        y: 192
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1556b3c3eff345e0800000000000000
-      internalID: -1926414861878274786
+      spriteID: 76b2969fba445f546960751e24d74b39
+      internalID: -180279860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_46
+      name: pidgey_Charge_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 74
-        width: 19
-        height: 21
+        x: 0
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9e99ec9c5875b74a0800000000000000
-      internalID: -6594580997225932311
+      spriteID: ab68ff5d47030b647b68bf855a9e6b87
+      internalID: 776724096
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_47
+      name: pidgey_Charge_d2_f1
       rect:
         serializedVersion: 2
-        x: 53
-        y: 75
-        width: 19
-        height: 21
+        x: 24
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96c05c6b60a76a220800000000000000
-      internalID: 2496817212678278249
+      spriteID: 97f3f1398c55419469e837bdf11afaf0
+      internalID: 601605516
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_48
+      name: pidgey_Charge_d2_f2
       rect:
         serializedVersion: 2
-        x: 76
-        y: 74
-        width: 19
-        height: 21
+        x: 48
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 31596c61dcc166350800000000000000
-      internalID: 6009522419948492051
+      spriteID: 6497ad276093174449e5720884e0b83b
+      internalID: -1784645116
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_49
+      name: pidgey_Charge_d2_f3
       rect:
         serializedVersion: 2
-        x: 101
-        y: 75
-        width: 19
-        height: 21
+        x: 72
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 52434446dfad1a300800000000000000
-      internalID: 261731035207971877
+      spriteID: 6964e6c38a6426c46af7d86ae958d22a
+      internalID: 272118950
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_50
+      name: pidgey_Charge_d2_f4
       rect:
         serializedVersion: 2
-        x: 124
-        y: 74
-        width: 19
-        height: 21
+        x: 96
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a7b5d08b97e24ac0800000000000000
-      internalID: -3872278074517768287
+      spriteID: 051e8e30cae350444ad3025f3f8e5645
+      internalID: 1741864443
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_51
+      name: pidgey_Charge_d2_f5
       rect:
         serializedVersion: 2
-        x: 149
-        y: 75
-        width: 19
-        height: 21
+        x: 120
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fc5956a0b6ee4f950800000000000000
-      internalID: 6482067907196327375
+      spriteID: 4143c79725369844fb0c3f6faeed7659
+      internalID: -2136464633
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_52
+      name: pidgey_Charge_d2_f6
       rect:
         serializedVersion: 2
-        x: 172
-        y: 74
-        width: 19
-        height: 21
+        x: 144
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c369e661e21a59a0800000000000000
-      internalID: -6243657174092258361
+      spriteID: 68aadb0fd71113e46b53dca1e765faad
+      internalID: -1910594221
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_53
+      name: pidgey_Charge_d2_f7
       rect:
         serializedVersion: 2
-        x: 197
-        y: 75
-        width: 19
-        height: 21
+        x: 168
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 20c3eb35f9be25a80800000000000000
-      internalID: -8479456078847919102
+      spriteID: 9e165988cd848e74e92b4607dca51450
+      internalID: -1887506782
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_54
+      name: pidgey_Charge_d2_f8
       rect:
         serializedVersion: 2
-        x: 220
-        y: 74
-        width: 19
-        height: 21
+        x: 192
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: df210e51a16b71310800000000000000
-      internalID: 1375768434337387261
+      spriteID: 7a7d7d49e3e5bb04c86d9eedcb79d942
+      internalID: 1199672725
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_55
+      name: pidgey_Charge_d2_f9
       rect:
         serializedVersion: 2
-        x: 2
-        y: 44
-        width: 19
-        height: 21
+        x: 216
+        y: 160
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 717c78275bc42f050800000000000000
-      internalID: 5832808809592506135
+      spriteID: 0a0617bee9d86d14c8ff2ebd7de7b7a4
+      internalID: 1877334005
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_56
+      name: pidgey_Charge_d3_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 43
-        width: 19
-        height: 21
+        x: 0
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce063c9772f52e7d0800000000000000
-      internalID: -2890643387667226388
+      spriteID: 2cc356a3c045f404b8e68d742acd9e27
+      internalID: 1454326899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_57
+      name: pidgey_Charge_d3_f1
       rect:
         serializedVersion: 2
-        x: 50
-        y: 44
-        width: 19
-        height: 21
+        x: 24
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cabcafa669bf5a080800000000000000
-      internalID: -9176652042239030356
+      spriteID: 80f0f2eb560e24a48af626d2301a1b08
+      internalID: -631856882
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_58
+      name: pidgey_Charge_d3_f2
       rect:
         serializedVersion: 2
-        x: 74
-        y: 43
-        width: 19
-        height: 21
+        x: 48
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 859d2b03a65aa5d80800000000000000
-      internalID: -8261108690955609768
+      spriteID: 6652a046a56b1984fbb46d562166cc36
+      internalID: 1597125133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_59
+      name: pidgey_Charge_d3_f3
       rect:
         serializedVersion: 2
-        x: 98
-        y: 44
-        width: 19
-        height: 21
+        x: 72
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62f65665b06e302d0800000000000000
-      internalID: -3313551964446036186
+      spriteID: a6a5a3d3857a54a43b6771989f6a8b45
+      internalID: -1269431756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_60
+      name: pidgey_Charge_d3_f4
       rect:
         serializedVersion: 2
-        x: 122
-        y: 43
-        width: 19
-        height: 21
+        x: 96
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 281e48d21cb58d770800000000000000
-      internalID: 8635753170733425026
+      spriteID: 11de5848e73c6a543b42b097a4dd52b0
+      internalID: 1501747502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_61
+      name: pidgey_Charge_d3_f5
       rect:
         serializedVersion: 2
-        x: 146
-        y: 44
-        width: 19
-        height: 21
+        x: 120
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c10fbe3deeae9e80800000000000000
-      internalID: -8169900340020313659
+      spriteID: 258e45ebfd724f34fbe74d158b0ec54c
+      internalID: 1521998
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_62
+      name: pidgey_Charge_d3_f6
       rect:
         serializedVersion: 2
-        x: 170
-        y: 43
-        width: 19
-        height: 21
+        x: 144
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 896f0c6a41eabdcd0800000000000000
-      internalID: -2532238961745529192
+      spriteID: b34d1c0bd9ff1e34a828418a465b5384
+      internalID: -2063583916
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_63
+      name: pidgey_Charge_d3_f7
       rect:
         serializedVersion: 2
-        x: 194
-        y: 44
-        width: 19
-        height: 21
+        x: 168
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb3c8bd58481ba6a0800000000000000
-      internalID: -6437024543306890308
+      spriteID: efa77df9b655f914d8f500aa524ea87b
+      internalID: 1526234865
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_64
+      name: pidgey_Charge_d3_f8
       rect:
         serializedVersion: 2
-        x: 218
-        y: 43
-        width: 19
-        height: 21
+        x: 192
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d0faeec0793ea6470800000000000000
-      internalID: 8388767493827505933
+      spriteID: b66ffecb3bdff8c4eb63bc441ded2208
+      internalID: 1197296443
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_65
+      name: pidgey_Charge_d3_f9
       rect:
         serializedVersion: 2
-        x: 1
-        y: 11
-        width: 22
-        height: 22
+        x: 216
+        y: 128
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd38038deec65ec20800000000000000
-      internalID: 3235111680420643803
+      spriteID: 63560e423ebe94148b350ecbb34439a7
+      internalID: -1751991242
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_66
+      name: pidgey_Charge_d4_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 10
-        width: 22
-        height: 22
+        x: 0
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7730164c27f26dad0800000000000000
-      internalID: -2677900758457711753
+      spriteID: 712018477b8fef447b3955fe1d1c4100
+      internalID: 1834600270
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_67
+      name: pidgey_Charge_d4_f1
       rect:
         serializedVersion: 2
-        x: 49
-        y: 11
-        width: 22
-        height: 22
+        x: 24
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 09fc43d0f2533f100800000000000000
-      internalID: 140514489579917200
+      spriteID: 1aebf7869f7e13642bbd3b100315c811
+      internalID: 636754766
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_68
+      name: pidgey_Charge_d4_f2
       rect:
         serializedVersion: 2
-        x: 74
-        y: 10
-        width: 22
-        height: 22
+        x: 48
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7ada5d861955a7e50800000000000000
-      internalID: 6807847869741378983
+      spriteID: 31bf38a471af5a041b9b43f55b01e9e4
+      internalID: -2145948632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_69
+      name: pidgey_Charge_d4_f3
       rect:
         serializedVersion: 2
-        x: 97
-        y: 11
-        width: 22
-        height: 22
+        x: 72
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d72bf1046d8cf6590800000000000000
-      internalID: -7678698017119030659
+      spriteID: 7803fcc285f979b40819ee86c2accb05
+      internalID: 1540755799
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_70
+      name: pidgey_Charge_d4_f4
       rect:
         serializedVersion: 2
-        x: 122
-        y: 10
-        width: 22
-        height: 22
+        x: 96
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87a1cec2124fa6950800000000000000
-      internalID: 6443230640231684728
+      spriteID: 7b6aee7fd7ba6a04682a50f096c816a5
+      internalID: 312448817
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_71
+      name: pidgey_Charge_d4_f5
       rect:
         serializedVersion: 2
-        x: 145
-        y: 11
-        width: 22
-        height: 22
+        x: 120
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5fd02749bf706a7b0800000000000000
-      internalID: -5213470741526082059
+      spriteID: b8d6fa28234655046926e9598ac6697a
+      internalID: 1013493867
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_72
+      name: pidgey_Charge_d4_f6
       rect:
         serializedVersion: 2
-        x: 170
-        y: 10
-        width: 22
-        height: 22
+        x: 144
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8097feac61ab29cc0800000000000000
-      internalID: -3705694936315758328
+      spriteID: 7796f0f374e61394f9939214c9900a39
+      internalID: -1803589125
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_73
+      name: pidgey_Charge_d4_f7
       rect:
         serializedVersion: 2
-        x: 193
-        y: 11
-        width: 22
-        height: 22
+        x: 168
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 17f321596ef37e550800000000000000
-      internalID: 6189986472420065137
+      spriteID: fa6a8414eee8856499884b4a7602bee1
+      internalID: -1324839145
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_74
+      name: pidgey_Charge_d4_f8
       rect:
         serializedVersion: 2
-        x: 218
-        y: 10
-        width: 22
-        height: 22
+        x: 192
+        y: 96
+        width: 24
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ce99bf6326d910c0800000000000000
-      internalID: -4604413696322986304
+      spriteID: 1583b32def4b27846868f6063f4ff736
+      internalID: -1556482690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d4_f9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 96
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91ffb7e5e3b1c4a409b10bc450a5f614
+      internalID: 1769150822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1063893800fb0e49b2fe9398ccad2c3
+      internalID: 717484903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7534fb438929dd4b8b68c5ef13a2673
+      internalID: -47042115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04984a08ebd290848b5fd0037eee9328
+      internalID: 81836577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df06f7da7e8ee91469ab10f42b7f4376
+      internalID: 498483650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 190a20772a90a3a44b0d5aee2aaec967
+      internalID: 695052729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cabdd4373e89f9845963e4921fe47e12
+      internalID: 1951264767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ea2ce4e9bea6434c98468374c561412
+      internalID: -1767825866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 312a4914f4b7346438fb5c6b96f1570e
+      internalID: -1625142922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f8
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e1e982ef8f6e214c83b4d8850fa3583
+      internalID: -762950249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d5_f9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 64
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ed19fe36f2b80443988fbfe763ca442
+      internalID: -580071758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27f7459898f4bf74487f01c1367b430c
+      internalID: 274377444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ffa4d01d01f5d24c9b28f32f9939b38
+      internalID: 1806195626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1073b03d6136eed42b1d20fd0498c54d
+      internalID: -849018679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bafa6ccdfdb9094cbd3a1bd3e8b1910
+      internalID: 808061308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31c3f089d0e48c348bb738be136ebe17
+      internalID: 1914673971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4633c9067b21b7d468694f7c2b59da43
+      internalID: -1710034049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ab93f83703796b468fc4d964da1e50a
+      internalID: -1318377785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbea38e9caa8da94fb8519364695b395
+      internalID: -937851048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f8
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d28704928af61049972abbf53df1c63
+      internalID: 534266479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d6_f9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 32
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a66206bf92dd4340b3b2a115f5d63fd
+      internalID: -260949796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4032a6a968821d47a811098ce7a2dd9
+      internalID: 1705775341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40e28740e673ce845965f777a81e6538
+      internalID: -1094146223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a85a84d7ea821b499200aea6eb3f9f0
+      internalID: 521320730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8bc63709ec99a94094d77bf9114586b
+      internalID: 1441002515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97e1033b32cbce64ab0c57838220ed1a
+      internalID: 665287116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 339ce035172915c4fa385aa58f588a9d
+      internalID: 1168473845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac5bb1bc59ab76946888ee2f7d6e72ad
+      internalID: -971626914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ce0ae9b97da3ed439389670fb17f2c8
+      internalID: -1146011653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 592504a74f71f1f4d8df319dd6a48c1e
+      internalID: -1473991471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pidgey_Charge_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 536dbde6681604c4eb957b48ef422708
+      internalID: -2132965745
       vertices: []
       indices: 
       edges: []
@@ -1988,7 +2098,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b342831c5a469e341a167beedc777f82
     internalID: 0
     vertices: []
     indices: 
@@ -1998,81 +2108,86 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Charge-Anim_0: 6050529143683612738
-      Charge-Anim_1: -2357100763812894843
-      Charge-Anim_10: -8472261237579189880
-      Charge-Anim_11: -7997949317640704328
-      Charge-Anim_12: 637892273005781557
-      Charge-Anim_13: 7328166014730791356
-      Charge-Anim_14: 2043534165584438127
-      Charge-Anim_15: 6519860158953654020
-      Charge-Anim_16: -8286524129662226000
-      Charge-Anim_17: -6329149814214907545
-      Charge-Anim_18: 110357724241910979
-      Charge-Anim_19: 7081564194025372345
-      Charge-Anim_2: 8152229948684771505
-      Charge-Anim_20: 1949544128343434919
-      Charge-Anim_21: -6854949173307895630
-      Charge-Anim_22: -3223036334843169251
-      Charge-Anim_23: -4464564434884042044
-      Charge-Anim_24: -6870119060040109155
-      Charge-Anim_25: -7579296505983312416
-      Charge-Anim_26: -4716742679352601975
-      Charge-Anim_27: 731518294201960140
-      Charge-Anim_28: 7233259638323983491
-      Charge-Anim_29: -8972251056356714744
-      Charge-Anim_3: -5498895372622810865
-      Charge-Anim_30: -3710517951472963436
-      Charge-Anim_31: 2803605974464117261
-      Charge-Anim_32: 3991568989005358776
-      Charge-Anim_33: -1652145435502157489
-      Charge-Anim_34: 6963124244906515467
-      Charge-Anim_35: -5527510091005994261
-      Charge-Anim_36: -5479332188940304660
-      Charge-Anim_37: 8033632287978440583
-      Charge-Anim_38: -1350473415671011457
-      Charge-Anim_39: 8060061570860006029
-      Charge-Anim_4: 4102630024138401424
-      Charge-Anim_40: 4322497503540132362
-      Charge-Anim_41: -5000351395835975364
-      Charge-Anim_42: 2665262118282353995
-      Charge-Anim_43: -3868295197434649110
-      Charge-Anim_44: -7599381376304422903
-      Charge-Anim_45: -1926414861878274786
-      Charge-Anim_46: -6594580997225932311
-      Charge-Anim_47: 2496817212678278249
-      Charge-Anim_48: 6009522419948492051
-      Charge-Anim_49: 261731035207971877
-      Charge-Anim_5: 3533404864906406384
-      Charge-Anim_50: -3872278074517768287
-      Charge-Anim_51: 6482067907196327375
-      Charge-Anim_52: -6243657174092258361
-      Charge-Anim_53: -8479456078847919102
-      Charge-Anim_54: 1375768434337387261
-      Charge-Anim_55: 5832808809592506135
-      Charge-Anim_56: -2890643387667226388
-      Charge-Anim_57: -9176652042239030356
-      Charge-Anim_58: -8261108690955609768
-      Charge-Anim_59: -3313551964446036186
-      Charge-Anim_6: 8809005069367673986
-      Charge-Anim_60: 8635753170733425026
-      Charge-Anim_61: -8169900340020313659
-      Charge-Anim_62: -2532238961745529192
-      Charge-Anim_63: -6437024543306890308
-      Charge-Anim_64: 8388767493827505933
-      Charge-Anim_65: 3235111680420643803
-      Charge-Anim_66: -2677900758457711753
-      Charge-Anim_67: 140514489579917200
-      Charge-Anim_68: 6807847869741378983
-      Charge-Anim_69: -7678698017119030659
-      Charge-Anim_7: 3360677501042403925
-      Charge-Anim_70: 6443230640231684728
-      Charge-Anim_71: -5213470741526082059
-      Charge-Anim_72: -3705694936315758328
-      Charge-Anim_73: 6189986472420065137
-      Charge-Anim_74: -4604413696322986304
-      Charge-Anim_8: 1357863980756995609
-      Charge-Anim_9: -2687928927010985954
+      pidgey_Charge_d0_f0: -616993965
+      pidgey_Charge_d0_f1: 38278539
+      pidgey_Charge_d0_f2: -753807610
+      pidgey_Charge_d0_f3: -1698047842
+      pidgey_Charge_d0_f4: -653022617
+      pidgey_Charge_d0_f5: 1682110227
+      pidgey_Charge_d0_f6: -1776300914
+      pidgey_Charge_d0_f7: 1021289713
+      pidgey_Charge_d0_f8: -1424188072
+      pidgey_Charge_d0_f9: 739830609
+      pidgey_Charge_d1_f0: 1253290768
+      pidgey_Charge_d1_f1: 792122090
+      pidgey_Charge_d1_f2: 1388496841
+      pidgey_Charge_d1_f3: -2076605433
+      pidgey_Charge_d1_f4: -494724809
+      pidgey_Charge_d1_f5: 1365396818
+      pidgey_Charge_d1_f6: 1778975018
+      pidgey_Charge_d1_f7: 1404378812
+      pidgey_Charge_d1_f8: 929361617
+      pidgey_Charge_d1_f9: -180279860
+      pidgey_Charge_d2_f0: 776724096
+      pidgey_Charge_d2_f1: 601605516
+      pidgey_Charge_d2_f2: -1784645116
+      pidgey_Charge_d2_f3: 272118950
+      pidgey_Charge_d2_f4: 1741864443
+      pidgey_Charge_d2_f5: -2136464633
+      pidgey_Charge_d2_f6: -1910594221
+      pidgey_Charge_d2_f7: -1887506782
+      pidgey_Charge_d2_f8: 1199672725
+      pidgey_Charge_d2_f9: 1877334005
+      pidgey_Charge_d3_f0: 1454326899
+      pidgey_Charge_d3_f1: -631856882
+      pidgey_Charge_d3_f2: 1597125133
+      pidgey_Charge_d3_f3: -1269431756
+      pidgey_Charge_d3_f4: 1501747502
+      pidgey_Charge_d3_f5: 1521998
+      pidgey_Charge_d3_f6: -2063583916
+      pidgey_Charge_d3_f7: 1526234865
+      pidgey_Charge_d3_f8: 1197296443
+      pidgey_Charge_d3_f9: -1751991242
+      pidgey_Charge_d4_f0: 1834600270
+      pidgey_Charge_d4_f1: 636754766
+      pidgey_Charge_d4_f2: -2145948632
+      pidgey_Charge_d4_f3: 1540755799
+      pidgey_Charge_d4_f4: 312448817
+      pidgey_Charge_d4_f5: 1013493867
+      pidgey_Charge_d4_f6: -1803589125
+      pidgey_Charge_d4_f7: -1324839145
+      pidgey_Charge_d4_f8: -1556482690
+      pidgey_Charge_d4_f9: 1769150822
+      pidgey_Charge_d5_f0: 717484903
+      pidgey_Charge_d5_f1: -47042115
+      pidgey_Charge_d5_f2: 81836577
+      pidgey_Charge_d5_f3: 498483650
+      pidgey_Charge_d5_f4: 695052729
+      pidgey_Charge_d5_f5: 1951264767
+      pidgey_Charge_d5_f6: -1767825866
+      pidgey_Charge_d5_f7: -1625142922
+      pidgey_Charge_d5_f8: -762950249
+      pidgey_Charge_d5_f9: -580071758
+      pidgey_Charge_d6_f0: 274377444
+      pidgey_Charge_d6_f1: 1806195626
+      pidgey_Charge_d6_f2: -849018679
+      pidgey_Charge_d6_f3: 808061308
+      pidgey_Charge_d6_f4: 1914673971
+      pidgey_Charge_d6_f5: -1710034049
+      pidgey_Charge_d6_f6: -1318377785
+      pidgey_Charge_d6_f7: -937851048
+      pidgey_Charge_d6_f8: 534266479
+      pidgey_Charge_d6_f9: -260949796
+      pidgey_Charge_d7_f0: 1705775341
+      pidgey_Charge_d7_f1: -1094146223
+      pidgey_Charge_d7_f2: 521320730
+      pidgey_Charge_d7_f3: 1441002515
+      pidgey_Charge_d7_f4: 665287116
+      pidgey_Charge_d7_f5: 1168473845
+      pidgey_Charge_d7_f6: -971626914
+      pidgey_Charge_d7_f7: -1146011653
+      pidgey_Charge_d7_f8: -1473991471
+      pidgey_Charge_d7_f9: -2132965745
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

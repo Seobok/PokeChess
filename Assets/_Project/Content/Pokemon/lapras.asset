@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: lapras
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: lapras
+  DisplayName: Lapras
+  LocalizedName: "\uB77C\uD504\uB77C\uC2A4"
+  RoleId: melee-dps
+  Cost: 5
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1650
+    Attack: 92
+    SpellPower: 100
+    AttackSpeed: 0.69
+    Armor: 60
+    MagicResistance: 65
+    AttackRange: 3
+    MoveSpeed: 2
+    MaxEnergy: 125
+    StartingEnergy: 40
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1650
+  - 2805
+  - 4785
+  RankAttack:
+  - 92
+  - 120
+  - 156
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 7801d0dc7a26279429b009f9c96a8d95, type: 2}
+  Visual: {fileID: 11400000, guid: 7cfe310fb33706a409d04960d289897b, type: 2}
+  Evolutions: []

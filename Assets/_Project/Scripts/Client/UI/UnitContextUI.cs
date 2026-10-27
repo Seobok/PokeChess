@@ -80,7 +80,7 @@ namespace PokeChess.Client.UI
             if(selected==null&&fighter!=null){var d=catalog.Get(fighter.DefinitionId);RenderUnitInfoIcons(d,fighter.Rank,fighter.Stats,fighter.CurrentHP,fighter.Stats.MaxHP,fighter.CurrentEnergy,fighter.Stats.MaxEnergy,fighter.CurrentShield,fighter.ItemInstanceIds.ToArray());sellButton.interactable=false;ButtonText(sellButton,"판매 불가");return;}
             if(selected==null){selectedUnitId=null;RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
             var definition=catalog.Get(selected.DefinitionId);var rank=selected.Rank;
-            var stats=RankRules.Default.Apply(definition.BaseStats,rank);
+            var stats=RankRules.Default.Apply(definition,rank);
 
             if(fighter!=null){rank=fighter.Rank;stats=fighter.Stats;}
             string vitals=fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.CurrentHP)+" / "+Number(stats.MaxHP)+" · Shield "+Number(fighter.CurrentShield);

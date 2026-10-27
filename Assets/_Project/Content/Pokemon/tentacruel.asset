@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: tentacruel
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: tentacruel
+  DisplayName: Tentacruel
+  LocalizedName: "\uB3C5\uD30C\uB9AC"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 890
+    Attack: 58
+    SpellPower: 100
+    AttackSpeed: 0.63
+    Armor: 38
+    MagicResistance: 45
+    AttackRange: 2
+    MoveSpeed: 2
+    MaxEnergy: 95
+    StartingEnergy: 25
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 890
+  - 1513
+  - 2581
+  RankAttack:
+  - 58
+  - 75
+  - 99
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: f5cea5875c3eb7341bbc4e0fad6704a9, type: 2}
+  Visual: {fileID: 11400000, guid: 353b90f20167edf4a80d25a1f2fbd9a7, type: 2}
+  Evolutions: []

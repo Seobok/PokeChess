@@ -94,7 +94,7 @@ namespace PokeChess.Client.UI
                 return;
             }
             var option = d.Evolutions[0]; var target = catalog.Get(option.TargetDefinitionId);
-            var before = RankRules.Default.Apply(d.BaseStats,rank); var after = RankRules.Default.Apply(target.BaseStats,rank);
+            var before = RankRules.Default.Apply(d,rank); var after = RankRules.Default.Apply(target,rank);
             evolveButton.interactable = allowed && points >= option.EvolutionPointCost;
             ButtonText(evolveButton,"진화 / " + option.EvolutionPointCost + " EP");
             evolutionHint.text = KoreanInfo(id)+" → "+KoreanInfo(target.Id)+"\n체력 "+Number(before.MaxHP)+" → "+Number(after.MaxHP)+

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: arcanine
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: arcanine
+  DisplayName: Arcanine
+  LocalizedName: "\uC708\uB514"
+  RoleId: melee-dps
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1250
+    Attack: 102
+    SpellPower: 100
+    AttackSpeed: 0.82
+    Armor: 42
+    MagicResistance: 44
+    AttackRange: 3
+    MoveSpeed: 2
+    MaxEnergy: 130
+    StartingEnergy: 35
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1250
+  - 2125
+  - 3625
+  RankAttack:
+  - 102
+  - 133
+  - 173
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 5fa4fab23ecc5d747b55a8143b00adcb, type: 2}
+  Visual: {fileID: 11400000, guid: cc5bec81ebf763542abaa42b49d9befa, type: 2}
+  Evolutions: []

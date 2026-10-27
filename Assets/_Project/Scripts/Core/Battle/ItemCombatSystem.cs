@@ -82,7 +82,7 @@ namespace PokeChess.Core.Battle
         }
         private void Heal(UnitCombatState u,float amount,string item)
         {
-            float before=u.CurrentHP;u.SetVitals(Math.Min(u.Stats.MaxHP,before+amount),u.CurrentEnergy);
+            float before=u.CurrentHP;battle.Healing.Apply(u,amount,false);
             if(u.CurrentHP>before)Emit(item,u,u,u.CurrentHP-before);
         }
         private void Emit(string item,UnitCombatState source,UnitCombatState target,float value)

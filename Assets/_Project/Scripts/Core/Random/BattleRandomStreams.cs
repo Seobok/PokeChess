@@ -38,8 +38,12 @@ namespace PokeChess.Core.Random
         public DeterministicRandom Critical { get; }
         public DeterministicRandom Skill { get; }
         public DeterministicRandom Item { get; }
+        public DeterministicRandom Hit { get; }
+        public DeterministicRandom Status { get; }
         public BattleRandomStreams(ulong battleSeed)
         {
+            Hit=new DeterministicRandom(DeterministicRandom.Mix(battleSeed ^ 0x4849540000000001UL));
+            Status=new DeterministicRandom(DeterministicRandom.Mix(battleSeed ^ 0x5354415455530001UL));
             Target = new DeterministicRandom(DeterministicRandom.Mix(battleSeed ^ 0x5441524745540001UL));
             Critical = new DeterministicRandom(DeterministicRandom.Mix(battleSeed ^ 0x4352495449430001UL));
             Skill = new DeterministicRandom(DeterministicRandom.Mix(battleSeed ^ 0x534B494C4C000001UL));

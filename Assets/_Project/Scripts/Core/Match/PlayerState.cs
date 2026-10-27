@@ -153,6 +153,9 @@ namespace PokeChess.Core.Match
         internal void ApplyRankUp(RankUpPlan plan,long revision)
         {
             var survivors=new HashSet<UnitInstance>(plan.Final.Select(n=>n.Unit));
+            var progress=plan.Final.Select(n=>new {n.Unit,Stacks=n.Originals.Sum(u=>u.BountyStacks)}).ToArray();
+            int bountyGold=progress.Sum(p=>p.Stacks/5);int nextGold=checked(Gold+bountyGold);
+            foreach(var p in progress)p.Unit.SetBountyStacks(p.Stacks);Gold=nextGold;
             foreach(var unit in plan.Events.SelectMany(e=>e.ConsumedUnitIds)
                 .Select(id=>plan.Before.FirstOrDefault(u=>u.InstanceId==id)).Where(u=>u!=null))
             {
@@ -306,7 +309,7 @@ namespace PokeChess.Core.Match
         {
             var unit = GetUnit(instanceId);
             long revision = checked(PlacementRevision + 1);
-            units.Remove(unit);
+            units.Remove(unit);unit.SetBountyStacks(0);
             unit.SetPlacementValidation(null);
             unit.SetPlacement(UnitPlacement.Unplaced);
             PlacementRevision = revision;

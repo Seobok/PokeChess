@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: nidoran-f
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: nidoran-f
+  DisplayName: Nidoran-f
+  LocalizedName: "\uB2C8\uB4DC\uB7F0\u2640"
+  RoleId: melee-dps
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1030
+    Attack: 75
+    SpellPower: 100
+    AttackSpeed: 0.72
+    Armor: 42
+    MagicResistance: 39
+    AttackRange: 2
+    MoveSpeed: 2
+    MaxEnergy: 75
+    StartingEnergy: 15
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1030
+  - 1751
+  - 2987
+  RankAttack:
+  - 75
+  - 98
+  - 128
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: c666763a6d31e594db422f63160155d1, type: 2}
+  Visual: {fileID: 11400000, guid: dbb22b7b8943de443836e3be65a0a96d, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: 3be029df9fa1c444b90c65ca568e29d1, type: 2}
+    PointCost: 1

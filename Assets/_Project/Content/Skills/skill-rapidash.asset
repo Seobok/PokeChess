@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-rapidash
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-rapidash
+  DisplayName: "\uD68C\uC624\uB9AC\uBD88\uAF43"
+  VariantIds:
+  - skill-rapidash-r1
+  - skill-rapidash-r2
+  - skill-rapidash-r3
+  VariantMode: 1
+  Description: "\uC801 \uC704\uCE58\uC5D0 3\uCD08\uAC04 \uBC18\uACBD 1/1/2\uCE78\uC758
+    \uBD88\uAF43 \uC18C\uC6A9\uB3CC\uC774\uB97C \uC0DD\uC131\uD574 \uB9E4\uCD08 40/60/80\uC758
+    \uD2B9\uC218 \uD53C\uD574\uB97C \uC8FC\uACE0 \uC774\uB3D9\uC18D\uB3C4\uB97C 30%\uAC10\uC18C\uC2DC\uD0A8\uB2E4."
+  Notes: 
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

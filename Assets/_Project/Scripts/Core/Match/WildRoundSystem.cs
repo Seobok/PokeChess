@@ -43,7 +43,7 @@ namespace PokeChess.Core.Match
             return BattleStateFactory.Create(match.MatchId+"-wild-"+round+"-"+player.PlayerId,round,
                 unchecked(match.MatchSeed^(ulong)round*0x9E3779B97F4A7C15UL),tickRate,catalog,allies.Concat(enemies),
                 (unit,definition)=>{
-                    var s=RankRules.Default.Apply(definition.BaseStats,unit.Rank);
+                    var s=RankRules.Default.Apply(definition,unit.Rank);
                     if(unit.OwnerPlayerId==player.PlayerId)return s;
                     float scale=round<=3?.15f+(round-1)*.025f: .65f+(round-9)*.025f;
                     return new PokemonStats(s.MaxHP*scale,s.Attack*scale,s.SpellPower,s.AttackSpeed,

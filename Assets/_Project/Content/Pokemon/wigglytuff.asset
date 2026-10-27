@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: wigglytuff
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: wigglytuff
+  DisplayName: Wigglytuff
+  LocalizedName: "\uD478\uD06C\uB9B0"
+  RoleId: melee-dps
+  Cost: 2
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1080
+    Attack: 62
+    SpellPower: 100
+    AttackSpeed: 0.66
+    Armor: 40
+    MagicResistance: 40
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 85
+    StartingEnergy: 10
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1080
+  - 1836
+  - 3132
+  RankAttack:
+  - 62
+  - 81
+  - 105
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: d5e4c414c881aac48890ad5207efcda9, type: 2}
+  Visual: {fileID: 11400000, guid: 501e163bce83a7a46bc56437495c91c8, type: 2}
+  Evolutions: []

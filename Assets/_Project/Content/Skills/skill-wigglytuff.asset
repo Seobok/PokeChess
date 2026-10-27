@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-wigglytuff
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-wigglytuff
+  DisplayName: "\uC5F0\uC18D\uBEA8\uCE58\uAE30"
+  VariantIds:
+  - skill-wigglytuff-r1
+  - skill-wigglytuff-r2
+  - skill-wigglytuff-r3
+  VariantMode: 1
+  Description: "\uC801\uC744 3~5\uD68C \uACF5\uACA9\uD574 \uD0C0\uACA9\uB2F9 25/40/55\uC758
+    \uBB3C\uB9AC \uD53C\uD574\uB97C \uC8FC\uACE0 \uB9C8\uC9C0\uB9C9 \uD0C0\uACA9\uC5D0
+    1\uCE78 \uB109\uBC31\uC744 \uBD80\uC5EC\uD55C\uB2E4."
+  Notes: "\uACF5\uACA9 \uAC04\uACA9\uC740 0.2\uCD08"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

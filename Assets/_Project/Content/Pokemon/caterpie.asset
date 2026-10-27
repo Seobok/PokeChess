@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Caterpie
   LocalizedName: "\uCE90\uD130\uD53C"
   RoleId: utility
-  Cost: 2
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 550
-    Attack: 35
-    SpellPower: 0
-    AttackSpeed: 0.6
+    MaxHP: 530
+    Attack: 42
+    SpellPower: 100
+    AttackSpeed: 0.65
     Armor: 20
     MagicResistance: 20
     AttackRange: 2
     MoveSpeed: 2
-    MaxEnergy: 60
-    StartingEnergy: 20
+    MaxEnergy: 70
+    StartingEnergy: 10
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 530
+  - 901
+  - 1537
+  RankAttack:
+  - 42
+  - 55
+  - 71
   TypeIds:
   - bug
   TraitIds:
   - focus
   - link
-  Skill: {fileID: 11400000, guid: 696ba0f78535ea247892a72916f67dca, type: 2}
+  Skill: {fileID: 11400000, guid: 0281cae628909e34583ffd3ac00d4c2f, type: 2}
   Visual: {fileID: 11400000, guid: d3cb721a514697f4a92de0e2fc8e9af4, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 40d33c71a2222bc40b917339fa6c8448, type: 2}

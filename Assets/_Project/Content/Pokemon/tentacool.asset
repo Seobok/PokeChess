@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: tentacool
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: tentacool
+  DisplayName: Tentacool
+  LocalizedName: "\uC655\uB208\uD574"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 600
+    Attack: 43
+    SpellPower: 100
+    AttackSpeed: 0.65
+    Armor: 22
+    MagicResistance: 35
+    AttackRange: 3
+    MoveSpeed: 2
+    MaxEnergy: 65
+    StartingEnergy: 10
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 600
+  - 1020
+  - 1740
+  RankAttack:
+  - 43
+  - 56
+  - 73
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 3cdd638b4ef510b43b7132604540618a, type: 2}
+  Visual: {fileID: 11400000, guid: bbad58c89367ad84eb363e57105544ed, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: cf416d6f496c8fb4e80372971e949f6b, type: 2}
+    PointCost: 1

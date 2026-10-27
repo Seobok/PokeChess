@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: onix
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: onix
+  DisplayName: Onix
+  LocalizedName: "\uB871\uC2A4\uD1A4"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1050
+    Attack: 48
+    SpellPower: 100
+    AttackSpeed: 0.6
+    Armor: 55
+    MagicResistance: 24
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 85
+    StartingEnergy: 25
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1050
+  - 1785
+  - 3045
+  RankAttack:
+  - 48
+  - 62
+  - 82
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: d9a4627e3eaf31145bf1fabb72a5a6d9, type: 2}
+  Visual: {fileID: 11400000, guid: acd7818caeab69043a65014aabc29b36, type: 2}
+  Evolutions: []

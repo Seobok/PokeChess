@@ -16,28 +16,38 @@ MonoBehaviour:
   DisplayName: Chansey
   LocalizedName: "\uB7ED\uD0A4"
   RoleId: support
-  Cost: 1
+  Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 600
-    Attack: 40
-    SpellPower: 0
-    AttackSpeed: 0.65
-    Armor: 20
-    MagicResistance: 20
-    AttackRange: 2
+    MaxHP: 1700
+    Attack: 45
+    SpellPower: 100
+    AttackSpeed: 0.55
+    Armor: 25
+    MagicResistance: 57
+    AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 90
-    StartingEnergy: 50
+    MaxEnergy: 125
+    StartingEnergy: 45
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1700
+  - 2890
+  - 4930
+  RankAttack:
+  - 45
+  - 59
+  - 77
   TypeIds:
   - normal
   TraitIds:
   - link
-  Skill: {fileID: 11400000, guid: b3f7427b7bec6af4fb96c37fde2a9934, type: 2}
+  Skill: {fileID: 11400000, guid: d2bd97d33fdc2324897a5250181d99cb, type: 2}
   Visual: {fileID: 11400000, guid: 4bf62572cbccaca42abbf7ec67e1fd19, type: 2}
   Evolutions: []

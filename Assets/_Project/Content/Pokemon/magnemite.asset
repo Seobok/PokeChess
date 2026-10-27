@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Magnemite
   LocalizedName: "\uCF54\uC77C"
   RoleId: ranged-dps
-  Cost: 3
+  Cost: 2
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 650
-    Attack: 70
-    SpellPower: 0
-    AttackSpeed: 0.7
-    Armor: 25
-    MagicResistance: 20
-    AttackRange: 4
+    MaxHP: 800
+    Attack: 50
+    SpellPower: 100
+    AttackSpeed: 0.6
+    Armor: 35
+    MagicResistance: 40
+    AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 80
-    StartingEnergy: 0
+    MaxEnergy: 95
+    StartingEnergy: 25
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 800
+  - 1360
+  - 2320
+  RankAttack:
+  - 50
+  - 65
+  - 85
   TypeIds:
   - electric
   - steel
   TraitIds:
   - focus
-  Skill: {fileID: 11400000, guid: 532b8da8ef808a6458555f905667d6e5, type: 2}
+  Skill: {fileID: 11400000, guid: 82e745af09125d048b51772ba8f9ac1b, type: 2}
   Visual: {fileID: 11400000, guid: 7c229f501d2202a458fb6e5e00adba75, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 8bb035f4445af1d409b558b0445a119c, type: 2}

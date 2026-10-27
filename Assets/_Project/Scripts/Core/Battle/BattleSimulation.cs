@@ -16,9 +16,10 @@ namespace PokeChess.Core.Battle
         private readonly List<CombatActionSignal> signals = new List<CombatActionSignal>();
         private readonly List<Action> scheduledAttacks = new List<Action>();
         private bool stepping;
+        private long nextCastId;
         private readonly HashSet<string> reportedDeaths = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> skillInterrupts = new HashSet<string>(StringComparer.Ordinal);
-        public MovementReservations Reservations { get; } = new MovementReservations();
+        public MovementReservations Reservations => battle.Movement.Reservations;
         public BattleSimulation(BattleState battle, CombatBehaviorPolicy policy = null, SkillCatalog skillCatalog = null, ISkillEffectExecutor skillExecutor = null, StatusCatalog statusCatalog = null)
         {
             this.battle=battle??throw new ArgumentNullException(nameof(battle));
@@ -30,25 +31,42 @@ namespace PokeChess.Core.Battle
             actions=ordered.ToDictionary(u=>u.UnitInstanceId,u=>new UnitActionRuntime(u.UnitInstanceId),StringComparer.Ordinal);
             if(statusCatalog!=null)battle.StatusEffects.UseCatalog(statusCatalog);
             battle.StatusEffects.Changed += OnStatusChanged;
+            battle.Movement.Relocating += OnRelocating;
+            battle.Movement.TravelInterrupted += unit=>{
+                var runtime=actions[unit.UnitInstanceId];
+                if(runtime.IsSkillActive){if(runtime.SkillCast!=null)runtime.SkillCast.CancelReason=SkillCancelReason.Interrupted;Finish(unit,runtime,true);}
+            };
             battle.HasSimulation=true;
             battle.Synergies.Initialize();
         }
         private bool CanMove(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
-            !u.HasCrowdControl(CrowdControlKind.Root)&&policy.CanMove(battle,u);
+            !u.HasCrowdControl(CrowdControlKind.Root)&&!battle.StatusEffects.BlocksMovement(u)&&policy.CanMove(battle,u);
         private bool CanAttack(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
-            !u.HasCrowdControl(CrowdControlKind.Disarm)&&policy.CanAttack(battle,u);
+            !u.HasCrowdControl(CrowdControlKind.Disarm)&&!battle.StatusEffects.BlocksAttacks(u)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanAttack(battle,u);
         private bool CanUseSkill(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
-            !u.HasCrowdControl(CrowdControlKind.Silence)&&policy.CanUseSkill(battle,u);
+            !u.HasCrowdControl(CrowdControlKind.Silence)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanUseSkill(battle,u);
+        private void OnRelocating(UnitCombatState unit,bool forced)
+        {
+            var runtime=actions[unit.UnitInstanceId];
+            if(unit.ActionState==CombatActionState.Moving||unit.ActionState==CombatActionState.Attacking||
+                forced&&runtime.IsSkillActive&&(runtime.SkillCast==null||runtime.SkillCast.Definition.Interruptible)) {
+                if(runtime.SkillCast!=null&&runtime.IsSkillActive)runtime.SkillCast.CancelReason=SkillCancelReason.Interrupted;
+                Finish(unit,runtime,true);
+            }
+            runtime.IsAttackTargetLocked=false;runtime.MovementTargetId=null;runtime.MoveDestination=null;
+            Reservations.Release(unit.UnitInstanceId);
+        }
         private void OnStatusChanged(UnitCombatState u)
         {
             if(!u.IsAlive||!u.IsOnBoard)return;
-            var runtime=actions[u.UnitInstanceId];bool stun=u.HasCrowdControl(CrowdControlKind.Stun);
-            if(u.ActionState==CombatActionState.Moving&&(stun||u.HasCrowdControl(CrowdControlKind.Root)))
+            var runtime=actions[u.UnitInstanceId];bool stun=u.HasCrowdControl(CrowdControlKind.Stun)||battle.StatusEffects.BlocksActions(u);
+            if(u.ActionState==CombatActionState.Moving&&(stun||u.HasCrowdControl(CrowdControlKind.Root)||battle.StatusEffects.BlocksMovement(u)))
                 Finish(u,runtime,true);
             else if(u.ActionState==CombatActionState.Attacking&&(stun||
                 (!runtime.EffectApplied&&u.HasCrowdControl(CrowdControlKind.Disarm))))
                 Finish(u,runtime,true);
-            else if(runtime.IsSkillActive&&stun&&(runtime.SkillCast==null||runtime.SkillCast.Definition.Interruptible)) {
+            else if(runtime.IsSkillActive&&(u.HasCrowdControl(CrowdControlKind.Stun)||battle.StatusEffects.HasBehavior(u,StatusBehavior.Sleep)||
+                battle.StatusEffects.HasBehavior(u,StatusBehavior.Freeze))&&(runtime.SkillCast==null||runtime.SkillCast.Definition.Interruptible)) {
                 if(runtime.SkillCast!=null)runtime.SkillCast.CancelReason=SkillCancelReason.Interrupted;
                 Finish(u,runtime,true);
             }
@@ -56,7 +74,11 @@ namespace PokeChess.Core.Battle
         public void QueueSkillInterrupt(string unitId)
         {
             if(unitId==null||!units.ContainsKey(unitId))throw new ArgumentException(nameof(unitId));
-            QueueInput(_=>{if(actions[unitId].IsSkillActive)skillInterrupts.Add(unitId);});
+            QueueInput(_=>{if(actions[unitId].IsSkillActive) {
+                var runtime=actions[unitId];
+                if(runtime.SkillCast==null||runtime.SkillCast.Definition.Interruptible)battle.Movement.Cancel(units[unitId]);
+                skillInterrupts.Add(unitId);
+            }});
         }
         public UnitActionRuntime GetRuntime(string unitId)=>actions[unitId];
         // Host-validated simulation input hook; not a network command validation API.
@@ -82,11 +104,15 @@ namespace PokeChess.Core.Battle
                 battle.BeginLifecycleTick();
                 battle.BeginDamageTick();
                 battle.BeginSkillTick();
+                battle.SkillTimeline.BeginTick();
                 battle.Synergies.BeginTick();
                 battle.StatusEffects.BeginTick();
                 battle.Energy.BeginTick();
                 battle.Items.BeginTick();
                 battle.Projectiles.BeginTick();
+                battle.PathProjectiles.BeginTick();
+                battle.Movement.BeginTick();
+                battle.Shields.BeginTick();
                 CleanupUnavailable();
                 if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
                 if(!battle.IsOvertime&&battle.CurrentTick>=battle.OvertimeStartTick) {
@@ -97,13 +123,28 @@ namespace PokeChess.Core.Battle
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
                 CleanupUnavailable();
                 if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
+                battle.StatusEffects.Advance();battle.WorldEffects.AdvanceGrounds();
+                CleanupUnavailable();if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
+                battle.Movement.Advance();
                 foreach(var unit in ordered)
                 {
                     if(!unit.IsAlive||!unit.IsOnBoard)continue;
+                    if(battle.StatusEffects.BlocksActions(unit)) {
+                        var held=actions[unit.UnitInstanceId];
+                        bool resting=battle.StatusEffects.HasBehavior(unit,StatusBehavior.RestSleep)&&
+                            !battle.StatusEffects.HasBehavior(unit,StatusBehavior.Sleep)&&!battle.StatusEffects.HasBehavior(unit,StatusBehavior.Freeze);
+                        if(!resting&&held.IsSkillActive&&held.SkillCast!=null&&!held.SkillCast.Definition.Interruptible) {
+                            held.SkillCast.PausedTicks=checked(held.SkillCast.PausedTicks+1);held.SkillCast.EndTick=checked(held.SkillCast.EndTick+1);
+                            held.SkillCast.EffectTick=checked(held.SkillCast.EffectTick+1);held.EndTick=checked(held.EndTick+1);held.EffectTick=checked(held.EffectTick+1);
+                        }
+                        if(!resting||unit.ActionState!=CombatActionState.Casting)continue;
+                    }
+                    if(battle.Movement.IsTravelling(unit)&&!(unit.ActionState==CombatActionState.Casting&&actions[unit.UnitInstanceId].SkillCast?.Definition.Interruptible==false))continue;
                     var runtime=actions[unit.UnitInstanceId];
                     if(unit.ActionState==CombatActionState.Idle) Decide(unit,runtime);
                     else Advance(unit,runtime);
                 }
+                battle.SkillTimeline.Advance();
                 // All attacks due this tick are selected before any basic attack can kill.
                 // Keep participants available until melee hits and arriving projectiles resolve.
                 foreach(var unit in ordered)unit.BeginSimultaneousAttacks();
@@ -111,6 +152,7 @@ namespace PokeChess.Core.Battle
                 {
                     foreach(var attack in scheduledAttacks)attack();
                     policy.OnProjectilesTiming(battle);
+                    battle.PathProjectiles.Advance();battle.WorldEffects.AdvanceChains();
                 }
                 finally
                 {
@@ -136,6 +178,7 @@ namespace PokeChess.Core.Battle
             foreach(var unit in ordered)
                 if(!unit.IsAlive||!unit.IsOnBoard)
                 {
+                    battle.Movement.Cancel(unit);
                     if(!unit.IsAlive&&reportedDeaths.Add(unit.UnitInstanceId)) {
                         var reason=unit.DeathCause;
                         battle.RecordLifecycle(new BattleLifecycleEvent(BattleLifecycleEventKind.UnitDied,battle.CurrentTick,unit.UnitInstanceId,reason));
@@ -166,7 +209,7 @@ namespace PokeChess.Core.Battle
                 r.IsAttackTargetLocked=false;r.MovementTargetId=null;
                 u.ActionState=u.IsAlive&&u.IsOnBoard?CombatActionState.Idle:CombatActionState.Dead;
             }
-            battle.StatusEffects.Cleanup();battle.Projectiles.EndBattle();inputs.Clear();skillInterrupts.Clear();
+            battle.StatusEffects.Cleanup();battle.Projectiles.EndBattle();battle.SkillTimeline.EndBattle();battle.Movement.EndBattle();battle.PathProjectiles.EndBattle();battle.WorldEffects.EndBattle();inputs.Clear();skillInterrupts.Clear();
             battle.Result=result;battle.EndReason=reason;battle.EndTick=battle.CurrentTick;
             battle.RecordLifecycle(new BattleLifecycleEvent(BattleLifecycleEventKind.BattleEnded,battle.CurrentTick,result:result,endReason:reason));
             return true;
@@ -182,7 +225,7 @@ namespace PokeChess.Core.Battle
             var target=Target(unit);
             var forced=ForcedTarget(unit);
             bool retain=runtime.IsAttackTargetLocked && target!=null &&
-                HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange);
+                HexCoordinates.IsInRange(unit.Position,target.Position,unit.StatusSystem.AttackRange(unit));
             if(forced!=null && (target==null || forced.UnitInstanceId!=target.UnitInstanceId))retain=false;
             if(!retain)
             {
@@ -205,7 +248,7 @@ namespace PokeChess.Core.Battle
                 if(unit.IsAlive&&unit.IsOnBoard)Advance(unit,runtime);
                 return;
             }
-            if(HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange))
+            if(HexCoordinates.IsInRange(unit.Position,target.Position,unit.StatusSystem.AttackRange(unit)))
             {
                 if(CanAttack(unit) && battle.CurrentTick>=runtime.NextAttackTick)
                 {
@@ -216,7 +259,7 @@ namespace PokeChess.Core.Battle
             }
             if(!CanMove(unit))return;
             var path=AttackPositionFinder.FindPosition(Reservations.Overlay(battle.Board),unit.UnitInstanceId,
-                target.UnitInstanceId,unit.Stats.AttackRange);
+                target.UnitInstanceId,unit.StatusSystem.AttackRange(unit));
             if(path.Status!=PathSearchStatus.PathFound)return;
             var next=path.Path[1];
             if(!Reservations.TryReserve(unit.UnitInstanceId,next))return;
@@ -228,7 +271,7 @@ namespace PokeChess.Core.Battle
         private UnitCombatState SkillTarget(UnitCombatState unit,SkillDefinition skill,string id)
         {
             if(skill.TargetRule==SkillTargetRule.Self)return unit.IsAlive&&unit.IsOnBoard?unit:null;
-            if(skill.TargetRule==SkillTargetRule.LowestHPAlly)
+            if(skill.TargetRule==SkillTargetRule.LowestHPAlly||skill.TargetRule==SkillTargetRule.NearestAlly)
                 return id!=null&&units.TryGetValue(id,out var ally)&&ally.TeamId==unit.TeamId&&ally.IsAlive&&ally.IsOnBoard ? ally : null;
             if(id==null||!units.TryGetValue(id,out var target)||target.TeamId==unit.TeamId||!target.IsTargetable||!policy.IsTargetable(target))return null;
             return target;
@@ -241,22 +284,46 @@ namespace PokeChess.Core.Battle
                     .OrderBy(t=>(double)t.CurrentHP/t.Stats.MaxHP)
                     .ThenByDescending(t=>(double)t.Stats.MaxHP-t.CurrentHP)
                     .ThenBy(t=>t.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();
+            if(skill.TargetRule==SkillTargetRule.NearestAlly)
+                return ordered.Where(t=>t!=unit&&t.TeamId==unit.TeamId&&t.IsAlive&&t.IsOnBoard&&(!checkRange||HexCoordinates.Distance(unit.Position,t.Position)<=skill.Range))
+                    .OrderBy(t=>HexCoordinates.Distance(unit.Position,t.Position)).ThenBy(t=>t.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();
+            if(skill.TargetRule==SkillTargetRule.FarthestEnemy)
+                return SkillSpatialSelector.Farthest(battle,unit,checkRange?skill.Range:56,policy.IsTargetable);
             // Restrict candidates before distance/center/RNG selection.
             var id=CombatTargetSelector.Select(battle,unit,
                 t=>policy.IsTargetable(t)&&(!checkRange||HexCoordinates.IsInRange(unit.Position,t.Position,skill.Range)),
                 policy.GetTauntSource(unit));
             return SkillTarget(unit,skill,id);
         }
+        private bool VariantAvailable(UnitCombatState unit,SkillDefinition skill,int depth) {
+            if(depth>=8)return false;
+            if(skill.VariantIds.Count==0)return SelectSkillTarget(unit,skill,true)!=null&&!FocusRecast(unit,skill);
+            var ids=skill.VariantMode==SkillVariantMode.Rank?new[]{skill.VariantIds[(int)unit.Rank-1]}:skill.VariantIds.ToArray();
+            return ids.Any(id=>policy.TryGetSkillById(id,out var v)&&VariantAvailable(unit,v,depth+1));
+        }
+        private bool FocusRecast(UnitCombatState unit,SkillDefinition skill)=>battle.StatusEffects.HasBehavior(unit,StatusBehavior.Focus)&&skill.Effects.Any(e=>e.Type==SkillEffectType.ApplyStatus&&battle.StatusEffects.GetDefinition(e.ResolveStatusId(unit.Rank)).Behavior==StatusBehavior.Focus);
         private bool TryStartDataSkill(UnitCombatState unit,UnitActionRuntime runtime)
         {
             if(!battle.Energy.IsSkillReady(unit)||!CanUseSkill(unit)||
                 !policy.TryGetSkillDefinition(battle,unit,out var skill))return false;
+            if(FocusRecast(unit,skill))return false;
+            for(int depth=0;skill.VariantIds.Count>0;depth++) {
+                if(depth>=8)return false;
+                var ids=skill.VariantMode==SkillVariantMode.Rank?new[]{skill.VariantIds[(int)unit.Rank-1]}:skill.VariantIds.ToArray();
+                var choices=ids.Select(id=>policy.TryGetSkillById(id,out var v)?v:null).Where(v=>v!=null&&VariantAvailable(unit,v,0)).ToArray();
+                if(choices.Length==0)return false;skill=choices.Length==1?choices[0]:choices[battle.RngStreams.Skill.NextInt(choices.Length)];
+            }
             var target=SelectSkillTarget(unit,skill,true);
             if(target==null)return false;
+            if(skill.Activation!=null&&(!battle.Movement.IsSurrounded(unit,skill.Activation.MinimumAdjacentEnemies)||
+                skill.Activation.RequireSafeDestination&&!battle.Movement.Safest(unit).HasValue))return false;
             int hit=ToTicks(skill.CastTime,battle.TickRate,false);
-            int duration=Math.Max(1,checked(hit+ToTicks(skill.PostCastTime,battle.TickRate,false)));
+            int duration=Math.Max(1,checked(skill.LastCastOffset(battle.TickRate)+ToTicks(skill.PostCastTime,battle.TickRate,false)));
             int lockTicks=ToTicks(skill.EnergyLock??unit.Stats.EnergyLockSeconds,battle.TickRate,false);
-            var cast=new SkillCastRuntime(skill,target.UnitInstanceId,battle.CurrentTick,hit,duration,lockTicks);
+            foreach(var step in skill.Steps)checked { var end=battle.CurrentTick+step.StartOffset(skill,battle.TickRate)+
+                ToTicks(step.FirstDelay,battle.TickRate,false)+step.RepeatOffset(step.Count-1,battle.TickRate); }
+            var cast=new SkillCastRuntime(skill,target.UnitInstanceId,battle.CurrentTick,hit,duration,lockTicks)
+                {CastId=checked(++nextCastId),Iterations=new int[skill.Steps.Count]};
             if(!battle.Energy.TryConsumeSkill(unit))return false;
             runtime.SkillCast=cast;runtime.IsSkillActive=true;runtime.IsAttackTargetLocked=false;
             Begin(unit,runtime,CombatActionState.Casting,new CombatActionTiming(duration,hit));
@@ -265,32 +332,56 @@ namespace PokeChess.Core.Battle
             if(unit.IsAlive&&unit.IsOnBoard)Advance(unit,runtime);
             return true;
         }
+        private static bool NeedsPendingTarget(SkillCastRuntime cast)
+        {
+            if(!cast.Definition.UsesAuthoredSteps)return !cast.EffectApplied;
+            return cast.Definition.Steps
+                .Where((step,i)=>cast.Iterations[i]<(step.Lifetime==SkillStepLifetime.Independent?1:step.Count))
+                .Any(step=>step.Targeting!=SkillStepTargeting.Reselect&&step.Effects.Any(e=>e.NeedsCastTarget));
+        }
         private void AdvanceDataSkill(UnitCombatState unit,UnitActionRuntime runtime)
         {
             var cast=runtime.SkillCast;var skill=cast.Definition;
-            var target=SkillTarget(unit,skill,cast.TargetId);
-            if(!cast.EffectApplied&&target==null&&skill.TargetLostPolicy==TargetLostPolicy.Cancel)
+            if(SkillTarget(unit,skill,cast.TargetId)==null&&skill.TargetLostPolicy==TargetLostPolicy.Cancel&&NeedsPendingTarget(cast))
             {cast.CancelReason=SkillCancelReason.TargetLost;Finish(unit,runtime,true);return;}
-            if(!cast.EffectApplied&&battle.CurrentTick>=cast.EffectTick)
+            while(!cast.Finished&&unit.IsAlive&&unit.IsOnBoard)
             {
-                if(target==null&&skill.TargetLostPolicy==TargetLostPolicy.RetargetAtEffect)
+                var next=skill.Steps.Select((step,index)=>new {Step=step,Index=index,Iteration=cast.Iterations[index]})
+                    .Where(x=>x.Iteration<(x.Step.Lifetime==SkillStepLifetime.Independent?1:x.Step.Count))
+                    .Select(x=>new {x.Step,x.Index,x.Iteration,Tick=checked(cast.StartTick+cast.PausedTicks+x.Step.StartOffset(skill,battle.TickRate)+
+                        (x.Step.Lifetime==SkillStepLifetime.Cast?x.Step.RepeatOffset(x.Iteration,battle.TickRate):0))})
+                    .Where(x=>x.Tick<=battle.CurrentTick).OrderBy(x=>x.Tick).ThenBy(x=>x.Index).FirstOrDefault();
+                if(next==null)break;
+                var target=SkillTarget(unit,skill,cast.TargetId);
+                if(next.Step.Targeting==SkillStepTargeting.Reselect||
+                    (target==null&&skill.TargetLostPolicy==TargetLostPolicy.RetargetAtEffect))
                 {target=SelectSkillTarget(unit,skill,true);cast.TargetId=target?.UnitInstanceId;}
-                if(target==null&&skill.TargetLostPolicy!=TargetLostPolicy.ContinueWithoutTarget)
+                if(target==null&&skill.TargetLostPolicy!=TargetLostPolicy.ContinueWithoutTarget&&
+                    (!skill.UsesAuthoredSteps||next.Step.Effects.Any(e=>e.NeedsCastTarget)))
                 {cast.CancelReason=SkillCancelReason.TargetLost;Finish(unit,runtime,true);return;}
+                cast.Iterations[next.Index]++;
+                bool first=!cast.EffectApplied;
                 cast.EffectApplied=true;runtime.EffectApplied=true;
                 Emit(unit,CombatActionSignalKind.TimingReached);
-                policy.ExecuteSkillEffect(battle,unit,target,skill);
-                battle.Synergies.OnSkillEffect(unit);
-                battle.Items.OnSkillEffect(unit);
-                battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.EffectApplied,SkillCancelReason.None));
+                if(next.Step.Lifetime==SkillStepLifetime.Independent)
+                    battle.SkillTimeline.Spawn(cast,next.Index,policy.PrepareSkillStep(battle,unit,target,skill,next.Step,cast.CastId,next.Index));
+                else policy.ExecuteSkillStep(battle,unit,target,skill,next.Step,cast.CastId,next.Index,next.Iteration);
+                if(battle.Movement.IsTravelling(unit)) {
+                    cast.EndTick=Math.Max(cast.EndTick,checked(battle.Movement.ArrivalTick(unit)+ToTicks(skill.PostCastTime,battle.TickRate,false)));
+                    runtime.EndTick=cast.EndTick;
+                }
+                if(first){battle.Synergies.OnSkillEffect(unit);battle.Items.OnSkillEffect(unit);}
+                battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.EffectApplied,
+                    SkillCancelReason.None,next.Index,next.Iteration));
+                if(battle.Movement.IsTravelling(unit))break;
             }
-            if(unit.IsAlive&&unit.IsOnBoard&&battle.CurrentTick>=cast.EndTick)Finish(unit,runtime,false);
+            if(!cast.Finished&&unit.IsAlive&&unit.IsOnBoard&&battle.CurrentTick>=cast.EndTick)Finish(unit,runtime,false);
         }
         private void ReevaluateLostSkillTargets()
         {
             foreach(var unit in ordered) {
                 var runtime=actions[unit.UnitInstanceId];var cast=runtime.SkillCast;
-                if(!unit.IsAlive||!unit.IsOnBoard||cast==null||cast.Finished||cast.EffectApplied||
+                if(!unit.IsAlive||!unit.IsOnBoard||cast==null||cast.Finished||!NeedsPendingTarget(cast)||
                     cast.Definition.TargetLostPolicy!=TargetLostPolicy.Cancel)continue;
                 if(SkillTarget(unit,cast.Definition,cast.TargetId)==null) {
                     cast.CancelReason=SkillCancelReason.TargetLost;Finish(unit,runtime,true);
@@ -331,7 +422,7 @@ namespace PokeChess.Core.Battle
             var target=Target(unit);
             if(unit.ActionState==CombatActionState.Attacking&&!runtime.EffectApplied &&
                 (target==null||!CanAttack(unit)||
-                 !HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange)))
+                 !HexCoordinates.IsInRange(unit.Position,target.Position,unit.StatusSystem.AttackRange(unit))))
             {CancelAttackAndReplan(unit,runtime);return;}
             var forced=ForcedTarget(unit);
             if(unit.ActionState==CombatActionState.Attacking && forced!=null && forced.UnitInstanceId!=unit.CurrentTargetId)
@@ -342,7 +433,7 @@ namespace PokeChess.Core.Battle
             {
                 runtime.EffectApplied=true;
                 Emit(unit,CombatActionSignalKind.TimingReached);
-                if(unit.ActionState==CombatActionState.Attacking)scheduledAttacks.Add(()=>policy.OnAttackTiming(battle,unit,target));
+                if(unit.ActionState==CombatActionState.Attacking)scheduledAttacks.Add(()=>{if(runtime.IsAttackTargetLocked)policy.OnAttackTiming(battle,unit,target);});
                 else if(unit.ActionState==CombatActionState.Casting)policy.OnSkillTiming(battle,unit,target);
             }
             if(!unit.IsAlive||!unit.IsOnBoard)return;
@@ -351,7 +442,7 @@ namespace PokeChess.Core.Battle
         private void Finish(UnitCombatState unit,UnitActionRuntime runtime,bool cancelled)
         {
             Emit(unit,cancelled?CombatActionSignalKind.Cancelled:CombatActionSignalKind.Completed);
-            Reservations.Release(unit.UnitInstanceId);
+            if(!battle.Movement.IsTravelling(unit))Reservations.Release(unit.UnitInstanceId);
             if(runtime.IsSkillActive) {
                 var cast=runtime.SkillCast;
                 if(cast!=null&&!cast.Finished) {
@@ -387,7 +478,7 @@ namespace PokeChess.Core.Battle
                     (unit.ActionState!=CombatActionState.Attacking&&unit.ActionState!=CombatActionState.Idle))continue;
                 var target=Target(unit);
                 var forced=ForcedTarget(unit);
-                if(target==null||!HexCoordinates.IsInRange(unit.Position,target.Position,unit.Stats.AttackRange)||
+                if(target==null||!HexCoordinates.IsInRange(unit.Position,target.Position,unit.StatusSystem.AttackRange(unit))||
                     (forced!=null&&forced.UnitInstanceId!=unit.CurrentTargetId))
                     CancelAttackAndReplan(unit,runtime);
             }

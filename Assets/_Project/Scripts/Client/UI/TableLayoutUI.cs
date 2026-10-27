@@ -38,7 +38,7 @@ namespace PokeChess.Client.UI
                 hoveredShopSlot=-1;HideUnitInfoHint();return false;
             }
             var definition=catalog.Get(definitionId);
-            var stats=RankRules.Default.Apply(definition.BaseStats,UnitRank.One);
+            var stats=RankRules.Default.Apply(definition,UnitRank.One);
             RenderUnitInfoIcons(definition,UnitRank.One,stats,stats.MaxHP,stats.MaxHP,stats.StartingEnergy,stats.MaxEnergy,0,System.Array.Empty<string>());
             return true;
         }

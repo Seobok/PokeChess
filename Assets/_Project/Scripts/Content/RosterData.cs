@@ -33,15 +33,25 @@ namespace PokeChess.Content
             }
             foreach(var p in ShopPokemon)
                 if(!pokemon.Contains(p))throw new InvalidOperationException("Unregistered shop Pokemon: "+p.Id);
-            foreach(var s in Skills)foreach(var e in s.Effects)
+            foreach(var s in Skills) {
+                foreach(var id in s.VariantIds??Array.Empty<string>())if(!Skills.Any(v=>v.Id==id))throw new InvalidOperationException(s.Id+": unknown variant "+id);
+                ValidateVariants(s,new HashSet<string>(),0);
+            }
+            foreach(var s in Skills)foreach(var e in s.AllEffects)
             {
                 if(e==null)throw new InvalidOperationException(s.Id+": null effect");
+                if(e.Type==SkillEffectType.RandomStatus&&(e.ChoiceStatuses.Length==0||e.ChoiceStatuses.Any(x=>x==null||!statuses.Contains(x))))throw new InvalidOperationException(s.Id+": invalid random statuses");
+                if(e.Type==SkillEffectType.GroundStatus&&(e.Status==null||!statuses.Contains(e.Status)))throw new InvalidOperationException(s.Id+": missing ground status");
                 if(e.Type==SkillEffectType.ApplyStatus&&(e.Status==null||!statuses.Contains(e.Status)||
                     e.RankStatuses==null||e.RankStatuses.Length!=3||e.RankStatuses.Any(r=>!statuses.Contains(r))))
                     throw new InvalidOperationException(s.Id+": missing status reference");
             }
             var catalog=CreateCatalog(); CreateSkills(); CreateStatuses();
             foreach(var p in Pokemon)catalog.EvolutionRoot(p.Id,out _);
+        }
+        private void ValidateVariants(SkillData skill,HashSet<string> path,int depth) {
+            if(depth>=8||!path.Add(skill.Id))throw new InvalidOperationException("Cyclic/deep skill variants: "+skill.Id);
+            foreach(var id in skill.VariantIds??Array.Empty<string>())ValidateVariants(Skills.Single(s=>s.Id==id),new HashSet<string>(path),depth+1);
         }
         private static void Unique<T>(T[] items,Func<T,string> id,string label) where T:UnityEngine.Object
         {

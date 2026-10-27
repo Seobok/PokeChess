@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: kangaskhan
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: kangaskhan
+  DisplayName: Kangaskhan
+  LocalizedName: "\uCEA5\uCE74"
+  RoleId: melee-dps
+  Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1250
+    Attack: 87
+    SpellPower: 100
+    AttackSpeed: 0.76
+    Armor: 45
+    MagicResistance: 38
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 90
+    StartingEnergy: 25
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1250
+  - 2125
+  - 3625
+  RankAttack:
+  - 87
+  - 113
+  - 148
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: b0097fa2dfb38cc4c8d59e37c22af221, type: 2}
+  Visual: {fileID: 11400000, guid: 167477b8aa50ce748b77a52feadeb2f5, type: 2}
+  Evolutions: []

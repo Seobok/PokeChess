@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-nidoking
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-nidoking
+  DisplayName: "\uB09C\uB3D9\uBD80\uB9AC\uAE30"
+  VariantIds:
+  - skill-nidoking-r1
+  - skill-nidoking-r2
+  - skill-nidoking-r3
+  VariantMode: 1
+  Description: "3\uCD08\uAC04 \uACF5\uACA9\uC18D\uB3C4\uAC00 60/80/100% \uC99D\uAC00\uD558\uACE0
+    \uAE30\uBCF8 \uACF5\uACA9\uC774 \uC8FC\uBCC0 1\uCE78\uC758 \uC801\uC5D0\uAC8C\uB3C4
+    50% \uBB3C\uB9AC\uD53C\uD574\uB97C \uC900\uB2E4."
+  Notes: "\uC8FC \uB300\uC0C1 \uC911\uC2EC \uBC18\uACBD 1\uCE78, \uC6D0\uB798 \uAE30\uBCF8
+    \uACF5\uACA9\uC758 \uCE58\uBA85\uD0C0 \uB4F1\uC744 \uBC18\uC601\uD55C \uBC29\uC5B4
+    \uACC4\uC0B0 \uC804 \uD53C\uD574 50%\uB97C \uAC01 \uC801\uC758 \uBC29\uC5B4\uB825\uC73C\uB85C
+    \uACC4\uC0B0"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

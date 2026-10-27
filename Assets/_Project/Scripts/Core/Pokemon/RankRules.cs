@@ -14,6 +14,15 @@ namespace PokeChess.Core.Pokemon
             if(rank<UnitRank.One || rank>UnitRank.Three) throw new ArgumentOutOfRangeException(nameof(rank));
             return multipliers[(int)rank-1];
         }
+        public PokemonStats Apply(PokemonDefinition definition,UnitRank rank)
+        {
+            if(definition==null)throw new ArgumentNullException(nameof(definition));
+            Multiplier(rank);
+            if(definition.RankHP==null)return Apply(definition.BaseStats,rank);
+            var s=definition.BaseStats;int i=(int)rank-1;
+            return new PokemonStats(definition.RankHP[i],definition.RankAttack[i],s.SpellPower,s.AttackSpeed,s.Armor,s.MagicResistance,
+                s.AttackRange,s.MoveSpeed,s.MaxEnergy,s.StartingEnergy,s.AttackHitTime,s.AttackDelivery,s.ProjectileSpeed,s.CritChance,s.CritMultiplier,s.EnergyLockSeconds);
+        }
         public PokemonStats Apply(PokemonStats stats,UnitRank rank)
         {
             if(stats==null) throw new ArgumentNullException(nameof(stats));

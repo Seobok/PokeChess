@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-mew-r1
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-mew-r1
+  DisplayName: "\uC190\uAC00\uB77D\uD754\uB4E4\uAE30"
+  VariantIds:
+  - skill-mew-r1-choice0
+  - skill-mew-r1-choice1
+  - skill-mew-r1-choice2
+  VariantMode: 0
+  Description: "\uBB34\uC791\uC704\uB85C \uB300\uC0C1 \uC911\uC2EC \uBC18\uACBD 2/2/9\uCE78\uC5D0
+    270/380/9000\uC758 \uAD11\uC5ED \uD2B9\uC218 \uD53C\uD574, \uC544\uAD70 \uC804\uCCB4
+    \uCD5C\uB300 HP 15/20/99% \uD68C\uBCF5 \uB610\uB294 1.5/1.75/99\uCD08 \uAE30\uC808
+    \uC911 \uD558\uB098\uB97C \uBC1C\uB3D9\uD55C\uB2E4."
+  Notes: "\uAC01 \uD655\uB960\uC740 1/3, \uC801 \uC804\uCCB4 X"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

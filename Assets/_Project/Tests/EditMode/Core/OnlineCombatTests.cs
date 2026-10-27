@@ -6,11 +6,60 @@ using UnityEngine;
 using PokeChess.Core.Match;
 using PokeChess.Core.Battle;
 using PokeChess.Core.Pokemon;
+using PokeChess.Core.Board;
 
 namespace PokeChess.Core.Tests
 {
     public sealed class OnlineCombatTests
     {
+        [Test] public void NumericStatusFramesRecoverStacksExpiryShieldAndUntargetability()
+        {
+            Add("p1");Add("p2");var catalog=PrototypeRoster.CreateCatalog();
+            var poison=new StatusEffectDefinition("net-poison",4,behavior:StatusBehavior.Poison);
+            var hide=new StatusEffectDefinition("net-hide",2,StatusTargetTeam.Ally,behavior:StatusBehavior.Untargetable);
+            var frames=new List<CombatFrame>();runtime.FrameProduced+=frames.Add;runtime.StartCombat(1);
+            var source=rounds.Battle.Units.First(u=>u.TeamId==1);var victim=rounds.Battle.Units.First(u=>u.TeamId==2);
+            rounds.Battle.StatusEffects.Apply(poison,source.UnitInstanceId,victim.UnitInstanceId);
+            rounds.Battle.StatusEffects.Apply(poison,source.UnitInstanceId,victim.UnitInstanceId);
+            rounds.Battle.StatusEffects.Apply(hide,victim.UnitInstanceId,victim.UnitInstanceId);
+            rounds.Battle.Shields.Add(victim,victim.UnitInstanceId,"net-shield",100,1);
+            for(int i=0;i<8;i++)runtime.Step();
+            var restored=JsonUtility.FromJson<CombatFrame>(JsonUtility.ToJson(frames.Last()));
+            var unit=restored.units.Single(u=>u.id==victim.UnitInstanceId);Assert.That(unit.untargetable,Is.True);
+            Assert.That(unit.statusDetails.Single(s=>s.definition==poison.Id).stacks,Is.EqualTo(2));
+            Assert.That(unit.statusDetails.Single(s=>s.definition==poison.Id).nextTick,Is.EqualTo(30));
+            Assert.That(unit.shields.Single().remaining,Is.EqualTo(100));Assert.That(unit.shields.Single().endTick,Is.EqualTo(30));
+            var playback=new CombatPlayback();playback.Accept(frames[0],match.MatchId,"p1",1);Assert.That(playback.Accept(restored,match.MatchId,"p1",1),Is.True);
+            Assert.That(playback.Current.units.Single(u=>u.id==victim.UnitInstanceId).statusDetails.Length,Is.EqualTo(2));
+        }
+        [Test] public void SpatialFramesPreserveAreaPathsAndPendingMovementsAcrossRecovery()
+        {
+            Add("p1");Add("p2");var catalog=PrototypeRoster.CreateCatalog();
+            var area=new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.Spatial,1,
+                spatial:new SkillSpatialDefinition(center:SkillAreaCenter.DensestEnemies,extent:1));
+            var shot=new SkillEffectDefinition(SkillEffectType.PathProjectileDamage,EffectTargetSelector.Spatial,1,
+                projectileSpeed:1,spatial:new SkillSpatialDefinition(shape:SkillAreaShape.Line,extent:10));
+            var move=new SkillEffectDefinition(SkillEffectType.Move,EffectTargetSelector.CastTarget,0,
+                movement:new SkillMovementDefinition(SkillMovementKind.DashToTarget,speed:1));
+            var skill=new SkillDefinition(catalog.Get("slowpoke").SkillId,0,0,SkillTargetRule.Enemy,TargetLostPolicy.Cancel,
+                Array.Empty<SkillEffectDefinition>(),range:56,steps:new[]{
+                    new SkillStepDefinition(new[]{area},interval:1,count:3,lifetime:SkillStepLifetime.Independent,firstDelay:1),
+                    new SkillStepDefinition(new[]{area,shot,move})});
+            rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:new SkillCatalog(new[]{skill}));
+            commands=new HostCommandProcessor(match,catalog,rounds);runtime=new OnlineCombatRuntime(rounds,commands);
+            var frames=new List<CombatFrame>();runtime.FrameProduced+=frames.Add;
+            Assert.That(runtime.StartCombat(1),Is.True);foreach(var u in rounds.Battle.Units)u.SetVitals(u.CurrentHP,100);
+            for(int i=0;i<12;i++)runtime.Step();
+            var initial=frames.First(f=>f.movements.Length>0);Assert.That(initial.events.Any(e=>e.area!=null),Is.True);
+            var frame=JsonUtility.FromJson<CombatFrame>(JsonUtility.ToJson(frames.Last()));
+            Assert.That(frame.movements.Length,Is.EqualTo(2));Assert.That(frame.movements[0].path.Length,Is.GreaterThan(1));
+            Assert.That(frame.pathProjectiles.Length,Is.EqualTo(2));Assert.That(frame.pathProjectiles[0].path.Length,Is.GreaterThan(1));
+            Assert.That(frame.independentSkills[0].areas.Length,Is.EqualTo(1));
+            Assert.That(frame.independentSkills[0].areas[0].cells.Length,Is.GreaterThan(0));
+            var playback=new CombatPlayback();playback.Accept(frames[0],match.MatchId,"p1",1);
+            Assert.That(playback.Accept(frame,match.MatchId,"p1",1),Is.True);Assert.That(playback.RecoveredGaps,Is.EqualTo(1));
+            Assert.That(playback.Current.movements[0].endTick,Is.EqualTo(frame.movements[0].endTick));
+        }
         private MatchState match;private LocalRoundCoordinator rounds;private HostCommandProcessor commands;private OnlineCombatRuntime runtime;
         [SetUp] public void Setup(){Create(2);}
         private void Create(int count,int hp=60)
@@ -22,6 +71,29 @@ namespace PokeChess.Core.Tests
         private void Add(string player,string definition="slowpoke",UnitRank rank=UnitRank.One,string id=null)
         {
             var unit=PrototypeRoster.CreateCatalog().CreateUnit(id??"fighter-"+player,definition,player,rank,0,UnitPlacement.OnBench(0));SharedPoolSystem.RegisterUnit(match,unit,definition);
+        }
+        [Test] public void IndependentSkillFramesRoundTripAndRecoverAcrossFrameGaps()
+        {
+            Add("p1");Add("p2");var catalog=PrototypeRoster.CreateCatalog();
+            var skill=new SkillDefinition(catalog.Get("slowpoke").SkillId,0,0,SkillTargetRule.Self,TargetLostPolicy.Cancel,
+                Array.Empty<SkillEffectDefinition>(),steps:new[]{new SkillStepDefinition(new[]{
+                    new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.EnemiesAroundCaster,5,radius:20)},
+                    interval:1,count:3,lifetime:SkillStepLifetime.Independent,firstDelay:1)});
+            rounds=new LocalRoundCoordinator(match,catalog,skillCatalog:new SkillCatalog(new[]{skill}));
+            commands=new HostCommandProcessor(match,catalog,rounds);runtime=new OnlineCombatRuntime(rounds,commands);
+            var frames=new List<CombatFrame>();runtime.FrameProduced+=frames.Add;
+            runtime.StartCombat(1);foreach(var u in rounds.Battle.Units)u.SetVitals(u.CurrentHP,100);
+            for(int i=0;i<12;i++)runtime.Step();
+            var first=frames.First(f=>f.independentSkills.Length>0);
+            Assert.That(first.independentSkills.Length,Is.EqualTo(2));
+            Assert.That(first.events.Any(e=>e.kind=="IndependentSkillCreated"&&e.castId>0&&e.effectId>0),Is.True);
+            var restored=JsonUtility.FromJson<CombatFrame>(JsonUtility.ToJson(frames.Last()));
+            Assert.That(restored.independentSkills.Length,Is.EqualTo(2));
+            Assert.That(restored.independentSkills[0].lastTick,Is.GreaterThan(restored.tick));
+            var playback=new CombatPlayback();Assert.That(playback.Accept(frames[0],match.MatchId,"p1",1),Is.True);
+            Assert.That(playback.Accept(restored,match.MatchId,"p1",1),Is.True);
+            Assert.That(playback.RecoveredGaps,Is.EqualTo(1));
+            Assert.That(playback.Current.independentSkills[0].castId,Is.EqualTo(restored.independentSkills[0].castId));
         }
         [Test] public void RosterThirtySixCasesProduceSkillsAndCompleteAuthoritativeFrames()
         {

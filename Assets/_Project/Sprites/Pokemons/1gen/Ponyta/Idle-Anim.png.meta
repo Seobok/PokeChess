@@ -370,7 +370,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -384,7 +384,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -408,7 +408,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -446,2465 +446,2465 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle-Anim_0
+      name: ponyta_Idle_d0_f0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 292
-        width: 15
-        height: 26
+        x: 0
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fa864d247f1766b60800000000000000
-      internalID: 7738998316474853551
+      spriteID: d570f0e55cc52f240af91eacf4f2f975
+      internalID: 113226291
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_1
+      name: ponyta_Idle_d0_f1
       rect:
         serializedVersion: 2
-        x: 39
-        y: 291
-        width: 17
-        height: 28
+        x: 32
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30f49f3b6ebff6b10800000000000000
-      internalID: 1977075729719447299
+      spriteID: ebdfe7e07cd04a2428fba3647d841ea5
+      internalID: 816582004
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_2
-      rect:
-        serializedVersion: 2
-        x: 70
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 04047ac9bd83f4f70800000000000000
-      internalID: 9173613481854189632
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_3
-      rect:
-        serializedVersion: 2
-        x: 103
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 12fbfb24eb2beff20800000000000000
-      internalID: 3458398094100512545
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_4
-      rect:
-        serializedVersion: 2
-        x: 134
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4adc0a0e11377bae0800000000000000
-      internalID: -1533630627476091484
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_5
-      rect:
-        serializedVersion: 2
-        x: 167
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 710667869a1b9d030800000000000000
-      internalID: 3520039924926930967
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_6
-      rect:
-        serializedVersion: 2
-        x: 198
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c93ba9d2f01700380800000000000000
-      internalID: -9007074944737430628
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_7
-      rect:
-        serializedVersion: 2
-        x: 231
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3e4ac36e2dbb6eb40800000000000000
-      internalID: 5469265311968306403
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_8
-      rect:
-        serializedVersion: 2
-        x: 262
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: abaf72ac278605a70800000000000000
-      internalID: 8813659312991238842
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_9
-      rect:
-        serializedVersion: 2
-        x: 295
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 218bfb460cfaffb90800000000000000
-      internalID: -7205847637910636526
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_10
-      rect:
-        serializedVersion: 2
-        x: 326
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9429d91a826ac4dd0800000000000000
-      internalID: -2500440999657106871
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_11
-      rect:
-        serializedVersion: 2
-        x: 359
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 96cdb23a9847bee20800000000000000
-      internalID: 3380924079768591465
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_12
-      rect:
-        serializedVersion: 2
-        x: 390
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7fdda996a9f0c9750800000000000000
-      internalID: 6312937933537730039
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_13
-      rect:
-        serializedVersion: 2
-        x: 423
-        y: 291
-        width: 17
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 77f8961a485984660800000000000000
-      internalID: 7370305187068088183
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_14
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 252
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5035613e1c7abe2c0800000000000000
-      internalID: -4401239759644110075
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_15
-      rect:
-        serializedVersion: 2
-        x: 37
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c808dca5d0f935f40800000000000000
-      internalID: 5716087231770099852
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_16
-      rect:
-        serializedVersion: 2
-        x: 68
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7c6531675e307f440800000000000000
-      internalID: 4969444997890004679
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_17
-      rect:
-        serializedVersion: 2
-        x: 101
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4b444a8c9eda31180800000000000000
-      internalID: -9145775198654151500
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_18
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e1f1d399fef9e93a0800000000000000
-      internalID: -6656707347790094562
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_19
-      rect:
-        serializedVersion: 2
-        x: 165
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a1c5edbf1de43c4b0800000000000000
-      internalID: -5421402862643160038
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_20
-      rect:
-        serializedVersion: 2
-        x: 196
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: defdd81d784ed1a00800000000000000
-      internalID: 728989986691342317
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_21
-      rect:
-        serializedVersion: 2
-        x: 229
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1bf74809e3bf50810800000000000000
-      internalID: 1731065877924970417
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_22
-      rect:
-        serializedVersion: 2
-        x: 260
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dcda8cca7f8eeb900800000000000000
-      internalID: 702254742369775053
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_23
-      rect:
-        serializedVersion: 2
-        x: 293
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a89579fd543d5bb00800000000000000
-      internalID: 843812802259278218
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_24
-      rect:
-        serializedVersion: 2
-        x: 324
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 69906a69f391192e0800000000000000
-      internalID: -2120886188613695082
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_25
-      rect:
-        serializedVersion: 2
-        x: 357
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8afe6a79463be50b0800000000000000
-      internalID: -5737951630601031768
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_26
-      rect:
-        serializedVersion: 2
-        x: 388
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a683f0ec316423bc0800000000000000
-      internalID: -3804901684299220886
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_27
-      rect:
-        serializedVersion: 2
-        x: 421
-        y: 252
-        width: 20
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f7bbce720a1b088c0800000000000000
-      internalID: -3999001167682290817
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_28
-      rect:
-        serializedVersion: 2
-        x: 2
-        y: 214
-        width: 27
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 18a9cff227ff57830800000000000000
-      internalID: 4068438704295549569
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_29
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 213
-        width: 26
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5cac0c4c0757dbef0800000000000000
-      internalID: -90787290279785787
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_30
+      name: ponyta_Idle_d0_f2
       rect:
         serializedVersion: 2
         x: 64
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8112eda686edbb2d0800000000000000
-      internalID: -3261768965048884968
+      spriteID: 1b7b8d911aee6044bb49511a118ccc25
+      internalID: -794277318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_31
+      name: ponyta_Idle_d0_f3
       rect:
         serializedVersion: 2
-        x: 97
-        y: 213
-        width: 26
-        height: 24
+        x: 96
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fb0f82efb8734fc20800000000000000
-      internalID: 3239275106390307007
+      spriteID: 20648372c877e9948830e40425941f05
+      internalID: -205686196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_32
+      name: ponyta_Idle_d0_f4
       rect:
         serializedVersion: 2
         x: 128
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c15dca8425a8c9a60800000000000000
-      internalID: 7682167150398461212
+      spriteID: f24802bb558b704458517d2c289b09b6
+      internalID: 1169635709
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_33
+      name: ponyta_Idle_d0_f5
       rect:
         serializedVersion: 2
-        x: 161
-        y: 213
-        width: 26
-        height: 24
+        x: 160
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2accd81a420ddf60800000000000000
-      internalID: 8060601425331014186
+      spriteID: 8d46ac9eab16d44448523274666606b9
+      internalID: -814610912
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_34
+      name: ponyta_Idle_d0_f6
       rect:
         serializedVersion: 2
         x: 192
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e81b064713dd6f90800000000000000
-      internalID: -6958673752304707357
+      spriteID: 3b4d396d2b0d4e7489535532c0dc717d
+      internalID: -446583767
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_35
+      name: ponyta_Idle_d0_f7
       rect:
         serializedVersion: 2
-        x: 225
-        y: 213
-        width: 26
-        height: 24
+        x: 224
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9dc47000db16e0b80800000000000000
-      internalID: -8426690388386427687
+      spriteID: 88078b253bf027b478508b7d81bc6296
+      internalID: 1309526432
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_36
+      name: ponyta_Idle_d0_f8
       rect:
         serializedVersion: 2
         x: 256
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 95aec204fa1914570800000000000000
-      internalID: 8449194557805750873
+      spriteID: 7e81ab084248baa438fbf6120e07dede
+      internalID: -1585313616
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_37
+      name: ponyta_Idle_d0_f9
       rect:
         serializedVersion: 2
-        x: 289
-        y: 213
-        width: 26
-        height: 24
+        x: 288
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 194d5e6ecd8fcfe00800000000000000
-      internalID: 1080011638312391825
+      spriteID: bc2ea707cbba1414f94b45756b3f1f5d
+      internalID: 1707442334
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_38
+      name: ponyta_Idle_d0_f10
       rect:
         serializedVersion: 2
         x: 320
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 799fe02f53b63aac0800000000000000
-      internalID: -3845111777405765225
+      spriteID: e606a5a52a0c50e449c2092fa4e73ca8
+      internalID: 2059013690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_39
+      name: ponyta_Idle_d0_f11
       rect:
         serializedVersion: 2
-        x: 353
-        y: 213
-        width: 26
-        height: 24
+        x: 352
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d36aec4f4f20c4ce0800000000000000
-      internalID: -1419756531426089411
+      spriteID: 2f1c2fa6b11747742ae0de398652e7e8
+      internalID: -536468261
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_40
+      name: ponyta_Idle_d0_f12
       rect:
         serializedVersion: 2
         x: 384
-        y: 213
-        width: 26
-        height: 24
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a45965f87b268fe80800000000000000
-      internalID: -8144651385576188598
+      spriteID: 13829a61a26903b4786bbe457d44580a
+      internalID: 1952497963
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_41
+      name: ponyta_Idle_d0_f13
       rect:
         serializedVersion: 2
-        x: 417
-        y: 213
-        width: 26
-        height: 24
+        x: 416
+        y: 280
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3507dfc83abb03960800000000000000
-      internalID: 7579764483984027731
+      spriteID: eaf330ea6a4440347b14186ab10495d9
+      internalID: -2014975296
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_42
+      name: ponyta_Idle_d1_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 172
-        width: 23
-        height: 25
+        x: 0
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 280f8973e906c24a0800000000000000
-      internalID: -6616807519860232062
+      spriteID: 956d8bae6412dd249a2eee8c6ebcb013
+      internalID: -162523888
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_43
+      name: ponyta_Idle_d1_f1
       rect:
         serializedVersion: 2
-        x: 35
-        y: 171
-        width: 23
-        height: 25
+        x: 32
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e10e3140f52dd4a00800000000000000
-      internalID: 742480819118137374
+      spriteID: cbf2c049003a4fd4fb50c3857b187740
+      internalID: 1349561968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_44
+      name: ponyta_Idle_d1_f2
       rect:
         serializedVersion: 2
-        x: 66
-        y: 171
-        width: 23
-        height: 25
+        x: 64
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 561c69af31740fe90800000000000000
-      internalID: -6994012070172245659
+      spriteID: 702888beb45d97b45a5ade72ad1a055b
+      internalID: 1510064427
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_45
+      name: ponyta_Idle_d1_f3
       rect:
         serializedVersion: 2
-        x: 99
-        y: 171
-        width: 23
-        height: 25
+        x: 96
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fce49562c73027fd0800000000000000
-      internalID: -2345808624152391985
+      spriteID: ef46918bb359f92488473f9dc478acdc
+      internalID: -1913451855
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_46
+      name: ponyta_Idle_d1_f4
       rect:
         serializedVersion: 2
-        x: 130
-        y: 171
-        width: 23
-        height: 25
+        x: 128
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 93c2119438d38d420800000000000000
-      internalID: 2654939614410779705
+      spriteID: 41f6bfe7892b0a74280ca7c31a395473
+      internalID: 1715864631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_47
+      name: ponyta_Idle_d1_f5
       rect:
         serializedVersion: 2
-        x: 163
-        y: 171
-        width: 23
-        height: 25
+        x: 160
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d946e617c7a6d930800000000000000
-      internalID: 4167702978702494160
+      spriteID: 5b4391725c3d63d42b971905afc89fc7
+      internalID: -466525020
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_48
+      name: ponyta_Idle_d1_f6
       rect:
         serializedVersion: 2
-        x: 194
-        y: 171
-        width: 23
-        height: 25
+        x: 192
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2b6d1f1695f139690800000000000000
-      internalID: -7596693677688105294
+      spriteID: b0e5dae49bfa2bb418dd7b9b0fb13370
+      internalID: -1448816445
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_49
+      name: ponyta_Idle_d1_f7
       rect:
         serializedVersion: 2
-        x: 227
-        y: 171
-        width: 23
-        height: 25
+        x: 224
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f3a2a405e6a4f0b0800000000000000
-      internalID: -5695744126161345550
+      spriteID: 52967dd3b06088d4ebb7c440c07de12f
+      internalID: -1443219680
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_50
+      name: ponyta_Idle_d1_f8
       rect:
         serializedVersion: 2
-        x: 258
-        y: 171
-        width: 23
-        height: 25
+        x: 256
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07fc6f4ae09f97510800000000000000
-      internalID: 1547541788270972784
+      spriteID: 16acb20c868d5d945be5c3820992e1ab
+      internalID: -764046988
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_51
+      name: ponyta_Idle_d1_f9
       rect:
         serializedVersion: 2
-        x: 291
-        y: 171
-        width: 23
-        height: 25
+        x: 288
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aa36f5084ddbe81c0800000000000000
-      internalID: -4499450257312095318
+      spriteID: fd556d8b2b4ca24418daef97eb585212
+      internalID: -1772126398
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_52
+      name: ponyta_Idle_d1_f10
       rect:
         serializedVersion: 2
-        x: 322
-        y: 171
-        width: 23
-        height: 25
+        x: 320
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7d53f11d5f77f2d70800000000000000
-      internalID: 9020560476305569239
+      spriteID: ad826032f38091747beeb6624f229ea4
+      internalID: 670691986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_53
+      name: ponyta_Idle_d1_f11
       rect:
         serializedVersion: 2
-        x: 355
-        y: 171
-        width: 23
-        height: 25
+        x: 352
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84f5c28606c33faf0800000000000000
-      internalID: -363880760124612792
+      spriteID: 7d593011c8b880a46876af5070e00f6b
+      internalID: -736117986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_54
+      name: ponyta_Idle_d1_f12
       rect:
         serializedVersion: 2
-        x: 386
-        y: 171
-        width: 23
-        height: 25
+        x: 384
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8f362947bbd315d30800000000000000
-      internalID: 4418380584751096824
+      spriteID: 0a064d2c32682e84db8a3118c5ca8b50
+      internalID: 503811598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_55
+      name: ponyta_Idle_d1_f13
       rect:
         serializedVersion: 2
-        x: 419
-        y: 171
-        width: 23
-        height: 25
+        x: 416
+        y: 240
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cc2ba1e559906590800000000000000
-      internalID: -7682972370156704571
+      spriteID: 6c47db9026fda854ba82559afde358cf
+      internalID: 1818212020
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_56
+      name: ponyta_Idle_d2_f0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 133
-        width: 13
-        height: 25
+        x: 0
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bb6438b5d2ca29860800000000000000
-      internalID: 7535274437353096891
+      spriteID: 2a02016202541364aa7481270a0526ea
+      internalID: 1974355256
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_57
+      name: ponyta_Idle_d2_f1
       rect:
         serializedVersion: 2
-        x: 41
-        y: 133
-        width: 13
-        height: 25
+        x: 32
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 368b76f9945452770800000000000000
-      internalID: 8585344447161022563
+      spriteID: 52e9057c3c90a8249af4fcf860551e11
+      internalID: -761842447
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_58
+      name: ponyta_Idle_d2_f2
       rect:
         serializedVersion: 2
-        x: 72
-        y: 133
-        width: 13
-        height: 25
+        x: 64
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83977709693019100800000000000000
-      internalID: 112875410864699704
+      spriteID: 65454f0093b160349ba9a2af7d4d6b39
+      internalID: -891949363
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_59
+      name: ponyta_Idle_d2_f3
       rect:
         serializedVersion: 2
-        x: 105
-        y: 133
-        width: 13
-        height: 25
+        x: 96
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 49ed86ed65899cc70800000000000000
-      internalID: 8991885629887930004
+      spriteID: 2120e5fa9a9998f4bb617727ffa883d9
+      internalID: 661009747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_60
+      name: ponyta_Idle_d2_f4
       rect:
         serializedVersion: 2
-        x: 136
-        y: 133
-        width: 13
-        height: 25
+        x: 128
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fe2542a111a3face0800000000000000
-      internalID: -1391829914706750737
+      spriteID: 4be9235bd10739d4dba53fed1d22984f
+      internalID: 823848745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_61
+      name: ponyta_Idle_d2_f5
       rect:
         serializedVersion: 2
-        x: 169
-        y: 133
-        width: 13
-        height: 25
+        x: 160
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e821e47d665b01e90800000000000000
-      internalID: -7056941162786057586
+      spriteID: a8abea269613d3845ad47c4700841108
+      internalID: 23135682
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_62
+      name: ponyta_Idle_d2_f6
       rect:
         serializedVersion: 2
-        x: 200
-        y: 133
-        width: 13
-        height: 25
+        x: 192
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25820a508f6f723b0800000000000000
-      internalID: -5537185671722031022
+      spriteID: 478b4f2e293f4d044bbdbd4fd31b4867
+      internalID: 413086463
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_63
+      name: ponyta_Idle_d2_f7
       rect:
         serializedVersion: 2
-        x: 233
-        y: 133
-        width: 13
-        height: 25
+        x: 224
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 783e63a07001305e0800000000000000
-      internalID: -1944692991671737465
+      spriteID: 2ce24602c51af8f43934d87ab598289d
+      internalID: -1526077342
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_64
+      name: ponyta_Idle_d2_f8
       rect:
         serializedVersion: 2
-        x: 264
-        y: 133
-        width: 13
-        height: 25
+        x: 256
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4ceb929d3a8f32170800000000000000
-      internalID: 8152633133077479108
+      spriteID: 534bd8d1279298044ab37981d00b749d
+      internalID: -1000553238
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_65
+      name: ponyta_Idle_d2_f9
       rect:
         serializedVersion: 2
-        x: 297
-        y: 133
-        width: 13
-        height: 25
+        x: 288
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ca9a61290ca1b2e10800000000000000
-      internalID: 2173860659523398060
+      spriteID: d1e87e4ef175df74e94fd667af2856a9
+      internalID: 208352650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_66
+      name: ponyta_Idle_d2_f10
       rect:
         serializedVersion: 2
-        x: 328
-        y: 133
-        width: 13
-        height: 25
+        x: 320
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb2a163f3de5dea30800000000000000
-      internalID: 4246154288094618300
+      spriteID: 2ab258e9e982f794cb43644f14655aa8
+      internalID: 2782601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_67
+      name: ponyta_Idle_d2_f11
       rect:
         serializedVersion: 2
-        x: 361
-        y: 133
-        width: 13
-        height: 25
+        x: 352
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6cff8eb8650621ec0800000000000000
-      internalID: -3597707227484848186
+      spriteID: 5766cf671c5747e48b065db2d3034aa9
+      internalID: -401222251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_68
+      name: ponyta_Idle_d2_f12
       rect:
         serializedVersion: 2
-        x: 392
-        y: 133
-        width: 13
-        height: 25
+        x: 384
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3def574c367094740800000000000000
-      internalID: 5136644975071985363
+      spriteID: 850642ae29d0df245a620fda1377f289
+      internalID: -2065743830
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_69
+      name: ponyta_Idle_d2_f13
       rect:
         serializedVersion: 2
-        x: 425
-        y: 133
-        width: 13
-        height: 25
+        x: 416
+        y: 200
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5ec35e167d1349310800000000000000
-      internalID: 1410807384403950821
+      spriteID: c113a49e7cc5e14469994e36133af59b
+      internalID: 1254793684
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_70
+      name: ponyta_Idle_d3_f0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 92
-        width: 23
-        height: 25
+        x: 0
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cf28704207cd051e0800000000000000
-      internalID: -2211025042839993604
+      spriteID: 4d995a70cf6ecc1409e8d18b8fdb1b50
+      internalID: -1510309040
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_71
+      name: ponyta_Idle_d3_f1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 91
-        width: 23
-        height: 25
+        x: 32
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6fd1f418e956909c0800000000000000
-      internalID: -3960522665846956554
+      spriteID: 06cef1da83aae6a4a87e500c370e2308
+      internalID: -1066382407
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_72
+      name: ponyta_Idle_d3_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 91
-        width: 23
-        height: 25
+        x: 64
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 54a275cd3478f5420800000000000000
-      internalID: 2620962233682176581
+      spriteID: ef4a10db9366a2047bcbb30e49bf1ce7
+      internalID: 684053632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_73
+      name: ponyta_Idle_d3_f3
       rect:
         serializedVersion: 2
-        x: 102
-        y: 91
-        width: 23
-        height: 25
+        x: 96
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8d20154b4f1d98fe0800000000000000
-      internalID: -1186186177907981608
+      spriteID: fd5c57d133b64f4498f2e59d2a9e104a
+      internalID: 2023857655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_74
+      name: ponyta_Idle_d3_f4
       rect:
         serializedVersion: 2
-        x: 133
-        y: 91
-        width: 23
-        height: 25
+        x: 128
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d4997d9d4702eb10800000000000000
-      internalID: 2009176413696529616
+      spriteID: 2865e3ce9ea9aea488ca1edd8010d0df
+      internalID: 549852635
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_75
+      name: ponyta_Idle_d3_f5
       rect:
         serializedVersion: 2
-        x: 166
-        y: 91
-        width: 23
-        height: 25
+        x: 160
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fe03cb10fb87029a0800000000000000
-      internalID: -6259870720281792273
+      spriteID: c7ebd406f6e712c4bb044ef3afd9b0bc
+      internalID: -891469514
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_76
+      name: ponyta_Idle_d3_f6
       rect:
         serializedVersion: 2
-        x: 197
-        y: 91
-        width: 23
-        height: 25
+        x: 192
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05d20ece303fc7b90800000000000000
-      internalID: -7242646902534034096
+      spriteID: 05a87cb579c6a0b4997c10d01d782298
+      internalID: -135135477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_77
+      name: ponyta_Idle_d3_f7
       rect:
         serializedVersion: 2
-        x: 230
-        y: 91
-        width: 23
-        height: 25
+        x: 224
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f619c4b8931346f30800000000000000
-      internalID: 4567830045280473455
+      spriteID: 9961fdb08efc1ef4090db9c6a9bb9ec5
+      internalID: 448224031
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_78
+      name: ponyta_Idle_d3_f8
       rect:
         serializedVersion: 2
-        x: 261
-        y: 91
-        width: 23
-        height: 25
+        x: 256
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f009ab00618ff8d0800000000000000
-      internalID: -2810385392943431438
+      spriteID: 5faa8140856c5304981b67e688e462cd
+      internalID: -1842103452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_79
+      name: ponyta_Idle_d3_f9
       rect:
         serializedVersion: 2
-        x: 294
-        y: 91
-        width: 23
-        height: 25
+        x: 288
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64973be3774378320800000000000000
-      internalID: 2560072599941118278
+      spriteID: eff289cdbd8b0504e869d54f30da1e01
+      internalID: -192091480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_80
+      name: ponyta_Idle_d3_f10
       rect:
         serializedVersion: 2
-        x: 325
-        y: 91
-        width: 23
-        height: 25
+        x: 320
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30d317dda0eee8f60800000000000000
-      internalID: 8038624115335183619
+      spriteID: 42f9fb39c57c1244f969ae2f65a52c18
+      internalID: 310746077
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_81
+      name: ponyta_Idle_d3_f11
       rect:
         serializedVersion: 2
-        x: 358
-        y: 91
-        width: 23
-        height: 25
+        x: 352
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 56821e4f47e72ea60800000000000000
-      internalID: 7701857353546672229
+      spriteID: b5167f25976f8ff429198f44510b2f41
+      internalID: -1130831207
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_82
+      name: ponyta_Idle_d3_f12
       rect:
         serializedVersion: 2
-        x: 389
-        y: 91
-        width: 23
-        height: 25
+        x: 384
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9daf9bfcd1f110100800000000000000
-      internalID: 72373281914223321
+      spriteID: e3414a52506b2974ba2fb981ccdb733e
+      internalID: -553260496
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_83
+      name: ponyta_Idle_d3_f13
       rect:
         serializedVersion: 2
-        x: 422
-        y: 91
-        width: 23
-        height: 25
+        x: 416
+        y: 160
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ab3b966117eb2ce60800000000000000
-      internalID: 7981150882570548154
+      spriteID: 1286a2f470667f14f866c33275d4a706
+      internalID: 442692894
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_84
+      name: ponyta_Idle_d4_f0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 54
-        width: 27
-        height: 22
+        x: 0
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f1c7c491bd8932930800000000000000
-      internalID: 4117302551136467999
+      spriteID: f5e8a161d4055c045bfa5d555f910abe
+      internalID: 627729122
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_85
+      name: ponyta_Idle_d4_f1
       rect:
         serializedVersion: 2
-        x: 37
-        y: 53
-        width: 26
-        height: 24
+        x: 32
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e81ae07bbd28285a0800000000000000
-      internalID: -6520505430298418802
+      spriteID: a9973366f8d5eab459b45d072d56c752
+      internalID: -592963986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_86
+      name: ponyta_Idle_d4_f2
       rect:
         serializedVersion: 2
-        x: 68
-        y: 53
-        width: 26
-        height: 24
+        x: 64
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c78b728f6ffbd88e0800000000000000
-      internalID: -1689483217747855236
+      spriteID: 20bff170eb3a16047904f2b345f494dc
+      internalID: -333835725
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_87
+      name: ponyta_Idle_d4_f3
       rect:
         serializedVersion: 2
-        x: 101
-        y: 53
-        width: 26
-        height: 24
+        x: 96
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: de85d5973fdf6f8d0800000000000000
-      internalID: -2812781695091255059
+      spriteID: 607648e6dfa8b3840981d11c3a2eb6b8
+      internalID: -1113889928
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_88
+      name: ponyta_Idle_d4_f4
       rect:
         serializedVersion: 2
-        x: 132
-        y: 53
-        width: 26
-        height: 24
+        x: 128
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f9d60e7d7ac658c70800000000000000
-      internalID: 8972697300742729119
+      spriteID: c4ccf16c7f19d674fb7a5f96ac08f4c9
+      internalID: -1605437158
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_89
+      name: ponyta_Idle_d4_f5
       rect:
         serializedVersion: 2
-        x: 165
-        y: 53
-        width: 26
-        height: 24
+        x: 160
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f0e195a0d7908f8e0800000000000000
-      internalID: -1659566030036853233
+      spriteID: 787797cd0120ec74291937989e18545c
+      internalID: 1973552208
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_90
+      name: ponyta_Idle_d4_f6
       rect:
         serializedVersion: 2
-        x: 196
-        y: 53
-        width: 26
-        height: 24
+        x: 192
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dd28f486f5c1835b0800000000000000
-      internalID: -5388525758051286307
+      spriteID: cab16a2b53021c14991eff5fed891c60
+      internalID: -2084754142
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_91
+      name: ponyta_Idle_d4_f7
       rect:
         serializedVersion: 2
-        x: 229
-        y: 53
-        width: 26
-        height: 24
+        x: 224
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26a1da8390f471ea0800000000000000
-      internalID: -5902161885621577118
+      spriteID: d20d93f593cb2334eabec9eb11134698
+      internalID: 1844780567
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_92
+      name: ponyta_Idle_d4_f8
       rect:
         serializedVersion: 2
-        x: 260
-        y: 53
-        width: 26
-        height: 24
+        x: 256
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dfdc95158aba45060800000000000000
-      internalID: 6941361665092472317
+      spriteID: 64e1e4c59e8e4874aaf4e5ef5ed27c36
+      internalID: -595333704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_93
+      name: ponyta_Idle_d4_f9
       rect:
         serializedVersion: 2
-        x: 293
-        y: 53
-        width: 26
-        height: 24
+        x: 288
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: be562f558e735cff0800000000000000
-      internalID: -16545552612039189
+      spriteID: 3a9b83e734bdf8342b75f332bb06a83e
+      internalID: 2086158069
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_94
+      name: ponyta_Idle_d4_f10
       rect:
         serializedVersion: 2
-        x: 324
-        y: 53
-        width: 26
-        height: 24
+        x: 320
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: da4095583319f9920800000000000000
-      internalID: 2999275527318602925
+      spriteID: efb6b629aedff25458b8cf809ca427da
+      internalID: -1096788980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_95
+      name: ponyta_Idle_d4_f11
       rect:
         serializedVersion: 2
-        x: 357
-        y: 53
-        width: 26
-        height: 24
+        x: 352
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3322baa5c82d2d710800000000000000
-      internalID: 1716665908239999539
+      spriteID: 2cffc4a71f2b2a64fa8a29171571b43a
+      internalID: -788148143
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_96
+      name: ponyta_Idle_d4_f12
       rect:
         serializedVersion: 2
-        x: 388
-        y: 53
-        width: 26
-        height: 24
+        x: 384
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ffaa958622f1ae210800000000000000
-      internalID: 1362936069873052415
+      spriteID: 54f6d46b0a26d9943bfc6831b8a8adc9
+      internalID: 439396877
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_97
+      name: ponyta_Idle_d4_f13
       rect:
         serializedVersion: 2
-        x: 421
-        y: 53
-        width: 26
-        height: 24
+        x: 416
+        y: 120
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4c85c78fca5ecdfd0800000000000000
-      internalID: -2315723577309243196
+      spriteID: b294bae139186194d96391e6c020a6a0
+      internalID: 499149777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_98
+      name: ponyta_Idle_d5_f0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 12
-        width: 22
-        height: 23
+        x: 0
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 877508b8107430090800000000000000
-      internalID: -8069528035356813448
+      spriteID: 8bb84875bdd7def48a8f81cf4caf2855
+      internalID: -1716758777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_99
+      name: ponyta_Idle_d5_f1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 11
-        width: 20
-        height: 25
+        x: 32
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b9d3b024a50d1d5b0800000000000000
-      internalID: -5345262196638401125
+      spriteID: 647e894db824e5246a616b147f4b1dec
+      internalID: -1675595444
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_100
+      name: ponyta_Idle_d5_f2
       rect:
         serializedVersion: 2
-        x: 69
-        y: 11
-        width: 20
-        height: 25
+        x: 64
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c55061b67e36568e0800000000000000
-      internalID: -1700843438677293732
+      spriteID: 3d634c48a78773342aae28741820270c
+      internalID: 1622257230
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_101
+      name: ponyta_Idle_d5_f3
       rect:
         serializedVersion: 2
-        x: 102
-        y: 11
-        width: 20
-        height: 25
+        x: 96
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a32c2936ddfd016f0800000000000000
-      internalID: -715826198800580038
+      spriteID: 315f8294f9583be408c0732435b24870
+      internalID: -1525937413
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_102
+      name: ponyta_Idle_d5_f4
       rect:
         serializedVersion: 2
-        x: 133
-        y: 11
-        width: 20
-        height: 25
+        x: 128
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 665a0c7e09f2e1300800000000000000
-      internalID: 224669330825061734
+      spriteID: 9fb1144ba96e5f843a732a9d13f86c70
+      internalID: -1277457311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_103
+      name: ponyta_Idle_d5_f5
       rect:
         serializedVersion: 2
-        x: 166
-        y: 11
-        width: 20
-        height: 25
+        x: 160
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 89d3a83bac7552ee0800000000000000
-      internalID: -1286525590437216872
+      spriteID: 88d382c4fe25d974fa3720827f011bcb
+      internalID: -1591406829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_104
+      name: ponyta_Idle_d5_f6
       rect:
         serializedVersion: 2
-        x: 197
-        y: 11
-        width: 20
-        height: 25
+        x: 192
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce3b6baffe579ceb0800000000000000
-      internalID: -4699095062620490772
+      spriteID: 84be4732f77b4184eb6807b444871095
+      internalID: 2051466773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_105
+      name: ponyta_Idle_d5_f7
       rect:
         serializedVersion: 2
-        x: 230
-        y: 11
-        width: 20
-        height: 25
+        x: 224
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5df4ee2175cf7f960800000000000000
-      internalID: 7635849144139927509
+      spriteID: 0e90edc658f54ba4f8bd820efabfb2ad
+      internalID: -1214243463
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_106
+      name: ponyta_Idle_d5_f8
       rect:
         serializedVersion: 2
-        x: 261
-        y: 11
-        width: 20
-        height: 25
+        x: 256
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c9008e0e33976970800000000000000
-      internalID: 8748122695931005381
+      spriteID: f21cbeed7bdb43646878908aa5fcf108
+      internalID: -1743676800
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_107
+      name: ponyta_Idle_d5_f9
       rect:
         serializedVersion: 2
-        x: 294
-        y: 11
-        width: 20
-        height: 25
+        x: 288
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 40894008326ff8790800000000000000
-      internalID: -7525525819980736508
+      spriteID: 09256894b78c3ec45861c57b13932c06
+      internalID: 1329053459
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_108
+      name: ponyta_Idle_d5_f10
       rect:
         serializedVersion: 2
-        x: 325
-        y: 11
-        width: 20
-        height: 25
+        x: 320
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e9bb275f2c9a47860800000000000000
-      internalID: 7526827532049628062
+      spriteID: ca82e5f569e27e54983cbf3bd432254a
+      internalID: -1974789022
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_109
+      name: ponyta_Idle_d5_f11
       rect:
         serializedVersion: 2
-        x: 358
-        y: 11
-        width: 20
-        height: 25
+        x: 352
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6aca3ab1ac2a8b360800000000000000
-      internalID: 7185672194400431270
+      spriteID: a347df027b2cd8e4d8647e8e8f28293b
+      internalID: -293989404
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_110
+      name: ponyta_Idle_d5_f12
       rect:
         serializedVersion: 2
-        x: 389
-        y: 11
-        width: 20
-        height: 25
+        x: 384
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aaa5f46fa75739170800000000000000
-      internalID: 8184014118841178794
+      spriteID: 406a4dba72348bc489f76b91abad5e3c
+      internalID: 490260249
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_111
+      name: ponyta_Idle_d5_f13
       rect:
         serializedVersion: 2
-        x: 422
-        y: 11
-        width: 20
-        height: 25
+        x: 416
+        y: 80
+        width: 32
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 426fb8902b0d76650800000000000000
-      internalID: 6226174472945923620
+      spriteID: 8e6cb989e1e8bcb43ac6faa01b2cf71e
+      internalID: -1786925720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f83c48b85cceea4282927c452e0d946
+      internalID: -1462182297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a3652492c8091748a3993f8d2684a8a
+      internalID: 290141346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4d665eeda1c5f54e8aadf1935948283
+      internalID: -1114058098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2881c4c644534c458412cc92860b9d9
+      internalID: 1246947090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdb915ed6fb92634d8a2233b50f5891a
+      internalID: -428089731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3543d603bba67f54fa362cf38169054c
+      internalID: -1611225073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c3d56bae18dc9449153e4e1cab245f
+      internalID: -555028804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36de455b0c51c14438c4ddacc645d144
+      internalID: 593594580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79139188b8f67d549a5f5e198338f23f
+      internalID: -377821619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a51b954e9bba36144aa7bea3aeb29d0e
+      internalID: 1514423269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 399bcf26ffd35ca49a1669b853c1ea12
+      internalID: 2057309048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2af5f8bc2a038e64fa6a031e86313460
+      internalID: 844709315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b45da003af9e9d4cb04c1d0d981e586
+      internalID: -861555803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d6_f13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 40
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f84d2a452717bf24cb5e0ab07b0def3b
+      internalID: 2018547450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c99173ddb4870044bb022dd71df2a4ef
+      internalID: -1161104239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51001729a86b4694f906134591d12996
+      internalID: -1514323111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69a8489b0b0343649b31bd6674f99336
+      internalID: -595416092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 694319571b980cf41a2da72965182f1b
+      internalID: -2053471220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94cc88fe947d4b24592c2ff0797c8621
+      internalID: -105240814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3c564e86bbbec847a39cd1630662082
+      internalID: -309026441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b72c28732e4afe542a4b5b0a12d8ce2a
+      internalID: -98404994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba01e3fdbd9be7843b8885eb11cfe808
+      internalID: -1370813574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e730fc74a52ea854c9dab453bf6f0f30
+      internalID: -1381609045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9db1526973412bf4caf85118b5192197
+      internalID: 1447427125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 645fd2b018da5de4c90e683b52497843
+      internalID: -1562787594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ccad659348609d498a65de5611e847a
+      internalID: -278694344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3908f16f2440d44418f1eeb892fd321f
+      internalID: -1531020967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ponyta_Idle_d7_f13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 0
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b69d647d85f10db49939f53a23eb6641
+      internalID: -1771443176
       vertices: []
       indices: 
       edges: []
@@ -2913,7 +2913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a33ef3700160c324aa2639d9f23b20bc
     internalID: 0
     vertices: []
     indices: 
@@ -2923,118 +2923,118 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Idle-Anim_0: 7738998316474853551
-      Idle-Anim_1: 1977075729719447299
-      Idle-Anim_10: -2500440999657106871
-      Idle-Anim_100: -1700843438677293732
-      Idle-Anim_101: -715826198800580038
-      Idle-Anim_102: 224669330825061734
-      Idle-Anim_103: -1286525590437216872
-      Idle-Anim_104: -4699095062620490772
-      Idle-Anim_105: 7635849144139927509
-      Idle-Anim_106: 8748122695931005381
-      Idle-Anim_107: -7525525819980736508
-      Idle-Anim_108: 7526827532049628062
-      Idle-Anim_109: 7185672194400431270
-      Idle-Anim_11: 3380924079768591465
-      Idle-Anim_110: 8184014118841178794
-      Idle-Anim_111: 6226174472945923620
-      Idle-Anim_12: 6312937933537730039
-      Idle-Anim_13: 7370305187068088183
-      Idle-Anim_14: -4401239759644110075
-      Idle-Anim_15: 5716087231770099852
-      Idle-Anim_16: 4969444997890004679
-      Idle-Anim_17: -9145775198654151500
-      Idle-Anim_18: -6656707347790094562
-      Idle-Anim_19: -5421402862643160038
-      Idle-Anim_2: 9173613481854189632
-      Idle-Anim_20: 728989986691342317
-      Idle-Anim_21: 1731065877924970417
-      Idle-Anim_22: 702254742369775053
-      Idle-Anim_23: 843812802259278218
-      Idle-Anim_24: -2120886188613695082
-      Idle-Anim_25: -5737951630601031768
-      Idle-Anim_26: -3804901684299220886
-      Idle-Anim_27: -3999001167682290817
-      Idle-Anim_28: 4068438704295549569
-      Idle-Anim_29: -90787290279785787
-      Idle-Anim_3: 3458398094100512545
-      Idle-Anim_30: -3261768965048884968
-      Idle-Anim_31: 3239275106390307007
-      Idle-Anim_32: 7682167150398461212
-      Idle-Anim_33: 8060601425331014186
-      Idle-Anim_34: -6958673752304707357
-      Idle-Anim_35: -8426690388386427687
-      Idle-Anim_36: 8449194557805750873
-      Idle-Anim_37: 1080011638312391825
-      Idle-Anim_38: -3845111777405765225
-      Idle-Anim_39: -1419756531426089411
-      Idle-Anim_4: -1533630627476091484
-      Idle-Anim_40: -8144651385576188598
-      Idle-Anim_41: 7579764483984027731
-      Idle-Anim_42: -6616807519860232062
-      Idle-Anim_43: 742480819118137374
-      Idle-Anim_44: -6994012070172245659
-      Idle-Anim_45: -2345808624152391985
-      Idle-Anim_46: 2654939614410779705
-      Idle-Anim_47: 4167702978702494160
-      Idle-Anim_48: -7596693677688105294
-      Idle-Anim_49: -5695744126161345550
-      Idle-Anim_5: 3520039924926930967
-      Idle-Anim_50: 1547541788270972784
-      Idle-Anim_51: -4499450257312095318
-      Idle-Anim_52: 9020560476305569239
-      Idle-Anim_53: -363880760124612792
-      Idle-Anim_54: 4418380584751096824
-      Idle-Anim_55: -7682972370156704571
-      Idle-Anim_56: 7535274437353096891
-      Idle-Anim_57: 8585344447161022563
-      Idle-Anim_58: 112875410864699704
-      Idle-Anim_59: 8991885629887930004
-      Idle-Anim_6: -9007074944737430628
-      Idle-Anim_60: -1391829914706750737
-      Idle-Anim_61: -7056941162786057586
-      Idle-Anim_62: -5537185671722031022
-      Idle-Anim_63: -1944692991671737465
-      Idle-Anim_64: 8152633133077479108
-      Idle-Anim_65: 2173860659523398060
-      Idle-Anim_66: 4246154288094618300
-      Idle-Anim_67: -3597707227484848186
-      Idle-Anim_68: 5136644975071985363
-      Idle-Anim_69: 1410807384403950821
-      Idle-Anim_7: 5469265311968306403
-      Idle-Anim_70: -2211025042839993604
-      Idle-Anim_71: -3960522665846956554
-      Idle-Anim_72: 2620962233682176581
-      Idle-Anim_73: -1186186177907981608
-      Idle-Anim_74: 2009176413696529616
-      Idle-Anim_75: -6259870720281792273
-      Idle-Anim_76: -7242646902534034096
-      Idle-Anim_77: 4567830045280473455
-      Idle-Anim_78: -2810385392943431438
-      Idle-Anim_79: 2560072599941118278
-      Idle-Anim_8: 8813659312991238842
-      Idle-Anim_80: 8038624115335183619
-      Idle-Anim_81: 7701857353546672229
-      Idle-Anim_82: 72373281914223321
-      Idle-Anim_83: 7981150882570548154
-      Idle-Anim_84: 4117302551136467999
-      Idle-Anim_85: -6520505430298418802
-      Idle-Anim_86: -1689483217747855236
-      Idle-Anim_87: -2812781695091255059
-      Idle-Anim_88: 8972697300742729119
-      Idle-Anim_89: -1659566030036853233
-      Idle-Anim_9: -7205847637910636526
-      Idle-Anim_90: -5388525758051286307
-      Idle-Anim_91: -5902161885621577118
-      Idle-Anim_92: 6941361665092472317
-      Idle-Anim_93: -16545552612039189
-      Idle-Anim_94: 2999275527318602925
-      Idle-Anim_95: 1716665908239999539
-      Idle-Anim_96: 1362936069873052415
-      Idle-Anim_97: -2315723577309243196
-      Idle-Anim_98: -8069528035356813448
-      Idle-Anim_99: -5345262196638401125
+      ponyta_Idle_d0_f0: 113226291
+      ponyta_Idle_d0_f1: 816582004
+      ponyta_Idle_d0_f10: 2059013690
+      ponyta_Idle_d0_f11: -536468261
+      ponyta_Idle_d0_f12: 1952497963
+      ponyta_Idle_d0_f13: -2014975296
+      ponyta_Idle_d0_f2: -794277318
+      ponyta_Idle_d0_f3: -205686196
+      ponyta_Idle_d0_f4: 1169635709
+      ponyta_Idle_d0_f5: -814610912
+      ponyta_Idle_d0_f6: -446583767
+      ponyta_Idle_d0_f7: 1309526432
+      ponyta_Idle_d0_f8: -1585313616
+      ponyta_Idle_d0_f9: 1707442334
+      ponyta_Idle_d1_f0: -162523888
+      ponyta_Idle_d1_f1: 1349561968
+      ponyta_Idle_d1_f10: 670691986
+      ponyta_Idle_d1_f11: -736117986
+      ponyta_Idle_d1_f12: 503811598
+      ponyta_Idle_d1_f13: 1818212020
+      ponyta_Idle_d1_f2: 1510064427
+      ponyta_Idle_d1_f3: -1913451855
+      ponyta_Idle_d1_f4: 1715864631
+      ponyta_Idle_d1_f5: -466525020
+      ponyta_Idle_d1_f6: -1448816445
+      ponyta_Idle_d1_f7: -1443219680
+      ponyta_Idle_d1_f8: -764046988
+      ponyta_Idle_d1_f9: -1772126398
+      ponyta_Idle_d2_f0: 1974355256
+      ponyta_Idle_d2_f1: -761842447
+      ponyta_Idle_d2_f10: 2782601
+      ponyta_Idle_d2_f11: -401222251
+      ponyta_Idle_d2_f12: -2065743830
+      ponyta_Idle_d2_f13: 1254793684
+      ponyta_Idle_d2_f2: -891949363
+      ponyta_Idle_d2_f3: 661009747
+      ponyta_Idle_d2_f4: 823848745
+      ponyta_Idle_d2_f5: 23135682
+      ponyta_Idle_d2_f6: 413086463
+      ponyta_Idle_d2_f7: -1526077342
+      ponyta_Idle_d2_f8: -1000553238
+      ponyta_Idle_d2_f9: 208352650
+      ponyta_Idle_d3_f0: -1510309040
+      ponyta_Idle_d3_f1: -1066382407
+      ponyta_Idle_d3_f10: 310746077
+      ponyta_Idle_d3_f11: -1130831207
+      ponyta_Idle_d3_f12: -553260496
+      ponyta_Idle_d3_f13: 442692894
+      ponyta_Idle_d3_f2: 684053632
+      ponyta_Idle_d3_f3: 2023857655
+      ponyta_Idle_d3_f4: 549852635
+      ponyta_Idle_d3_f5: -891469514
+      ponyta_Idle_d3_f6: -135135477
+      ponyta_Idle_d3_f7: 448224031
+      ponyta_Idle_d3_f8: -1842103452
+      ponyta_Idle_d3_f9: -192091480
+      ponyta_Idle_d4_f0: 627729122
+      ponyta_Idle_d4_f1: -592963986
+      ponyta_Idle_d4_f10: -1096788980
+      ponyta_Idle_d4_f11: -788148143
+      ponyta_Idle_d4_f12: 439396877
+      ponyta_Idle_d4_f13: 499149777
+      ponyta_Idle_d4_f2: -333835725
+      ponyta_Idle_d4_f3: -1113889928
+      ponyta_Idle_d4_f4: -1605437158
+      ponyta_Idle_d4_f5: 1973552208
+      ponyta_Idle_d4_f6: -2084754142
+      ponyta_Idle_d4_f7: 1844780567
+      ponyta_Idle_d4_f8: -595333704
+      ponyta_Idle_d4_f9: 2086158069
+      ponyta_Idle_d5_f0: -1716758777
+      ponyta_Idle_d5_f1: -1675595444
+      ponyta_Idle_d5_f10: -1974789022
+      ponyta_Idle_d5_f11: -293989404
+      ponyta_Idle_d5_f12: 490260249
+      ponyta_Idle_d5_f13: -1786925720
+      ponyta_Idle_d5_f2: 1622257230
+      ponyta_Idle_d5_f3: -1525937413
+      ponyta_Idle_d5_f4: -1277457311
+      ponyta_Idle_d5_f5: -1591406829
+      ponyta_Idle_d5_f6: 2051466773
+      ponyta_Idle_d5_f7: -1214243463
+      ponyta_Idle_d5_f8: -1743676800
+      ponyta_Idle_d5_f9: 1329053459
+      ponyta_Idle_d6_f0: -1462182297
+      ponyta_Idle_d6_f1: 290141346
+      ponyta_Idle_d6_f10: 2057309048
+      ponyta_Idle_d6_f11: 844709315
+      ponyta_Idle_d6_f12: -861555803
+      ponyta_Idle_d6_f13: 2018547450
+      ponyta_Idle_d6_f2: -1114058098
+      ponyta_Idle_d6_f3: 1246947090
+      ponyta_Idle_d6_f4: -428089731
+      ponyta_Idle_d6_f5: -1611225073
+      ponyta_Idle_d6_f6: -555028804
+      ponyta_Idle_d6_f7: 593594580
+      ponyta_Idle_d6_f8: -377821619
+      ponyta_Idle_d6_f9: 1514423269
+      ponyta_Idle_d7_f0: -1161104239
+      ponyta_Idle_d7_f1: -1514323111
+      ponyta_Idle_d7_f10: -1562787594
+      ponyta_Idle_d7_f11: -278694344
+      ponyta_Idle_d7_f12: -1531020967
+      ponyta_Idle_d7_f13: -1771443176
+      ponyta_Idle_d7_f2: -595416092
+      ponyta_Idle_d7_f3: -2053471220
+      ponyta_Idle_d7_f4: -105240814
+      ponyta_Idle_d7_f5: -309026441
+      ponyta_Idle_d7_f6: -98404994
+      ponyta_Idle_d7_f7: -1370813574
+      ponyta_Idle_d7_f8: -1381609045
+      ponyta_Idle_d7_f9: 1447427125
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

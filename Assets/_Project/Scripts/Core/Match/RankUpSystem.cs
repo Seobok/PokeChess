@@ -82,7 +82,7 @@ namespace PokeChess.Core.Match
                     newNode.Placement=UnitPlacement.OnBench(free.Value);
                 }
             }
-            foreach(var node in nodes.Where(n=>n.Rank!=n.Unit.Rank)) RankRules.Default.Apply(catalog.Get(node.Unit.DefinitionId).BaseStats,node.Rank);
+            foreach(var node in nodes.Where(n=>n.Rank!=n.Unit.Rank)) RankRules.Default.Apply(catalog.Get(node.Unit.DefinitionId),node.Rank);
             return new RankUpPlan(before,added,nodes.ToArray(),events);
         }
     }

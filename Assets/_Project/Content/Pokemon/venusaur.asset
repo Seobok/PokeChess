@@ -17,29 +17,39 @@ MonoBehaviour:
   LocalizedName: "\uC774\uC0C1\uD574\uAF43"
   RoleId: melee-dps
   Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1200
-    Attack: 104
-    SpellPower: 0
-    AttackSpeed: 0.7
-    Armor: 30
-    MagicResistance: 20
-    AttackRange: 1
+    MaxHP: 1150
+    Attack: 75
+    SpellPower: 100
+    AttackSpeed: 0.65
+    Armor: 42
+    MagicResistance: 48
+    AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 60
-    StartingEnergy: 0
+    MaxEnergy: 115
+    StartingEnergy: 35
     AttackHitTime: 0.2
-    AttackDelivery: 0
+    AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1150
+  - 1955
+  - 3335
+  RankAttack:
+  - 75
+  - 98
+  - 128
   TypeIds:
   - grass
   - poison
   TraitIds:
   - assault
   - link
-  Skill: {fileID: 11400000, guid: 5bcaee58dda88f74ebb82410fc80abbd, type: 2}
+  Skill: {fileID: 11400000, guid: c606291663397904293768082edaa420, type: 2}
   Visual: {fileID: 11400000, guid: 7be23567ead8be648b299b3159accdc1, type: 2}
   Evolutions: []

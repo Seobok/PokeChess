@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Charmander
   LocalizedName: "\uD30C\uC774\uB9AC"
   RoleId: tank-carry
-  Cost: 5
+  Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1200
-    Attack: 85
-    SpellPower: 0
-    AttackSpeed: 0.7
-    Armor: 45
-    MagicResistance: 35
-    AttackRange: 1
+    MaxHP: 740
+    Attack: 68
+    SpellPower: 100
+    AttackSpeed: 0.77
+    Armor: 28
+    MagicResistance: 27
+    AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 120
-    StartingEnergy: 40
+    MaxEnergy: 70
+    StartingEnergy: 0
     AttackHitTime: 0.2
-    AttackDelivery: 0
+    AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 740
+  - 1258
+  - 2146
+  RankAttack:
+  - 68
+  - 88
+  - 116
   TypeIds:
   - fire
   TraitIds:
   - guardian
   - assault
-  Skill: {fileID: 11400000, guid: a494c987d10beb647b6199a271fd6199, type: 2}
+  Skill: {fileID: 11400000, guid: c52f9491a526c274bad928daca4dc17f, type: 2}
   Visual: {fileID: 11400000, guid: 9eb85162a36cd454dbc1e33fd6fffa52, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 91ebba13e81b3ca4882d7bc524f3f52e, type: 2}

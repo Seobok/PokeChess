@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-lapras
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-lapras
+  DisplayName: "\uB0C9\uB3D9\uBE54"
+  VariantIds:
+  - skill-lapras-r1
+  - skill-lapras-r2
+  - skill-lapras-r3
+  VariantMode: 1
+  Description: "\uC801\uC5D0\uAC8C 190/265/4000\uC758 \uD2B9\uC218 \uD53C\uD574\uB97C
+    \uC8FC\uACE0 2/4/99\uCD08\uAC04 \uBE59\uACB0\uC2DC\uD0A8\uB2E4."
+  Notes: "3\uC131 \uC804\uC6A9: \uACF5\uACA9 \uB300\uC0C1\uC774 \uBAA8\uB4E0 \uC0C1\uB300
+    \uC720\uB2DB\uC73C\uB85C \uD655\uC7A5"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

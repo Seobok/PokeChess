@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: paras
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: paras
+  DisplayName: Paras
+  LocalizedName: "\uD30C\uB77C\uC2A4"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 620
+    Attack: 42
+    SpellPower: 100
+    AttackSpeed: 0.6
+    Armor: 28
+    MagicResistance: 30
+    AttackRange: 2
+    MoveSpeed: 2
+    MaxEnergy: 100
+    StartingEnergy: 30
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 620
+  - 1054
+  - 1798
+  RankAttack:
+  - 42
+  - 55
+  - 71
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: a9d8e850dca507040820f0f463705f78, type: 2}
+  Visual: {fileID: 11400000, guid: ad1abfe98bdeb714d8237cde80741f5d, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: 0d7711dfede050742afc28eb012428ac, type: 2}
+    PointCost: 1

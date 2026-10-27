@@ -20,11 +20,15 @@ namespace PokeChess.Content
         public float Duration=4, SlowFraction;
         public StatusTargetTeam TargetTeam;
         public CrowdControlKind CrowdControl;
+        public StatusBehavior Behavior;
+        public float RecoveryFraction;
+        public bool FixedSpellDamage;
+        public float EnergyRefundFraction,EffectValue,RestReduction=.3f,ReflectionMultiplier;
         public StackPolicy StackPolicy=StackPolicy.Refresh;
         public SourceStackRule SourceRule;
         public int MaxStack=1;
         public StatModifierData[] Modifiers=Array.Empty<StatModifierData>();
         public StatusEffectDefinition ToCore()=>new StatusEffectDefinition(Id,Duration,TargetTeam,CrowdControl,
-            StackPolicy,SourceRule,MaxStack,Modifiers.Select(m=>m.ToCore()),string.IsNullOrEmpty(StackGroup)?null:StackGroup,SlowFraction);
+            StackPolicy,SourceRule,MaxStack,Modifiers.Select(m=>m.ToCore()),string.IsNullOrEmpty(StackGroup)?null:StackGroup,SlowFraction,Behavior,RecoveryFraction,EnergyRefundFraction,EffectValue,RestReduction,ReflectionMultiplier,FixedSpellDamage);
     }
 }

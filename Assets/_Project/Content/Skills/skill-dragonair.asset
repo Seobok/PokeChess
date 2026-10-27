@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-dragonair
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-dragonair
+  DisplayName: "\uD30C\uB3C4\uD0C0\uAE30"
+  VariantIds:
+  - skill-dragonair-r1
+  - skill-dragonair-r2
+  - skill-dragonair-r3
+  VariantMode: 1
+  Description: "\uC804\uBC29\uC73C\uB85C \uAC70\uB300\uD55C \uD30C\uB3C4\uB97C \uC77C\uC73C\uCF1C
+    \uAC00\uB85C 3\uCE78, \uC138\uB85C 3\uCE78 \uBC94\uC704\uC758 \uC801\uC5D0\uAC8C
+    145/200/270\uC758 \uD2B9\uC218 \uD53C\uD574\uB97C \uC900\uB2E4. \uC801\uC744
+    1\uCE78 \uBC00\uC5B4\uB0B4\uACE0, 3\uCD08\uAC04 \uACF5\uACA9\uC18D\uB3C4\uB97C
+    20/25/30% \uAC10\uC18C\uC2DC\uD0A8\uB2E4."
+  Notes: "\uD0ED\uC758 \uCC38\uACE0 \uADF8\uB9BC \uC6B0\uC120"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

@@ -17,29 +17,39 @@ MonoBehaviour:
   LocalizedName: "\uC5B4\uB2C8\uBD80\uAE30"
   RoleId: support
   Cost: 3
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 1062.5
-    Attack: 56.25
-    SpellPower: 0
-    AttackSpeed: 0.55
-    Armor: 35
-    MagicResistance: 30
-    AttackRange: 2
+    MaxHP: 1100
+    Attack: 64
+    SpellPower: 100
+    AttackSpeed: 0.64
+    Armor: 46
+    MagicResistance: 44
+    AttackRange: 1
     MoveSpeed: 2
-    MaxEnergy: 100
-    StartingEnergy: 40
+    MaxEnergy: 90
+    StartingEnergy: 30
     AttackHitTime: 0.2
-    AttackDelivery: 1
+    AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 1100
+  - 1870
+  - 3190
+  RankAttack:
+  - 64
+  - 83
+  - 109
   TypeIds:
   - water
   TraitIds:
   - guardian
   - link
-  Skill: {fileID: 11400000, guid: 8af879c9008df2148b16deb0dd4ce204, type: 2}
+  Skill: {fileID: 11400000, guid: 68f187252079cb14a9b1d68e28a92dd4, type: 2}
   Visual: {fileID: 11400000, guid: 6d344f65f929a2142b053e1a2a3e914e, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: a7b46059ac694bb43859c5dc03a23c75, type: 2}

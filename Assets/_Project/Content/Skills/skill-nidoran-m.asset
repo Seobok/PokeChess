@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-nidoran-m
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-nidoran-m
+  DisplayName: "\uBFD4\uCC0C\uB974\uAE30"
+  VariantIds:
+  - skill-nidoran-m-r1
+  - skill-nidoran-m-r2
+  - skill-nidoran-m-r3
+  VariantMode: 1
+  Description: "\uC801\uC5D0\uAC8C 120/170/225\uC758 \uBB3C\uB9AC \uD53C\uD574\uB97C
+    \uC8FC\uACE0 1\uCE78 \uBC00\uC5B4\uB0B8\uB2E4."
+  Notes: 
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

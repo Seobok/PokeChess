@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06c5670ae68d1cf4caf9628e0d88ba33, type: 3}
+  m_Name: status-slowpoke-r1-s0
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.StatusData
+  Id: status-slowpoke-r1-s0
+  StackGroup: status-slowpoke-r1-s0
+  Duration: 5
+  SlowFraction: 0
+  TargetTeam: 0
+  CrowdControl: 0
+  Behavior: 0
+  RecoveryFraction: 0
+  FixedSpellDamage: 0
+  EnergyRefundFraction: 0
+  EffectValue: 0
+  RestReduction: 0.3
+  ReflectionMultiplier: 0
+  StackPolicy: 1
+  SourceRule: 0
+  MaxStack: 1
+  Modifiers:
+  - Stat: 3
+    Type: 1
+    Value: 0.5

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be41c1b3aaeb274ba134703a8027196, type: 3}
+  m_Name: skill-farfetchd
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
+  Id: skill-farfetchd
+  DisplayName: "\uCE7C\uCDA4"
+  VariantIds:
+  - skill-farfetchd-r1
+  - skill-farfetchd-r2
+  - skill-farfetchd-r3
+  VariantMode: 1
+  Description: "6\uCD08\uAC04 \uACF5\uACA9\uC18D\uB3C4 30/45/60% \uC99D\uAC00. \uAE30\uBCF8
+    \uACF5\uACA9 3\uD68C\uB9C8\uB2E4 \uC8FC\uBCC0 1\uCE78\uC5D0 100/140/190% \uCD94\uAC00
+    \uBB3C\uB9AC\uD53C\uD574. \uC801 \uCC98\uCE58 \uAD00\uC5EC \uC2DC \uC9C0\uC18D\uC2DC\uAC04
+    2\uCD08 \uC5F0\uC7A5, \uCD5C\uB300 2\uD68C."
+  Notes: "\uC131\uACF5\uD55C \uAE30\uBCF8 \uACF5\uACA9 \uC801\uC911\uC744 \uACC4\uC0B0.
+    \uC2E4\uBA85\xB7\uD68C\uD53C \uC81C\uC678, \uBCF4\uD638\uB9C9 \uC801\uC911 \uD3EC\uD568.
+    \uBCF8\uC778 \uC911\uC2EC \uBC18\uACBD 1\uCE78\uC5D0 \uACF5\uACA9\uB825 \uAE30\uBC18
+    \uCD94\uAC00 \uD53C\uD574. \uC7AC\uC2DC\uC804 \uC2DC \uD69F\uC218 \uC720\uC9C0\n\uC2DC\uC804\uB2F9
+    \uCD5C\uB300 2\uD68C, \uCD1D \uCD5C\uB300 10\uCD08. \uC7AC\uC2DC\uC804\uC740
+    \uC0C8 \uBC84\uD504\uB85C \uAC31\uC2E0\n\uC5F0\uC7A5 \uAC00\uB2A5 \uD69F\uC218\uB294
+    \uC0C8 \uC2DC\uC804\uB9C8\uB2E4 \uCD08\uAE30\uD654"
+  CastTime: 0.4
+  PostCastTime: 0.4
+  TargetRule: 0
+  TargetLostPolicy: 0
+  Range: 3
+  Interruptible: 1
+  HasEnergyLock: 1
+  EnergyLock: 1
+  HasActivation: 0
+  Activation:
+    MinimumAdjacentEnemies: 2
+    RequireSafeDestination: 1
+  Effects: []
+  Steps: []

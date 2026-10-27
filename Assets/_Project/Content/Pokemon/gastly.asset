@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Gastly
   LocalizedName: "\uACE0\uC624\uC2A4"
   RoleId: caster
-  Cost: 2
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 500
-    Attack: 40
-    SpellPower: 0
-    AttackSpeed: 0.6
-    Armor: 15
-    MagicResistance: 20
+    MaxHP: 880
+    Attack: 68
+    SpellPower: 100
+    AttackSpeed: 0.7
+    Armor: 22
+    MagicResistance: 55
     AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 70
-    StartingEnergy: 0
+    MaxEnergy: 100
+    StartingEnergy: 35
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 880
+  - 1496
+  - 2552
+  RankAttack:
+  - 68
+  - 88
+  - 116
   TypeIds:
   - ghost
   - poison
   TraitIds:
   - focus
-  Skill: {fileID: 11400000, guid: 9d218ddbad3cf0344afe2393711a857d, type: 2}
+  Skill: {fileID: 11400000, guid: 95a50eef4707c5d439b59eae23683242, type: 2}
   Visual: {fileID: 11400000, guid: 07254d403ce9e884baebafcd55828ff0, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 5b8cc749cf2f788488de590b672604f8, type: 2}

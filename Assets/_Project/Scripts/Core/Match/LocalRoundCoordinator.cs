@@ -124,6 +124,7 @@ namespace PokeChess.Core.Match
         private readonly EliminationSystem elimination=new EliminationSystem();
         private IReadOnlyList<LocalPairBattle> battles=Array.Empty<LocalPairBattle>();
         private bool refreshing;
+        private readonly HashSet<string> rewardBound=new HashSet<string>();
         private readonly List<UnitRankedUp> preparationRankUps=new List<UnitRankedUp>();
         public IReadOnlyList<UnitRankedUp> PreparationRankUps => preparationRankUps.AsReadOnly();
         public MatchState Match { get; }
@@ -241,7 +242,17 @@ namespace PokeChess.Core.Match
         {
             if(Match.Phase==MatchPhase.Result) { SettleResult();return; }
             if(Match.Phase!=MatchPhase.Combat)return;
-            foreach(var battle in battles)battle.Step();
+            foreach(var battle in battles) {
+                if(battle.Battle!=null&&!rewardBound.Contains(battle.Battle.BattleId)) {
+                    rewardBound.Add(battle.Battle.BattleId);
+                    battle.Battle.SkillProcs.GoldAwarded+=(unit,gold)=>{
+                        if(battle.IsShadow&&unit.TeamId==2)return;
+                        var player=Match.Players.FirstOrDefault(p=>p.PlayerId==unit.OwnerPlayerId);
+                        if(player!=null)player.SetProgress(checked(player.Gold+gold),player.XP,player.Level);
+                    };
+                }
+                battle.Step();
+            }
             if(battles.All(b=>b.IsComplete))Finish();
         }
         private void Finish()

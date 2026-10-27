@@ -16,30 +16,40 @@ MonoBehaviour:
   DisplayName: Haunter
   LocalizedName: "\uACE0\uC6B0\uC2A4\uD2B8"
   RoleId: caster
-  Cost: 2
+  Cost: 4
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 625
-    Attack: 50
-    SpellPower: 0
-    AttackSpeed: 0.6
-    Armor: 15
-    MagicResistance: 20
+    MaxHP: 960
+    Attack: 76
+    SpellPower: 100
+    AttackSpeed: 0.74
+    Armor: 25
+    MagicResistance: 58
     AttackRange: 3
     MoveSpeed: 2
-    MaxEnergy: 70
-    StartingEnergy: 0
+    MaxEnergy: 105
+    StartingEnergy: 30
     AttackHitTime: 0.2
     AttackDelivery: 1
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 960
+  - 1632
+  - 2784
+  RankAttack:
+  - 76
+  - 99
+  - 129
   TypeIds:
   - ghost
   - poison
   TraitIds:
   - focus
-  Skill: {fileID: 11400000, guid: 9d218ddbad3cf0344afe2393711a857d, type: 2}
+  Skill: {fileID: 11400000, guid: c68c9b8b792060b4fa027d6aa3fd9038, type: 2}
   Visual: {fileID: 11400000, guid: fea1fb57566a16845b13d18e0a4c4372, type: 2}
   Evolutions:
   - Target: {fileID: 11400000, guid: 37e3b39caf0fc494f8bfb98508de4c76, type: 2}

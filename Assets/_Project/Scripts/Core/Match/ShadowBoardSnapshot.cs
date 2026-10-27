@@ -48,7 +48,7 @@ namespace PokeChess.Core.Match
             if(round<1)throw new ArgumentOutOfRangeException(nameof(round));
             var units=source.Units.Where(u=>u.Placement.Kind==PlacementKind.Board || deployments.ContainsKey(u.InstanceId))
                 .Select(u=>new ShadowUnitSnapshot(u,deployments.TryGetValue(u.InstanceId,out var placement) ? placement.Position.Value : u.Placement.Position.Value,
-                    RankRules.Default.Apply(catalog.Get(u.DefinitionId).BaseStats,u.Rank))).ToArray();
+                    RankRules.Default.Apply(catalog.Get(u.DefinitionId),u.Rank))).ToArray();
             return new ShadowBoardSnapshot(source.PlayerId,round,units);
         }
         public BattleState CreateBattle(string battleId,ulong seed,int tickRate,PokemonCatalog catalog,IEnumerable<BattleUnitSetup> challenger)
@@ -59,7 +59,7 @@ namespace PokeChess.Core.Match
                 throw new ArgumentException("Shadow challenger must be a different player's team one.",nameof(challenger));
             var stats=Units.ToDictionary(u=>u.UnitInstanceId,u=>u.Stats,StringComparer.Ordinal);
             return BattleStateFactory.Create(battleId,Round,seed,tickRate,catalog,entries.Concat(Units.Select(u=>u.CreateSetup(SourcePlayerId))),
-                (unit,definition)=>unit.OwnerPlayerId==SourcePlayerId ? stats[unit.InstanceId] : RankRules.Default.Apply(definition.BaseStats,unit.Rank));
+                (unit,definition)=>unit.OwnerPlayerId==SourcePlayerId ? stats[unit.InstanceId] : RankRules.Default.Apply(definition,unit.Rank));
         }
     }
 }

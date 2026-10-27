@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: diglett
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: diglett
+  DisplayName: Diglett
+  LocalizedName: "\uB514\uADF8\uB2E4"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 580
+    Attack: 55
+    SpellPower: 100
+    AttackSpeed: 0.75
+    Armor: 20
+    MagicResistance: 20
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 65
+    StartingEnergy: 15
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 580
+  - 986
+  - 1682
+  RankAttack:
+  - 55
+  - 72
+  - 94
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 64943fe435c9b894285da186c9996b98, type: 2}
+  Visual: {fileID: 11400000, guid: 0ddd83f227c793f47bb32c2837241469, type: 2}
+  Evolutions:
+  - Target: {fileID: 11400000, guid: 48bab14db5c87274baa939ca60a6324a, type: 2}
+    PointCost: 1

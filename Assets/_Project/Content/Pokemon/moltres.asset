@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: moltres
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: moltres
+  DisplayName: Moltres
+  LocalizedName: "\uD30C\uC774\uC5B4"
+  RoleId: melee-dps
+  Cost: 5
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 1450
+    Attack: 110
+    SpellPower: 100
+    AttackSpeed: 0.77
+    Armor: 52
+    MagicResistance: 60
+    AttackRange: 3
+    MoveSpeed: 2
+    MaxEnergy: 170
+    StartingEnergy: 65
+    AttackHitTime: 0.2
+    AttackDelivery: 1
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 1450
+  - 2465
+  - 4205
+  RankAttack:
+  - 110
+  - 143
+  - 187
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: 94db8acd1afd11542b06db7dce72dc4e, type: 2}
+  Visual: {fileID: 11400000, guid: c0b2103087e0300459ad48ae50bef54d, type: 2}
+  Evolutions: []

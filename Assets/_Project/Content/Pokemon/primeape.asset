@@ -17,16 +17,18 @@ MonoBehaviour:
   LocalizedName: "\uC131\uC6D0\uC22D"
   RoleId: melee-dps
   Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
   Stats:
-    MaxHP: 625
-    Attack: 62.5
-    SpellPower: 0
-    AttackSpeed: 0.65
-    Armor: 20
-    MagicResistance: 20
+    MaxHP: 800
+    Attack: 78
+    SpellPower: 100
+    AttackSpeed: 0.88
+    Armor: 30
+    MagicResistance: 25
     AttackRange: 1
     MoveSpeed: 2
-    MaxEnergy: 50
+    MaxEnergy: 85
     StartingEnergy: 0
     AttackHitTime: 0.2
     AttackDelivery: 0
@@ -34,10 +36,18 @@ MonoBehaviour:
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
+  RankHP:
+  - 800
+  - 1360
+  - 2320
+  RankAttack:
+  - 78
+  - 101
+  - 133
   TypeIds:
   - fighting
   TraitIds:
   - assault
-  Skill: {fileID: 11400000, guid: a5ace70c037bf144489931abcc7996d8, type: 2}
+  Skill: {fileID: 11400000, guid: 4e1205400762c454bb0d54b726e8c559, type: 2}
   Visual: {fileID: 11400000, guid: 77939fa9bee02e04390e69ba365e814f, type: 2}
   Evolutions: []

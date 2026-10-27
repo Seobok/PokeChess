@@ -274,7 +274,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -288,7 +288,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -312,7 +312,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -350,1761 +350,1761 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle-Anim_0
+      name: nidorino_Idle_d0_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 291
-        width: 25
-        height: 26
+        x: 0
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fa864d247f1766b60800000000000000
-      internalID: 7738998316474853551
+      spriteID: dcd2b463cd4915b4ca43e25905a6de34
+      internalID: 1197977897
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_1
+      name: nidorino_Idle_d0_f1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 291
-        width: 24
-        height: 28
+        x: 40
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30f49f3b6ebff6b10800000000000000
-      internalID: 1977075729719447299
+      spriteID: 5d7763f72ad8ef64b9dea3b71114d499
+      internalID: 460074957
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_2
-      rect:
-        serializedVersion: 2
-        x: 87
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 04047ac9bd83f4f70800000000000000
-      internalID: 9173613481854189632
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_3
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 12fbfb24eb2beff20800000000000000
-      internalID: 3458398094100512545
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_4
-      rect:
-        serializedVersion: 2
-        x: 167
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4adc0a0e11377bae0800000000000000
-      internalID: -1533630627476091484
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_5
-      rect:
-        serializedVersion: 2
-        x: 208
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 710667869a1b9d030800000000000000
-      internalID: 3520039924926930967
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_6
-      rect:
-        serializedVersion: 2
-        x: 247
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c93ba9d2f01700380800000000000000
-      internalID: -9007074944737430628
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_7
-      rect:
-        serializedVersion: 2
-        x: 288
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3e4ac36e2dbb6eb40800000000000000
-      internalID: 5469265311968306403
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_8
-      rect:
-        serializedVersion: 2
-        x: 327
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: abaf72ac278605a70800000000000000
-      internalID: 8813659312991238842
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_9
-      rect:
-        serializedVersion: 2
-        x: 368
-        y: 291
-        width: 24
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 218bfb460cfaffb90800000000000000
-      internalID: -7205847637910636526
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_10
-      rect:
-        serializedVersion: 2
-        x: 6
-        y: 250
-        width: 29
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9429d91a826ac4dd0800000000000000
-      internalID: -2500440999657106871
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_11
-      rect:
-        serializedVersion: 2
-        x: 41
-        y: 250
-        width: 31
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 96cdb23a9847bee20800000000000000
-      internalID: 3380924079768591465
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Idle-Anim_12
+      name: nidorino_Idle_d0_f2
       rect:
         serializedVersion: 2
         x: 80
-        y: 250
-        width: 31
-        height: 29
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7fdda996a9f0c9750800000000000000
-      internalID: 6312937933537730039
+      spriteID: f6c9d9ecf5f43c94c8c829e34576b5fa
+      internalID: -1692187756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_13
+      name: nidorino_Idle_d0_f3
       rect:
         serializedVersion: 2
-        x: 121
-        y: 250
-        width: 31
-        height: 29
+        x: 120
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 77f8961a485984660800000000000000
-      internalID: 7370305187068088183
+      spriteID: 81b8a0418c386cf47b1d1723fc628f04
+      internalID: 664486292
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_14
+      name: nidorino_Idle_d0_f4
       rect:
         serializedVersion: 2
         x: 160
-        y: 250
-        width: 31
-        height: 29
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5035613e1c7abe2c0800000000000000
-      internalID: -4401239759644110075
+      spriteID: 2673680a99b18fa45aa02ee76dcd6cc9
+      internalID: -2001173396
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_15
+      name: nidorino_Idle_d0_f5
       rect:
         serializedVersion: 2
-        x: 201
-        y: 250
-        width: 31
-        height: 29
+        x: 200
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c808dca5d0f935f40800000000000000
-      internalID: 5716087231770099852
+      spriteID: 03cfc13534e02714c9a538c0615d7976
+      internalID: -1371322983
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_16
+      name: nidorino_Idle_d0_f6
       rect:
         serializedVersion: 2
         x: 240
-        y: 250
-        width: 31
-        height: 29
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c6531675e307f440800000000000000
-      internalID: 4969444997890004679
+      spriteID: 662e1a1a30d235d4995ed96d443df681
+      internalID: 1238605908
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_17
+      name: nidorino_Idle_d0_f7
       rect:
         serializedVersion: 2
-        x: 281
-        y: 250
-        width: 31
-        height: 29
+        x: 280
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4b444a8c9eda31180800000000000000
-      internalID: -9145775198654151500
+      spriteID: 3a30087ec3e569647b695a9a5413bfbf
+      internalID: 212487085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_18
+      name: nidorino_Idle_d0_f8
       rect:
         serializedVersion: 2
         x: 320
-        y: 250
-        width: 31
-        height: 29
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1f1d399fef9e93a0800000000000000
-      internalID: -6656707347790094562
+      spriteID: 4c007de9147f7424094b67718fcbf683
+      internalID: -1742980139
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_19
+      name: nidorino_Idle_d0_f9
       rect:
         serializedVersion: 2
-        x: 361
-        y: 250
-        width: 31
-        height: 29
+        x: 360
+        y: 280
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a1c5edbf1de43c4b0800000000000000
-      internalID: -5421402862643160038
+      spriteID: 156af6e518cced948bfac65e25d9ed9c
+      internalID: -797466474
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_20
+      name: nidorino_Idle_d1_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 211
-        width: 32
-        height: 29
+        x: 0
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: defdd81d784ed1a00800000000000000
-      internalID: 728989986691342317
+      spriteID: a2dce72c409dbd443a87f680d2dcf5f5
+      internalID: -904560316
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_21
+      name: nidorino_Idle_d1_f1
       rect:
         serializedVersion: 2
-        x: 41
-        y: 211
-        width: 34
-        height: 26
+        x: 40
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bf74809e3bf50810800000000000000
-      internalID: 1731065877924970417
+      spriteID: baa0ad7429933434bbe131cb560d740e
+      internalID: -1636947873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_22
+      name: nidorino_Idle_d1_f2
       rect:
         serializedVersion: 2
         x: 80
-        y: 211
-        width: 34
-        height: 26
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dcda8cca7f8eeb900800000000000000
-      internalID: 702254742369775053
+      spriteID: dd3fd744edc041642890e39acf4a8e38
+      internalID: 1258913177
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_23
+      name: nidorino_Idle_d1_f3
       rect:
         serializedVersion: 2
-        x: 121
-        y: 211
-        width: 34
-        height: 26
+        x: 120
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a89579fd543d5bb00800000000000000
-      internalID: 843812802259278218
+      spriteID: a780ddabc7c3c784b914dbb86c1351f0
+      internalID: -394148657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_24
+      name: nidorino_Idle_d1_f4
       rect:
         serializedVersion: 2
         x: 160
-        y: 211
-        width: 34
-        height: 26
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 69906a69f391192e0800000000000000
-      internalID: -2120886188613695082
+      spriteID: bbdf0241131ce5e49a70bec552ff8527
+      internalID: -150846986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_25
+      name: nidorino_Idle_d1_f5
       rect:
         serializedVersion: 2
-        x: 201
-        y: 211
-        width: 34
-        height: 26
+        x: 200
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8afe6a79463be50b0800000000000000
-      internalID: -5737951630601031768
+      spriteID: 89deb4e6f14bc224c8ab24de7fee63c1
+      internalID: -1183367556
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_26
+      name: nidorino_Idle_d1_f6
       rect:
         serializedVersion: 2
         x: 240
-        y: 211
-        width: 34
-        height: 26
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a683f0ec316423bc0800000000000000
-      internalID: -3804901684299220886
+      spriteID: 3135f1c1da7c628479033ac993025295
+      internalID: -1310993544
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_27
+      name: nidorino_Idle_d1_f7
       rect:
         serializedVersion: 2
-        x: 281
-        y: 211
-        width: 34
-        height: 26
+        x: 280
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f7bbce720a1b088c0800000000000000
-      internalID: -3999001167682290817
+      spriteID: 59cc4208dd90815418a1493479fbf7f9
+      internalID: 1381061934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_28
+      name: nidorino_Idle_d1_f8
       rect:
         serializedVersion: 2
         x: 320
-        y: 211
-        width: 34
-        height: 26
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 18a9cff227ff57830800000000000000
-      internalID: 4068438704295549569
+      spriteID: e104f1d890cd83e4199584049e668fe7
+      internalID: -159824957
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_29
+      name: nidorino_Idle_d1_f9
       rect:
         serializedVersion: 2
-        x: 361
-        y: 211
-        width: 34
-        height: 26
+        x: 360
+        y: 240
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cac0c4c0757dbef0800000000000000
-      internalID: -90787290279785787
+      spriteID: 7b2cc9f2d7293be43ad4d6c280230f16
+      internalID: 608147825
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_30
+      name: nidorino_Idle_d2_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 170
-        width: 29
-        height: 30
+        x: 0
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8112eda686edbb2d0800000000000000
-      internalID: -3261768965048884968
+      spriteID: cab51a41c07f8854180f6985cdf8ee65
+      internalID: 1591644897
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_31
+      name: nidorino_Idle_d2_f1
       rect:
         serializedVersion: 2
-        x: 46
-        y: 170
-        width: 29
-        height: 29
+        x: 40
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fb0f82efb8734fc20800000000000000
-      internalID: 3239275106390307007
+      spriteID: a0c6ae381934c714ea2030f888df045c
+      internalID: 1912837645
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_32
+      name: nidorino_Idle_d2_f2
       rect:
         serializedVersion: 2
-        x: 85
-        y: 170
-        width: 29
-        height: 29
+        x: 80
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c15dca8425a8c9a60800000000000000
-      internalID: 7682167150398461212
+      spriteID: 06d19251297569442945bda7514dd7b2
+      internalID: 2049962605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_33
+      name: nidorino_Idle_d2_f3
       rect:
         serializedVersion: 2
-        x: 126
-        y: 170
-        width: 29
-        height: 29
+        x: 120
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2accd81a420ddf60800000000000000
-      internalID: 8060601425331014186
+      spriteID: 0668fabddbe28cf4498bde3b9555062d
+      internalID: 899777808
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_34
+      name: nidorino_Idle_d2_f4
       rect:
         serializedVersion: 2
-        x: 165
-        y: 170
-        width: 29
-        height: 29
+        x: 160
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e81b064713dd6f90800000000000000
-      internalID: -6958673752304707357
+      spriteID: b937c1f0cf2d9664f9b99de0de09ae8d
+      internalID: 1685501589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_35
+      name: nidorino_Idle_d2_f5
       rect:
         serializedVersion: 2
-        x: 206
-        y: 170
-        width: 29
-        height: 29
+        x: 200
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9dc47000db16e0b80800000000000000
-      internalID: -8426690388386427687
+      spriteID: f746e35adc6ee004b840fd102a1364a5
+      internalID: 2098239467
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_36
+      name: nidorino_Idle_d2_f6
       rect:
         serializedVersion: 2
-        x: 245
-        y: 170
-        width: 29
-        height: 29
+        x: 240
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 95aec204fa1914570800000000000000
-      internalID: 8449194557805750873
+      spriteID: 3a1c38a741529c74bb7cc974279117f7
+      internalID: 616830062
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_37
+      name: nidorino_Idle_d2_f7
       rect:
         serializedVersion: 2
-        x: 286
-        y: 170
-        width: 29
-        height: 29
+        x: 280
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 194d5e6ecd8fcfe00800000000000000
-      internalID: 1080011638312391825
+      spriteID: 0a018323d7f239441a5511ac054e3a81
+      internalID: 865146344
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_38
+      name: nidorino_Idle_d2_f8
       rect:
         serializedVersion: 2
-        x: 325
-        y: 170
-        width: 29
-        height: 29
+        x: 320
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 799fe02f53b63aac0800000000000000
-      internalID: -3845111777405765225
+      spriteID: 075556b148d2d1442bca1e05b39a7308
+      internalID: -1856571355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_39
+      name: nidorino_Idle_d2_f9
       rect:
         serializedVersion: 2
-        x: 366
-        y: 170
-        width: 29
-        height: 29
+        x: 360
+        y: 200
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d36aec4f4f20c4ce0800000000000000
-      internalID: -1419756531426089411
+      spriteID: 9f3ee170bea34c344ae97714657ff54d
+      internalID: -556983556
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_40
+      name: nidorino_Idle_d3_f0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 131
-        width: 27
-        height: 27
+        x: 0
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a45965f87b268fe80800000000000000
-      internalID: -8144651385576188598
+      spriteID: 683704a9539dbea48a644ac2ec560758
+      internalID: 1115157989
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_41
+      name: nidorino_Idle_d3_f1
       rect:
         serializedVersion: 2
-        x: 47
-        y: 128
-        width: 27
-        height: 28
+        x: 40
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3507dfc83abb03960800000000000000
-      internalID: 7579764483984027731
+      spriteID: e4341ed856c4f574ca220a1d1417b7f4
+      internalID: 1723978846
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_42
+      name: nidorino_Idle_d3_f2
       rect:
         serializedVersion: 2
-        x: 86
-        y: 128
-        width: 27
-        height: 28
+        x: 80
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 280f8973e906c24a0800000000000000
-      internalID: -6616807519860232062
+      spriteID: 334d296647d973c48853877474767aea
+      internalID: -1729319420
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_43
+      name: nidorino_Idle_d3_f3
       rect:
         serializedVersion: 2
-        x: 127
-        y: 128
-        width: 27
-        height: 28
+        x: 120
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e10e3140f52dd4a00800000000000000
-      internalID: 742480819118137374
+      spriteID: 3c3b55b668e8f944c8f8210dd664d7d3
+      internalID: 2058759168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_44
+      name: nidorino_Idle_d3_f4
       rect:
         serializedVersion: 2
-        x: 166
-        y: 128
-        width: 27
-        height: 28
+        x: 160
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 561c69af31740fe90800000000000000
-      internalID: -6994012070172245659
+      spriteID: 445a0bf773bbfbc49a75682e0fcb62ff
+      internalID: -310152442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_45
+      name: nidorino_Idle_d3_f5
       rect:
         serializedVersion: 2
-        x: 207
-        y: 128
-        width: 27
-        height: 28
+        x: 200
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fce49562c73027fd0800000000000000
-      internalID: -2345808624152391985
+      spriteID: ab85b5f8d46050d4b88b989a6bffd48c
+      internalID: 1214830190
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_46
+      name: nidorino_Idle_d3_f6
       rect:
         serializedVersion: 2
-        x: 246
-        y: 128
-        width: 27
-        height: 28
+        x: 240
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 93c2119438d38d420800000000000000
-      internalID: 2654939614410779705
+      spriteID: 7fe48e9d4e70bed4e9790c6e6e20fe22
+      internalID: -385118337
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_47
+      name: nidorino_Idle_d3_f7
       rect:
         serializedVersion: 2
-        x: 287
-        y: 128
-        width: 27
-        height: 28
+        x: 280
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d946e617c7a6d930800000000000000
-      internalID: 4167702978702494160
+      spriteID: 8e58fc633f8de364585bcb72bb704207
+      internalID: 2002923017
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_48
+      name: nidorino_Idle_d3_f8
       rect:
         serializedVersion: 2
-        x: 326
-        y: 128
-        width: 27
-        height: 28
+        x: 320
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2b6d1f1695f139690800000000000000
-      internalID: -7596693677688105294
+      spriteID: b84e81037f4b4a2489919fb35a2640c3
+      internalID: 2123311141
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_49
+      name: nidorino_Idle_d3_f9
       rect:
         serializedVersion: 2
-        x: 367
-        y: 128
-        width: 27
-        height: 28
+        x: 360
+        y: 160
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f3a2a405e6a4f0b0800000000000000
-      internalID: -5695744126161345550
+      spriteID: 6984cc8f889a36e45a5db0aa1385d9ca
+      internalID: -856878130
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_50
+      name: nidorino_Idle_d4_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 90
-        width: 29
-        height: 30
+        x: 0
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07fc6f4ae09f97510800000000000000
-      internalID: 1547541788270972784
+      spriteID: 521409ddd63df464fa2ff98819ba9c32
+      internalID: -677279866
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_51
+      name: nidorino_Idle_d4_f1
       rect:
         serializedVersion: 2
-        x: 44
-        y: 90
-        width: 29
-        height: 29
+        x: 40
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aa36f5084ddbe81c0800000000000000
-      internalID: -4499450257312095318
+      spriteID: aaddb9529382abd4c8de1a85c07ff94a
+      internalID: 1475997499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_52
+      name: nidorino_Idle_d4_f2
       rect:
         serializedVersion: 2
-        x: 83
-        y: 90
-        width: 29
-        height: 29
+        x: 80
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7d53f11d5f77f2d70800000000000000
-      internalID: 9020560476305569239
+      spriteID: 5fc120653a1f3cb4a97c390604086c3d
+      internalID: 393880240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_53
+      name: nidorino_Idle_d4_f3
       rect:
         serializedVersion: 2
-        x: 124
-        y: 90
-        width: 29
-        height: 29
+        x: 120
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84f5c28606c33faf0800000000000000
-      internalID: -363880760124612792
+      spriteID: 122020dd04f7fe848b29de0e801ab644
+      internalID: 1895833205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_54
+      name: nidorino_Idle_d4_f4
       rect:
         serializedVersion: 2
-        x: 163
-        y: 90
-        width: 29
-        height: 29
+        x: 160
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8f362947bbd315d30800000000000000
-      internalID: 4418380584751096824
+      spriteID: 55cc9c11d5228854ba4674bca6a8aeee
+      internalID: -1615727711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_55
+      name: nidorino_Idle_d4_f5
       rect:
         serializedVersion: 2
-        x: 204
-        y: 90
-        width: 29
-        height: 29
+        x: 200
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cc2ba1e559906590800000000000000
-      internalID: -7682972370156704571
+      spriteID: 19d76c2968877a3479f0e51732bddf71
+      internalID: -1997604661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_56
+      name: nidorino_Idle_d4_f6
       rect:
         serializedVersion: 2
-        x: 243
-        y: 90
-        width: 29
-        height: 29
+        x: 240
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bb6438b5d2ca29860800000000000000
-      internalID: 7535274437353096891
+      spriteID: 816c599ac26357c4d98460bfb190d20a
+      internalID: 775060574
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_57
+      name: nidorino_Idle_d4_f7
       rect:
         serializedVersion: 2
-        x: 284
-        y: 90
-        width: 29
-        height: 29
+        x: 280
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 368b76f9945452770800000000000000
-      internalID: 8585344447161022563
+      spriteID: 1067909ef4725104cbca3218d13ca28b
+      internalID: 1443775795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_58
+      name: nidorino_Idle_d4_f8
       rect:
         serializedVersion: 2
-        x: 323
-        y: 90
-        width: 29
-        height: 29
+        x: 320
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83977709693019100800000000000000
-      internalID: 112875410864699704
+      spriteID: 758063cf05000a74eb0a15daca901603
+      internalID: -1890941343
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_59
+      name: nidorino_Idle_d4_f9
       rect:
         serializedVersion: 2
-        x: 364
-        y: 90
-        width: 29
-        height: 29
+        x: 360
+        y: 120
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 49ed86ed65899cc70800000000000000
-      internalID: 8991885629887930004
+      spriteID: a77a9677911b5a343962733ba948133a
+      internalID: 1151024790
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_60
+      name: nidorino_Idle_d5_f0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 51
-        width: 32
-        height: 29
+        x: 0
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fe2542a111a3face0800000000000000
-      internalID: -1391829914706750737
+      spriteID: 666869307f54ac8418fa6676b2f5999c
+      internalID: -1658480865
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_61
+      name: nidorino_Idle_d5_f1
       rect:
         serializedVersion: 2
-        x: 44
-        y: 51
-        width: 34
-        height: 26
+        x: 40
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e821e47d665b01e90800000000000000
-      internalID: -7056941162786057586
+      spriteID: f134ee53bf7f03346b3c3cb396e46cdc
+      internalID: 1092991247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_62
+      name: nidorino_Idle_d5_f2
       rect:
         serializedVersion: 2
-        x: 83
-        y: 51
-        width: 34
-        height: 26
+        x: 80
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25820a508f6f723b0800000000000000
-      internalID: -5537185671722031022
+      spriteID: b42be49e1833f15439d15e6394de2c78
+      internalID: -2016085656
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_63
+      name: nidorino_Idle_d5_f3
       rect:
         serializedVersion: 2
-        x: 124
-        y: 51
-        width: 34
-        height: 26
+        x: 120
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 783e63a07001305e0800000000000000
-      internalID: -1944692991671737465
+      spriteID: 7e3d148e39cfc4840ae4e4aec822f1ea
+      internalID: -569060476
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_64
+      name: nidorino_Idle_d5_f4
       rect:
         serializedVersion: 2
-        x: 163
-        y: 51
-        width: 34
-        height: 26
+        x: 160
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4ceb929d3a8f32170800000000000000
-      internalID: 8152633133077479108
+      spriteID: eb29993ae34babc4ea716d651725f513
+      internalID: 1622669423
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_65
+      name: nidorino_Idle_d5_f5
       rect:
         serializedVersion: 2
-        x: 204
-        y: 51
-        width: 34
-        height: 26
+        x: 200
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ca9a61290ca1b2e10800000000000000
-      internalID: 2173860659523398060
+      spriteID: fac533c9f4424e94392e8e9b0c29a8df
+      internalID: -132001117
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_66
+      name: nidorino_Idle_d5_f6
       rect:
         serializedVersion: 2
-        x: 243
-        y: 51
-        width: 34
-        height: 26
+        x: 240
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb2a163f3de5dea30800000000000000
-      internalID: 4246154288094618300
+      spriteID: f8f6dfffa6b82b2479494af80b48ed97
+      internalID: 1805963818
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_67
+      name: nidorino_Idle_d5_f7
       rect:
         serializedVersion: 2
-        x: 284
-        y: 51
-        width: 34
-        height: 26
+        x: 280
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6cff8eb8650621ec0800000000000000
-      internalID: -3597707227484848186
+      spriteID: 89414699ee214434c8f5cb1b9ca03f9d
+      internalID: 1507809379
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_68
+      name: nidorino_Idle_d5_f8
       rect:
         serializedVersion: 2
-        x: 323
-        y: 51
-        width: 34
-        height: 26
+        x: 320
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3def574c367094740800000000000000
-      internalID: 5136644975071985363
+      spriteID: c86029289f37c924488ddae5060f892e
+      internalID: 401277569
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_69
+      name: nidorino_Idle_d5_f9
       rect:
         serializedVersion: 2
-        x: 364
-        y: 51
-        width: 34
-        height: 26
+        x: 360
+        y: 80
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5ec35e167d1349310800000000000000
-      internalID: 1410807384403950821
+      spriteID: 5b0c7daa48d31d240ada4e6c3f7c3b6c
+      internalID: -1664884434
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_70
+      name: nidorino_Idle_d6_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 10
-        width: 29
-        height: 28
+        x: 0
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cf28704207cd051e0800000000000000
-      internalID: -2211025042839993604
+      spriteID: 29768d5f98caff542af29d1e95886c95
+      internalID: -1660403272
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_71
+      name: nidorino_Idle_d6_f1
       rect:
         serializedVersion: 2
-        x: 47
-        y: 10
-        width: 31
-        height: 29
+        x: 40
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6fd1f418e956909c0800000000000000
-      internalID: -3960522665846956554
+      spriteID: b557a958d8e0b944c8c6963f069b2dc3
+      internalID: -427920434
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_72
+      name: nidorino_Idle_d6_f2
       rect:
         serializedVersion: 2
-        x: 86
-        y: 10
-        width: 31
-        height: 29
+        x: 80
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 54a275cd3478f5420800000000000000
-      internalID: 2620962233682176581
+      spriteID: d4cc5719aa1e459428e2f9d533c3fa32
+      internalID: 4799762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_73
+      name: nidorino_Idle_d6_f3
       rect:
         serializedVersion: 2
-        x: 127
-        y: 10
-        width: 31
-        height: 29
+        x: 120
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8d20154b4f1d98fe0800000000000000
-      internalID: -1186186177907981608
+      spriteID: 9c9b723d3ba348741952398700739cb0
+      internalID: 121910483
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_74
+      name: nidorino_Idle_d6_f4
       rect:
         serializedVersion: 2
-        x: 166
-        y: 10
-        width: 31
-        height: 29
+        x: 160
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d4997d9d4702eb10800000000000000
-      internalID: 2009176413696529616
+      spriteID: 8644341c049db8043b8e0faf185389fe
+      internalID: 586540574
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_75
+      name: nidorino_Idle_d6_f5
       rect:
         serializedVersion: 2
-        x: 207
-        y: 10
-        width: 31
-        height: 29
+        x: 200
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fe03cb10fb87029a0800000000000000
-      internalID: -6259870720281792273
+      spriteID: fef0458606fe6c04cad029e1a3e15a0f
+      internalID: 272514549
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_76
+      name: nidorino_Idle_d6_f6
       rect:
         serializedVersion: 2
-        x: 246
-        y: 10
-        width: 31
-        height: 29
+        x: 240
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05d20ece303fc7b90800000000000000
-      internalID: -7242646902534034096
+      spriteID: 48f6ee3277756bc4598b748443a7a318
+      internalID: -1990662274
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_77
+      name: nidorino_Idle_d6_f7
       rect:
         serializedVersion: 2
-        x: 287
-        y: 10
-        width: 31
-        height: 29
+        x: 280
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f619c4b8931346f30800000000000000
-      internalID: 4567830045280473455
+      spriteID: 8b2b7393d4941bf4cb3e12ab1b9f6c99
+      internalID: -688590984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_78
+      name: nidorino_Idle_d6_f8
       rect:
         serializedVersion: 2
-        x: 326
-        y: 10
-        width: 31
-        height: 29
+        x: 320
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f009ab00618ff8d0800000000000000
-      internalID: -2810385392943431438
+      spriteID: 4f4ebdcee6e8f014daf1799d86863781
+      internalID: 1267003531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_79
+      name: nidorino_Idle_d6_f9
       rect:
         serializedVersion: 2
-        x: 367
-        y: 10
-        width: 31
-        height: 29
+        x: 360
+        y: 40
+        width: 40
+        height: 40
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64973be3774378320800000000000000
-      internalID: 2560072599941118278
+      spriteID: 425556d753f545e4fa27143f04b3211c
+      internalID: 1880402970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb1f858c05d6b9d47b72cd6232d6d5fa
+      internalID: -1677977476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8eb45bffe6764cd47be714f795288365
+      internalID: -1757105444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00b1f16dd0ff0eb43bd0f4cbf5b6da4f
+      internalID: 195344525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e111cd8185142dc49a3fbf69263fb110
+      internalID: 1304343745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01e9e4aa63a71044783dbd051b69f759
+      internalID: -2087323612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 679db53aa67c230408ce5e2a92512e07
+      internalID: -400152035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de35415844b288e4f957e6efe3dbe71f
+      internalID: -511602496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a658cfe7ffb58214988dd0616cbdad71
+      internalID: -274162954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ebcfe86f8311234796693729b68c064
+      internalID: 962370122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nidorino_Idle_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 0
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 662d7d775aef7704886f95948edbbf6d
+      internalID: -907301837
       vertices: []
       indices: 
       edges: []
@@ -2113,7 +2113,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b6b1d8a6e21da214bbe16e28c0662da3
     internalID: 0
     vertices: []
     indices: 
@@ -2123,86 +2123,86 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Idle-Anim_0: 7738998316474853551
-      Idle-Anim_1: 1977075729719447299
-      Idle-Anim_10: -2500440999657106871
-      Idle-Anim_11: 3380924079768591465
-      Idle-Anim_12: 6312937933537730039
-      Idle-Anim_13: 7370305187068088183
-      Idle-Anim_14: -4401239759644110075
-      Idle-Anim_15: 5716087231770099852
-      Idle-Anim_16: 4969444997890004679
-      Idle-Anim_17: -9145775198654151500
-      Idle-Anim_18: -6656707347790094562
-      Idle-Anim_19: -5421402862643160038
-      Idle-Anim_2: 9173613481854189632
-      Idle-Anim_20: 728989986691342317
-      Idle-Anim_21: 1731065877924970417
-      Idle-Anim_22: 702254742369775053
-      Idle-Anim_23: 843812802259278218
-      Idle-Anim_24: -2120886188613695082
-      Idle-Anim_25: -5737951630601031768
-      Idle-Anim_26: -3804901684299220886
-      Idle-Anim_27: -3999001167682290817
-      Idle-Anim_28: 4068438704295549569
-      Idle-Anim_29: -90787290279785787
-      Idle-Anim_3: 3458398094100512545
-      Idle-Anim_30: -3261768965048884968
-      Idle-Anim_31: 3239275106390307007
-      Idle-Anim_32: 7682167150398461212
-      Idle-Anim_33: 8060601425331014186
-      Idle-Anim_34: -6958673752304707357
-      Idle-Anim_35: -8426690388386427687
-      Idle-Anim_36: 8449194557805750873
-      Idle-Anim_37: 1080011638312391825
-      Idle-Anim_38: -3845111777405765225
-      Idle-Anim_39: -1419756531426089411
-      Idle-Anim_4: -1533630627476091484
-      Idle-Anim_40: -8144651385576188598
-      Idle-Anim_41: 7579764483984027731
-      Idle-Anim_42: -6616807519860232062
-      Idle-Anim_43: 742480819118137374
-      Idle-Anim_44: -6994012070172245659
-      Idle-Anim_45: -2345808624152391985
-      Idle-Anim_46: 2654939614410779705
-      Idle-Anim_47: 4167702978702494160
-      Idle-Anim_48: -7596693677688105294
-      Idle-Anim_49: -5695744126161345550
-      Idle-Anim_5: 3520039924926930967
-      Idle-Anim_50: 1547541788270972784
-      Idle-Anim_51: -4499450257312095318
-      Idle-Anim_52: 9020560476305569239
-      Idle-Anim_53: -363880760124612792
-      Idle-Anim_54: 4418380584751096824
-      Idle-Anim_55: -7682972370156704571
-      Idle-Anim_56: 7535274437353096891
-      Idle-Anim_57: 8585344447161022563
-      Idle-Anim_58: 112875410864699704
-      Idle-Anim_59: 8991885629887930004
-      Idle-Anim_6: -9007074944737430628
-      Idle-Anim_60: -1391829914706750737
-      Idle-Anim_61: -7056941162786057586
-      Idle-Anim_62: -5537185671722031022
-      Idle-Anim_63: -1944692991671737465
-      Idle-Anim_64: 8152633133077479108
-      Idle-Anim_65: 2173860659523398060
-      Idle-Anim_66: 4246154288094618300
-      Idle-Anim_67: -3597707227484848186
-      Idle-Anim_68: 5136644975071985363
-      Idle-Anim_69: 1410807384403950821
-      Idle-Anim_7: 5469265311968306403
-      Idle-Anim_70: -2211025042839993604
-      Idle-Anim_71: -3960522665846956554
-      Idle-Anim_72: 2620962233682176581
-      Idle-Anim_73: -1186186177907981608
-      Idle-Anim_74: 2009176413696529616
-      Idle-Anim_75: -6259870720281792273
-      Idle-Anim_76: -7242646902534034096
-      Idle-Anim_77: 4567830045280473455
-      Idle-Anim_78: -2810385392943431438
-      Idle-Anim_79: 2560072599941118278
-      Idle-Anim_8: 8813659312991238842
-      Idle-Anim_9: -7205847637910636526
+      nidorino_Idle_d0_f0: 1197977897
+      nidorino_Idle_d0_f1: 460074957
+      nidorino_Idle_d0_f2: -1692187756
+      nidorino_Idle_d0_f3: 664486292
+      nidorino_Idle_d0_f4: -2001173396
+      nidorino_Idle_d0_f5: -1371322983
+      nidorino_Idle_d0_f6: 1238605908
+      nidorino_Idle_d0_f7: 212487085
+      nidorino_Idle_d0_f8: -1742980139
+      nidorino_Idle_d0_f9: -797466474
+      nidorino_Idle_d1_f0: -904560316
+      nidorino_Idle_d1_f1: -1636947873
+      nidorino_Idle_d1_f2: 1258913177
+      nidorino_Idle_d1_f3: -394148657
+      nidorino_Idle_d1_f4: -150846986
+      nidorino_Idle_d1_f5: -1183367556
+      nidorino_Idle_d1_f6: -1310993544
+      nidorino_Idle_d1_f7: 1381061934
+      nidorino_Idle_d1_f8: -159824957
+      nidorino_Idle_d1_f9: 608147825
+      nidorino_Idle_d2_f0: 1591644897
+      nidorino_Idle_d2_f1: 1912837645
+      nidorino_Idle_d2_f2: 2049962605
+      nidorino_Idle_d2_f3: 899777808
+      nidorino_Idle_d2_f4: 1685501589
+      nidorino_Idle_d2_f5: 2098239467
+      nidorino_Idle_d2_f6: 616830062
+      nidorino_Idle_d2_f7: 865146344
+      nidorino_Idle_d2_f8: -1856571355
+      nidorino_Idle_d2_f9: -556983556
+      nidorino_Idle_d3_f0: 1115157989
+      nidorino_Idle_d3_f1: 1723978846
+      nidorino_Idle_d3_f2: -1729319420
+      nidorino_Idle_d3_f3: 2058759168
+      nidorino_Idle_d3_f4: -310152442
+      nidorino_Idle_d3_f5: 1214830190
+      nidorino_Idle_d3_f6: -385118337
+      nidorino_Idle_d3_f7: 2002923017
+      nidorino_Idle_d3_f8: 2123311141
+      nidorino_Idle_d3_f9: -856878130
+      nidorino_Idle_d4_f0: -677279866
+      nidorino_Idle_d4_f1: 1475997499
+      nidorino_Idle_d4_f2: 393880240
+      nidorino_Idle_d4_f3: 1895833205
+      nidorino_Idle_d4_f4: -1615727711
+      nidorino_Idle_d4_f5: -1997604661
+      nidorino_Idle_d4_f6: 775060574
+      nidorino_Idle_d4_f7: 1443775795
+      nidorino_Idle_d4_f8: -1890941343
+      nidorino_Idle_d4_f9: 1151024790
+      nidorino_Idle_d5_f0: -1658480865
+      nidorino_Idle_d5_f1: 1092991247
+      nidorino_Idle_d5_f2: -2016085656
+      nidorino_Idle_d5_f3: -569060476
+      nidorino_Idle_d5_f4: 1622669423
+      nidorino_Idle_d5_f5: -132001117
+      nidorino_Idle_d5_f6: 1805963818
+      nidorino_Idle_d5_f7: 1507809379
+      nidorino_Idle_d5_f8: 401277569
+      nidorino_Idle_d5_f9: -1664884434
+      nidorino_Idle_d6_f0: -1660403272
+      nidorino_Idle_d6_f1: -427920434
+      nidorino_Idle_d6_f2: 4799762
+      nidorino_Idle_d6_f3: 121910483
+      nidorino_Idle_d6_f4: 586540574
+      nidorino_Idle_d6_f5: 272514549
+      nidorino_Idle_d6_f6: -1990662274
+      nidorino_Idle_d6_f7: -688590984
+      nidorino_Idle_d6_f8: 1267003531
+      nidorino_Idle_d6_f9: 1880402970
+      nidorino_Idle_d7_f0: -1677977476
+      nidorino_Idle_d7_f1: -1757105444
+      nidorino_Idle_d7_f2: 195344525
+      nidorino_Idle_d7_f3: 1304343745
+      nidorino_Idle_d7_f4: -2087323612
+      nidorino_Idle_d7_f5: -400152035
+      nidorino_Idle_d7_f6: -511602496
+      nidorino_Idle_d7_f7: -274162954
+      nidorino_Idle_d7_f8: 962370122
+      nidorino_Idle_d7_f9: -907301837
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

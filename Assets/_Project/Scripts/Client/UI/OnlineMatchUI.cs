@@ -198,7 +198,7 @@ namespace PokeChess.Client.UI
             var fighter=activeFrame?.round==pub.round&&(pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying)?activeFrame.units.FirstOrDefault(u=>u.id==selectedUnitId):null;
             string definition=unit?.definitionId??board?.definitionId??fighter?.definitionId;int rank=unit?.rank??board?.rank??fighter?.rank??1;
             if(definition==null){RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
-            var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d.BaseStats,(UnitRank)rank);var items=unit?.items??board?.items??fighter?.items??Array.Empty<string>();
+            var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d,(UnitRank)rank);var items=unit?.items??board?.items??fighter?.items??Array.Empty<string>();
             detailLabel.font=itemFont;
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+
                 (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items.Select(ItemCatalog.DisplayName)))+"\n"+RankFeedbackText;

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008d473f3113d464e9ee1ed250c75915, type: 3}
+  m_Name: sandslash
+  m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.PokemonData
+  Id: sandslash
+  DisplayName: Sandslash
+  LocalizedName: "\uACE0\uC9C0"
+  RoleId: melee-dps
+  Cost: 1
+  IsBoss: 0
+  HasProvisionalStats: 0
+  Stats:
+    MaxHP: 900
+    Attack: 70
+    SpellPower: 100
+    AttackSpeed: 0.72
+    Armor: 42
+    MagicResistance: 28
+    AttackRange: 1
+    MoveSpeed: 2
+    MaxEnergy: 85
+    StartingEnergy: 10
+    AttackHitTime: 0.2
+    AttackDelivery: 0
+    ProjectileSpeed: 8
+    CritChance: 0.25
+    CritMultiplier: 1.3
+    EnergyLockSeconds: 1
+  RankHP:
+  - 900
+  - 1530
+  - 2610
+  RankAttack:
+  - 70
+  - 91
+  - 119
+  TypeIds: []
+  TraitIds: []
+  Skill: {fileID: 11400000, guid: d10c56943ed03e14d81c1d56fc223dea, type: 2}
+  Visual: {fileID: 11400000, guid: bf448eb0ac2cb964c8a6699579c03a2f, type: 2}
+  Evolutions: []
