@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using PokeChess.Client.Data;
 using PokeChess.Core.Battle;
@@ -10,6 +11,7 @@ namespace PokeChess.Client.UI
     public sealed class PokemonSpriteView : MonoBehaviour
     {
         private UnityEngine.UI.Image image;
+        private StatusSpriteView statusView;
         private PokemonAnimationLibrary library;
         private string pokemon;
         private string animationPokemon;
@@ -18,6 +20,7 @@ namespace PokeChess.Client.UI
         private long idleStart, hurtStart=-1000,deathStart=-1;
         private float previousHP=-1;
         private const float PixelScale=1.5f;
+        private const float UnitSizeMultiplier=1.5f;
         public string PokemonId=>pokemon;
         public bool Visible=>image!=null&&image.enabled&&image.color.a>0;
         public void Initialize(string id,string instanceId=null)
@@ -32,10 +35,11 @@ namespace PokeChess.Client.UI
             animationPokemon=library?.Find(id,"Idle")!=null ? id : PokeChess.Content.GameContent.BaseForm(id);
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();
             image.raycastTarget=false;image.color=Color.white;
+            statusView=GetComponent<StatusSpriteView>()??gameObject.AddComponent<StatusSpriteView>();statusView.Clear();
             direction=0;previousHP=-1;deathStart=-1;hurtStart=-1000;
         }
         public bool ShowIdle(double seconds)
-            => Draw("Idle",seconds,true,1);
+        {statusView?.Clear();return Draw("Idle",seconds,true,1);}
         public void ShowCombat(BattleState battle,UnitCombatState unit,UnitActionRuntime action,Vector2 facing)
         {
             if(facing.sqrMagnitude>.001f)
@@ -71,6 +75,8 @@ namespace PokeChess.Client.UI
             else if(name=="Idle" && battle.CurrentTick-hurtStart<battle.TickRate/6d)
             {name="Hurt";time=(battle.CurrentTick-hurtStart)/(double)battle.TickRate;loop=false;}
             Draw(name,time,loop,alpha);
+            statusView.Render(battle.StatusEffects.Active.Where(s=>s.TargetId==unit.UnitInstanceId).Select(s=>s.Definition.Behavior),
+                battle.CurrentTick/(double)battle.TickRate,image,unit.IsAlive&&image.enabled,PixelScale*UnitSizeMultiplier/2.25f);
         }
         private bool Draw(string name,double seconds,bool loop,float alpha)
             =>DrawScaled(name,seconds,loop,alpha,PixelScale);
@@ -88,9 +94,14 @@ namespace PokeChess.Client.UI
             float alpha=1;if(unit.hp<=0){if(deathStart<0)deathStart=(long)tick;name="Hurt";seconds=(tick-deathStart)/tickRate;alpha=Mathf.Clamp01(1-(float)seconds/.45f);}
             else if(name=="Idle"&&tick-hurtStart<tickRate/6d){name="Hurt";seconds=(tick-hurtStart)/tickRate;}
             DrawScaled(name,Math.Max(0,seconds),name=="Idle"||name=="Walk",alpha,pixelScale);
+            var behaviors=unit.statusDetails!=null
+                ?unit.statusDetails.Where(s=>s.endTick>tick).Select(s=>(StatusBehavior)s.behavior)
+                :(unit.statuses??Array.Empty<string>()).Select(id=>PokeChess.Content.GameContent.Roster.Statuses.FirstOrDefault(s=>s.Id==id)?.Behavior??StatusBehavior.None);
+            statusView.Render(behaviors,tick/tickRate,image,unit.hp>0&&unit.onBoard&&image.enabled,pixelScale*UnitSizeMultiplier/2.25f);
         }
         private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
+            scale*=UnitSizeMultiplier;
             var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);

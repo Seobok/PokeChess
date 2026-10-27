@@ -179,15 +179,14 @@ namespace PokeChess.Client.UI
             bool combat=pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying&&onlineService.Combat.Current?.round==pub.round;
             var observed=pub.players.FirstOrDefault(p=>p.id==onlineService.WatchingPlayerId);
             foreach(var slot in slots){slot.Graphic.color=slot.Color;if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat&&pub.phase==MatchPhase.Preparation);}
-            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderEquippedItemIcon(tokens[unit.id],unit.items,true,44);}
-            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderEquippedItemIcon(tokens[unit.id],unit.items,true,44);}
+            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,observed.id==owner.playerId);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
+            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
         }
         private void ShowOnlineToken(string id,string definition,int rank,UnitPlacement placement)
         {
             if(!tokens.ContainsKey(id))CreateToken(id);var token=tokens[id];token.gameObject.SetActive(true);token.anchoredPosition=FindSlot(placement).Rect.anchoredPosition;groups[id].alpha=id==dragged?.3f:1;
             if(!placementSprites.TryGetValue(id,out var sprite)||sprite==null)placementSprites[id]=sprite=AddSprite(token,definition);if(sprite.PokemonId!=definition)sprite.Initialize(definition);sprite.ShowIdle(Time.unscaledTimeAsDouble);
-            int evolutionStage=PokeChess.Content.GameContent.Stage(definition);
-            tokenLabels[id].text=new string('★',rank)+(evolutionStage>0?" E"+evolutionStage:"");tokenLabels[id].color=Color.white;tokenLabels[id].fontSize=11;tokenLabels[id].rectTransform.anchoredPosition=new Vector2(0,25);tokenLabels[id].transform.SetAsLastSibling();
+            tokenLabels[id].text="";
         }
         private void RenderOnlineContext(OwnerMatchState owner,PublicMatchState pub)
         {

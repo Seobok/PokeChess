@@ -182,7 +182,7 @@ namespace PokeChess.Client.UI
                 var unit=ViewedPlayer.Units.FirstOrDefault(u=>u.InstanceId==pair.Key);pair.Value.gameObject.SetActive(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced);
                 if(unit!=null && unit.Placement.Kind!=PlacementKind.Unplaced) { pair.Value.anchoredPosition=FindSlot(unit.Placement).Rect.anchoredPosition;tokenLabels[pair.Key].text=(unit.DefinitionId.StartsWith("sample-c",StringComparison.Ordinal) ? "C"+catalog.Get(unit.DefinitionId).Cost : unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant())+" R"+(int)unit.Rank; }
                 groups[pair.Key].alpha=pair.Key==dragged ? .3f : 1;
-                if(unit!=null)RenderEquippedItemIcon(pair.Value,unit.ItemInstanceIds,true,44);
+                if(unit!=null)RenderEquippedItemIcon(pair.Value,unit.ItemInstanceIds);
             }
             RenderMinimumUI();AnimateRosterSprites();
         }

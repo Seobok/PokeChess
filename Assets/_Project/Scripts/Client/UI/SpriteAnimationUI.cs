@@ -26,8 +26,8 @@ namespace PokeChess.Client.UI
                 if(sprite.PokemonId!=unit.DefinitionId)sprite.Initialize(unit.DefinitionId);
                 if(sprite.ShowIdle(Time.unscaledTimeAsDouble))
                 {
-                    var text=tokenLabels[unit.InstanceId];text.text=new string('★',(int)unit.Rank)+(unit.EvolutionStage>0?" E"+unit.EvolutionStage:"");text.fontSize=11;
-                    text.rectTransform.anchoredPosition=new Vector2(0,25);text.color=Color.white;text.transform.SetAsLastSibling();
+                    tokenLabels[unit.InstanceId].text="";
+                    RenderPreparationVitals(token,unit.DefinitionId,(int)unit.Rank,localViewedPlayerId=="p1");
                 }
             }
             for(int slot=0;slot<Player.Shop.Slots.Count;slot++)
@@ -67,9 +67,10 @@ namespace PokeChess.Client.UI
                 unit.TeamId == (pair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2), unit.CurrentShield);
             RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
             RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
+            RenderUnitRank(label.transform.parent,(int)unit.Rank,unit.EvolutionStage,unit.IsAlive);
             if(sprite.Visible)
             {
-                label.rectTransform.anchoredPosition=new Vector2(0,-15);label.rectTransform.sizeDelta=new Vector2(46,24);
+                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+28);label.rectTransform.sizeDelta=new Vector2(64,18);
                 label.fontSize=9;label.transform.SetAsLastSibling();
                 string state=label.text.Split('\n').Last();
                 int charges = pair.Battle.Synergies.AssaultCharges(unit);
@@ -82,7 +83,7 @@ namespace PokeChess.Client.UI
                     else if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
                     else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
                 }
-                label.text="R"+(int)unit.Rank+(unit.EvolutionStage>0?" E"+unit.EvolutionStage:"")+"\n"+state;
+                label.text=state;
                 var background=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
                 var c=background.color;c.a=.2f;background.color=c;
                 if(!unit.IsAlive)label.text="";

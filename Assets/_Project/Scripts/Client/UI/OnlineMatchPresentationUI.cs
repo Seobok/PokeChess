@@ -67,7 +67,7 @@ namespace PokeChess.Client.UI
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
                     var button=node.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string id=unit.id;button.onClick.AddListener(()=>SelectOnlineUnit(id));var hover=node.gameObject.AddComponent<UnitHoverTarget>();hover.View=this;hover.UnitId=id;
                     combatTokens[unit.id]=label=Label("HP",node,"",9,new Vector2(60,26),new Vector2(0,-15));fighterSprites[unit.id]=AddSprite(node,unit.definitionId,unit.id);
-                    onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,50));
+                    onlineEffects[unit.id]=Label("Effect",node,"",11,new Vector2(90,18),new Vector2(0,98));
                 }
                 Vector2 position=CombatPoint(new BoardPosition(unit.column,unit.row)),facing=Vector2.zero;
                 if(unit.action==CombatActionState.Moving){var destination=CombatPoint(new BoardPosition(unit.moveColumn,unit.moveRow));facing=destination-position;position=Vector2.Lerp(position,destination,(float)((tick-unit.startTick)/Math.Max(1,unit.endTick-unit.startTick)));}
@@ -77,7 +77,10 @@ namespace PokeChess.Client.UI
                 RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
                 RenderUnitEnergyBar(label.transform.parent, unit.energy, unit.maxEnergy, unit.hp > 0);
                 RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
-                label.text=unit.hp<=0?"":"R"+unit.rank+(unit.statuses.Length>0?"\n"+unit.statuses[0]:"");
+                RenderUnitRank(label.transform.parent,unit.rank,PokeChess.Content.GameContent.Stage(unit.definitionId),unit.hp>0);
+                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+28);
+                onlineEffects[unit.id].rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+50);
+                label.text=unit.hp<=0?"":unit.statuses.Length>0?unit.statuses[0]:"";
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
                 if(unit.assaultCharges>0)label.text+=" AT+"+unit.assaultCharges;
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);
