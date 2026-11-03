@@ -7,6 +7,7 @@ namespace PokeChess.Client.Bootstrap
     [DisallowMultipleComponent]
     public sealed class GameBootstrap : MonoBehaviour
     {
+        public PokeChess.Client.Data.SkillVisualCatalog SkillVisuals;
         public bool IsInitialized { get; private set; }
 
         private void Awake()
@@ -25,6 +26,7 @@ namespace PokeChess.Client.Bootstrap
                 new GameObject("OnlineConnectionView").AddComponent<OnlineConnectionView>();
             if (FindFirstObjectByType<RoomFlowView>() == null)
                 new GameObject("RoomFlowView").AddComponent<RoomFlowView>();
+            FindFirstObjectByType<RoomFlowView>().SkillVisuals=SkillVisuals;
             await OnlineAuthenticationService.Instance.EnsureSignedInAsync();
         }
     }

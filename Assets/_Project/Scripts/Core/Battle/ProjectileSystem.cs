@@ -17,6 +17,10 @@ namespace PokeChess.Core.Battle
         public BoardPosition TargetPositionAtLaunch { get; }
         public long SpawnTick { get; }
         public long ArrivalTick { get; }
+        public string SkillId {get;internal set;}
+        public long CastId {get;internal set;}
+        public int StepIndex {get;internal set;}
+        public int Iteration {get;internal set;}
         public DamageRequest? SkillDamage { get; }
         public int? ImpactRadius { get; }
         internal Action<UnitCombatState> Impact { get; }
@@ -68,11 +72,12 @@ namespace PokeChess.Core.Battle
             events.Add(new ProjectileEvent(projectile,battle.CurrentTick,ProjectileEventKind.Spawned));
             return true;
         }
-        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request,int? impactRadius=null,Action<UnitCombatState> impact=null,Action<bool> completed=null)
+        internal bool TrySpawnSkill(UnitCombatState source,UnitCombatState target,int range,float speed,DamageRequest request,int? impactRadius=null,Action<UnitCombatState> impact=null,Action<bool> completed=null,string skillId=null,long castId=0,int stepIndex=0,int iteration=0)
         {
             if(!source.IsAlive||!source.IsOnBoard||!target.IsTargetable||source.TeamId==target.TeamId)return false;
             int travel=BattleSimulation.ToTicks((double)HexCoordinates.Distance(source.Position,target.Position)/speed,battle.TickRate);
             var p=new ProjectileState(checked(++nextId),source,target,battle.CurrentTick,checked(battle.CurrentTick+travel),request,impactRadius,impact,completed);
+            p.SkillId=skillId;p.CastId=castId;p.StepIndex=stepIndex;p.Iteration=iteration;
             active.Add(p);events.Add(new ProjectileEvent(p,battle.CurrentTick,ProjectileEventKind.Spawned));return true;
         }
         internal void Advance(IDamageProcessor damage)

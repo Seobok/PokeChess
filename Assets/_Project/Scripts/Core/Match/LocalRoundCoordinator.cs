@@ -30,6 +30,7 @@ namespace PokeChess.Core.Match
         public ShadowBoardSnapshot ShadowSnapshot { get; }
         public BattleState Battle { get; }
         public UnitActionRuntime GetActionRuntime(string unitId) => simulation.GetRuntime(unitId);
+        public event Action<BattleState> Stepped;
         private BattleResult? surrenderResult;
         public BattleResult Result => surrenderResult ?? Battle?.Result ?? emptyResult;
         public BattleEndReason Reason => surrenderResult.HasValue ? BattleEndReason.Surrender : Battle?.EndReason ?? BattleEndReason.Elimination;
@@ -41,7 +42,7 @@ namespace PokeChess.Core.Match
         internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0,
             SkillCatalog skills=null,StatusCatalog statuses=null)
         { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null)simulation=new BattleSimulation(battle,skillCatalog:skills,statusCatalog:statuses);FreezeSurvivors(); }
-        internal void Step() { if(!IsComplete)simulation.Step();FreezeSurvivors(); }
+        internal void Step() { if(!IsComplete){simulation.Step();Stepped?.Invoke(Battle);}FreezeSurvivors(); }
         internal void Surrender(string playerId)
         {
             int team=Pairing.PlayerOneId==playerId ? 1 : 2;

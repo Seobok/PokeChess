@@ -121,7 +121,7 @@ namespace PokeChess.Core.Battle
         internal StatusEffectSnapshot(long id,StatusEffectDefinition d,string source,string target,long start,long end,int count,long nextTick=0,int pulses=0)
         {NextTick=nextTick;Pulses=pulses;InstanceId=id;Definition=d;SourceId=source;TargetId=target;StartTick=start;ExpireTick=end;StackCount=count;}
     }
-    public enum StatusEventKind { Applied, Ignored, Refreshed, Stacked, Expired, Removed, Shortened, Pulse }
+    public enum StatusEventKind { Applied, Ignored, Refreshed, Stacked, Expired, Removed, Shortened, Pulse, Proc }
     public readonly struct StatusEvent
     {
         public StatusEffectSnapshot Effect { get; }

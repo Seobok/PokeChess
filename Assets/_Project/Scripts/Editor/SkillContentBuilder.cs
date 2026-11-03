@@ -133,7 +133,7 @@ namespace PokeChess.Editor
                 case "칼춤":s.TargetRule=SkillTargetRule.Self;var dance=State(StatusBehavior.SwordDance,6,StatusTargetTeam.Ally,Ratio(r,1),modifiers:new[]{Mod(CombatStat.AttackSpeed,Ratio(r))});e.Add(StatusEffect(dance,self:true));break;
                 case "자폭":case "대폭발":s.TargetRule=SkillTargetRule.Self;e.Add(Hp(SkillEffectType.HealthCost,r.Skill=="자폭"?.2f:.3f));e.Add(Damage(r,Area(r.Skill=="자폭"?1:2)));break;
                 case "전기쇼크":case "번개펀치":e.Add(Damage(r));e.Add(Debuff(StatusBehavior.Paralysis,r.Dex==25?2:new[]{1f,1.5f,2}[rank]));break;
-                case "10만볼트":e.Add(Damage(r));e.Add(Damage(r,new SkillSpatialData{Mode=SpatialTargetMode.ChainEnemies,MaxTargets=2,IncludePrimary=false},DamageValue(r,1)));break;
+                case "10만볼트":e.Add(Damage(r));e.Add(Damage(r,new SkillSpatialData{Mode=SpatialTargetMode.PrimaryEnemies,MaxTargets=2,IncludePrimary=false},DamageValue(r,1)));break;
                 case "작아지기":s.TargetRule=SkillTargetRule.Self;e.Add(Buff(4,Mod(CombatStat.Evasion,Ratio(r),StatModifierType.Flat)));break;
                 case "연속뺨치기":var variants=new List<string>();foreach(int hits in new[]{3,4,5}){var leaf=Leaf(r,rank,"-hits"+hits);Repeat(leaf,new[]{Damage(r)},hits,last:new[]{Move(SkillMovementKind.Knockback)});variants.Add(leaf.Id);}s.VariantIds=variants.ToArray();break;
                 case "흡수":e.Add(Numeric(Damage(r),n=>n.Lifesteal=.6f));break;
@@ -143,7 +143,7 @@ namespace PokeChess.Editor
                 case "회오리불꽃":area=Area(rank==2?2:1,SkillAreaCenter.CastTarget);s.Steps=new[]{new SkillStepData{Lifetime=SkillStepLifetime.Independent,Count=3,Interval=1,FirstDelay=1,Effects=new[]{Damage(r,area)}},Step(0,Ground(Slow(),area.Extent,3))};break;
                 case "전기자석파":e.Add(Debuff(StatusBehavior.Paralysis,new[]{3f,3.25f,3.5f}[rank],new SkillSpatialData{Mode=SpatialTargetMode.ChainEnemies,MaxTargets=2,IncludePrimary=true}));break;
                 case "소닉붐":s.Range=3;e.Add(Numeric(Damage(r,Area(3,shape:SkillAreaShape.Line)),n=>n.MagicPenetration=.3f));break;
-                case "회전부리":e.Add(Move(SkillMovementKind.DashToTarget,1,Damage(r)));break;
+                case "회전부리":var drill=Move(SkillMovementKind.DashToTarget,1,Damage(r));drill.Movement.HasTravelTime=true;drill.Movement.TravelTime=.05f;e.Add(drill);break;
                 case "트라이어택":var states=new[]{State(StatusBehavior.Burn,r.Dex==85?new[]{1f,1.5f,2}[rank]:new[]{2f,3,99}[rank]),State(StatusBehavior.Freeze,r.Dex==85?new[]{1f,1.5f,2}[rank]:new[]{2f,3,99}[rank]),State(StatusBehavior.Paralysis,r.Dex==85?new[]{1f,1.5f,2}[rank]:new[]{2f,3,99}[rank])};
                     area=r.Dex==137&&rank==2?Area(56,shape:SkillAreaShape.All):null;var random=new SkillEffectData{Type=SkillEffectType.RandomStatus,TargetSelector=area==null?EffectTargetSelector.CastTarget:EffectTargetSelector.Spatial,Spatial=area,ChoiceStatuses=states};
                     if(r.Dex==85)Numeric(random,n=>n.Chance=.3f);var bolts=Damage(r,area);bolts.Type=SkillEffectType.ProjectileDamage;bolts.ProjectileGroupSize=3;Repeat(s,new[]{bolts},3);s.Steps[2].Effects=new[]{Damage(r,area)};var finalBolt=s.Steps[2].Effects[0];finalBolt.Type=SkillEffectType.ProjectileDamage;finalBolt.ProjectileGroupSize=3;finalBolt.PathImpactEffects=r.Dex==137&&rank==2?states.Select(t=>StatusEffect(t)).ToArray():new[]{random};
@@ -160,16 +160,16 @@ namespace PokeChess.Editor
                 case "불꽃세례":e.Add(Damage(r));e.Add(Debuff(StatusBehavior.Burn,3));break;
                 case "화염방사":s.Range=3;area=Area(3,shape:SkillAreaShape.Cone);e.Add(Damage(r,area));e.Add(Debuff(StatusBehavior.Burn,3,area));break;
                 case "물대포":e.Add(Damage(r));e.Add(Move(SkillMovementKind.Knockback));break;
-                case "로켓박치기":s.CastTime=0;s.Steps=new[]{Step(0,Buff(1,Mod(CombatStat.Armor,.4f))),Step(1,Move(SkillMovementKind.DashToTarget,1,Damage(r)))};break;
+                case "로켓박치기":s.CastTime=0;var bash=Move(SkillMovementKind.DashToTarget,1,Damage(r));bash.Movement.HasTravelTime=true;bash.Movement.TravelTime=.05f;s.Steps=new[]{Step(0,Buff(1,Mod(CombatStat.Armor,.4f))),Step(1,bash)};break;
                 case "망각술":s.TargetRule=SkillTargetRule.Self;e.Add(Buff(5,Mod(CombatStat.MagicResistance,Ratio(r))));break;
-                case "지옥의바퀴":var wheel=new[]{Damage(r),CC(CrowdControlKind.Stun,1),Hp(SkillEffectType.HealthCost,.08f)};if(r.Dex==62)e.Add(Move(SkillMovementKind.CarryTarget,2,wheel));else e.AddRange(wheel);break;
+                case "지옥의바퀴":var wheel=new[]{Damage(r),CC(CrowdControlKind.Stun,1),Hp(SkillEffectType.HealthCost,.08f)};var carry=Move(SkillMovementKind.CarryTarget,2,wheel);carry.Movement.HasTravelTime=true;carry.Movement.TravelTime=.35f;e.Add(carry);break;
                 case "사이코키네시스":area=r.Dex==150?Area(new[]{2,3,9}[rank],SkillAreaCenter.CastTarget):null;e.Add(Damage(r,area));e.Add(StatusEffect(State(StatusBehavior.None,r.Dex==150?new[]{4f,4,99}[rank]:3,modifiers:new[]{Mod(CombatStat.MagicResistance,r.Dex==150?-Ratio(r):-.25f)}),area));break;
                 case "무릎차기":s.TargetRule=SkillTargetRule.FarthestEnemy;s.Range=56;e.Add(Move(SkillMovementKind.JumpToTarget,1,Damage(r),Hp(SkillEffectType.HealthCost,.08f)));break;
                 case "빛의장막":s.TargetRule=SkillTargetRule.Self;e.Add(StatusEffect(State(StatusBehavior.None,4,StatusTargetTeam.Ally,modifiers:new[]{Mod(CombatStat.MagicResistance,Ratio(r))}),Area(56,shape:SkillAreaShape.All,self:true)));break;
                 case "배리어":s.TargetRule=SkillTargetRule.Self;var shield=Hp(SkillEffectType.Shield,Ratio(r),true);shield.TargetSelector=EffectTargetSelector.Spatial;shield.Spatial=new SkillSpatialData{Mode=SpatialTargetMode.NearestAllies,MaxTargets=2};e.Add(Numeric(shield,n=>{n.HasShieldDuration=true;n.ShieldDuration=4;}));break;
                 case "악마의키스":e.Add(Debuff(StatusBehavior.Sleep,new[]{2.5f,2.75f,3}[rank]));e.Add(Hp(SkillEffectType.Heal,Ratio(r)));break;
                 case "파괴광선":s.CastTime=.8f;s.Range=r.Dex==142?3:4;e.Add(Damage(r,Area(s.Range,shape:SkillAreaShape.Line)));e.Add(StatusEffect(State(StatusBehavior.AttackRecovery,1,StatusTargetTeam.Ally),self:true));break;
-                case "누르기":var guard=Numeric(Hp(SkillEffectType.Shield,Ratio(r)),n=>{n.HasShieldDuration=true;n.ShieldDuration=4;});e.Add(Move(SkillMovementKind.JumpToCluster,1,Damage(r,Area(1)),CC(CrowdControlKind.Stun,1,Area(1)),guard));break;
+                case "누르기":var guard=Numeric(Hp(SkillEffectType.Shield,Ratio(r)),n=>{n.HasShieldDuration=true;n.ShieldDuration=4;});var slam=Move(SkillMovementKind.JumpToCluster,1,Damage(r,Area(1)),CC(CrowdControlKind.Stun,1,Area(1)),guard);slam.Movement.HasTravelTime=true;slam.Movement.TravelTime=.5f;e.Add(slam);break;
                 case "뿔찌르기":e.Add(Damage(r));e.Add(Move(SkillMovementKind.Knockback));break;
                 case "뿔드릴":e.Add(Numeric(Damage(r),n=>{n.Condition=SkillValueCondition.TargetLowHP;n.Threshold=.25f;n.ConditionalValues=new[]{DamageValue(r,1),DamageValue(r,1),DamageValue(r,1)};}));break;
                 case "난동부리기":s.TargetRule=SkillTargetRule.Self;e.Add(StatusEffect(State(StatusBehavior.AttackSplash,3,StatusTargetTeam.Ally,.5f,modifiers:new[]{Mod(CombatStat.AttackSpeed,Ratio(r))}),self:true));break;

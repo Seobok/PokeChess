@@ -18,7 +18,7 @@ namespace PokeChess.Core.Battle
         private sealed class Ground
         {public GroundSkillSnapshot View;public StatusEffectDefinition Status;public readonly Dictionary<string,long> Members=new Dictionary<string,long>();}
         private sealed class Chain
-        {public long Id,Start,Next;public int Iteration;public UnitCombatState Source;public SkillDefinition Skill;public SkillEffectDefinition Effect;
+        {public long Id,Start,Next,CastId;public int Iteration,StepIndex,EffectIndex;public UnitCombatState Source;public SkillDefinition Skill;public SkillEffectDefinition Effect;
          public float Value;public float[] Children;public DamageSourceSnapshot Snapshot;public BoardPosition Center;public readonly HashSet<string> Visited=new HashSet<string>();}
         private readonly BattleState battle;private long next;
         private readonly List<Ground> grounds=new List<Ground>();private readonly List<Chain> chains=new List<Chain>();
@@ -64,10 +64,10 @@ namespace PokeChess.Core.Battle
                 if(battle.CurrentTick>=g.View.EndTick)grounds.Remove(g);
             }
         }
-        internal void SpawnChain(UnitCombatState source,UnitCombatState primary,SkillDefinition skill,SkillEffectDefinition effect,float value)
+        internal void SpawnChain(UnitCombatState source,UnitCombatState primary,SkillDefinition skill,SkillEffectDefinition effect,float value,long castId=0,int stepIndex=0,int effectIndex=0)
         {
             if(primary==null)return;
-            var chain=new Chain{Id=checked(++next),Start=battle.CurrentTick,Source=source,Skill=skill,Effect=effect,Value=value,Center=primary.Position,
+            var chain=new Chain{Id=checked(++next),Start=battle.CurrentTick,Source=source,Skill=skill,Effect=effect,Value=value,Center=primary.Position,CastId=castId,StepIndex=stepIndex,EffectIndex=effectIndex,
                 Snapshot=SkillNumericMath.Capture(battle,source),Children=effect.PathImpactEffects.Select(e=>SkillNumericMath.SourceValue(source,e)).ToArray()};
             chain.Visited.Add(primary.UnitInstanceId);chain.Next=checked(chain.Start+BattleSimulation.ToTicks(effect.ChainDelay,battle.TickRate));chains.Add(chain);
         }
@@ -82,6 +82,8 @@ namespace PokeChess.Core.Battle
                 foreach(var target in targets) {
                     c.Visited.Add(target.UnitInstanceId);c.Center=target.Position;
                     var result=new DamageProcessor().Apply(battle,SkillNumericMath.Request(battle,c.Source,target,c.Effect,c.Value,snapshot:c.Snapshot));
+                    if(!result.Missed)battle.RecordSkillEffect(new SkillEffectEvent(c.Skill.Id,c.Source.UnitInstanceId,target.UnitInstanceId,c.EffectIndex,SkillEffectType.Damage,battle.CurrentTick,
+                        c.Value,result.AppliedDamage,SkillEffectOutcome.Applied,SkillEffectSkipReason.None,c.CastId,c.StepIndex,c.Iteration));
                     if(!result.Missed&&target.IsTargetable)new SkillEffectExecutor().ExecuteGenerated(battle,c.Source,target,c.Skill,c.Effect.PathImpactEffects,c.Children,c.Snapshot);
                 }
                 if(!c.Effect.ChainSequential){chains.Remove(c);continue;}

@@ -62,6 +62,7 @@ namespace PokeChess.Client.UI
             if(onlineBattleId!=frame.battleId){ClearOnlineFighters();onlineBattleId=frame.battleId;}
             combatInfo.text="VS "+PlayerLabel(frame.one==onlineService.WatchingPlayerId?frame.two:frame.one,owner.playerId)+(frame.shadow?" / SHADOW":"");
             double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
+            SkillVisualBattleView.Get(combatRoot,SkillVisuals).RenderPlayback(frame,tick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
             foreach(var unit in frame.units){
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
@@ -72,6 +73,7 @@ namespace PokeChess.Client.UI
                 Vector2 position=CombatPoint(new BoardPosition(unit.column,unit.row)),facing=Vector2.zero;
                 if(unit.action==CombatActionState.Moving){var destination=CombatPoint(new BoardPosition(unit.moveColumn,unit.moveRow));facing=destination-position;position=Vector2.Lerp(position,destination,(float)((tick-unit.startTick)/Math.Max(1,unit.endTick-unit.startTick)));}
                 else{var target=frame.units.FirstOrDefault(u=>u.id==unit.target);if(target!=null)facing=CombatPoint(new BoardPosition(target.column,target.row))-position;}
+                position=ThrowPresentation.Playback(frame,unit.id,tick,position,(c,r)=>CombatPoint(new BoardPosition(c,r)));
                 ((RectTransform)label.transform.parent).anchoredPosition=position;fighterSprites[unit.id].ShowPlayback(unit,tick,30,facing,1.5f);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
                 RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
@@ -88,11 +90,14 @@ namespace PokeChess.Client.UI
             foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
             foreach(var projectile in frame.projectiles){
                 if(!combatShots.TryGetValue(projectile.id,out var shot)){shot=Rect("Projectile_"+projectile.id,combatRoot,new Vector2(7,7),Vector2.zero);shot.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(1,.8f,.15f);shot.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;combatShots[projectile.id]=shot;}
-                shot.gameObject.SetActive(true);shot.anchoredPosition=Vector2.Lerp(CombatPoint(new BoardPosition(projectile.column,projectile.row)),CombatPoint(new BoardPosition(projectile.targetColumn,projectile.targetRow)),(float)((tick-projectile.spawnTick)/Math.Max(1,projectile.arrivalTick-projectile.spawnTick)));
+                shot.gameObject.SetActive(!SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,projectile.skillId,projectile.stepIndex,projectile.iteration));shot.anchoredPosition=Vector2.Lerp(CombatPoint(new BoardPosition(projectile.column,projectile.row)),CombatPoint(new BoardPosition(projectile.targetColumn,projectile.targetRow)),(float)((tick-projectile.spawnTick)/Math.Max(1,projectile.arrivalTick-projectile.spawnTick)));
             }
         }
         private void ShowOnlineEffect(CombatEventView effect)
         {
+            var visualFrame=onlineService.Combat.Current;
+            if(visualFrame!=null)SkillVisualBattleView.Get(combatRoot,SkillVisuals).PlaybackEvent(effect,visualFrame,
+                (column,row)=>CombatPoint(new BoardPosition(column,row)));
             PlayOnlineUnitCry(effect);
             PlayOnlineCombatSound(effect);
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;

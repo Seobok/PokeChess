@@ -9,6 +9,7 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class RoomFlowView : MonoBehaviour
     {
+        public PokeChess.Client.Data.SkillVisualCatalog SkillVisuals;
         public RoomBrowser Browser { get; }=new RoomBrowser();
         private GameObject panel,browse,lobby;
         private RectTransform content;
@@ -42,7 +43,7 @@ namespace PokeChess.Client.UI
             body.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
             Label("Title",body,"POKECHESS / ONLINE ROOMS",new Vector2(640,35),new Vector2(-90,245),22);
             Button("Local play",body,new Vector2(400,245),new Vector2(125,30),()=>{
-                panel.SetActive(false);var view=FindFirstObjectByType<PlacementSandboxView>();if(view==null)view=new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();view.ShowLocalMatch();
+                panel.SetActive(false);var view=FindFirstObjectByType<PlacementSandboxView>();if(view==null)view=new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();view.SkillVisuals=SkillVisuals??view.SkillVisuals;view.ShowLocalMatch();
             });
             var browser=Rect("Browse",body,body.sizeDelta,Vector2.zero);browse=browser.gameObject;
             BuildBrowser(browser);
@@ -89,7 +90,7 @@ namespace PokeChess.Client.UI
             bool inMatch=(inRoom||s.IsRecovering)&&s.StartInfo!=null;onlineMatchPanel.SetActive(false);
             recoveryPanel.SetActive(s.IsRecovering);if(s.IsRecovering){recoveryPanel.transform.SetAsLastSibling();recoveryText.text=s.RecoveryFeedback+"\n"+Math.Ceiling(s.ReconnectRemainingSeconds)+"s remaining\nThe match continues. Input resumes after state recovery.";recoveryRetry.interactable=!s.IsBusy&&s.State==ConnectionState.DisconnectedGrace;}
             transform.Find("RoomCanvas/Online rooms").gameObject.SetActive(!inMatch);
-            if(inMatch){if(matchClient==null)matchClient=FindFirstObjectByType<PlacementSandboxView>();if(matchClient==null)matchClient=new GameObject("MatchClient").AddComponent<PlacementSandboxView>();matchClient.EnterOnlineMatch(s);panel.SetActive(false);}
+            if(inMatch){if(matchClient==null)matchClient=FindFirstObjectByType<PlacementSandboxView>();if(matchClient==null)matchClient=new GameObject("MatchClient").AddComponent<PlacementSandboxView>();matchClient.SkillVisuals=SkillVisuals??matchClient.SkillVisuals;matchClient.EnterOnlineMatch(s);panel.SetActive(false);}
             else if(matchClient!=null&&matchClient.IsOnlineMatch){matchClient.ExitOnlineMatch();panel.SetActive(true);}
             var connectionTest=FindFirstObjectByType<OnlineConnectionView>();if(connectionTest!=null)connectionTest.transform.Find("OnlineCanvas").gameObject.SetActive(!inMatch);
             feedback.gameObject.SetActive(!inMatch);

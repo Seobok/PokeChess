@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Client::PokeChess.Client.Data.StatusVisualLibrary
   Effects:
   - Behavior: 7
+    CrowdControl: 0
     Position: 0
     Frames:
     - {fileID: 1463936047, guid: a25a9b4480c6faa4698fdad24abb5b6d, type: 3}
@@ -73,6 +74,7 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 6
+    CrowdControl: 0
     Position: 0
     Frames:
     - {fileID: 2070274429, guid: b497dc6ca8795454584370235d2f6061, type: 3}
@@ -132,6 +134,7 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 4
+    CrowdControl: 0
     Position: 0
     Frames:
     - {fileID: -7572634858374518996, guid: 4b2c01193a2e56f4084ecd6a83c0ae6c, type: 3}
@@ -191,12 +194,14 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 3
+    CrowdControl: 0
     Position: 1
     Frames:
     - {fileID: 21300000, guid: 69708a5ff30c90d4b939e5f8ef6cf988, type: 2}
     FramesPerSecond: 12
     Opacity: 0.55
   - Behavior: 10
+    CrowdControl: 0
     Position: 2
     Frames:
     - {fileID: -1194121975, guid: 836a19626ed017c419b13d600089f035, type: 3}
@@ -238,6 +243,7 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 9
+    CrowdControl: 0
     Position: 2
     Frames:
     - {fileID: 2060302567, guid: 3fc93ef022ef7f547a8db88a55c0a174, type: 3}
@@ -279,6 +285,7 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 5
+    CrowdControl: 0
     Position: 2
     Frames:
     - {fileID: 268078488, guid: ccf63b054ba1893429280d3591cff144, type: 3}
@@ -320,6 +327,7 @@ MonoBehaviour:
     FramesPerSecond: 12
     Opacity: 1
   - Behavior: 1
+    CrowdControl: 0
     Position: 2
     Frames:
     - {fileID: 4225597641596277017, guid: 95d38a9c5584b324d8883b533b9a2dcb, type: 3}
@@ -358,5 +366,19 @@ MonoBehaviour:
     - {fileID: 3629567653536191297, guid: 95d38a9c5584b324d8883b533b9a2dcb, type: 3}
     - {fileID: -5089267855162709781, guid: 95d38a9c5584b324d8883b533b9a2dcb, type: 3}
     - {fileID: -4347246495962709514, guid: 95d38a9c5584b324d8883b533b9a2dcb, type: 3}
+    FramesPerSecond: 12
+    Opacity: 1
+  - Behavior: 0
+    CrowdControl: 1
+    Position: 2
+    Frames:
+    - {fileID: -484626737, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: 379392897, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: 1947866447, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: -1846140301, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: 165025490, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: -1235081495, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: 462857202, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
+    - {fileID: 355429293, guid: ad2672d6c851daf41a924cf15dcf76bf, type: 3}
     FramesPerSecond: 12
     Opacity: 1

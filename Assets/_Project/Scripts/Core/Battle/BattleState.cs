@@ -147,8 +147,10 @@ namespace PokeChess.Core.Battle
         public long CurrentTick { get; internal set; }
         public double ElapsedSeconds => (double)CurrentTick / TickRate;
         public bool IsOvertime { get; internal set; }
-        public long OvertimeStartTick => checked(30L * TickRate);
-        public long TimeLimitTick => checked(45L * TickRate);
+        // Only enabled by the isolated EffectLab; preserves hit events for visual inspection.
+        public bool PreserveHealthForPreview { get; set; }
+        public long OvertimeStartTick => PreserveHealthForPreview?long.MaxValue:checked(30L * TickRate);
+        public long TimeLimitTick => PreserveHealthForPreview?long.MaxValue:checked(45L * TickRate);
         public long? EndTick { get; internal set; }
         private readonly List<BattleLifecycleEvent> lifecycleEvents = new List<BattleLifecycleEvent>();
         public IReadOnlyList<BattleLifecycleEvent> LifecycleEventsThisTick => Array.AsReadOnly(lifecycleEvents.ToArray());
@@ -161,7 +163,7 @@ namespace PokeChess.Core.Battle
         public IReadOnlyList<UnitCombatState> Units { get; }
         private readonly List<DamageResult> damageResults = new List<DamageResult>();
         public IReadOnlyList<DamageResult> DamageResultsThisTick => Array.AsReadOnly(damageResults.ToArray());
-        internal void BeginDamageTick() => damageResults.Clear();
+        internal void BeginDamageTick() {damageResults.Clear();SkillProcs.BeginTick();}
         internal void RecordDamage(DamageResult result) => damageResults.Add(result);
         private readonly CombatBoard board;
         private readonly Dictionary<string, UnitCombatState> unitsById;

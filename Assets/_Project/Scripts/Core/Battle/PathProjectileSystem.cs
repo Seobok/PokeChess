@@ -16,6 +16,8 @@ namespace PokeChess.Core.Battle
         public int Iteration { get; internal set; }
         public long SpawnTick { get; internal set; }
         public long NextTick { get; internal set; }
+        public long PreviousTick {get;internal set;}
+        public BoardPosition LaunchPosition {get;internal set;}
         public int NextIndex { get; internal set; }
         public int OutgoingCount { get; internal set; }
         public IReadOnlyList<BoardPosition> Path { get; internal set; }
@@ -47,7 +49,7 @@ namespace PokeChess.Core.Battle
         public IReadOnlyList<PathProjectileEvent> EventsThisTick=>Array.AsReadOnly(events.ToArray());
         private static PathProjectileState Clone(PathProjectileState p)=>new PathProjectileState{Id=p.Id,CastId=p.CastId,SourceId=p.SourceId,
             SkillId=p.SkillId,StepIndex=p.StepIndex,Iteration=p.Iteration,SpawnTick=p.SpawnTick,NextTick=p.NextTick,
-            NextIndex=p.NextIndex,OutgoingCount=p.OutgoingCount,Path=p.Path};
+            NextIndex=p.NextIndex,OutgoingCount=p.OutgoingCount,Path=p.Path,PreviousTick=p.PreviousTick,LaunchPosition=p.LaunchPosition};
         internal PathProjectileSystem(BattleState battle){this.battle=battle;}
         internal void BeginTick()=>events.Clear();
         internal bool Spawn(UnitCombatState caster,UnitCombatState target,string skill,SkillEffectDefinition effect,float value,
@@ -58,7 +60,7 @@ namespace PokeChess.Core.Battle
             if(outgoing.Count==0)return false;
             var path=effect.Returns?outgoing.Concat(outgoing.Reverse()).Concat(new[]{caster.Position}).ToArray():outgoing.ToArray();
             var p=new PathProjectileState{Id=checked(++nextId),CastId=castId,SourceId=caster.UnitInstanceId,SkillId=skill,StepIndex=stepIndex,
-                Iteration=iteration,SpawnTick=battle.CurrentTick,OutgoingCount=outgoing.Count,Path=Array.AsReadOnly(path),Effect=effect,Value=value,
+                Iteration=iteration,SpawnTick=battle.CurrentTick,PreviousTick=battle.CurrentTick,LaunchPosition=caster.Position,OutgoingCount=outgoing.Count,Path=Array.AsReadOnly(path),Effect=effect,Value=value,
                 Impact=impact,Snapshot=SkillNumericMath.Capture(battle,caster)};
             p.NextTick=Due(p,0);Due(p,path.Length-1);active.Add(p);events.Add(new PathProjectileEvent(p,PathProjectileEventKind.Spawned));return true;
         }
@@ -82,7 +84,7 @@ namespace PokeChess.Core.Battle
                     events.Add(new PathProjectileEvent(p,PathProjectileEventKind.Hit,target.UnitInstanceId));
                     if(target.IsAlive&&target.IsOnBoard)p.Impact?.Invoke(target);
                 }
-                p.NextIndex++;
+                p.PreviousTick=p.NextTick;p.NextIndex++;
                 if(p.NextIndex==p.Path.Count){active.Remove(p);events.Add(new PathProjectileEvent(p,PathProjectileEventKind.Completed));}
                 else p.NextTick=Due(p,p.NextIndex);
             }

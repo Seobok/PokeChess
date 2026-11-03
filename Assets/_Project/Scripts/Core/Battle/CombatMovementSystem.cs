@@ -40,10 +40,11 @@ namespace PokeChess.Core.Battle
         public string UnitId { get; }
         public SkillMovementKind Kind { get; }
         public long StartTick { get; }
+        public long DepartureTick { get; }
         public long EndTick { get; }
         public IReadOnlyList<BoardPosition> Path { get; }
-        internal CombatMovementSnapshot(long id,string source,string unit,SkillMovementKind kind,long start,long end,IEnumerable<BoardPosition> path,long castId=0,int stepIndex=0,int iteration=0)
-        {Id=id;CastId=castId;StepIndex=stepIndex;Iteration=iteration;SourceId=source;UnitId=unit;Kind=kind;StartTick=start;EndTick=end;Path=Array.AsReadOnly(path.ToArray());}
+        internal CombatMovementSnapshot(long id,string source,string unit,SkillMovementKind kind,long start,long end,IEnumerable<BoardPosition> path,long castId=0,int stepIndex=0,int iteration=0,int holdTicks=0)
+        {Id=id;CastId=castId;StepIndex=stepIndex;Iteration=iteration;SourceId=source;UnitId=unit;Kind=kind;StartTick=start;DepartureTick=checked(start+holdTicks);EndTick=end;Path=Array.AsReadOnly(path.ToArray());}
     }
     public readonly struct CombatMovementEvent
     {
@@ -55,6 +56,8 @@ namespace PokeChess.Core.Battle
     }
     public sealed class CombatMovementSystem
     {
+        public const double KnockbackHoldSeconds=.12;
+        public const double CarryApproachSeconds=.12;
         private sealed class Pending
         {public CombatMovementSnapshot View;public UnitCombatState Unit;public Action Impact;public UnitCombatState Companion;public CombatMovementSnapshot CompanionView;}
         private readonly BattleState battle;
@@ -101,7 +104,18 @@ namespace PokeChess.Core.Battle
                     if(end.HasValue)path=new[]{start,end.Value};
                 } else {
                     var cells=new List<BoardPosition>{start};
-                    foreach(var p in ray){if(!Empty(p,subject))break;cells.Add(p);}path=cells;
+                    foreach(var p in ray){if(!KnockbackSpace(p))break;cells.Add(p);}path=cells;
+                    bool KnockbackSpace(BoardPosition p) {
+                        if(Empty(p,subject))return true;
+                        if(castId==0||!battle.Board.Contains(p)||Reservations.TryGetOwner(p,out _))return false;
+                        // Only follow an earlier victim of this same effect, moving away at the same speed.
+                        return active.Any(v=>v.Unit.Position.Equals(p)&&v.View.Kind==SkillMovementKind.Knockback&&
+                            v.View.CastId==castId&&v.View.StepIndex==stepIndex&&v.View.Iteration==iteration&&
+                            v.View.SourceId==caster.UnitInstanceId&&v.View.StartTick==battle.CurrentTick&&
+                            v.View.EndTick<=battle.CurrentTick+BattleSimulation.ToTicks(KnockbackHoldSeconds,battle.TickRate)+(definition.TravelTime.HasValue?
+                                BattleSimulation.ToTicks(definition.TravelTime.Value,battle.TickRate,false):
+                                BattleSimulation.ToTicks(cells.Count/(double)definition.Speed,battle.TickRate)));
+                    }
                 }
             }
             else if(!blocked&&definition.Kind==SkillMovementKind.Retreat) {
@@ -144,28 +158,32 @@ namespace PokeChess.Core.Battle
             Relocating?.Invoke(subject,definition.Forced);Reservations.Release(subject.UnitInstanceId);
             var destination=path.Last();int distance=definition.Kind==SkillMovementKind.DashToTarget?path.Count-1:HexCoordinates.Distance(start,destination);
             int ticks=definition.TravelTime.HasValue?BattleSimulation.ToTicks(definition.TravelTime.Value,battle.TickRate,false):definition.Kind==SkillMovementKind.TeleportSafe||definition.Kind==SkillMovementKind.Retreat||definition.Kind==SkillMovementKind.BurrowToTarget||distance==0?0:BattleSimulation.ToTicks(distance/(double)definition.Speed,battle.TickRate);
+            int hold=definition.Kind==SkillMovementKind.Knockback?BattleSimulation.ToTicks(KnockbackHoldSeconds,battle.TickRate):0;
             var view=new CombatMovementSnapshot(checked(++nextId),caster.UnitInstanceId,subject.UnitInstanceId,definition.Kind,
-                battle.CurrentTick,checked(battle.CurrentTick+ticks),path,castId,stepIndex,iteration);
+                battle.CurrentTick,checked(battle.CurrentTick+hold+ticks),path,castId,stepIndex,iteration,hold);
             if(!destination.Equals(start)&&!Reservations.TryReserve(subject.UnitInstanceId,destination)){Record(view,CombatMovementEventKind.Blocked);return false;}
             Record(view,CombatMovementEventKind.Started);
             var pending=new Pending{View=view,Unit=subject,Impact=impact};
-            if(ticks==0)Arrive(pending);else active.Add(pending);
+            if(ticks+hold==0)Arrive(pending);else active.Add(pending);
             return true;
         }
         private bool TryCarry(UnitCombatState caster,UnitCombatState target,SkillMovementDefinition def,Action impact,long castId,int step,int iteration) {
             if(target==null||target.TeamId==caster.TeamId||!target.IsTargetable)return false;
             var a=HexCoordinates.ToAxial(caster.Position);var t=HexCoordinates.ToAxial(target.Position);
             var ray=SkillGeometry.Ray(target.Position,new AxialPosition(t.Q-a.Q,t.R-a.R),def.Distance);
-            var end=ray.Reverse().Where(p=>Empty(p,target)).Select(p=>(BoardPosition?)p).FirstOrDefault();if(!end.HasValue)return false;
-            var landing=battle.Board.Cells.Where(p=>HexCoordinates.Distance(p,end.Value)==1&&(Empty(p,caster)||p.Equals(target.Position)))
-                .OrderBy(p=>HexCoordinates.Distance(caster.Position,p)).ThenBy(p=>p.Row).ThenBy(p=>p.Column).Select(p=>(BoardPosition?)p).FirstOrDefault();
-            if(!landing.HasValue)return false;
+            var end=ray.Reverse().Where(p=>Empty(p,target)).Select(p=>(BoardPosition?)p).FirstOrDefault();
+            var landing=end.HasValue?battle.Board.Cells.Where(p=>HexCoordinates.Distance(p,end.Value)==1&&(Empty(p,caster)||p.Equals(target.Position)))
+                .OrderBy(p=>HexCoordinates.Distance(caster.Position,p)).ThenBy(p=>p.Row).ThenBy(p=>p.Column).Select(p=>(BoardPosition?)p).FirstOrDefault():null;
+            bool inPlace=!end.HasValue||!landing.HasValue;
+            if(inPlace){end=target.Position;landing=caster.Position;}
             Cancel(caster);Cancel(target);Relocating?.Invoke(caster,false);Relocating?.Invoke(target,true);
             if(!landing.Value.Equals(caster.Position)&&!Reservations.TryReserve(caster.UnitInstanceId,landing.Value))return false;
             if(!Reservations.TryReserve(target.UnitInstanceId,end.Value)){Reservations.Release(caster.UnitInstanceId);return false;}
-            long endTick=checked(battle.CurrentTick+BattleSimulation.ToTicks(HexCoordinates.Distance(caster.Position,landing.Value)/def.Speed,battle.TickRate));
-            var view=new CombatMovementSnapshot(checked(++nextId),caster.UnitInstanceId,caster.UnitInstanceId,SkillMovementKind.CarryTarget,battle.CurrentTick,endTick,new[]{caster.Position,landing.Value},castId,step,iteration);
-            var other=new CombatMovementSnapshot(checked(++nextId),caster.UnitInstanceId,target.UnitInstanceId,SkillMovementKind.Throw,battle.CurrentTick,endTick,new[]{target.Position,end.Value},castId,step,iteration);
+            int approach=BattleSimulation.ToTicks(CarryApproachSeconds,battle.TickRate);
+            int jump=BattleSimulation.ToTicks(def.TravelTime??(inPlace?.35f:(float)(HexCoordinates.Distance(caster.Position,landing.Value)/def.Speed)),battle.TickRate);
+            long endTick=checked(battle.CurrentTick+approach+jump);
+            var view=new CombatMovementSnapshot(checked(++nextId),caster.UnitInstanceId,caster.UnitInstanceId,SkillMovementKind.CarryTarget,battle.CurrentTick,endTick,new[]{caster.Position,target.Position,landing.Value},castId,step,iteration,approach);
+            var other=new CombatMovementSnapshot(checked(++nextId),caster.UnitInstanceId,target.UnitInstanceId,SkillMovementKind.Throw,battle.CurrentTick,endTick,new[]{target.Position,end.Value},castId,step,iteration,approach);
             Record(view,CombatMovementEventKind.Started);Record(other,CombatMovementEventKind.Started);
             active.Add(new Pending{View=view,Unit=caster,Companion=target,CompanionView=other,Impact=impact});return true;
         }

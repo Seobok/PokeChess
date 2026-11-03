@@ -186,6 +186,7 @@ namespace PokeChess.Client.UI
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
                 var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
+                SkillVisualBattleView.Get(combatRoot,SkillVisuals).RenderLocal(ownPair,battle.CurrentTick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
                 if(lastVisualBattle!=battle)
                 {
                     lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();
@@ -201,7 +202,7 @@ namespace PokeChess.Client.UI
                         var shotImage=shot.gameObject.AddComponent<UnityEngine.UI.Image>();shotImage.raycastTarget=false;
                         shotImage.color=projectile.SkillDamage.HasValue?new Color(1,.8f,.15f):Color.white;combatShots[projectile.Id]=shot;
                     }
-                    shot.gameObject.SetActive(true);
+                    shot.gameObject.SetActive(!SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,projectile.SkillId,projectile.StepIndex,projectile.Iteration));
                     float progress=(float)(battle.CurrentTick-projectile.SpawnTick)/Math.Max(1,projectile.ArrivalTick-projectile.SpawnTick);
                     shot.anchoredPosition=Vector2.Lerp(CombatPoint(projectile.LaunchPosition),CombatPoint(projectile.TargetPositionAtLaunch),progress);
                 }

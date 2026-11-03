@@ -12,6 +12,7 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView : MonoBehaviour
     {
+        public PokeChess.Client.Data.SkillVisualCatalog SkillVisuals;
         private sealed class Slot
         {
             public UnitPlacement Placement;

@@ -13,6 +13,9 @@ namespace PokeChess.Core.Battle
         private readonly Dictionary<string,HashSet<string>> bounties=new Dictionary<string,HashSet<string>>();
         private readonly HashSet<string> settled=new HashSet<string>();
         public event Action<UnitCombatState,int> GoldAwarded;
+        private readonly List<KeyValuePair<string,int>> goldAwards=new List<KeyValuePair<string,int>>();
+        public IReadOnlyList<KeyValuePair<string,int>> GoldAwardsThisTick=>goldAwards;
+        internal void BeginTick()=>goldAwards.Clear();
         internal SkillProcSystem(BattleState battle){this.battle=battle;}
         private static void Mark(Dictionary<string,HashSet<string>> map,string victim,string source)
         {if(!map.TryGetValue(victim,out var ids))map[victim]=ids=new HashSet<string>();ids.Add(source);}
@@ -30,7 +33,7 @@ namespace PokeChess.Core.Battle
                     foreach(var id in ids.OrderBy(x=>x,StringComparer.Ordinal))battle.StatusEffects.ExtendSwordDance(battle.Units.Single(u=>u.UnitInstanceId==id));
                 if(bounties.TryGetValue(target.UnitInstanceId,out ids))foreach(var id in ids.OrderBy(x=>x,StringComparer.Ordinal)) {
                     var unit=battle.Units.Single(u=>u.UnitInstanceId==id);
-                    int gold=unit.PersistentUnit.AddBountyParticipation();if(gold>0)GoldAwarded?.Invoke(unit,gold);
+                    int gold=unit.PersistentUnit.AddBountyParticipation();if(gold>0){goldAwards.Add(new KeyValuePair<string,int>(id,gold));GoldAwarded?.Invoke(unit,gold);}
                 }
             }
             if(!result.Request.IsBasicAttack||result.PostMitigationDamage<=0||!source.IsAlive||!source.IsOnBoard)return;

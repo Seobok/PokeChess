@@ -48,6 +48,7 @@ namespace PokeChess.Client.UI
                 if(!started) {
                     view=FindFirstObjectByType<PlacementSandboxView>();
                     if(view==null)view=new GameObject("ContentAlphaSandbox").AddComponent<PlacementSandboxView>();
+                    if(view.SkillVisuals==null)view.SkillVisuals=FindFirstObjectByType<PokeChess.Client.Bootstrap.GameBootstrap>()?.SkillVisuals;
                     if(view.RoundLoop==null)return;
                     if(itemsMode){CheckItems();itemsChecked=true;}
                     view.StartLocalSimulation(seed,true);started=true;return;

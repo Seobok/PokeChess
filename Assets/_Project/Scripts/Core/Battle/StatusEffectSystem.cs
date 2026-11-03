@@ -42,6 +42,7 @@ namespace PokeChess.Core.Battle
         {
             var e=Live(unit).FirstOrDefault(x=>x.Def.Behavior==StatusBehavior.SwordDance);if(e==null)return 0;
             e.Pulses=(e.Pulses+1)%3;unit.SwordDanceHits=e.Pulses;events.Add(new StatusEvent(e.Snapshot(),battle.CurrentTick,StatusEventKind.Pulse));
+            if(e.Pulses==0)events.Add(new StatusEvent(e.Snapshot(),battle.CurrentTick,StatusEventKind.Proc));
             return e.Pulses==0?e.Def.EffectValue:0;
         }
         internal void ExtendSwordDance(UnitCombatState unit)

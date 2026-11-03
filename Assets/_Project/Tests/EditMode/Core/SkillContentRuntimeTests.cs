@@ -55,6 +55,10 @@ namespace PokeChess.Core.Tests
                 Hit(b,target.UnitInstanceId,10,false,new SkillNumericDefinition(bounty:true));Hit(b,target.UnitInstanceId,2000,false);
             }
             Assert.That(gold,Is.EqualTo(1));Assert.That(U(b,"a").BountyStacks,Is.Zero);
+            Assert.That(b.SkillProcs.GoldAwardsThisTick.Count,Is.EqualTo(1));
+            Assert.That(b.SkillProcs.GoldAwardsThisTick[0].Key,Is.EqualTo("a"));
+            Assert.That(b.SkillProcs.GoldAwardsThisTick[0].Value,Is.EqualTo(1));
+            new BattleSimulation(b,new Policy()).Step();Assert.That(b.SkillProcs.GoldAwardsThisTick,Is.Empty);
         }
         [Test] public void MagicPenetrationOnlyAffectsTheCurrentSpecialHit()
         {
@@ -132,9 +136,32 @@ namespace PokeChess.Core.Tests
         {
             var b=Battle();int impacts=0;var source=U(b,"a");var target=U(b,"z1");
             var before=target.Position;Assert.That(b.Movement.TryStart(source,target,new SkillMovementDefinition(SkillMovementKind.CarryTarget,2),()=>impacts++),Is.True);
-            Assert.That(impacts,Is.Zero);var sim=new BattleSimulation(b,new Policy());Through(b,sim,40);
+            var mover=b.Movement.Active.Single(m=>m.UnitId==source.UnitInstanceId);var passenger=b.Movement.Active.Single(m=>m.UnitId==target.UnitInstanceId);
+            Assert.That(mover.Path[1],Is.EqualTo(before));Assert.That(mover.DepartureTick,Is.GreaterThan(mover.StartTick));
+            Assert.That(passenger.DepartureTick,Is.EqualTo(mover.DepartureTick));Assert.That(passenger.EndTick,Is.EqualTo(mover.EndTick));
+            Assert.That(impacts,Is.Zero);var sim=new BattleSimulation(b,new Policy());
+            while(b.CurrentTick<mover.EndTick-1)sim.Step();
+            Assert.That(impacts,Is.Zero);Assert.That(target.Position,Is.EqualTo(before));Through(b,sim,40);
             Assert.That(impacts,Is.EqualTo(1));Assert.That(target.Position,Is.Not.EqualTo(before));Assert.That(HexCoordinates.Distance(source.Position,target.Position),Is.EqualTo(1));
             Assert.That(b.Movement.Active,Is.Empty);
+        }
+        [TestCase(true)] [TestCase(false)]
+        public void CarryWithoutLandingSpaceJumpsInPlaceAndImpactsExactlyOnce(bool wall)
+        {
+            var b=Battle();var source=U(b,"a");var target=U(b,"z1");
+            if(wall){b.TryMoveUnit(source.UnitInstanceId,P(5,3));b.TryMoveUnit(target.UnitInstanceId,P(6,3));}
+            else {b.TryMoveUnit("z2",P(3,3));b.TryMoveUnit("z3",P(4,3));}
+            var originalSource=source.Position;var originalTarget=target.Position;int impacts=0;
+            Assert.That(b.Movement.TryStart(source,target,new SkillMovementDefinition(SkillMovementKind.CarryTarget,2,travelTime:.35f),()=>impacts++),Is.True);
+            var mover=b.Movement.Active.Single(m=>m.UnitId==source.UnitInstanceId);
+            var passenger=b.Movement.Active.Single(m=>m.UnitId==target.UnitInstanceId);
+            Assert.That(mover.Path.Last(),Is.EqualTo(originalSource));Assert.That(passenger.Path.Last(),Is.EqualTo(originalTarget));
+            Assert.That(mover.Path[1],Is.EqualTo(originalTarget));Assert.That(mover.EndTick,Is.GreaterThan(mover.DepartureTick));
+            var sim=new BattleSimulation(b,new Policy());while(b.CurrentTick<mover.EndTick-1)sim.Step();Assert.That(impacts,Is.Zero);
+            Through(b,sim,40);Assert.That(impacts,Is.EqualTo(1));Assert.That(b.Movement.Active,Is.Empty);
+            Assert.That(source.Position,Is.EqualTo(originalSource));Assert.That(target.Position,Is.EqualTo(originalTarget));
+            Assert.That(b.Movement.Reservations.TryGetOwner(originalTarget,out _),Is.False);
+            Assert.That(b.Units.Select(u=>u.Position).Distinct().Count(),Is.EqualTo(b.Units.Count));
         }
         [Test] public void BountyPersistsBetweenBattlesMergesAndIsDiscardedOnSale()
         {

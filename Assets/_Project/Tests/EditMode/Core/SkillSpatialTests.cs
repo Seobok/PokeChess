@@ -96,6 +96,18 @@ namespace PokeChess.Core.Tests
             spec=new SkillSpatialDefinition(SpatialTargetMode.ChainEnemies,maxTargets:2,chainRange:1,includePrimary:false);
             CollectionAssert.AreEqual(new[]{"y","x"},SkillSpatialSelector.Select(b,a,z,spec,true,a.Position,a.Position,z.Position).Select(u=>u.UnitInstanceId));
         }
+        [Test] public void PrimaryBranchesHitBothSidesOfPrimaryRatherThanWalkingFromFirstVictim()
+        {
+            var b=Battle(("upper",2,P(3,2)),("outside",2,P(3,5)));b.TryMoveUnit("y",P(3,4));
+            var spec=new SkillSpatialDefinition(SpatialTargetMode.PrimaryEnemies,maxTargets:2,chainRange:1,includePrimary:false);
+            var selected=SkillSpatialSelector.Select(b,U(b,"a"),U(b,"z"),spec,true,U(b,"a").Position,P(3,3),P(3,3));
+            CollectionAssert.AreEquivalent(new[]{"upper","y"},selected.Select(u=>u.UnitInstanceId));
+            var extra=new SkillEffectDefinition(SkillEffectType.Damage,EffectTargetSelector.Spatial,10,spatial:spec);
+            var sim=Sim(b,Skill(Hit(20),extra));Through(b,sim,4);
+            Assert.That(U(b,"z").CurrentHP,Is.EqualTo(980));
+            Assert.That(U(b,"upper").CurrentHP,Is.EqualTo(990));Assert.That(U(b,"y").CurrentHP,Is.EqualTo(990));
+            Assert.That(U(b,"outside").CurrentHP,Is.EqualTo(1000));
+        }
         [Test] public void FarthestEnemyHonorsEligibleTauntAndRange()
         {
             var b=Battle();var a=U(b,"a");Assert.That(SkillSpatialSelector.Farthest(b,a,7),Is.SameAs(U(b,"y")));
@@ -137,6 +149,20 @@ namespace PokeChess.Core.Tests
                 movement:new SkillMovementDefinition(SkillMovementKind.Knockback,2,impactEffects:new[]{Hit()}));
             Sim(b,Skill(e)).Step();Assert.That(U(b,"z").CurrentHP,Is.EqualTo(980));Assert.That(U(b,"z").Position,Is.EqualTo(P(3,3)));
             Assert.That(b.Movement.EventsThisTick.Last().Kind,Is.EqualTo(CombatMovementEventKind.Blocked));
+        }
+        [Test] public void KnockbackWaitsBeforeTravelAndKeepsDestinationReserved()
+        {
+            var b=Battle();b.TryMoveUnit("y",P(6,6));
+            Assert.That(b.Movement.TryStart(U(b,"a"),U(b,"z"),new SkillMovementDefinition(SkillMovementKind.Knockback)),Is.True);
+            var move=b.Movement.Active.Single();
+            Assert.That(move.DepartureTick,Is.GreaterThan(move.StartTick));
+            Assert.That(move.EndTick,Is.GreaterThan(move.DepartureTick));
+            Assert.That(b.Movement.Reservations.TryGetOwner(P(4,3),out var owner),Is.True);Assert.That(owner,Is.EqualTo("z"));
+            var sim=new BattleSimulation(b,new StationaryPolicy());
+            while(b.CurrentTick<move.DepartureTick)sim.Step();
+            Assert.That(U(b,"z").Position,Is.EqualTo(P(3,3)));
+            while(b.CurrentTick<=move.EndTick)sim.Step();
+            Assert.That(U(b,"z").Position,Is.EqualTo(P(4,3)));
         }
         [Test] public void BoardEdgeKnockbackStopsRatherThanMovingBackwards()
         {
@@ -296,7 +322,31 @@ namespace PokeChess.Core.Tests
                 spatial:new SkillSpatialDefinition(extent:5),movement:new SkillMovementDefinition(SkillMovementKind.Knockback,
                     impactEffects:new[]{Hit()}));var sim=Sim(b,Skill(e));Through(b,sim,4);
             Assert.That(U(b,"z").CurrentHP,Is.EqualTo(980));Assert.That(U(b,"y").CurrentHP,Is.EqualTo(980));
-            Assert.That(U(b,"z").Position,Is.EqualTo(P(3,3)));Assert.That(U(b,"y").Position,Is.EqualTo(P(5,3)));
+            Assert.That(U(b,"z").Position,Is.EqualTo(P(4,3)));Assert.That(U(b,"y").Position,Is.EqualTo(P(5,3)));
+        }
+        [Test] public void LineKnockbackMovesEveryVictimOneCellFromBackToFront()
+        {
+            var b=Battle(("last",2,P(5,3)));b.TryMoveUnit("z",P(2,3));b.TryMoveUnit("y",P(3,3));
+            b.TryMoveUnit("last",P(4,3));
+            var e=new SkillEffectDefinition(SkillEffectType.Move,EffectTargetSelector.Spatial,0,
+                spatial:new SkillSpatialDefinition(shape:SkillAreaShape.Line,extent:4),
+                movement:new SkillMovementDefinition(SkillMovementKind.Knockback,impactEffects:new[]{Hit()}));
+            var sim=Sim(b,Skill(e));Through(b,sim,8);
+            Assert.That(U(b,"z").Position,Is.EqualTo(P(3,3)));
+            Assert.That(U(b,"y").Position,Is.EqualTo(P(4,3)));
+            Assert.That(U(b,"last").Position,Is.EqualTo(P(5,3)));
+            foreach(var id in new[]{"z","y","last"})Assert.That(U(b,id).CurrentHP,Is.EqualTo(980));
+        }
+        [Test] public void LineKnockbackCannotFollowAVictimBlockedByAnUnaffectedUnit()
+        {
+            var b=Battle(("blocker",2,P(5,3)));
+            var e=new SkillEffectDefinition(SkillEffectType.Move,EffectTargetSelector.Spatial,0,
+                spatial:new SkillSpatialDefinition(shape:SkillAreaShape.Line,extent:3),
+                movement:new SkillMovementDefinition(SkillMovementKind.Knockback,impactEffects:new[]{Hit()}));
+            var sim=Sim(b,Skill(e));Through(b,sim,8);
+            Assert.That(U(b,"z").Position,Is.EqualTo(P(3,3)));
+            Assert.That(U(b,"y").Position,Is.EqualTo(P(4,3)));
+            Assert.That(U(b,"blocker").Position,Is.EqualTo(P(5,3)));
         }
         [Test] public void NestedPathThrowImpactUsesTheOriginalOffensiveSnapshot()
         {

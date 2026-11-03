@@ -95,8 +95,8 @@ namespace PokeChess.Core.Battle
                 var miss=new DamageResult(battle.CurrentTick,request,0,0,0,0,target.CurrentHP,target.CurrentShield,false,missed:true);battle.RecordDamage(miss);return miss;
             }
             if(numeric?.ExecuteThreshold>0&&target.CurrentHP/target.Stats.MaxHP<=numeric.ExecuteThreshold) {
-                float before=target.CurrentHP;target.SetVitals(0,target.CurrentEnergy);target.DeathCause=DeathReason.Damage;battle.TryRemoveUnit(target.UnitInstanceId);
-                var executed=new DamageResult(battle.CurrentTick,request,before,before,0,before,0,target.CurrentShield,true);
+                float before=target.CurrentHP;if(!battle.PreserveHealthForPreview){target.SetVitals(0,target.CurrentEnergy);target.DeathCause=DeathReason.Damage;battle.TryRemoveUnit(target.UnitInstanceId);}
+                var executed=new DamageResult(battle.CurrentTick,request,before,before,0,before,target.CurrentHP,target.CurrentShield,!battle.PreserveHealthForPreview);
                 battle.RecordDamage(executed);battle.SkillProcs.OnDamage(executed);
                 if(numeric.Lifesteal>0)battle.Healing.Apply(source,before*numeric.Lifesteal);
                 return executed;
@@ -133,9 +133,9 @@ namespace PokeChess.Core.Battle
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));
             hpDamage=battle.Items.AdjustHPDamage(target,hpDamage);
-            bool killed=target.CurrentHP>0 && hpDamage>=target.CurrentHP;
+            bool killed=!battle.PreserveHealthForPreview&&target.CurrentHP>0 && hpDamage>=target.CurrentHP;
             battle.Shields.Absorb(target,shield);
-            target.SetVitals(target.CurrentHP-hpDamage,target.CurrentEnergy);
+            if(!battle.PreserveHealthForPreview)target.SetVitals(target.CurrentHP-hpDamage,target.CurrentEnergy);
             if(target.CurrentHP<=0)target.DeathCause=DeathReason.Damage;
             if(!target.IsAlive)battle.TryRemoveUnit(target.UnitInstanceId);
             var result=new DamageResult(battle.CurrentTick,request,calculation.AfterAmplification,post,shield,hpDamage,

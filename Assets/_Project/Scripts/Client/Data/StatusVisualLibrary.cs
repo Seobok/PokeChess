@@ -6,7 +6,7 @@ namespace PokeChess.Client.Data
     public enum StatusVisualPosition { Feet, Overlay, Head }
     [Serializable] public sealed class StatusVisual
     {
-        public StatusBehavior Behavior;
+        public StatusBehavior Behavior; public CrowdControlKind CrowdControl;
         public StatusVisualPosition Position;
         public Sprite[] Frames=Array.Empty<Sprite>();
         public float FramesPerSecond=12,Opacity=1;

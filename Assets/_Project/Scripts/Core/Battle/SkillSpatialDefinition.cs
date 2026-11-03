@@ -7,7 +7,7 @@ using PokeChess.Core.Pokemon;
 namespace PokeChess.Core.Battle
 {
     public enum SkillAreaCenter { Caster, CastTarget, DensestEnemies }
-    public enum SpatialTargetMode { Area, NearestAllies, ChainEnemies }
+    public enum SpatialTargetMode { Area, NearestAllies, ChainEnemies, PrimaryEnemies }
     public sealed class SkillSpatialDefinition
     {
         public SpatialTargetMode Mode { get; }
@@ -65,6 +65,13 @@ namespace PokeChess.Core.Battle
         {
             var valid=battle.Units.Where(u=>u.IsAlive&&u.IsOnBoard&&(enemies?u.TeamId!=caster.TeamId&&u.IsTargetable:
                 u.TeamId==caster.TeamId&&(spec.IncludeSelf||u!=caster))).ToArray();
+            if(spec.Mode==SpatialTargetMode.PrimaryEnemies) {
+                if(target==null)return Array.Empty<UnitCombatState>();
+                var nearby=valid.Where(u=>(spec.IncludePrimary||u!=target)&&HexCoordinates.Distance(target.Position,u.Position)<=spec.ChainRange)
+                    .OrderBy(u=>HexCoordinates.Distance(target.Position,u.Position))
+                    .ThenBy(u=>CombatTargetSelector.CenterDistanceScore(u.Position)).ThenBy(u=>u.UnitInstanceId,StringComparer.Ordinal);
+                return (spec.MaxTargets==0?nearby:nearby.Take(spec.MaxTargets)).ToArray();
+            }
             if(spec.Mode==SpatialTargetMode.ChainEnemies) {
                 var selected=new List<UnitCombatState>();var current=target;
                 if(current==null||!valid.Contains(current))return selected.ToArray();

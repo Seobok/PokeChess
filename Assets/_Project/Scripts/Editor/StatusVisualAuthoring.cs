@@ -8,6 +8,18 @@ namespace PokeChess.Editor
 {
     public static class StatusVisualAuthoring
     {
+        [MenuItem("PokeChess/Visuals/Register Common Stun")]
+        public static void RegisterCommonStun()
+        {
+            var library=AssetDatabase.LoadAssetAtPath<StatusVisualLibrary>("Assets/_Project/Resources/StatusVisuals.asset");
+            var frames=AssetDatabase.LoadAllAssetsAtPath("Assets/_Project/Sprites/Effects/CC/stun.png").OfType<Sprite>().OrderByDescending(s=>s.rect.y).ThenBy(s=>s.rect.x).ToArray();
+            if(library==null||frames.Length==0)throw new InvalidOperationException("Missing common stun library or frames");
+            library.Effects=library.Effects.Where(e=>e.CrowdControl!=CrowdControlKind.Stun).Concat(new[]{new StatusVisual{CrowdControl=CrowdControlKind.Stun,Position=StatusVisualPosition.Head,Frames=frames,FramesPerSecond=12}}).ToArray();
+            EditorUtility.SetDirty(library);
+            var catalog=AssetDatabase.LoadAssetAtPath<SkillVisualCatalog>(SkillVisualCatalogBuilder.CatalogPath);
+            if(catalog!=null){catalog.Entries=catalog.Entries.Where(e=>e.Name!="SubmissionStun").ToArray();EditorUtility.SetDirty(catalog);}
+            AssetDatabase.SaveAssets();
+        }
         public static void Apply()
         {
             const string folder="Assets/_Project/Sprites/Effects/";
@@ -35,6 +47,7 @@ namespace PokeChess.Editor
             var library=AssetDatabase.LoadAssetAtPath<StatusVisualLibrary>(libraryPath);
             if(library==null){library=ScriptableObject.CreateInstance<StatusVisualLibrary>();AssetDatabase.CreateAsset(library,libraryPath);}
             library.Effects=effects;EditorUtility.SetDirty(library);AssetDatabase.SaveAssets();
+            RegisterCommonStun();
             Debug.Log("Registered "+effects.Length+" status sprite effects");
         }
     }

@@ -40,7 +40,7 @@ namespace PokeChess.Core.Battle
         public bool RequiresEnemy => Type==SkillEffectType.GroundStatus||Type==SkillEffectType.RandomStatus||IsDamage || (Type==SkillEffectType.Move&&Movement.Kind!=SkillMovementKind.TeleportSafe&&Movement.Kind!=SkillMovementKind.JumpToCluster) || (Type==SkillEffectType.ApplyStatus&&StatusTargetTeam==StatusTargetTeam.Enemy);
         public bool NeedsCastTarget => TargetSelector==EffectTargetSelector.BehindCastTarget||TargetSelector==EffectTargetSelector.CastTarget ||
             TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget || Type==SkillEffectType.PathProjectileDamage ||
-            (Spatial!=null&&(Spatial.Mode==SpatialTargetMode.ChainEnemies||Spatial.Center==SkillAreaCenter.CastTarget||
+            (Spatial!=null&&(Spatial.Mode==SpatialTargetMode.ChainEnemies||Spatial.Mode==SpatialTargetMode.PrimaryEnemies||Spatial.Center==SkillAreaCenter.CastTarget||
                 Spatial.Shape==SkillAreaShape.Line||Spatial.Shape==SkillAreaShape.Cone));
         public bool IsDamage => Type==SkillEffectType.ChainDamage||Type==SkillEffectType.Damage||Type==SkillEffectType.ProjectileDamage||Type==SkillEffectType.PathProjectileDamage;
         public SkillEffectDefinition(SkillEffectType type,EffectTargetSelector targetSelector,float baseValue,
@@ -74,7 +74,7 @@ namespace PokeChess.Core.Battle
             if(type==SkillEffectType.PathProjectileDamage&&(spatial==null||spatial.Shape!=SkillAreaShape.Line||spatial.Mode!=SpatialTargetMode.Area||spatial.Center!=SkillAreaCenter.Caster))
                 throw new ArgumentException("Path projectiles require a caster-centered line.");
             if(spatial!=null&&((spatial.Mode==SpatialTargetMode.NearestAllies&&(IsDamageType(type)||type==SkillEffectType.ApplyStatus&&statusTargetTeam==StatusTargetTeam.Enemy))||
-                (spatial.Mode==SpatialTargetMode.ChainEnemies&&!(IsDamageType(type)||type==SkillEffectType.ApplyStatus&&statusTargetTeam==StatusTargetTeam.Enemy))))
+                ((spatial.Mode==SpatialTargetMode.ChainEnemies||spatial.Mode==SpatialTargetMode.PrimaryEnemies)&&!(IsDamageType(type)||type==SkillEffectType.ApplyStatus&&statusTargetTeam==StatusTargetTeam.Enemy))))
                 throw new ArgumentException("Spatial selection team mismatch.");
             Spatial=spatial;Movement=movement;Returns=returns;
             if(type==SkillEffectType.Move&&spatial!=null&&(!movement.Forced||spatial.Mode==SpatialTargetMode.NearestAllies))
@@ -131,14 +131,14 @@ namespace PokeChess.Core.Battle
         public int EffectIndex { get; }
         public SkillEffectType Type { get; }
         public long Tick { get; }
-        public float CalculatedValue { get; }
+        public bool ConditionMatched { get; } public float CalculatedValue { get; }
         public float ActualValue { get; }
         public SkillEffectOutcome Outcome { get; }
         public SkillEffectSkipReason SkipReason { get; }
         public SkillEffectEvent(string skillId,string caster,string target,int index,SkillEffectType type,long tick,
-            float calculated,float actual,SkillEffectOutcome outcome,SkillEffectSkipReason skip,long castId=0,int stepIndex=0,int iteration=0)
+            float calculated,float actual,SkillEffectOutcome outcome,SkillEffectSkipReason skip,long castId=0,int stepIndex=0,int iteration=0,bool conditionMatched=false)
         { CastId=castId;StepIndex=stepIndex;Iteration=iteration;SkillId=skillId;CasterId=caster;TargetId=target;EffectIndex=index;Type=type;Tick=tick;
-          CalculatedValue=calculated;ActualValue=actual;Outcome=outcome;SkipReason=skip; }
+          ConditionMatched=conditionMatched;CalculatedValue=calculated;ActualValue=actual;Outcome=outcome;SkipReason=skip; }
     }
     public readonly struct SkillEffectApplication
     {
@@ -284,7 +284,7 @@ namespace PokeChess.Core.Battle
             // Resolve values before applying any effect; invalid scaling cannot leave partial numeric changes.
             var values=frozenValues??effects.Select(e=>frozenTree!=null?frozenTree[e]:SkillNumericMath.SourceValue(caster,e)).ToArray();
             // Freeze target lists before effects: a killed AoE center must not erase later CC targets.
-            var selections=effects.Select(e=>e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget||e.Spatial?.Mode==SpatialTargetMode.ChainEnemies?
+            var selections=effects.Select(e=>e.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget||e.Spatial?.Mode==SpatialTargetMode.ChainEnemies||e.Spatial?.Mode==SpatialTargetMode.PrimaryEnemies?
                 Select(battle,caster,target,e,casterAnchor,targetAnchor):null).ToArray();
             for(int i=0;i<effects.Count;i++) {
                 var e=effects[i];
@@ -304,16 +304,18 @@ namespace PokeChess.Core.Battle
                     var c=e.Spatial.Center==SkillAreaCenter.Caster?caster.Position:target?.Position??caster.Position;
                     battle.WorldEffects.SpawnGround(caster,e,c,values[i]);continue;
                 }
-                if(e.Type==SkillEffectType.ChainDamage) {battle.WorldEffects.SpawnChain(caster,target,skill,e,values[i]);continue;}
+                if(e.Type==SkillEffectType.ChainDamage) {battle.WorldEffects.SpawnChain(caster,target,skill,e,values[i],castId,stepIndex,i);continue;}
                 if(e.Type==SkillEffectType.Move) {
                     var victims=e.Spatial==null?new[]{target}:Select(battle,caster,target,e,casterAnchor,targetAnchor,centers?[i],aims?[i]);
+                    if(e.Movement.Kind==SkillMovementKind.Knockback)
+                        victims=victims.OrderByDescending(v=>v==null?-1:HexCoordinates.Distance(casterAnchor??caster.Position,v.Position)).ToArray();
                     foreach(var victim in victims) {
                         if(!independent&&(!caster.IsAlive||!caster.IsOnBoard))break;
                         ExecuteMovement(battle,caster,victim,skill,e,castId,stepIndex,iteration,independent,sourceSnapshot,frozenTree,i,casterAnchor);
                     }
                     continue;
                 }
-                if(e.Type==SkillEffectType.ProjectileDamage&&(e.PathImpactEffects.Count>0||e.ProjectileGroupSize>0)) {
+                if(e.Type==SkillEffectType.ProjectileDamage) {
                     var impactTree=CaptureValues(caster,e.PathImpactEffects);var impactValues=e.PathImpactEffects.Select(v=>impactTree[v]).ToArray();
                     var snapshot=SkillNumericMath.Capture(battle,caster);var launchOrigin=caster.Position;
                     foreach(var victim in Select(battle,caster,target,e,casterAnchor,targetAnchor,centers?[i],aims?[i])) {
@@ -322,7 +324,7 @@ namespace PokeChess.Core.Battle
                             SkillNumericMath.Request(battle,caster,victim,e,values[i],snapshot:snapshot),e.ImpactRadius,
                             e.ProjectileGroupSize>0?null:(Action<UnitCombatState>)(v=>ExecuteEffects(battle,caster,v,skill,e.PathImpactEffects,impactValues,true,
                                 casterAnchor:launchOrigin,targetAnchor:v.Position,castId:castId,stepIndex:stepIndex,iteration:iteration,
-                                sourceSnapshot:snapshot,snapshotOrigin:DamageOrigin.Direct,frozenTree:impactTree)),completion);
+                                sourceSnapshot:snapshot,snapshotOrigin:DamageOrigin.Direct,frozenTree:impactTree)),completion,skill.Id,castId,stepIndex,iteration);
                         if(!spawned)completion?.Invoke(false);
                         Record(battle,skill,castId,stepIndex,iteration,caster,victim,i,e,values[i],0,
                             spawned?SkillEffectOutcome.Spawned:SkillEffectOutcome.Skipped,spawned?SkillEffectSkipReason.None:SkillEffectSkipReason.NoValidTarget);
@@ -359,13 +361,13 @@ namespace PokeChess.Core.Battle
                         Record(battle,skill,castId,stepIndex,iteration,caster,t,i,e,values[i],0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.ChanceFailed);continue;
                     }
                     float actualValue=values[i]*(e.ValueSource==SkillValueSource.TargetMaxHP&&!e.IsDamage?t.Stats.MaxHP:1);
-                    SkillEffectApplication applied;
+                    bool conditionMatched=e.Numeric!=null&&((e.Numeric.Condition!=SkillValueCondition.None&&SkillNumericMath.Matches(e.Numeric,caster,t))||(e.Numeric.ExecuteThreshold>0&&t.CurrentHP/t.Stats.MaxHP<=e.Numeric.ExecuteThreshold)); SkillEffectApplication applied;
                     if(e.Type==SkillEffectType.RandomStatus) {
                         var id=e.StatusChoices[battle.RngStreams.Skill.NextInt(e.StatusChoices.Count)];
                         var status=independent?battle.StatusEffects.ApplyPersistent(id,caster.UnitInstanceId,t.UnitInstanceId):battle.StatusEffects.Apply(id,caster.UnitInstanceId,t.UnitInstanceId);
                         applied=new SkillEffectApplication(status?.StackCount??0);
                     } else if(e.Type==SkillEffectType.HealthCost) {
-                        float before=t.CurrentHP;t.SetVitals(Math.Max(1,before-actualValue),t.CurrentEnergy);applied=new SkillEffectApplication(before-t.CurrentHP);
+                        float before=t.CurrentHP;if(!battle.PreserveHealthForPreview)t.SetVitals(Math.Max(1,before-actualValue),t.CurrentEnergy);applied=new SkillEffectApplication(before-t.CurrentHP);
                     } else if(e.Type==SkillEffectType.EnergyRefund) {
                         float before=t.CurrentEnergy;battle.Energy.Refund(t,actualValue);applied=new SkillEffectApplication(t.CurrentEnergy-before);
                     } else if(e.Type==SkillEffectType.Shield&&e.Numeric?.ShieldDuration!=null) {
@@ -378,7 +380,7 @@ namespace PokeChess.Core.Battle
                         : handlers[e.Type].Apply(battle,caster,t,e,actualValue);
                     Record(battle,skill,castId,stepIndex,iteration,caster,t,i,e,values[i],applied.ActualValue,applied.Outcome,
                         applied.Outcome==SkillEffectOutcome.Skipped?
-                            (applied.Reason==SkillEffectSkipReason.None?SkillEffectSkipReason.NoValidTarget:applied.Reason):SkillEffectSkipReason.None);
+                            (applied.Reason==SkillEffectSkipReason.None?SkillEffectSkipReason.NoValidTarget:applied.Reason):SkillEffectSkipReason.None,conditionMatched);
                 }
             }
         }
@@ -423,7 +425,7 @@ namespace PokeChess.Core.Battle
             return applied==null?new SkillEffectApplication(0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.StackPolicyIgnored):new SkillEffectApplication(applied.StackCount);
         }
         private static void Record(BattleState b,SkillDefinition skill,long castId,int stepIndex,int iteration,UnitCombatState caster,UnitCombatState target,
-            int i,SkillEffectDefinition e,float value,float actual,SkillEffectOutcome outcome,SkillEffectSkipReason reason) =>
-            b.RecordSkillEffect(new SkillEffectEvent(skill.Id,caster.UnitInstanceId,target?.UnitInstanceId,i,e.Type,b.CurrentTick,value,actual,outcome,reason,castId,stepIndex,iteration));
+            int i,SkillEffectDefinition e,float value,float actual,SkillEffectOutcome outcome,SkillEffectSkipReason reason,bool conditionMatched=false) =>
+            b.RecordSkillEffect(new SkillEffectEvent(skill.Id,caster.UnitInstanceId,target?.UnitInstanceId,i,e.Type,b.CurrentTick,value,actual,outcome,reason,castId,stepIndex,iteration,conditionMatched));
     }
 }
