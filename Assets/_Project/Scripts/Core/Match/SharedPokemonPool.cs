@@ -62,6 +62,7 @@ namespace PokeChess.Core.Match
             // Validate aggregate int bounds before RNG can use the totals.
             for (int cost = 1; cost <= 5; cost++) TotalAvailable(cost);
         }
+        internal PokemonDefinition Definition(string id)=>catalog.Get(id);
         public IReadOnlyList<PoolStock> Stocks => Array.AsReadOnly(definitions.Select(d => GetStock(d.Id)).ToArray());
         public PoolStock GetStock(string definitionId)
         {

@@ -186,7 +186,8 @@ namespace PokeChess.Client.UI
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
                 var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
-                SkillVisualBattleView.Get(combatRoot,SkillVisuals).RenderLocal(ownPair,battle.CurrentTick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
+                var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
+                visuals.RenderLocal(ownPair,battle.CurrentTick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
                 if(lastVisualBattle!=battle)
                 {
                     lastVisualBattle=battle;previousCombatHP.Clear();healFlashUntil.Clear();
@@ -232,6 +233,7 @@ namespace PokeChess.Client.UI
                         (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":"");
                     label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
                 }
+                visuals.SortCombatDepth(combatTokens.Values.Select(label=>(RectTransform)label.transform.parent));
             }
             RenderResultPresentation();
             RenderUnitContext();

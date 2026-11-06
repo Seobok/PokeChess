@@ -11,6 +11,7 @@ namespace PokeChess.Core.Match
     {
         public string UnitInstanceId { get; }
         public string DefinitionId { get; }
+        public string SynergyTargetId { get; }
         public UnitRank Rank { get; }
         public int EvolutionStage { get; }
         public BoardPosition Position { get; }
@@ -18,13 +19,13 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<string> ItemInstanceIds { get; }
         internal ShadowUnitSnapshot(UnitInstance unit,BoardPosition position,PokemonStats stats)
         {
-            UnitInstanceId=unit.InstanceId;DefinitionId=unit.DefinitionId;Rank=unit.Rank;
+            SynergyTargetId=unit.SynergyTargetId;UnitInstanceId=unit.InstanceId;DefinitionId=unit.DefinitionId;Rank=unit.Rank;
             EvolutionStage=unit.EvolutionStage;Position=position;Stats=stats;
             ItemInstanceIds=Array.AsReadOnly(unit.ItemInstanceIds.ToArray());
         }
         internal BattleUnitSetup CreateSetup(string owner)
         {
-            var unit=new UnitInstance(UnitInstanceId,DefinitionId,owner,Rank,EvolutionStage,UnitPlacement.OnBoard(Position),ItemInstanceIds);
+            var unit=new UnitInstance(UnitInstanceId,DefinitionId,owner,Rank,EvolutionStage,UnitPlacement.OnBoard(Position),ItemInstanceIds){SynergyTargetId=SynergyTargetId};
             return new BattleUnitSetup(unit,2,HexCoordinates.MirrorCombat(Position));
         }
     }
@@ -33,6 +34,9 @@ namespace PokeChess.Core.Match
     // Never register these copies in PlayerState or the shared pool.
     public sealed class ShadowBoardSnapshot
     {
+        public int NatureXP { get; private set; }
+        public int VenomSamples { get; private set; }
+        public IReadOnlyList<BoardPosition> RockTiles { get; private set; }
         public string SourcePlayerId { get; }
         public int Round { get; }
         public IReadOnlyList<ShadowUnitSnapshot> Units { get; }
@@ -49,7 +53,7 @@ namespace PokeChess.Core.Match
             var units=source.Units.Where(u=>u.Placement.Kind==PlacementKind.Board || deployments.ContainsKey(u.InstanceId))
                 .Select(u=>new ShadowUnitSnapshot(u,deployments.TryGetValue(u.InstanceId,out var placement) ? placement.Position.Value : u.Placement.Position.Value,
                     RankRules.Default.Apply(catalog.Get(u.DefinitionId),u.Rank))).ToArray();
-            return new ShadowBoardSnapshot(source.PlayerId,round,units);
+            return new ShadowBoardSnapshot(source.PlayerId,round,units){NatureXP=source.Synergy.NatureXP,VenomSamples=source.Synergy.VenomSamples,RockTiles=Array.AsReadOnly(source.Synergy.RockTiles.ToArray())};
         }
         public BattleState CreateBattle(string battleId,ulong seed,int tickRate,PokemonCatalog catalog,IEnumerable<BattleUnitSetup> challenger)
         {
@@ -58,8 +62,12 @@ namespace PokeChess.Core.Match
             if(entries.Any(e=>e==null || e.TeamId!=1 || e.Unit.OwnerPlayerId==SourcePlayerId))
                 throw new ArgumentException("Shadow challenger must be a different player's team one.",nameof(challenger));
             var stats=Units.ToDictionary(u=>u.UnitInstanceId,u=>u.Stats,StringComparer.Ordinal);
-            return BattleStateFactory.Create(battleId,Round,seed,tickRate,catalog,entries.Concat(Units.Select(u=>u.CreateSetup(SourcePlayerId))),
+            var battle=BattleStateFactory.Create(battleId,Round,seed,tickRate,catalog,entries.Concat(Units.Select(u=>u.CreateSetup(SourcePlayerId))),
                 (unit,definition)=>unit.OwnerPlayerId==SourcePlayerId ? stats[unit.InstanceId] : RankRules.Default.Apply(definition,unit.Rank));
+            battle.NatureExperience[2]=NatureXP;battle.VenomSamples[2]=VenomSamples;battle.PreparedRocks[2]=RockTiles.Select(HexCoordinates.MirrorCombat).ToArray();
+            var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==2&&u.IsSynergySummon);
+            if(guardian!=null&&battle.Synergies.TeamTier(2,SynergyTraits.Nature)<10)guardian.ScaleMaxHP(NatureXP>=30?1.5f:NatureXP>=16?.8f:NatureXP>=6?.35f:0);
+            return battle;
         }
     }
 }

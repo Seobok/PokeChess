@@ -40,6 +40,7 @@ namespace PokeChess.Core.Match
             inventoryItems.AddRange(unit.ItemInstanceIds);
             unit.ClearItems();
         }
+        public SynergyProgress Synergy { get; } = new SynergyProgress();
         public string PlayerId { get; }
         private readonly Dictionary<string, ShopEvolution> shopEvolutions = new Dictionary<string, ShopEvolution>(StringComparer.Ordinal);
         public IReadOnlyDictionary<string, ShopEvolution> ShopEvolutions => new ReadOnlyDictionary<string, ShopEvolution>(shopEvolutions);

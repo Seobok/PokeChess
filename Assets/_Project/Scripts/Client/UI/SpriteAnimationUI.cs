@@ -63,8 +63,47 @@ namespace PokeChess.Client.UI
             var rect=Rect("PokemonSprite",parent,Vector2.one,Vector2.zero);
             var view=rect.gameObject.AddComponent<PokemonSpriteView>();view.Initialize(species,instanceId);return view;
         }
+        private readonly Dictionary<(string guardian,string target),UnityEngine.UI.Image> guardianLinks =
+            new Dictionary<(string,string),UnityEngine.UI.Image>();
+
+        private void RefreshGuardianLinks(IEnumerable<(string guardian,string target)> desired)
+        {
+            var links=new HashSet<(string guardian,string target)>(desired);
+            foreach(var stale in guardianLinks.Keys.Where(key=>!links.Contains(key)).ToArray())
+            {
+                guardianLinks[stale].enabled=false;
+                Destroy(guardianLinks[stale].gameObject);
+                guardianLinks.Remove(stale);
+            }
+            foreach(var link in links)
+            {
+                if(guardianLinks.ContainsKey(link))continue;
+                var image=GuardianVisuals.Create(canvasRect,"prep-link");
+                image.transform.SetSiblingIndex(Mathf.Max(tokens[link.guardian].GetSiblingIndex(),tokens[link.target].GetSiblingIndex())+1);
+                guardianLinks.Add(link,image);
+            }
+        }
+
+        private void AnimateGuardianLinks()
+        {
+            foreach(var entry in guardianLinks)
+            {
+                var source=tokens[entry.Key.guardian];var target=tokens[entry.Key.target];var image=entry.Value;
+                if(!source.gameObject.activeInHierarchy || !target.gameObject.activeInHierarchy ||
+                    dragged==entry.Key.guardian || dragged==entry.Key.target)
+                {image.enabled=false;continue;}
+                var delta=target.anchoredPosition-source.anchoredPosition;
+                image.rectTransform.anchoredPosition=(source.anchoredPosition+target.anchoredPosition)*.5f;
+                image.rectTransform.sizeDelta=new Vector2(delta.magnitude*64/50,48);
+                image.rectTransform.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg);
+                GuardianVisuals.Draw(image,"prep-link",Time.unscaledTimeAsDouble,true);
+            }
+        }
+
         private void AnimateRosterSprites()
         {
+            AnimateGuardianLinks();
+            AnimateStormLinks();
             foreach(var unit in ViewedPlayer.Units)
             {
                 if(!tokens.TryGetValue(unit.InstanceId,out var token))continue;
@@ -77,6 +116,10 @@ namespace PokeChess.Client.UI
                     RenderPreparationVitals(token,unit.DefinitionId,(int)unit.Rank,localViewedPlayerId=="p1");
                 }
             }
+            if(Match.Phase==MatchPhase.Preparation)
+                SkillVisualBattleView.SortBoardDepth(canvasRect,ViewedPlayer.Units
+                    .Where(u=>u.Placement.Kind==PokeChess.Core.Pokemon.PlacementKind.Board&&tokens.ContainsKey(u.InstanceId))
+                    .Select(u=>tokens[u.InstanceId]));
             for(int slot=0;slot<Player.Shop.Slots.Count;slot++)
             {
                 var offer=Player.Shop.Slots[slot];
@@ -123,8 +166,11 @@ namespace PokeChess.Client.UI
                 label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+28);label.rectTransform.sizeDelta=new Vector2(64,18);
                 label.fontSize=9;label.transform.SetAsLastSibling();
                 string state=label.text.Split('\n').Last();
-                int charges = pair.Battle.Synergies.AssaultCharges(unit);
-                if (charges > 0) state = "AT+ " + charges;
+                int charges = pair.Battle.Synergies.DuelistStacks(unit);
+                if (charges > 0) state = "AS+ " + charges;
+                if(pair.Battle.Synergies.TrackerStacks(unit)>0)state="TRACK "+pair.Battle.Synergies.TrackerStacks(unit);
+                if(pair.Battle.Synergies.IsGuarded(unit))state="GUARD";
+                if(unit.IsSynergySummon)state="FOREST";
                 string synergyFlash = LocalSynergyFlash(unit);
                 if (synergyFlash.Length > 0) state = synergyFlash;
                 if(unit.ActionState!=CombatActionState.Casting)

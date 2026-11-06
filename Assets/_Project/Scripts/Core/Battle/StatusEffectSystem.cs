@@ -84,8 +84,10 @@ namespace PokeChess.Core.Battle
             if(d==null)throw new ArgumentNullException(nameof(d));
             var source=Unit(sourceId);var target=Unit(targetId);
             if(source==null||target==null||(!persistent&&(!source.IsAlive||!source.IsOnBoard))||!target.IsAlive||!target.IsOnBoard||
-                (d.TargetTeam==StatusTargetTeam.Enemy?(source.TeamId==target.TeamId||!target.IsTargetable):source.TeamId!=target.TeamId))
+                (d.TargetTeam==StatusTargetTeam.Enemy?(source.TeamId==target.TeamId||!target.IsTargetable&&!target.IsSynergyStealthed):source.TeamId!=target.TeamId))
                 throw new InvalidOperationException("Invalid status participants.");
+            bool control=d.CrowdControl!=CrowdControlKind.None||new[]{StatusBehavior.Sleep,StatusBehavior.Freeze,StatusBehavior.Paralysis,StatusBehavior.Confusion,StatusBehavior.Blind}.Contains(d.Behavior);
+            if(control&&battle.Synergies!=null&&battle.Synergies.PreventControl(target))return null;
             bool timedControl=d.Behavior==StatusBehavior.AttackRecovery||d.Behavior==StatusBehavior.ActionRecovery||d.Behavior==StatusBehavior.RestSleep||d.Behavior==StatusBehavior.Blind||d.CrowdControl!=CrowdControlKind.None||d.Behavior==StatusBehavior.Sleep||d.Behavior==StatusBehavior.Freeze||d.Behavior==StatusBehavior.Paralysis||d.Behavior==StatusBehavior.Confusion;
             int ticks=BattleSimulation.ToTicks(d.Duration*(timedControl&&battle.IsOvertime ? .34 : 1),battle.TickRate);
             long end=checked(battle.CurrentTick+ticks);
@@ -128,7 +130,7 @@ namespace PokeChess.Core.Battle
             if(d.CrowdControl==CrowdControlKind.Root&&d.EffectValue>0){applied.Start=battle.CurrentTick;applied.Pulses=0;applied.Next=NextPulse(applied);applied.RestAmount=SkillNumericMath.Magnitude(d.EffectValue,d.FixedSpellDamage?SkillValueSource.Flat:SkillValueSource.Attack,source.EffectiveStats.Attack,source.EffectiveStats.SpellPower,d.FixedSpellDamage,SkillPowerScaling.TotalSpellPower);applied.Offense=SkillNumericMath.Capture(battle,source,DamageOrigin.Periodic);}
             if(kind==StatusEventKind.Applied)nextId=applied.Id;
             var snapshot=applied.Snapshot();events.Add(new StatusEvent(snapshot,battle.CurrentTick,kind));
-            if(kind!=StatusEventKind.Ignored)Changed?.Invoke(target);
+            if(kind!=StatusEventKind.Ignored){Changed?.Invoke(target);battle.Synergies?.OnDebuffApplied(d,source,target);}
             return kind==StatusEventKind.Ignored?null:snapshot;
         }
         private StatusEffectSnapshot ApplyBehavior(StatusEffectDefinition d,string source,string target,long end)
@@ -151,7 +153,7 @@ namespace PokeChess.Core.Battle
             if(created)nextId=e.Id;
             var snapshot=e.Snapshot();events.Add(new StatusEvent(snapshot,battle.CurrentTick,created?StatusEventKind.Applied:
                 d.Behavior==StatusBehavior.Poison?StatusEventKind.Stacked:StatusEventKind.Refreshed));
-            NotifyTargetability(Unit(target));return snapshot;
+            NotifyTargetability(Unit(target));battle.Synergies?.OnDebuffApplied(d,Unit(source),Unit(target));return snapshot;
         }
         private long NextPulse(Entry e)
         {
@@ -170,7 +172,7 @@ namespace PokeChess.Core.Battle
                     if(e.Def.CrowdControl==CrowdControlKind.Root&&e.Def.EffectValue>0)
                         new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,e.RestAmount,DamageType.Physical,origin:DamageOrigin.Periodic,sourceSnapshot:e.Offense));
                     else if(e.Def.Behavior==StatusBehavior.Poison||e.Def.Behavior==StatusBehavior.Burn)
-                        new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,target.Stats.MaxHP*.025f*e.Count,
+                        new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,target.Stats.MaxHP*.025f*e.Count*(e.Def.Behavior==StatusBehavior.Poison?battle.Synergies.PoisonMultiplier(Unit(e.Source)):1),
                             DamageType.True,origin:DamageOrigin.Debuff));
                     else if(e.Def.Behavior==StatusBehavior.RestSleep) {
                         if(e.Pulses<=4)battle.Healing.Apply(target,e.RestAmount);

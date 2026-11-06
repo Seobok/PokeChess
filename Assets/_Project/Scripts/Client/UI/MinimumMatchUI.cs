@@ -258,7 +258,7 @@ namespace PokeChess.Client.UI
                 shopCards[i].interactable=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability.Accepted;
             }
             rerollButton.gameObject.SetActive(ShopExpanded);lockButton.gameObject.SetActive(ShopExpanded);xpButton.gameObject.SetActive(ShopExpanded);
-            rerollButton.interactable=trade && Player.Gold>=commands.ShopRules.RerollGoldCost;ButtonText(rerollButton,"Reroll / "+commands.ShopRules.RerollGoldCost+"G");
+            rerollButton.interactable=trade && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);ButtonText(rerollButton,Player.Synergy.FreeRerollRound==Match.RoundNumber?"신비 무료 새로고침":"Reroll / "+commands.ShopRules.RerollGoldCost+"G");
             lockButton.interactable=trade;ButtonText(lockButton,Player.Shop.IsLocked ? "LOCKED / Unlock" : "Lock next refresh");
             xpButton.interactable=trade && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
             ButtonText(xpButton,Player.Level==commands.LevelRules.MaxLevel ? "XP MAX" : "Buy "+commands.LevelRules.PurchaseXP+" XP / "+commands.LevelRules.PurchaseGoldCost+"G");

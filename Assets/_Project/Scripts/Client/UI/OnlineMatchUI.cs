@@ -144,7 +144,7 @@ namespace PokeChess.Client.UI
             status.text=onlineService.IsRecovering?onlineService.RecoveryFeedback:onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
             onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineRetry.interactable=!onlineService.IsRecovering;onlineSync.interactable=!onlineService.IsRecovering&&onlineService.PendingCommand==null;
             bool trade=OnlineInputReady&&pub.phase==MatchPhase.Preparation;
-            rerollButton.interactable=trade&&owner.gold>=2;xpButton.interactable=trade&&owner.gold>=4&&owner.level<onlineLevelRules.MaxLevel;lockButton.interactable=trade;ButtonText(rerollButton,"Reroll / 2G");ButtonText(xpButton,"Buy XP / 4G");ButtonText(lockButton,owner.locked?"Unlock shop":"Lock shop");
+            rerollButton.interactable=trade&&(owner.gold>=2||owner.freeRerollRound==owner.round);xpButton.interactable=trade&&owner.gold>=4&&owner.level<onlineLevelRules.MaxLevel;lockButton.interactable=trade;ButtonText(rerollButton,owner.freeRerollRound==owner.round?"신비 무료 새로고침":"Reroll / 2G");ButtonText(xpButton,"Buy XP / 4G");ButtonText(lockButton,owner.locked?"Unlock shop":"Lock shop");
             surrenderButton.interactable=OnlineInputReady;
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
@@ -173,6 +173,7 @@ namespace PokeChess.Client.UI
                 card.Action.color=shopCards[i].interactable?new Color(.5f,1,.7f):new Color(1,.65f,.4f);card.Stripe.color=available?Color.Lerp(new Color(.3f,.7f,1),new Color(1,.7f,.3f),offer.cost/5f):Color.gray;
             }
         }
+        private PublicBoardUnit[] guardianPreviewBoard;
         private void RenderOnlineUnits(OwnerMatchState owner,PublicMatchState pub)
         {
             foreach(var token in tokens.Values)token.gameObject.SetActive(false);
@@ -180,6 +181,19 @@ namespace PokeChess.Client.UI
             var observed=pub.players.FirstOrDefault(p=>p.id==onlineService.WatchingPlayerId);
             foreach(var slot in slots){slot.Graphic.color=slot.Color;if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat&&pub.phase==MatchPhase.Preparation);}
             if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,observed.id==owner.playerId);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
+            var previewBoard=!combat&&pub.phase==MatchPhase.Preparation?observed?.board:null;
+            if(guardianPreviewBoard!=previewBoard || (previewBoard==null && (guardianLinks.Count>0||stormLinks.Count>0)))
+            {
+                guardianPreviewBoard=previewBoard;
+                var roster=previewBoard==null?Array.Empty<UnitInstance>():previewBoard.Select(u=>
+                    catalog.CreateUnit(u.id,u.definitionId,observed.id,(UnitRank)u.rank,u.evolutionStage,
+                        UnitPlacement.OnBoard(new BoardPosition(u.column,u.row)),u.items)).ToArray();
+                RefreshGuardianLinks(PokeChess.Core.Battle.SynergySystem.PreviewGuardianLinks(roster,catalog));
+                RefreshStormLinks(roster);
+            }
+            AnimateGuardianLinks();
+            AnimateStormLinks();
+            if(previewBoard!=null)SkillVisualBattleView.SortBoardDepth(canvasRect,previewBoard.Select(u=>tokens[u.id]));
             foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
         }
         private void ShowOnlineToken(string id,string definition,int rank,UnitPlacement placement)

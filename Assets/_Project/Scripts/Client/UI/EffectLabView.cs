@@ -276,7 +276,9 @@ namespace PokeChess.Client.UI
                 fighter.Vitals.text=(unit.UnitInstanceId==Session.CasterId?"▶ ":"")+PokemonName(unit.DefinitionId)+"\n"+Math.Ceiling(unit.CurrentHP)+" / "+Math.Floor(unit.CurrentEnergy)+"E";
                 fighter.Vitals.color=unit.TeamId==1?new Color(.4f,.86f,1):new Color(1,.6f,.55f);
             }
-            SkillVisualBattleView.Get(board,Visuals).RenderSimulation(battle,Session.Simulation,battle.CurrentTick,Point,.8f);
+            var visuals=SkillVisualBattleView.Get(board,Visuals);
+            visuals.RenderSimulation(battle,Session.Simulation,battle.CurrentTick,Point,.8f);
+            visuals.SortCombatDepth(fighters.Values.Select(f=>f.Root));
             var selected=Session.Unit(inspected);var stats=selected.EffectiveStats;
             detail.text=PokemonName(selected.DefinitionId)+" · "+(int)selected.Rank+"성 / "+(selected.TeamId==1?"아군":"적군")+"\n"+
                 "HP  "+selected.CurrentHP.ToString("0.#")+" / "+selected.Stats.MaxHP+"\n보호막  "+selected.CurrentShield.ToString("0.#")+"   마나 "+selected.CurrentEnergy.ToString("0.#")+"\n"+

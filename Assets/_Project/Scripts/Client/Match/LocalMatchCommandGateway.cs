@@ -14,6 +14,7 @@ namespace PokeChess.Client.Match
         public bool CanSell(string id)=>executor.CanSell(id);
         public MatchCommandResult PreviewBuy(int slot,long revision)=>executor.PreviewBuy(slot,revision);
         public MatchCommandResult Buy(int slot,long revision)=>executor.Buy(slot,revision);
+        public MatchCommandResult ConfigureSynergy(int mode,string unit,string value,int slot=0,int column=0,int row=0)=>executor.ConfigureSynergy(mode,unit,value,slot,column,row);
         public MatchCommandResult Reroll(long revision)=>executor.Reroll(revision);
         public MatchCommandResult Lock(bool locked,long revision)=>executor.Lock(locked,revision);
         public MatchCommandResult BuyXP()=>executor.BuyXP();

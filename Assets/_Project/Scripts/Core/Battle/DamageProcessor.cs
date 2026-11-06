@@ -75,7 +75,7 @@ namespace PokeChess.Core.Battle
             var source=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.SourceId);
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
             if(source==null||target==null||source.TeamId==target.TeamId||
-                (request.Origin==DamageOrigin.Reflection||request.Origin==DamageOrigin.Debuff||request.Origin==DamageOrigin.FreezeBreak?target.CurrentHP<=0||!target.IsOnBoard:!target.IsTargetable))
+                (request.Origin==DamageOrigin.Reflection||request.Origin==DamageOrigin.Debuff||request.Origin==DamageOrigin.FreezeBreak||request.Origin==DamageOrigin.Periodic&&target.IsSynergyStealthed||request.IsAreaDamage?target.CurrentHP<=0||!target.IsOnBoard:!target.IsTargetable))
                 throw new InvalidOperationException("Invalid damage participants.");
             var numeric=request.SkillPolicy?.Numeric;
             float reflection=request.Origin==DamageOrigin.Direct?battle.StatusEffects.Reflection(target):0;
@@ -97,7 +97,7 @@ namespace PokeChess.Core.Battle
             if(numeric?.ExecuteThreshold>0&&target.CurrentHP/target.Stats.MaxHP<=numeric.ExecuteThreshold) {
                 float before=target.CurrentHP;if(!battle.PreserveHealthForPreview){target.SetVitals(0,target.CurrentEnergy);target.DeathCause=DeathReason.Damage;battle.TryRemoveUnit(target.UnitInstanceId);}
                 var executed=new DamageResult(battle.CurrentTick,request,before,before,0,before,target.CurrentHP,target.CurrentShield,!battle.PreserveHealthForPreview);
-                battle.RecordDamage(executed);battle.SkillProcs.OnDamage(executed);
+                battle.RecordDamage(executed);battle.Synergies.OnDamageResolved(executed);battle.SkillProcs.OnDamage(executed);
                 if(numeric.Lifesteal>0)battle.Healing.Apply(source,before*numeric.Lifesteal);
                 return executed;
             }
@@ -106,28 +106,30 @@ namespace PokeChess.Core.Battle
             if(numeric?.DamageCap!=null)rawValue=Math.Min(rawValue,numeric.DamageCap.Value);
             float synergyBonus = request.IsBasicAttack ? battle.Synergies.AttackBonus(source) : 0;
             bool guaranteed=request.IsBasicAttack&&battle.StatusEffects.HasBehavior(source,StatusBehavior.GuaranteedCritical);
-            bool canCrit=(request.CanCrit||guaranteed)&&request.Type!=DamageType.True&&
+            bool canCrit=(request.CanCrit||guaranteed||battle.Synergies.SkillCanCrit(source,request))&&request.Type!=DamageType.True&&
                 ((double)rawValue+request.BonusDamage+source.EffectiveDamageModifiers.BonusAttackDamage)>0;
             float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0)+synergyBonus;
-            float raw=rawValue*(request.SourceSnapshot?.OutgoingMultiplier??battle.Items.Outgoing(source,request));
-            if(request.Type==DamageType.True&&request.SkillPolicy!=null)raw=rawValue;
+            float raw=rawValue*battle.Synergies.OutgoingMultiplier(source,target)*(request.SourceSnapshot?.OutgoingMultiplier??battle.Items.Outgoing(source,request));
+            if(request.Type==DamageType.True&&request.SkillPolicy!=null)raw=rawValue*battle.Synergies.OutgoingMultiplier(source,target);
+            if(request.Type==DamageType.True)raw*=battle.Synergies.IncomingMultiplier(target,request);
             float amplification=request.SourceSnapshot?.Amplification??source.EffectiveDamageModifiers.Amplification;
             float penetration=Math.Min(1,(request.SourceSnapshot?.ArmorPenetration??source.EffectiveStats.ArmorPenetration)+(numeric?.ArmorPenetration??0));
             float armor=target.EffectiveStats.Armor;if(armor>0)armor*=1-penetration;
             float critChance=Math.Min(1,(request.SourceSnapshot?.CritChance??source.EffectiveStats.CritChance)+(numeric?.CritBonus??0));
             float mr=target.EffectiveStats.MagicResistance;if(mr>0)mr*=1-(numeric?.MagicPenetration??0);
             if(!request.IsBasicAttack&&(request.Origin==DamageOrigin.Direct||request.Origin==DamageOrigin.Periodic)&&request.Type!=DamageType.True)raw*=1+battle.StatusEffects.SkillVulnerability(target);
-            float reduction=battle.Items.IncomingReduction(target,request,target.EffectiveDamageModifiers.Reduction);
+            float reduction=1-(1-battle.Items.IncomingReduction(target,request,target.EffectiveDamageModifiers.Reduction))*battle.Synergies.IncomingMultiplier(target,request);
             // Validate arithmetic before consuming RNG or changing state.
             DamageCalculator.CalculateDetailed(raw,bonus,request.Type,armor,
-                mr,canCrit,source.Stats.CritMultiplier,
+                mr,canCrit,source.Stats.CritMultiplier+battle.Synergies.CriticalBonus(source),
                 amplification,reduction);
             if(guaranteed)battle.StatusEffects.ConsumeCritical(source);
-            bool critical=canCrit&&(guaranteed||critChance>=1 ||
+            bool critical=battle.Synergies.CachedCritical(request)??(canCrit&&(guaranteed||critChance>=1 ||
                 (critChance>0 &&
-                 (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<critChance));
+                 (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<critChance)));
+            critical=battle.Synergies.ResolveCritical(request,critical);
             var calculation=DamageCalculator.CalculateDetailed(raw,bonus,request.Type,armor,
-                mr,critical,source.Stats.CritMultiplier,
+                mr,critical,source.Stats.CritMultiplier+battle.Synergies.CriticalBonus(source),
                 amplification,reduction);
             float post=calculation.FinalDamage;
             float shield=Math.Min(target.CurrentShield,post);
@@ -142,10 +144,7 @@ namespace PokeChess.Core.Battle
                 target.CurrentHP,target.CurrentShield,killed,calculation);
             battle.RecordDamage(result);
             battle.Energy.OnDamage(result);
-            if(request.Origin!=DamageOrigin.Reflection){
-                if(request.IsBasicAttack)battle.Synergies.OnBasicAttack(source, synergyBonus);
-                battle.Synergies.OnDamage(target, shield);
-            }
+            battle.Synergies.OnDamageResolved(result);
             battle.StatusEffects.OnDamage(result);
             if(numeric?.Lifesteal>0&&request.Origin==DamageOrigin.Direct)battle.Healing.Apply(source,hpDamage*numeric.Lifesteal);
             battle.SkillProcs.OnDamage(result);

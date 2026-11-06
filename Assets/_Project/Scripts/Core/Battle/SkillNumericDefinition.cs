@@ -51,12 +51,13 @@ namespace PokeChess.Core.Battle
     // Values are frozen at release; target HP/state are deliberately evaluated on impact.
     public sealed class SkillDamagePolicy
     {
+        public long CastId { get; }
         public SkillNumericDefinition Numeric { get; }
         public bool TargetMaxHP { get; }
         public float ConditionalValue { get; }
         public float SourceMaxHP { get; }
-        public SkillDamagePolicy(SkillNumericDefinition numeric,bool targetMaxHP,float conditionalValue,float sourceMaxHP)
-        {Numeric=numeric;TargetMaxHP=targetMaxHP;ConditionalValue=conditionalValue;SourceMaxHP=sourceMaxHP;}
+        public SkillDamagePolicy(SkillNumericDefinition numeric,bool targetMaxHP,float conditionalValue,float sourceMaxHP,long castId=0)
+        {CastId=castId;Numeric=numeric;TargetMaxHP=targetMaxHP;ConditionalValue=conditionalValue;SourceMaxHP=sourceMaxHP;}
         internal float Resolve(float original,UnitCombatState target)
         {
             var n=Numeric;bool condition=n!=null&&(n.Condition==SkillValueCondition.TargetSleeping&&target.StatusSystem.IsSleeping(target)||
@@ -90,20 +91,20 @@ namespace PokeChess.Core.Battle
             new DamageSourceSnapshot(caster.EffectiveDamageModifiers.Amplification,
                 b.Items.Outgoing(caster,new DamageRequest(caster.UnitInstanceId,caster.UnitInstanceId,0,DamageType.Magic,origin:origin)),
                 caster.EffectiveStats.CritChance,caster.EffectiveStats.ArmorPenetration,caster.EffectiveStats.Attack,
-                caster.EffectiveStats.SpellPower,caster.Stats.MaxHP);
+                caster.EffectiveStats.SpellPower,caster.Stats.MaxHP,caster.ActiveSynergyCastId);
         public static DamageRequest Request(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition effect,float value,
             DamageOrigin origin=DamageOrigin.Direct,DamageSourceSnapshot? snapshot=null)
         {
             SkillDamagePolicy policy=null;var n=effect.Numeric;
-            if(n!=null||effect.ValueSource==SkillValueSource.TargetMaxHP) {
+            {
                 double alternative=Magnitude(n?.ConditionalValues[(int)caster.Rank-1]??0,effect.ValueSource,
                     snapshot?.Attack??caster.EffectiveStats.Attack,snapshot?.SpellPower??caster.EffectiveStats.SpellPower,effect.SpellPowerScalable,effect.PowerScaling);
                 if(effect.ValueSource==SkillValueSource.CasterMaxHP)alternative*=snapshot?.MaxHP??caster.Stats.MaxHP;
                 if(alternative>float.MaxValue)throw new OverflowException();
-                policy=new SkillDamagePolicy(n,effect.ValueSource==SkillValueSource.TargetMaxHP,(float)alternative,snapshot?.MaxHP??caster.Stats.MaxHP);
+                policy=new SkillDamagePolicy(n,effect.ValueSource==SkillValueSource.TargetMaxHP,(float)alternative,snapshot?.MaxHP??caster.Stats.MaxHP,snapshot?.CastId??caster.ActiveSynergyCastId);
             }
             return new DamageRequest(caster.UnitInstanceId,target.UnitInstanceId,value,effect.DamageType,n?.CanCrit??false,
-                origin:origin,sourceSnapshot:snapshot,skillPolicy:policy);
+                origin:origin,sourceSnapshot:snapshot,skillPolicy:policy,isAreaDamage:effect.TargetSelector==EffectTargetSelector.EnemiesAroundCastTarget||effect.TargetSelector==EffectTargetSelector.EnemiesAroundCaster||effect.TargetSelector==EffectTargetSelector.BehindCastTarget||effect.Spatial?.Mode==SpatialTargetMode.Area||effect.Type==SkillEffectType.PathProjectileDamage);
         }
         public static bool Matches(SkillNumericDefinition n,UnitCombatState caster,UnitCombatState target)=>n==null||n.Condition==SkillValueCondition.None||
             n.Condition==SkillValueCondition.TargetSleeping&&target.StatusSystem.IsSleeping(target)||

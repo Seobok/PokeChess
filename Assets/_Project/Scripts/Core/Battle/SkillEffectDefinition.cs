@@ -170,7 +170,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectType Type => SkillEffectType.Heal;
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
-            return new SkillEffectApplication(b.Healing.Apply(target,value));
+            return new SkillEffectApplication(b.Healing.Apply(target,value,source:caster));
         }
     }
     public sealed class ShieldSkillEffectHandler : ISkillEffectHandler
@@ -222,7 +222,7 @@ namespace PokeChess.Core.Battle
         }
         private static bool Valid(UnitCombatState caster,UnitCombatState target,SkillEffectDefinition effect) =>
             target!=null&&target.IsAlive&&target.IsOnBoard&&
-            (effect.RequiresEnemy?target.TeamId!=caster.TeamId&&target.IsTargetable:target.TeamId==caster.TeamId);
+            (effect.RequiresEnemy?target.TeamId!=caster.TeamId&&(target.IsTargetable||target.IsSynergyStealthed&&(effect.TargetSelector!=EffectTargetSelector.CastTarget||effect.Spatial?.Mode==SpatialTargetMode.Area)):target.TeamId==caster.TeamId);
         private static UnitCombatState[] Select(BattleState b,UnitCombatState caster,UnitCombatState castTarget,SkillEffectDefinition e, BoardPosition? casterAnchor=null, BoardPosition? targetAnchor=null,BoardPosition? spatialCenter=null,BoardPosition? spatialAim=null)
         {
             if(e.TargetSelector==EffectTargetSelector.BehindCastTarget) {

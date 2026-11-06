@@ -63,7 +63,7 @@ namespace PokeChess.Core.Battle
         public static UnitCombatState[] Select(BattleState battle,UnitCombatState caster,UnitCombatState target,
             SkillSpatialDefinition spec,bool enemies,BoardPosition origin,BoardPosition center,BoardPosition aim)
         {
-            var valid=battle.Units.Where(u=>u.IsAlive&&u.IsOnBoard&&(enemies?u.TeamId!=caster.TeamId&&u.IsTargetable:
+            var valid=battle.Units.Where(u=>u.IsAlive&&u.IsOnBoard&&(enemies?u.TeamId!=caster.TeamId&&(u.IsTargetable||spec.Mode==SpatialTargetMode.Area&&u.IsSynergyStealthed):
                 u.TeamId==caster.TeamId&&(spec.IncludeSelf||u!=caster))).ToArray();
             if(spec.Mode==SpatialTargetMode.PrimaryEnemies) {
                 if(target==null)return Array.Empty<UnitCombatState>();

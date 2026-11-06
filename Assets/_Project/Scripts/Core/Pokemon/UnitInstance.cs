@@ -44,6 +44,7 @@ namespace PokeChess.Core.Pokemon
         public int BountyStacks { get; private set; }
         internal int SetBountyStacks(int count) {if(count<0)throw new ArgumentOutOfRangeException();BountyStacks=count%5;return count/5;}
         internal int AddBountyParticipation()=>SetBountyStacks(checked(BountyStacks+1));
+        public string SynergyTargetId { get; internal set; }
         public string InstanceId { get; }
         public string DefinitionId { get; private set; }
         public string OwnerPlayerId { get; }

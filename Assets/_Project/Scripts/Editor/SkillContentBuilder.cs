@@ -208,7 +208,8 @@ namespace PokeChess.Editor
                 baseSkill.VariantIds=r.Id=="clefairy"?Array.Empty<string>():Enumerable.Range(0,3).Select(i=>{var leaf=Leaf(r,i);Recipe(r,leaf);return leaf.Id;}).ToArray();skills.Add(baseSkill);bases[r.Id]=baseSkill;EditorUtility.SetDirty(baseSkill);
                 var p=Asset<PokemonData>("Pokemon",r.Id);bool isNew=!existing.ContainsKey(r.Id);
                 p.Id=r.Id;p.DisplayName=char.ToUpperInvariant(r.Id[0])+r.Id.Substring(1);p.LocalizedName=r.Name;p.Cost=r.Cost;p.Skill=baseSkill;
-                if(isNew){p.Stats=new PokemonStatsData();p.RoleId="melee-dps";p.TypeIds=Array.Empty<string>();p.TraitIds=Array.Empty<string>();}
+                p.TraitIds=PokeChess.Core.Battle.SynergyTraits.ForPokemon(p.Id);
+                if(isNew){p.Stats=new PokemonStatsData();p.RoleId="melee-dps";p.TypeIds=Array.Empty<string>();}
                 p.Stats.MaxHP=r.HP[0];p.Stats.Attack=r.Attack[0];p.Stats.SpellPower=100;
                 p.Stats.AttackSpeed=r.AttackSpeed;p.Stats.MaxEnergy=r.MaxEnergy;p.Stats.StartingEnergy=r.StartingEnergy;
                 p.Stats.Armor=r.Armor;p.Stats.MagicResistance=r.MagicResistance;p.Stats.AttackRange=r.AttackRange;

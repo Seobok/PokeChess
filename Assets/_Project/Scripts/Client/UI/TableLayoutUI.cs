@@ -153,7 +153,7 @@ namespace PokeChess.Client.UI
             sellButton.gameObject.SetActive(!shopInfo);
             detailPopup.gameObject.SetActive(shopInfo||hoveredUnitId!=null&&selectedUnitId==hoveredUnitId);
             if(detailPopup.gameObject.activeSelf)detailPopup.SetAsLastSibling();
-            bool outline=selectedUnitId!=null||IsDragging||IsItemDragging;
+            bool outline=selectedUnitId!=null||IsDragging||IsItemDragging||SynergyLabMode&&Match.Phase==MatchPhase.Preparation;
             foreach(var hex in tableHexes)hex.gameObject.SetActive(outline);
             foreach(var slot in slots.Where(s=>s.Placement.Kind==PlacementKind.Bench))slot.Rect.gameObject.SetActive(true);
             header.gameObject.SetActive(false);status.gameObject.SetActive(false);inventoryLabel.gameObject.SetActive(false);detailLabel.gameObject.SetActive(false);

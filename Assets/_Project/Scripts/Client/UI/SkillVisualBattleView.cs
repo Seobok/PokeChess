@@ -52,6 +52,15 @@ namespace PokeChess.Client.UI
         private int rate=30;
         private float pixelScale=1.5f;
         private double lastTick=-1;
+        private readonly StormBattleVisuals storm=new StormBattleVisuals();
+        private readonly TorrentBattleVisuals torrent = new TorrentBattleVisuals();
+        private readonly FlameBattleVisuals flame = new FlameBattleVisuals();
+        private IEnumerable<(int column,int row)> flameTiles=Array.Empty<(int,int)>();
+        private readonly GuardianBattleVisuals guardian = new GuardianBattleVisuals();
+        private void GuardianSignal(string target, string clip, long tick)
+        {
+            if(target!=null && clip!=null)guardian.Trigger(transform,target,clip,tick);
+        }
         public static SkillVisualBattleView Get(Transform board,SkillVisualCatalog catalog)
         {
             var view=board.GetComponent<SkillVisualBattleView>()??board.gameObject.AddComponent<SkillVisualBattleView>();
@@ -71,7 +80,26 @@ namespace PokeChess.Client.UI
         }
         private void CaptureLocal(BattleState battle)
         {
-            if(catalog==null||localRuntime==null||point==null)return;
+            if(localRuntime==null||point==null)return;
+            flameTiles=battle.Synergies.FireTiles.Select(p=>(p.Column,p.Row));
+            foreach(var e in battle.Synergies.EventsThisTick)
+                if(e.TraitId==SynergyTraits.Flame && e.Cell.HasValue)
+                    flame.Trigger(transform,(e.Cell.Value.Column,e.Cell.Value.Row),e.Detail,e.Tick);
+            foreach(var e in battle.Synergies.EventsThisTick)
+                if(e.TraitId==SynergyTraits.Guardian)
+                    GuardianSignal(e.TargetId,e.Detail=="FIRST_HIT"?"first-hit":e.Detail=="GUARD_START"?"battle-guard":null,battle.CurrentTick);
+            foreach(var e in battle.Shields.EventsThisTick)
+                if(e.Shield.Group==SynergyTraits.Guardian)
+                    GuardianSignal(e.Shield.TargetId,GuardianBattleVisuals.ShieldClip(e.Kind.ToString(),e.Shield.Remaining),e.Tick);
+            foreach(var e in battle.Synergies.EventsThisTick)
+                if(e.TraitId==SynergyTraits.Storm)storm.Signal(transform,e.Detail,e.SourceId,e.TargetId,(int)e.Value,e.Tick);
+            foreach(var e in battle.Synergies.EventsThisTick)
+                if(e.TraitId==SynergyTraits.Torrent)
+                {
+                    if(e.Cell.HasValue)torrent.Tile(transform,e.Detail,e.Cell.Value.Column,e.Cell.Value.Row,(int)e.Value,e.Tick,e.TargetId,e.Destination.HasValue?(e.Destination.Value.Column,e.Destination.Value.Row):((int,int)?)null);
+                    else if(e.Detail=="MANA"&&e.Value>0)torrent.Mana(transform,e.TargetId,e.Tick);
+                }
+            if(catalog==null)return;
             units=SkillVisualSnapshot.Local(battle,localRuntime,battle.CurrentTick,point);
             projectiles=battle.Projectiles.Active.Select(OnlineCombatRuntime.Projectile).ToArray();
             paths=battle.PathProjectiles.Active.Select(OnlineCombatRuntime.PathProjectile).ToArray();
@@ -139,6 +167,18 @@ namespace PokeChess.Client.UI
         public void PlaybackEvent(CombatEventView e,CombatFrame frame,Func<int,int,Vector2> project,float scale=1.5f)
         {
             Context(frame.battleId);point=project;pixelScale=scale;rate=frame.tickRate;
+            if(e.kind=="Synergy"&&e.detail?.StartsWith("storm:",StringComparison.Ordinal)==true)
+                storm.Signal(transform,e.detail.Substring(6),e.source,e.target,(int)e.value,e.tick);
+            if(e.kind=="SynergyTile"&&e.synergyCell!=null&&e.detail?.StartsWith("torrent:",StringComparison.Ordinal)==true)
+                torrent.Tile(transform,e.detail.Substring(8),e.synergyCell.column,e.synergyCell.row,(int)e.value,e.tick,e.target,e.synergyDestination==null?((int,int)?)null:(e.synergyDestination.column,e.synergyDestination.row));
+            if(e.kind=="Synergy"&&e.detail=="torrent:MANA"&&e.value>0&&e.target!=null)
+                torrent.Mana(transform,e.target,e.tick);
+            if(e.kind=="SynergyTile" && e.synergyCell!=null && e.detail?.StartsWith("flame:",StringComparison.Ordinal)==true)
+                flame.Trigger(transform,(e.synergyCell.column,e.synergyCell.row),e.detail.Substring(6),e.tick);
+            if(e.kind=="Synergy")
+                GuardianSignal(e.target,e.detail=="guardian:FIRST_HIT"?"first-hit":e.detail=="guardian:GUARD_START"?"battle-guard":null,e.tick);
+            if(e.detail==SynergyTraits.Guardian && e.kind?.StartsWith("Shield",StringComparison.Ordinal)==true)
+                GuardianSignal(e.target,GuardianBattleVisuals.ShieldClip(e.kind.Substring(6),e.value),e.tick);
             if(catalog==null)return;
             units=SkillVisualSnapshot.Playback(frame,e.tick,point);
             if(e.kind=="ProjectileHit"&&e.projectile!=null) {
@@ -187,7 +227,9 @@ namespace PokeChess.Client.UI
             if(lastTick>tick)ResetVisuals();
             foreach(var e in frame.events??Array.Empty<CombatEventView>())PlaybackEvent(e,frame,project,scale);
             units=SkillVisualSnapshot.Playback(frame,tick,point);projectiles=frame.projectiles??Array.Empty<CombatProjectileView>();
-            paths=frame.pathProjectiles??Array.Empty<CombatPathProjectileView>();grounds=frame.grounds??Array.Empty<CombatGroundView>();Render(tick);
+            paths=frame.pathProjectiles??Array.Empty<CombatPathProjectileView>();grounds=frame.grounds??Array.Empty<CombatGroundView>();
+            flameTiles=(frame.synergyFire??Array.Empty<CombatCellView>()).Select(p=>(p.column,p.row));
+            Render(tick);
         }
         private void SplashHit(string caster,string target,long tick)
         {
@@ -277,9 +319,38 @@ namespace PokeChess.Client.UI
                 }
             }
         }
+        internal static Vector2 GroundOffset(Func<int,int,Vector2> project)
+            =>Vector2.down*(Vector2.Distance(project(0,0),project(1,0))*.22f);
+
+        internal void SortCombatDepth(IEnumerable<RectTransform> fighters)
+        {
+            var ground=visuals.Where(v=>v.Image.enabled&&v.Entry.Trigger==SkillVisualTrigger.GroundActive)
+                .Select(v=>v.Image.rectTransform);
+            SortBoardDepth(transform,fighters,ground.Concat(flame.VisibleLayers).Concat(torrent.VisibleLayers));
+        }
+
+        internal static void SortBoardDepth(Transform parent,IEnumerable<RectTransform> fighters,IEnumerable<RectTransform> foreground=null)
+        {
+            var desired=fighters.Where(r=>r!=null&&r.parent==parent&&r.gameObject.activeSelf)
+                .OrderByDescending(r=>r.anchoredPosition.y).ThenBy(r=>r.GetSiblingIndex())
+                .Concat((foreground??Array.Empty<RectTransform>()).OrderBy(r=>r.GetSiblingIndex()))
+                .ToArray();
+            if(desired.Length<2)return;
+            var slots=desired.Select(r=>r.GetSiblingIndex()).OrderBy(i=>i).ToArray();
+            if(desired.Select(r=>r.GetSiblingIndex()).SequenceEqual(slots))return;
+            var siblings=Enumerable.Range(0,parent.childCount).Select(parent.GetChild).ToArray();
+            for(int i=0;i<slots.Length;i++)siblings[slots[i]]=desired[i];
+            for(int i=0;i<siblings.Length;i++)
+                if(siblings[i].GetSiblingIndex()!=i)siblings[i].SetSiblingIndex(i);
+        }
+
         private void Render(double tick)
         {
-            lastTick=tick;if(catalog==null)return;
+            lastTick=tick;
+            flame.Render(transform,flameTiles,point,tick,rate);
+            torrent.Render(transform,units,point,tick,rate);
+            storm.Render(units,tick,rate,point);
+            guardian.Render(transform,units,tick,rate,pixelScale);if(catalog==null)return;
             foreach(var bolt in bolts.ToArray()) {
                 double elapsed=(tick-bolt.Start)/Math.Max(1,rate);var source=Find(bolt.Source);var target=Find(bolt.Target);
                 if(elapsed>=bolt.Entry.LightningSeconds||source==null||target==null){RemoveBolt(bolt);continue;}
@@ -317,7 +388,7 @@ namespace PokeChess.Client.UI
                     var center=new PokeChess.Core.Pokemon.BoardPosition(ground.column,ground.row);
                     foreach(var cell in SkillGeometry.Cells(SkillAreaShape.Radius,center,center,ground.radius)) {
                         var visual=Continuous("ground:"+index+":"+ground.id+":"+cell.Column+":"+cell.Row,entry,ground.startTick);visual.End=ground.endTick;
-                        visual.Image.rectTransform.anchoredPosition=point(cell.Column,cell.Row)+entry.Offset*OffsetScale(entry);
+                        visual.Image.rectTransform.anchoredPosition=point(cell.Column,cell.Row)+GroundOffset(point)+entry.Offset*OffsetScale(entry);
                     }
                 }
                 if(entry.Trigger==SkillVisualTrigger.ProjectileFlight)
@@ -523,7 +594,7 @@ namespace PokeChess.Client.UI
             foreach(var bolt in bolts.ToArray())RemoveBolt(bolt);
             foreach(var actor in GetComponentsInChildren<PokemonSpriteView>()){actor.SetSkillLungeOffset(Vector2.zero);actor.SetSkillHidden(false);actor.SetSkillScale(1);}
             lunges.Clear();
-            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
+            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();guardian.Clear();flame.Clear();torrent.Clear();storm.Clear();flameTiles=Array.Empty<(int,int)>();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
         }
         private void RemoveBolt(BoltVisual bolt)
         {

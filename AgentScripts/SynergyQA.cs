@@ -19,30 +19,30 @@ public static class SynergyQA
         foreach (var room in UnityEngine.Object.FindObjectsByType<RoomFlowView>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         { room.enabled = false; room.transform.Find("RoomCanvas").gameObject.SetActive(false); }
         typeof(PlacementSandboxView).GetMethod("AnimateRosterSprites", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(view, null);
-        Check(view.SynergyDisplay.Contains("Guardian 3/3") && view.SynergyDisplay.Contains("Assault 2/3") && view.SynergyDisplay.Contains("Link 3/3"), "Preparation counts.");
-        view.SelectUnit("p1-synergy-3"); Check(view.DetailText.Contains("Guardian") && view.DetailText.Contains("Link"), "Unit traits.");
-        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../TestResults/Synergy")); Directory.CreateDirectory(folder);
+        Check(view.SynergyDisplay.Contains("수호자\n4/5") && view.SynergyDisplay.Contains("격류\n3/4") && view.SynergyDisplay.Contains("자연\n2/4"), "Preparation counts.");
+        view.SelectUnit("p1-synergy-2"); Check(view.DetailText.Contains("수호자") && view.DetailText.Contains("격류"), "Unit traits.");
+        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../TestResults/SynergyV09")); Directory.CreateDirectory(folder);
         Capture(view, Path.Combine(folder, "preparation.png"));
         var trait = view.transform.Find("PlacementCanvas/Synergies/guardian").gameObject;
         ExecuteEvents.Execute(trait, new PointerEventData(EventSystem.current), ExecuteEvents.pointerEnterHandler);
         view.RefreshFromState();
         var help = view.transform.Find("PlacementCanvas/SynergyHelp");
-        Check(help.gameObject.activeSelf && help.GetComponentInChildren<UnityEngine.UI.Text>().text.Contains("140 shield"), "Tooltip.");
+        Check(help.gameObject.activeSelf && help.GetComponentInChildren<UnityEngine.UI.Text>().text.Contains("+20"), "Tooltip.");
         Capture(view, Path.Combine(folder, "tooltip.png"));
         ExecuteEvents.Execute(trait, new PointerEventData(EventSystem.current), ExecuteEvents.pointerExitHandler);
         view.AdvanceRound(); var battle = view.RoundLoop.GetBattleFor("p1").Battle;
-        Check(battle.Units.First(u => u.UnitInstanceId == "p1-synergy-0").CurrentShield == 140, "Starting guardian shield.");
-        bool link = false, assault = false, guard = false;
+        Check(battle.Units.First(u => u.UnitInstanceId == "p1-synergy-0").EffectiveStats.Armor >= 20, "Guardian resistance.");
+        bool wave = false;
         for (int i = 0; i < 1400 && view.Match.Phase == MatchPhase.Combat; i++)
         {
             view.RoundLoop.Step();
-            foreach (var e in battle.Synergies.EventsThisTick) { link |= e.TraitId == "link"; assault |= e.Detail == "STRIKE"; guard |= e.Detail == "GUARD"; }
+            foreach (var e in battle.Synergies.EventsThisTick) { wave |= e.TraitId == "torrent"; }
             if (i == 120) { view.RefreshFromState(); Capture(view, Path.Combine(folder, "combat.png")); }
         }
         view.RefreshFromState();
-        Check(view.Match.Phase != MatchPhase.Combat && link && assault && guard, "Combat completion and all active effects.");
+        Check(view.Match.Phase != MatchPhase.Combat && wave, "Combat completion and all active effects.");
         view.Match.Pool.AssertConservation(view.Match);
-        var report = "Passed: Guardian 3 / Assault 2 / Link 3, unit details, tooltip, start shields, Link/Assault/Guardian effects, battle completion, pool conservation.";
+        var report = "Passed: v0.9 Guardian 4 / Torrent 2 / Nature 2, unit details, tooltip, wave effects, battle completion, pool conservation.";
         File.WriteAllText(Path.Combine(folder, "playmode.txt"), report);
         return report;
     }

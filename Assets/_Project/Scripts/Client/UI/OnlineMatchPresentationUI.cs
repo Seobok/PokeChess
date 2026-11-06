@@ -62,7 +62,8 @@ namespace PokeChess.Client.UI
             if(onlineBattleId!=frame.battleId){ClearOnlineFighters();onlineBattleId=frame.battleId;}
             combatInfo.text="VS "+PlayerLabel(frame.one==onlineService.WatchingPlayerId?frame.two:frame.one,owner.playerId)+(frame.shadow?" / SHADOW":"");
             double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
-            SkillVisualBattleView.Get(combatRoot,SkillVisuals).RenderPlayback(frame,tick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
+            var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
+            visuals.RenderPlayback(frame,tick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
             foreach(var unit in frame.units){
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
                     var node=Rect("Fighter_"+unit.id,combatRoot,new Vector2(43,35),Vector2.zero);var image=node.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.12f,.44f,.58f,.2f);
@@ -84,9 +85,13 @@ namespace PokeChess.Client.UI
                 onlineEffects[unit.id].rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+50);
                 label.text=unit.hp<=0?"":unit.statuses.Length>0?unit.statuses[0]:"";
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
-                if(unit.assaultCharges>0)label.text+=" AT+"+unit.assaultCharges;
+                if(unit.duelistStacks>0)label.text+=" AS+"+unit.duelistStacks;
+                if(unit.trackerStacks>0)label.text+=" TRACK "+unit.trackerStacks;
+                if(unit.guarded)label.text+=" GUARD";
+                if(unit.isSynergySummon)label.text+=" FOREST";
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);
             }
+            visuals.SortCombatDepth(combatTokens.Values.Select(label=>(RectTransform)label.transform.parent));
             foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
             foreach(var projectile in frame.projectiles){
                 if(!combatShots.TryGetValue(projectile.id,out var shot)){shot=Rect("Projectile_"+projectile.id,combatRoot,new Vector2(7,7),Vector2.zero);shot.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(1,.8f,.15f);shot.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;combatShots[projectile.id]=shot;}
@@ -102,7 +107,7 @@ namespace PokeChess.Client.UI
             PlayOnlineCombatSound(effect);
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;
             if(effect.kind=="Item") { label.font=itemFont;label.text=ItemCatalog.Get(effect.detail).Name;label.color=new Color(.5f,1,.7f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
-            if(effect.kind=="Synergy") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
+            if(effect.kind=="Synergy"&&effect.detail!="guardian:FIRST_HIT"&&effect.detail!="guardian:GUARD_START") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
             else if(effect.kind=="Damage"||effect.kind=="EffectHeal"||effect.kind.StartsWith("Status")){
                 label.text=effect.kind=="Damage"?"-"+Math.Ceiling(effect.value):effect.kind=="EffectHeal"?"+"+Math.Ceiling(effect.value):effect.detail;
                 label.color=effect.kind=="Damage"?Color.red:Color.green;onlineEffectUntil[effect.target]=Time.unscaledTime+.45f;

@@ -49,7 +49,11 @@ namespace PokeChess.Client.UI
                 var rect=image.rectTransform;rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);
                 rect.pivot=new Vector2(.5f,0);
                 if(effect.Position==StatusVisualPosition.Feet) {
-                    rect.sizeDelta=Vector2.one*64*scale;rect.anchoredPosition=new Vector2(0,-5*scale);
+                    // Midpoint between the former bottom-pivot center (+27)
+                    // and the lowered center-pivot position (-12).
+                    rect.pivot=new Vector2(.5f,.5f);
+                    rect.sizeDelta=Vector2.one*64*scale;
+                    rect.anchoredPosition=new Vector2(0,7.5f*scale);
                 } else if(effect.Position==StatusVisualPosition.Overlay) {
                     rect.sizeDelta=new Vector2(Mathf.Max(40*scale,width*1.2f),Mathf.Max(44*scale,top-bottom+8*scale));
                     rect.anchoredPosition=new Vector2(character.rectTransform.anchoredPosition.x,bottom-3*scale);

@@ -5,9 +5,10 @@ using PokeChess.Core.Board;
 namespace PokeChess.Core.Battle
 {
     public enum DamageType { Physical, Magic, True }
-    public enum DamageOrigin { Direct, Periodic, Reflection, Debuff, FreezeBreak, Execution }
+    public enum DamageOrigin { Direct, Periodic, Reflection, Debuff, FreezeBreak, Execution, Synergy }
     public readonly struct DamageSourceSnapshot
     {
+        public long CastId { get; }
         public float Amplification { get; }
         public float OutgoingMultiplier { get; }
         public float? CritChance { get; }
@@ -15,11 +16,11 @@ namespace PokeChess.Core.Battle
         public float? Attack { get; }
         public float? SpellPower { get; }
         public float? MaxHP { get; }
-        public DamageSourceSnapshot(float amplification,float outgoingMultiplier,float? critChance=null,float armorPenetration=0,float? attack=null,float? spellPower=null,float? maxHP=null)
+        public DamageSourceSnapshot(float amplification,float outgoingMultiplier,float? critChance=null,float armorPenetration=0,float? attack=null,float? spellPower=null,float? maxHP=null,long castId=0)
         {DamageCalculator.Validate(amplification,true);DamageCalculator.Validate(outgoingMultiplier,true);
          if(critChance.HasValue){DamageCalculator.Validate(critChance.Value,true);if(critChance>1)throw new ArgumentOutOfRangeException();}
          DamageCalculator.Validate(armorPenetration,true);if(armorPenetration>1)throw new ArgumentOutOfRangeException();
-         Attack=attack;SpellPower=spellPower;MaxHP=maxHP;CritChance=critChance;ArmorPenetration=armorPenetration;Amplification=amplification;OutgoingMultiplier=outgoingMultiplier;}
+         CastId=castId;Attack=attack;SpellPower=spellPower;MaxHP=maxHP;CritChance=critChance;ArmorPenetration=armorPenetration;Amplification=amplification;OutgoingMultiplier=outgoingMultiplier;}
     }
     public readonly struct DamageRequest
     {
@@ -29,11 +30,12 @@ namespace PokeChess.Core.Battle
         public DamageType Type { get; }
         public bool CanCrit { get; }
         public bool IsBasicAttack { get; }
+        public bool IsAreaDamage { get; }
         public DamageOrigin Origin { get; }
         public float BonusDamage { get; }
         public DamageSourceSnapshot? SourceSnapshot { get; }
         public SkillDamagePolicy SkillPolicy { get; }
-        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0, bool isBasicAttack=false, DamageOrigin origin=DamageOrigin.Direct,DamageSourceSnapshot? sourceSnapshot=null,SkillDamagePolicy skillPolicy=null)
+        public DamageRequest(string sourceId, string targetId, float rawDamage, DamageType type, bool canCrit=false, float bonusDamage=0, bool isBasicAttack=false, DamageOrigin origin=DamageOrigin.Direct,DamageSourceSnapshot? sourceSnapshot=null,SkillDamagePolicy skillPolicy=null,bool isAreaDamage=false)
         {
             if(string.IsNullOrWhiteSpace(sourceId)||string.IsNullOrWhiteSpace(targetId))
                 throw new ArgumentException("Damage requires source and target IDs.");
@@ -42,7 +44,7 @@ namespace PokeChess.Core.Battle
             if(!Enum.IsDefined(typeof(DamageType),type))throw new ArgumentOutOfRangeException(nameof(type));
             if(float.IsNaN(bonusDamage)||float.IsInfinity(bonusDamage)||bonusDamage<0)
                 throw new ArgumentOutOfRangeException(nameof(bonusDamage));
-            IsBasicAttack=isBasicAttack; CanCrit=canCrit; BonusDamage=bonusDamage;
+            IsAreaDamage=isAreaDamage;IsBasicAttack=isBasicAttack; CanCrit=canCrit; BonusDamage=bonusDamage;
             if(!Enum.IsDefined(typeof(DamageOrigin),origin))throw new ArgumentOutOfRangeException(nameof(origin));
             Origin=origin;
             SourceSnapshot=sourceSnapshot;SkillPolicy=skillPolicy;

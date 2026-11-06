@@ -185,7 +185,12 @@ namespace PokeChess.Client.UI
                 groups[pair.Key].alpha=pair.Key==dragged ? .3f : 1;
                 if(unit!=null)RenderEquippedItemIcon(pair.Value,unit.ItemInstanceIds);
             }
-            RenderMinimumUI();AnimateRosterSprites();
+            RenderMinimumUI();
+            RefreshStormLinks(Match.Phase==MatchPhase.Preparation?ViewedPlayer.Units:Array.Empty<UnitInstance>());
+            RefreshGuardianLinks(Match.Phase==MatchPhase.Preparation
+                ? PokeChess.Core.Battle.SynergySystem.PreviewGuardianLinks(ViewedPlayer.Units,catalog)
+                : Array.Empty<(string,string)>());
+            AnimateRosterSprites();
         }
         public void BeginDrag(string id,Vector2 point)
         {

@@ -73,14 +73,14 @@ namespace PokeChess.Core.Battle
     {
         private readonly BattleState battle;
         internal HealingSystem(BattleState battle){this.battle=battle;}
-        public float Apply(UnitCombatState target,float amount,bool overtime=true)
+        public float Apply(UnitCombatState target,float amount,bool overtime=true,UnitCombatState source=null)
         {
             DamageCalculator.Validate(amount,true);
             if(target==null||!battle.Units.Contains(target))throw new ArgumentException();
             if(target.CurrentHP<=0||!target.IsOnBoard)return 0;
             float before=target.CurrentHP;
             double value=amount*target.StatusSystem.HealingMultiplier(target)*(overtime&&battle.IsOvertime?.34:1);
-            target.SetVitals((float)Math.Min(target.Stats.MaxHP,before+value),target.CurrentEnergy);return target.CurrentHP-before;
+            target.SetVitals((float)Math.Min(target.Stats.MaxHP,before+value),target.CurrentEnergy);if(target.CurrentHP>before&&target.IsSynergySummon&&source!=null&&battle.Synergies.Tier(source,SynergyTraits.Nature)>=4)battle.NatureHealBonus.Add(target.TeamId);return target.CurrentHP-before;
         }
     }
 }

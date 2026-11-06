@@ -41,9 +41,9 @@ namespace PokeChess.Core.Battle
         }
         private bool CanMove(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Root)&&!battle.StatusEffects.BlocksMovement(u)&&policy.CanMove(battle,u);
-        private bool CanAttack(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
+        private bool CanAttack(UnitCombatState u)=>!u.IsSynergyStealthed&&!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Disarm)&&!battle.StatusEffects.BlocksAttacks(u)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanAttack(battle,u);
-        private bool CanUseSkill(UnitCombatState u)=>!u.HasCrowdControl(CrowdControlKind.Stun)&&
+        private bool CanUseSkill(UnitCombatState u)=>!u.IsSynergyStealthed&&!u.IsSynergySummon&&!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Silence)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanUseSkill(battle,u);
         private void OnRelocating(UnitCombatState unit,bool forced)
         {
@@ -123,6 +123,7 @@ namespace PokeChess.Core.Battle
                 for(int i=0;i<count;i++)inputs.Dequeue()(battle);
                 CleanupUnavailable();
                 if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
+                battle.Synergies.Advance();
                 battle.StatusEffects.Advance();battle.WorldEffects.AdvanceGrounds();
                 CleanupUnavailable();if(TryEndBattle())return Array.AsReadOnly(signals.ToArray());
                 battle.Movement.Advance();
@@ -325,7 +326,7 @@ namespace PokeChess.Core.Battle
             var cast=new SkillCastRuntime(skill,target.UnitInstanceId,battle.CurrentTick,hit,duration,lockTicks)
                 {CastId=checked(++nextCastId),Iterations=new int[skill.Steps.Count]};
             if(!battle.Energy.TryConsumeSkill(unit))return false;
-            runtime.SkillCast=cast;runtime.IsSkillActive=true;runtime.IsAttackTargetLocked=false;
+            unit.ActiveSynergyCastId=cast.CastId;runtime.SkillCast=cast;runtime.IsSkillActive=true;runtime.IsAttackTargetLocked=false;
             Begin(unit,runtime,CombatActionState.Casting,new CombatActionTiming(duration,hit));
             battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.CastStarted,SkillCancelReason.None));
             policy.OnSkillStarted(battle,unit,target);
@@ -444,6 +445,7 @@ namespace PokeChess.Core.Battle
             Emit(unit,cancelled?CombatActionSignalKind.Cancelled:CombatActionSignalKind.Completed);
             if(!battle.Movement.IsTravelling(unit))Reservations.Release(unit.UnitInstanceId);
             if(runtime.IsSkillActive) {
+                if(!cancelled)battle.Synergies.OnSkillCompleted(unit);
                 var cast=runtime.SkillCast;
                 if(cast!=null&&!cast.Finished) {
                     cast.Finished=true;

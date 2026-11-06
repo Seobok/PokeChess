@@ -92,6 +92,7 @@ namespace PokeChess.Core.Battle
             var subject=definition.Forced?target:caster;
             if(subject==null||!battle.Units.Contains(subject)||!subject.IsAlive||!subject.IsOnBoard)return false;
             if(definition.Forced&&(subject.TeamId==caster.TeamId||!subject.IsTargetable))return false;
+            if(definition.Forced&&battle.Synergies.PreventControl(subject,true))return false;
             bool blocked=!definition.Forced&&(subject.HasCrowdControl(CrowdControlKind.Root)||subject.HasCrowdControl(CrowdControlKind.Stun)||subject.StatusSystem.BlocksMovement(subject));
             if(IsTravelling(subject)&&!definition.Forced)blocked=true;
             if(definition.Kind==SkillMovementKind.CarryTarget)return !blocked&&TryCarry(caster,target,definition,impact,castId,stepIndex,iteration);
@@ -169,6 +170,8 @@ namespace PokeChess.Core.Battle
         }
         private bool TryCarry(UnitCombatState caster,UnitCombatState target,SkillMovementDefinition def,Action impact,long castId,int step,int iteration) {
             if(target==null||target.TeamId==caster.TeamId||!target.IsTargetable)return false;
+            // Forced-movement immunity does not cancel the independent hit payload.
+            if(battle.Synergies.PreventControl(target,true)){impact?.Invoke();return false;}
             var a=HexCoordinates.ToAxial(caster.Position);var t=HexCoordinates.ToAxial(target.Position);
             var ray=SkillGeometry.Ray(target.Position,new AxialPosition(t.Q-a.Q,t.R-a.R),def.Distance);
             var end=ray.Reverse().Where(p=>Empty(p,target)).Select(p=>(BoardPosition?)p).FirstOrDefault();

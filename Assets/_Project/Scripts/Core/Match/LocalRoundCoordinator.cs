@@ -24,6 +24,8 @@ namespace PokeChess.Core.Match
     public sealed class LocalPairBattle
     {
         private readonly BattleSimulation simulation;
+        internal IReadOnlyList<SynergyCount> OneSynergies { get; set; }
+        internal IReadOnlyList<SynergyCount> TwoSynergies { get; set; }
         public RoundPairing Pairing { get; }
         public bool IsShadow => Pairing.IsShadow;
         public bool IsWild => Pairing.IsWild;
@@ -64,8 +66,8 @@ namespace PokeChess.Core.Match
             if(!IsComplete || survivorCountsFrozen)return;
             if(Battle!=null)
             {
-                oneSurvivors=Battle.Units.Count(u=>u.TeamId==1 && u.IsAlive && u.IsOnBoard);
-                twoSurvivors=Battle.Units.Count(u=>u.TeamId==2 && u.IsAlive && u.IsOnBoard);
+                oneSurvivors=Battle.Units.Count(u=>u.TeamId==1 && u.IsAlive && u.IsOnBoard && !u.IsSynergySummon);
+                twoSurvivors=Battle.Units.Count(u=>u.TeamId==2 && u.IsAlive && u.IsOnBoard && !u.IsSynergySummon);
             }
             survivorCountsFrozen=true;
         }
@@ -115,6 +117,7 @@ namespace PokeChess.Core.Match
     public sealed partial class LocalRoundCoordinator : IRoundFlowRuntime
     {
         private readonly PokemonCatalog catalog;
+        internal string[] BoardTraits(UnitInstance unit,PlayerState player)=>SynergyPreparation.Traits(unit,catalog,player);
         private readonly SkillCatalog skills;
         private readonly StatusCatalog statuses;
         private readonly EconomySystem economy=new EconomySystem();
@@ -193,7 +196,17 @@ namespace PokeChess.Core.Match
                         : BattleStateFactory.Create(battleId,expectedRound,seed,TickRate,catalog,setup);
                 }
                 var emptyResult=one.Length==0 && twoCount==0 ? BattleResult.Draw : one.Length==0 ? BattleResult.TeamTwoWin : BattleResult.TeamOneWin;
-                nextBattles.Add(new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,twoCount,skills,statuses));
+                if(battle!=null)foreach(var playerId in pair.ParticipantIds) {
+                    var player=Match.GetPlayer(playerId);int team=pair.PlayerOneId==playerId?1:2;
+                    battle.NatureExperience[team]=player.Synergy.NatureXP;battle.VenomSamples[team]=player.Synergy.VenomSamples;
+                    battle.PreparedRocks[team]=player.Synergy.RockTiles.Select(p=>team==1?p:HexCoordinates.MirrorCombat(p)).ToArray();
+                    var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==team&&u.IsSynergySummon);
+                    if(guardian!=null&&battle.Synergies.TeamTier(team,PokeChess.Core.Battle.SynergyTraits.Nature)<10)guardian.ScaleMaxHP(player.Synergy.NatureXP>=30?1.5f:player.Synergy.NatureXP>=16?.8f:player.Synergy.NatureXP>=6?.35f:0);
+                }
+                var pairBattle=new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,twoCount,skills,statuses);
+                pairBattle.OneSynergies=battle?.Synergies.TeamCounts(1)??SynergyPreparation.CountUnits(one,catalog);
+                pairBattle.TwoSynergies=battle?.Synergies.TeamCounts(2)??SynergyPreparation.CountUnits(two,catalog);
+                nextBattles.Add(pairBattle);
             }
             foreach(var player in players)if(deployments[player.PlayerId].Count>0)player.ApplyPlacements(deployments[player.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
@@ -210,6 +223,7 @@ namespace PokeChess.Core.Match
                 var pair=new RoundPairing(p.PlayerId,"wild-"+WildRoundSystem.Pattern(round),isWild:true);
                 var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[p.PlayerId])));
                 var battle=one.Length==0?null:WildRoundSystem.CreateBattle(Match,catalog,p,setup,TickRate);
+                if(battle!=null){battle.NatureExperience[1]=p.Synergy.NatureXP;battle.VenomSamples[1]=p.Synergy.VenomSamples;battle.PreparedRocks[1]=p.Synergy.RockTiles.ToArray();var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==1&&u.IsSynergySummon);if(guardian!=null&&battle.Synergies.TeamTier(1,SynergyTraits.Nature)<10)guardian.ScaleMaxHP(p.Synergy.NatureXP>=30?1.5f:p.Synergy.NatureXP>=16?.8f:p.Synergy.NatureXP>=6?.35f:0);}
                 next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses));
             }
             foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);
@@ -283,6 +297,7 @@ namespace PokeChess.Core.Match
             {
                 if(p.LastEconomyRound!=Match.RoundNumber)LastResult.Record(economy.Settle(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome));
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
+                SynergyPreparation.Settle(p,battles.First(b=>b.Pairing.Contains(p.PlayerId)),Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
             }
             elimination.SettleDamage(Match);
@@ -304,6 +319,7 @@ namespace PokeChess.Core.Match
             foreach(var p in recipients){
                 if(p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
+                SynergyPreparation.Settle(p,battles.First(b=>b.Pairing.Contains(p.PlayerId)),Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
                 if(LastResult.PlayerResults[p.PlayerId].Outcome==RoundOutcome.Win&&WildRoundSystem.HasItemReward(Match.RoundNumber))
                     new ItemSystem().Offer(Match,p);

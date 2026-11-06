@@ -21,6 +21,7 @@ namespace PokeChess.Core.Match
     // Local host executor. UI does not mutate Gold, Rank, shop or ownership directly.
     public sealed class MatchCommandExecutor
     {
+        private readonly PokemonCatalog synergyCatalog;
         private readonly MatchState match;
         private readonly string playerId;
         private readonly ShopTransactionSystem trades;
@@ -35,7 +36,7 @@ namespace PokeChess.Core.Match
         public bool CanSell(string id) => CanBuy && System.Linq.Enumerable.Any(Player.Units,u=>u.InstanceId==id && (match.Phase==MatchPhase.Preparation || u.Placement.Kind==PlacementKind.Bench));
         public MatchCommandExecutor(MatchState match,PokemonCatalog catalog,string playerId)
         {
-            this.match=match ?? throw new ArgumentNullException(nameof(match));this.playerId=playerId;match.GetPlayer(playerId);
+            synergyCatalog=catalog;this.match=match ?? throw new ArgumentNullException(nameof(match));this.playerId=playerId;match.GetPlayer(playerId);
             trades=new ShopTransactionSystem(catalog);
             evolutions=new EvolutionSystem(catalog);
         }
@@ -65,6 +66,7 @@ namespace PokeChess.Core.Match
         }
         public MatchCommandResult PreviewBuy(int slot,long revision) => Run(()=>new MatchCommandResult("Available.",preview:trades.PreviewBuy(match,playerId,slot,revision)));
         public MatchCommandResult Buy(int slot,long revision) => Run(()=>new MatchCommandResult("Purchase accepted.",purchase:trades.BuyWithRankUp(match,playerId,slot,revision)));
+        public MatchCommandResult ConfigureSynergy(int mode,string unit,string value,int slot=0,int column=0,int row=0) => Run(()=>{SynergyPreparation.Configure(match,synergyCatalog,playerId,mode,unit,value,slot,column,row);return new MatchCommandResult("시너지 설정을 저장했습니다.");});
         public MatchCommandResult Reroll(long revision) => Run(()=> { CheckShopRevision(revision);shops.Reroll(match,playerId);return new MatchCommandResult("Shop refreshed."); });
         public MatchCommandResult Lock(bool locked,long revision) => Run(()=> { CheckShopRevision(revision);shops.SetLocked(match,playerId,locked);return new MatchCommandResult(locked ? "Shop locked for the next round." : "Shop unlocked."); });
         public MatchCommandResult BuyXP() => Run(()=> { if(Player.HP==0 || Player.IsEliminated) throw new InvalidOperationException("Player is eliminated.");levels.BuyXP(match,playerId);return new MatchCommandResult("XP purchased."); });

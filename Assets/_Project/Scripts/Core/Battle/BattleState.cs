@@ -23,7 +23,9 @@ namespace PokeChess.Core.Battle
         public int TeamId { get; }
         public UnitRank Rank { get; }
         public int EvolutionStage { get; }
-        public PokemonStats Stats { get; }
+        public PokemonStats Stats { get; private set; }
+        internal long ActiveSynergyCastId { get; set; }
+        internal void ScaleMaxHP(float bonus) { var s=Stats; float hp=s.MaxHP*(1+bonus); CurrentHP*=hp/s.MaxHP; Stats=new PokemonStats(hp,s.Attack,s.SpellPower,s.AttackSpeed,s.Armor,s.MagicResistance,s.AttackRange,s.MoveSpeed,s.MaxEnergy,s.StartingEnergy,s.AttackHitTime,s.AttackDelivery,s.ProjectileSpeed,s.CritChance,s.CritMultiplier,s.EnergyLockSeconds); }
         internal StatusEffectSystem StatusSystem { get; set; }
         public EffectiveCombatStats EffectiveStats => StatusSystem.Resolve(this);
         public DamageModifiers EffectiveDamageModifiers => StatusSystem.ResolveDamageModifiers(this);
@@ -38,6 +40,7 @@ namespace PokeChess.Core.Battle
         internal float LegacyShield { get; set; }
         public float CurrentShield => LegacyShield+(ShieldSystem?.Total(this)??0);
         public bool IsBoss { get; internal set; }
+        public bool IsSynergySummon { get; internal set; }
         public DamageModifiers DamageModifiers { get; private set; } = new DamageModifiers();
         public void SetDamageModifiers(DamageModifiers modifiers)
         { DamageModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers)); }
@@ -56,6 +59,8 @@ namespace PokeChess.Core.Battle
         }
         public bool IsOnBoard { get; private set; } = true;
         private bool untargetable;
+        public bool IsSynergyStealthed => StatusSystem?.Active.Any(e=>e.TargetId==UnitInstanceId&&e.Definition.Id=="synergy-stealth")??false;
+        public bool IsAreaTargetable => CurrentHP>0&&IsOnBoard&&(!IsUntargetable||IsSynergyStealthed);
         public bool IsUntargetable => untargetable||(StatusSystem?.HasBehavior(this,StatusBehavior.Untargetable)??false);
         public string TauntSourceId { get; private set; }
         public bool IsTargetable => IsAlive && IsOnBoard && !IsUntargetable;
@@ -132,6 +137,12 @@ namespace PokeChess.Core.Battle
         public HealingSystem Healing { get; }
         public StatusEffectSystem StatusEffects { get; }
         public SynergySystem Synergies { get; internal set; }
+        public Dictionary<int,int> NatureEarned { get; } = new Dictionary<int,int>();
+        public HashSet<int> NatureHealBonus { get; } = new HashSet<int>();
+        public Dictionary<int,BoardPosition[]> PreparedRocks { get; } = new Dictionary<int,BoardPosition[]>();
+        public Dictionary<int,int> NatureExperience { get; } = new Dictionary<int,int>();
+        public Dictionary<int,int> VenomSamples { get; } = new Dictionary<int,int>();
+        public Dictionary<int,int> VenomEarned { get; } = new Dictionary<int,int>();
         public ItemCombatSystem Items { get; }
         private readonly List<SkillEvent> skillEvents = new List<SkillEvent>();
         public IReadOnlyList<SkillEvent> SkillEventsThisTick => Array.AsReadOnly(skillEvents.ToArray());
@@ -209,6 +220,11 @@ namespace PokeChess.Core.Battle
 
     public static class BattleStateFactory
     {
+        private static string[] ResolveTraits(UnitInstance unit,BattleUnitSetup[] entries,PokemonCatalog catalog) {
+            var traits=PokeChess.Core.Match.SynergyPreparation.Traits(unit,catalog).ToList();
+            if(SynergyTraits.Family(unit.DefinitionId)==SynergyTraits.Family("porygon")&&unit.SynergyTargetId!=null){var target=entries.FirstOrDefault(e=>e.Unit.InstanceId==unit.SynergyTargetId&&e.Unit.OwnerPlayerId==unit.OwnerPlayerId);if(target!=null)traits.AddRange(catalog.Get(target.Unit.DefinitionId).TraitIds.Where(SynergyTraits.Origins.Contains).Take(1));}
+            return traits.Distinct(StringComparer.Ordinal).ToArray();
+        }
         public static BattleState Create(string battleId, int roundNumber, ulong seed, int tickRate,
             PokemonCatalog catalog, IEnumerable<BattleUnitSetup> setup,
             Func<UnitInstance, PokemonDefinition, PokemonStats> resolveStats = null, SynergyRules synergyRules = null)
@@ -235,9 +251,23 @@ namespace PokeChess.Core.Battle
                 var stats = resolveStats == null ? RankRules.Default.Apply(definition,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
                 stats = ItemCombatSystem.ApplyStats(e.Unit,stats);
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, definition.TraitIds){IsBoss=definition.IsBoss};
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, ResolveTraits(e.Unit,entries,catalog)){IsBoss=definition.IsBoss};
             }).ToArray();
-            var battle = new BattleState(battleId, roundNumber, seed, tickRate, states, board);
+            var expanded=states.ToList();
+            if(synergyRules==null||synergyRules.Enabled)foreach(int team in new[]{1,2}) {
+                var own=states.Where(u=>u.TeamId==team).ToArray();
+                int nature=own.Where(u=>u.TraitIds.Contains(SynergyTraits.Nature)).Select(u=>SynergyTraits.Family(u.DefinitionId)).Distinct().Count();
+                if(nature<2)continue;
+                BoardPosition? tile=null;
+                for(int row=0;row<8&&!tile.HasValue;row++)for(int col=0;col<7;col++){var p=new BoardPosition(col,team==1?row:7-row);if(!board.IsOccupied(p)){tile=p;break;}}
+                if(!tile.HasValue)continue;
+                var unit=new UnitInstance("nature-guardian-"+team,catalog.TryGet("tangela",out _)?"tangela":own[0].DefinitionId,own[0].OwnerPlayerId,UnitRank.One,0,UnitPlacement.Unplaced,Array.Empty<string>());
+                var tuning=(synergyRules??new SynergyRules()).Origins;
+                var stats=new PokemonStats(nature>=10?tuning.WorldTreeHP:tuning.GuardianHP,nature>=10?tuning.WorldTreeAttack:tuning.GuardianAttack,100,.6f,30,30,1,2,0,0,.2f);
+                var guardian=new UnitCombatState(unit,stats,team,tile.Value,own[0].SkillId,Array.Empty<string>()){IsSynergySummon=true};
+                board.TryPlace(unit.InstanceId,tile.Value);expanded.Add(guardian);
+            }
+            var battle = new BattleState(battleId, roundNumber, seed, tickRate, expanded.ToArray(), board);
             battle.Synergies = new SynergySystem(battle, synergyRules);
             return battle;
         }

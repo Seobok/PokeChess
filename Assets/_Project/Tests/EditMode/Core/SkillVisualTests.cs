@@ -611,9 +611,11 @@ namespace PokeChess.Core.Tests
             Render(28);view.CaptureAfterimages();Assert.That(Images().Any(i=>i.name=="SkillVisual_SubmissionAfterimage"&&i.enabled),Is.False);
         }
         [TestCase("poliwrath",true)] [TestCase("machamp",true)]
+        [TestCase("poliwrath",false)] [TestCase("machamp",false)]
         public void ActualSubmissionKeepsItsMovementDamageStunAndHealthCostRules(string species,bool shouldCarry)
         {
             var session=new EffectLabSession(PokeChess.Content.GameContent.Roster);session.ReplaceCaster(species);
+            session.Layout.Single(p=>p.Id=="target").Pokemon=shouldCarry?"slowpoke":"snorlax";session.Reset();
             session.Remove("enemy2");session.Remove("enemy3");session.Cast();
             bool carry=false,damage=false,cost=false,stun=false;
             for(int i=0;i<80;i++) {
@@ -644,6 +646,7 @@ namespace PokeChess.Core.Tests
         public void ActualSubmissionAtWallStillDealsDamageStunAndOneHealthCost(string species)
         {
             var session=new EffectLabSession(PokeChess.Content.GameContent.Roster);session.ReplaceCaster(species);
+            session.Layout.Single(p=>p.Id=="target").Pokemon="slowpoke";session.Reset();
             session.Move("enemy3",new BoardPosition(0,1));session.Move("enemy2",new BoardPosition(0,0));
             session.Move(session.CasterId,new BoardPosition(5,3));session.Move("target",new BoardPosition(6,3));
             float beforeCaster=session.Unit(session.CasterId).CurrentHP;float beforeTarget=session.Unit("target").CurrentHP;

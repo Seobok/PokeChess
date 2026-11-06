@@ -73,7 +73,7 @@ namespace PokeChess.Core.Battle
                 if(p==null)return;
                 if(p.NextIndex==p.OutgoingCount)p.Hit.Clear();
                 var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);var cell=p.Path[p.NextIndex];
-                var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsTargetable&&u.Position.Equals(cell)&&!p.Hit.Contains(u.UnitInstanceId))
+                var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsAreaTargetable&&u.Position.Equals(cell)&&!p.Hit.Contains(u.UnitInstanceId))
                     .OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
                 foreach(var target in victims) {
                     if(p.Effect.Spatial.MaxTargets>0&&p.Hit.Count>=p.Effect.Spatial.MaxTargets)break;

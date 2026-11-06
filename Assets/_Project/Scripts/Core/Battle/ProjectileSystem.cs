@@ -87,7 +87,7 @@ namespace PokeChess.Core.Battle
                 var target=battle.Units.Single(u=>u.UnitInstanceId==p.TargetId);
                 var reason=!target.IsAlive?ProjectileExpireReason.TargetDead:
                     !target.IsOnBoard?ProjectileExpireReason.TargetRemoved:
-                    target.IsUntargetable?ProjectileExpireReason.TargetUntargetable:ProjectileExpireReason.None;
+                    target.IsUntargetable&&!(target.IsSynergyStealthed&&p.ImpactRadius.HasValue)?ProjectileExpireReason.TargetUntargetable:ProjectileExpireReason.None;
                 // Consume before applying; each projectile can resolve at most once.
                 active.Remove(p);
                 if(reason!=ProjectileExpireReason.None)
@@ -95,12 +95,12 @@ namespace PokeChess.Core.Battle
                 var source=battle.Units.Single(u=>u.UnitInstanceId==p.SourceId);bool hit=false;
                 if(p.ImpactRadius.HasValue) {
                     var request=p.SkillDamage.Value;
-                    var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsTargetable&&
+                    var victims=battle.Units.Where(u=>u.TeamId!=source.TeamId&&u.IsAreaTargetable&&
                         HexCoordinates.Distance(target.Position,u.Position)<=p.ImpactRadius.Value)
                         .OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
                     foreach(var victim in victims) {
                         var result=damage.Apply(battle,new DamageRequest(p.SourceId,victim.UnitInstanceId,request.RawDamage,request.Type,
-                            request.CanCrit,request.BonusDamage,request.IsBasicAttack,request.Origin,request.SourceSnapshot,request.SkillPolicy));
+                            request.CanCrit,request.BonusDamage,request.IsBasicAttack,request.Origin,request.SourceSnapshot,request.SkillPolicy,isAreaDamage:true));
                         hit|=!result.Missed&&result.PostMitigationDamage>0;
                         if(!result.Missed&&victim.CurrentHP>0&&victim.IsOnBoard)p.Impact?.Invoke(victim);
                     }

@@ -5,7 +5,7 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
-    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, UnequipItem, Evolve }
+    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, UnequipItem, Evolve, ConfigureSynergy }
     [Serializable] public sealed class MatchCommand
     {
         public int protocol=1,round,slot,column,row,bench;
@@ -30,6 +30,7 @@ namespace PokeChess.Core.Match
         public long revision,playerRevision,shopRevision,placementRevision,nextSequence;
         public bool locked,eliminated;public OwnerShopSlot[] shop;public OwnerUnit[] units;public string[] inventory;public OwnerRoundReward reward;
         public long itemRevision;public int itemRewardRound;public string[] itemCandidates;
+        public int natureXP,venomSamples,resolve,freeRerollRound,synergyRewardChoices,equipmentFragments,emblemFragments;public string prophecyOrigin;
         public int evolutionPoints,lastEvolutionPointRound,nextEvolutionPointRound;
         public long evolutionRevision;
         public OwnerShopEvolution[] shopEvolutions;
@@ -77,6 +78,7 @@ namespace PokeChess.Core.Match
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,bountyStacks=u.BountyStacks,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
                 inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
                 itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>(),
+                equipmentFragments=p.Synergy.EquipmentFragments,emblemFragments=p.Synergy.EmblemFragments,natureXP=p.Synergy.NatureXP,venomSamples=p.Synergy.VenomSamples,resolve=p.Synergy.Resolve,freeRerollRound=p.Synergy.FreeRerollRound,synergyRewardChoices=p.Synergy.RewardChoices,prophecyOrigin=p.Synergy.ProphecyOrigin,
                 evolutionPoints=p.EvolutionPoints,lastEvolutionPointRound=p.LastEvolutionPointRound,nextEvolutionPointRound=EvolutionPointRules.NextGrantRound(match.RoundNumber),evolutionRevision=p.EvolutionRevision,
                 shopEvolutions=p.ShopEvolutions.Values.OrderBy(e=>e.RootDefinitionId,StringComparer.Ordinal).Select(e=>new OwnerShopEvolution{rootDefinitionId=e.RootDefinitionId,definitionId=e.DefinitionId,stage=e.Stage}).ToArray()};
         }
@@ -106,6 +108,7 @@ namespace PokeChess.Core.Match
                     try {
                         MatchCommandResult result=null;
                         switch(c.kind){
+                            case MatchCommandKind.ConfigureSynergy:result=executor.ConfigureSynergy(c.bench,c.unitId,c.itemId,c.slot,c.column,c.row);break;
                             case MatchCommandKind.Buy:result=executor.Buy(c.slot,c.shopRevision);break;
                             case MatchCommandKind.Sell:result=executor.Sell(c.unitId,c.placementRevision);break;
                             case MatchCommandKind.Reroll:result=executor.Reroll(c.shopRevision);break;

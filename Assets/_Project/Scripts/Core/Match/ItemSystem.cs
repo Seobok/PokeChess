@@ -30,7 +30,7 @@ namespace PokeChess.Core.Match
             new ItemDefinition(WiseGlasses,"박식안경","직접 기술 피해 20% 증가","기술 딜러"),
             new ItemDefinition(RockyHelmet,"울퉁불퉁멧","실제로 받은 직접 피해의 20%를 반사 (지속/반사 제외)","앞줄 / 반격"),
             new ItemDefinition(ChoiceScarf,"구애스카프","공격 속도 25% 증가, 직접 기술 피해 15% 감소","기본 공격 딜러"),
-            new ItemDefinition(ExpShare,"학습장치","인접 아군의 기술 발동 시 에너지 10 획득 (2초 쿨다운)","배치 / 기술 지원")});
+            new ItemDefinition(ExpShare,"학습장치","인접 아군의 기술 발동 시 에너지 10 획득 (2초 쿨다운)","배치 / 기술 지원")} .Concat(PokeChess.Core.Battle.SynergyTraits.Origins.Select(o=>new ItemDefinition("emblem-"+o,PokeChess.Core.Battle.SynergyTraits.Name(o)+" 상징","해당 계열 부여. 같은 진화 계열은 1회 카운트.","계열"))).ToArray());
         public static ItemDefinition Get(string id)=>All.FirstOrDefault(d=>d.Id==id)
             ??throw new ArgumentException("Unknown item definition.",nameof(id));
         public static string DefinitionId(string instanceId)

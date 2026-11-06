@@ -7,9 +7,10 @@ namespace PokeChess.Core.Match
 {
     [Serializable] public sealed class CombatUnitView
     {
-        public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,assaultCharges;
+        public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,duelistStacks,trackerStacks;
+        public string trackerTarget; public bool guarded,isSynergySummon;
         public float hp,maxHP,energy,maxEnergy,shield;public bool onBoard;public CombatActionState action;
-        public string[] items;
+        public string[] items,synergyIds;
         public string skillId;
         public long castId;
         public bool untargetable,isBoss;
@@ -31,6 +32,7 @@ namespace PokeChess.Core.Match
         public DamageOrigin origin;
         public long sequence,tick;public string kind,source,target,detail;public float value,hpAfter,shieldAfter;
         public long castId,effectId;public int stepIndex,iteration,effectIndex;
+        public CombatCellView synergyCell,synergyDestination;
         public CombatAreaView area;public CombatMovementView movement;
         public CombatProjectileView projectile;public bool conditionMatched,isBasicAttack;
     }
@@ -51,6 +53,7 @@ namespace PokeChess.Core.Match
     {
         public string matchId,battleId,one,two;public int round,tickRate=30;public long sequence,tick;
         public bool shadow,wild,complete,baseline;public string result,reason;public long overtimeTick,timeLimitTick;
+        public CombatCellView[] synergyFire,synergyRocksOne,synergyRocksTwo;
         public CombatUnitView[] units;public CombatProjectileView[] projectiles;public CombatEventView[] events;
         public CombatIndependentSkillView[] independentSkills;
         public CombatMovementView[] movements;public CombatPathProjectileView[] pathProjectiles;
@@ -117,10 +120,20 @@ namespace PokeChess.Core.Match
                 events.Add(new CombatEventView{sequence=sequence,tick=tick,kind=kind,source=source,target=target,detail=detail,value=value,hpAfter=hp,shieldAfter=shield});};
             if(baseline) {
                 add("BattleStarted",null,null,null,0,0,0);
-                if(battle!=null)foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+                if(battle!=null)foreach(var e in battle.Synergies.EventsThisTick)
+                {
+                    add(e.Cell.HasValue?"SynergyTile":"Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+                    if(e.Cell.HasValue)events[events.Count-1].synergyCell=Cell(e.Cell.Value);
+                    if(e.Destination.HasValue)events[events.Count-1].synergyDestination=Cell(e.Destination.Value);
+                }
             }
             else if(battle!=null&&(!lastTicks.TryGetValue(pair,out var old)||tick!=old)){
-                foreach(var e in battle.Synergies.EventsThisTick)add("Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+                foreach(var e in battle.Synergies.EventsThisTick)
+                {
+                    add(e.Cell.HasValue?"SynergyTile":"Synergy",e.SourceId,e.TargetId,e.TraitId+":"+e.Detail,e.Value,0,0);
+                    if(e.Cell.HasValue)events[events.Count-1].synergyCell=Cell(e.Cell.Value);
+                    if(e.Destination.HasValue)events[events.Count-1].synergyDestination=Cell(e.Destination.Value);
+                }
                 foreach(var e in battle.Items.EventsThisTick)add("Item",e.SourceId,e.TargetId,e.ItemId,e.Value,0,0);
                 foreach(var d in battle.DamageResultsThisTick){add("Damage",d.Request.SourceId,d.Request.TargetId,d.Missed?"Miss":d.IsCritical?"Critical":d.Request.Type.ToString(),d.AppliedDamage,d.RemainingHP,d.RemainingShield);events[events.Count-1].origin=d.Request.Origin;events[events.Count-1].isBasicAttack=d.Request.IsBasicAttack;}
                 foreach(var award in battle.SkillProcs.GoldAwardsThisTick)add("SkillGoldAwarded",award.Key,award.Key,"bounty",award.Value,0,0);
@@ -147,6 +160,7 @@ namespace PokeChess.Core.Match
             var frame=new CombatFrame{matchId=Match.MatchId,battleId=battle?.BattleId??Match.MatchId+"-empty-"+Match.RoundNumber+"-"+pair.Pairing.PlayerOneId,
                 round=Match.RoundNumber,sequence=frameSequence,tick=tick,tickRate=TickRate,baseline=baseline,one=pair.Pairing.PlayerOneId,two=pair.Pairing.PlayerTwoId,shadow=pair.IsShadow,wild=pair.IsWild,
                 complete=pair.IsComplete,result=pair.Result.ToString(),reason=pair.Reason.ToString(),overtimeTick=battle?.OvertimeStartTick??0,timeLimitTick=battle?.TimeLimitTick??0,events=events.ToArray(),
+                synergyFire=battle?.Synergies.FireTiles.Select(p=>new CombatCellView{column=p.Column,row=p.Row}).ToArray()??Array.Empty<CombatCellView>(),synergyRocksOne=battle?.Synergies.RockTiles(1).Select(p=>new CombatCellView{column=p.Column,row=p.Row}).ToArray()??Array.Empty<CombatCellView>(),synergyRocksTwo=battle?.Synergies.RockTiles(2).Select(p=>new CombatCellView{column=p.Column,row=p.Row}).ToArray()??Array.Empty<CombatCellView>(),
                 grounds=battle?.WorldEffects.Grounds.Select(g=>new CombatGroundView{id=g.Id,source=g.SourceId,status=g.StatusId,startTick=g.StartTick,endTick=g.EndTick,column=g.Center.Column,row=g.Center.Row,radius=g.Radius}).ToArray()??Array.Empty<CombatGroundView>(),
                 chains=battle?.WorldEffects.Chains.Select(c=>new CombatChainView{id=c.Id,source=c.SourceId,skill=c.SkillId,nextTick=c.NextTick,column=c.Center.Column,row=c.Center.Row,visited=c.Visited}).ToArray()??Array.Empty<CombatChainView>(),
                 independentSkills=battle?.SkillTimeline.Active.Select(e=>new CombatIndependentSkillView{id=e.Id,castId=e.CastId,
@@ -159,7 +173,7 @@ namespace PokeChess.Core.Match
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;var effective=u.EffectiveStats;
                     return new CombatUnitView{id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
                         hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,maxEnergy=u.Stats.MaxEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
-                        assaultCharges=battle.Synergies.AssaultCharges(u),skillId=cast?.Definition.Id,castId=cast?.CastId??0,
+                        synergyIds=u.TraitIds.ToArray(),duelistStacks=battle.Synergies.DuelistStacks(u),trackerStacks=battle.Synergies.TrackerStacks(u),trackerTarget=battle.Synergies.TrackerTarget(u),guarded=battle.Synergies.IsGuarded(u),isSynergySummon=u.IsSynergySummon,skillId=cast?.Definition.Id,castId=cast?.CastId??0,
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
                         untargetable=u.IsUntargetable,isBoss=u.IsBoss,accuracy=effective.Accuracy,evasion=effective.Evasion,

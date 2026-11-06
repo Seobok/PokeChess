@@ -49,7 +49,8 @@ namespace PokeChess.Client.UI
             combatCaption.text="Round "+frame.round+" / "+(frame.shadow?"Shadow battle":"Combat")+" / "+(frame.tick/30d).ToString("0.0")+"s";
             if(visibleBattle!=frame.battleId){foreach(var f in combatFighters.Values)Destroy(f.root.gameObject);combatFighters.Clear();foreach(var p in combatProjectiles.Values)Destroy(p.gameObject);combatProjectiles.Clear();visibleBattle=frame.battleId;}
             double renderTick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
-            SkillVisualBattleView.Get(combatLayer,SkillVisuals).RenderPlayback(frame,renderTick,ReplayPoint,1f);
+            var visuals=SkillVisualBattleView.Get(combatLayer,SkillVisuals);
+            visuals.RenderPlayback(frame,renderTick,ReplayPoint,1f);
             foreach(var u in frame.units){
                 if(!combatFighters.TryGetValue(u.id,out var f)){
                     var node=Rect("Fighter "+u.id,combatLayer,new Vector2(40,36),Vector2.zero);
@@ -65,6 +66,7 @@ namespace PokeChess.Client.UI
                 f.label.text="R"+u.rank+" / "+Math.Ceiling(u.hp)+"HP"+(u.shield>0?" S"+Math.Ceiling(u.shield):"")+"\n"+Math.Floor(u.energy)+"E"+(u.statuses.Length>0?" / "+string.Join("/",u.statuses):"");
                 f.label.color=u.team==1?new Color(.5f,.85f,1):new Color(1,.65f,.55f);f.popup.gameObject.SetActive(Time.unscaledTimeAsDouble<f.popupUntil);
             }
+            visuals.SortCombatDepth(combatFighters.Values.Select(f=>f.root));
             foreach(var id in combatProjectiles.Keys.Where(id=>!frame.projectiles.Any(p=>p.id==id)).ToArray()){Destroy(combatProjectiles[id].gameObject);combatProjectiles.Remove(id);}
             foreach(var p in frame.projectiles){if(!combatProjectiles.TryGetValue(p.id,out var marker)){marker=Rect("Projectile "+p.id,combatLayer,new Vector2(5,5),Vector2.zero);var image=marker.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=Color.yellow;image.raycastTarget=false;combatProjectiles[p.id]=marker;}
                 marker.gameObject.SetActive(!SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,p.skillId,p.stepIndex,p.iteration));

@@ -58,6 +58,11 @@ namespace PokeChess.Core.Match
                     int total = match.Pool.TotalAvailable(cost);
                     if (total == 0) { slots[i] = new ShopSlot(i); continue; }
                     definition = match.Pool.SelectDefinition(cost, random.NextInt(total));
+                    if(i==0&&player.Synergy.FreeRerollRound==match.RoundNumber&&player.Synergy.ProphecyOrigin!=null&&player.Synergy.MysticTier>=6) {
+                        var available=match.Pool.Stocks.Where(s=>s.Cost==cost&&s.Available>0&&PokeChess.Core.Battle.SynergyTraits.ForPokemon(s.DefinitionId).Contains(player.Synergy.ProphecyOrigin)).ToArray();
+                        int weight=available.Sum(s=>s.Available);
+                        if(weight>0){int roll=random.NextInt(weight);foreach(var entry in available){if(roll<entry.Available){definition=match.Pool.Definition(entry.DefinitionId);break;}roll-=entry.Available;}}
+                    }
                 }
                 else
                 {
@@ -94,10 +99,12 @@ namespace PokeChess.Core.Match
             var player = PreparationPlayer(match, playerId);
             if (!player.Shop.IsInitialized || player.Shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
-            if (player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
+            bool free=player.Synergy.FreeRerollRound==match.RoundNumber;
+            if (!free && player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
             var revision = checked(player.Shop.Revision + 1);
             var slots = Generate(match, player, out var state, out var count);
-            player.SetProgress(player.Gold - Rules.RerollGoldCost, player.XP, player.Level);
+            player.SetProgress(player.Gold - (free?0:Rules.RerollGoldCost), player.XP, player.Level);
+            if(free)player.Synergy.FreeRerollRound=0;
             player.Shop.Apply(slots, state, count, null, revision);
             return slots;
         }
