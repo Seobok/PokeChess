@@ -80,7 +80,7 @@ namespace PokeChess.Core.Battle
             if(target.CurrentHP<=0||!target.IsOnBoard)return 0;
             float before=target.CurrentHP;
             double value=amount*target.StatusSystem.HealingMultiplier(target)*(overtime&&battle.IsOvertime?.34:1);
-            target.SetVitals((float)Math.Min(target.Stats.MaxHP,before+value),target.CurrentEnergy);if(target.CurrentHP>before&&target.IsSynergySummon&&source!=null&&battle.Synergies.Tier(source,SynergyTraits.Nature)>=4)battle.NatureHealBonus.Add(target.TeamId);return target.CurrentHP-before;
+            target.SetVitals((float)Math.Min(target.Stats.MaxHP,before+value),target.CurrentEnergy);return target.CurrentHP-before;
         }
     }
 }

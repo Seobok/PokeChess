@@ -29,7 +29,7 @@ namespace PokeChess.Core.Match
                 throw new InvalidOperationException("Shop commands require Preparation.");
             return player;
         }
-        private ReadOnlyCollection<ShopSlot> Generate(MatchState match, PlayerState player, out ulong state, out long drawCount)
+        private ReadOnlyCollection<ShopSlot> Generate(MatchState match, PlayerState player, out ulong state, out long drawCount, bool freeReroll = false)
         {
             if (player.Rules.MaxLevel != Rules.MaxLevel)
                 throw new ArgumentException("Match maximum level must match the shop probability table.");
@@ -53,15 +53,16 @@ namespace PokeChess.Core.Match
             {
                 int cost = Rules.SelectCost(player.Level, random.NextInt(100));
                 PokemonDefinition definition;
+                string favoredOrigin = null;
                 if (match.Pool != null)
                 {
                     int total = match.Pool.TotalAvailable(cost);
                     if (total == 0) { slots[i] = new ShopSlot(i); continue; }
                     definition = match.Pool.SelectDefinition(cost, random.NextInt(total));
-                    if(i==0&&player.Synergy.FreeRerollRound==match.RoundNumber&&player.Synergy.ProphecyOrigin!=null&&player.Synergy.MysticTier>=6) {
+                    if(i==0&&freeReroll&&player.Synergy.ProphecyOrigin!=null&&player.Synergy.MysticTier>=6) {
                         var available=match.Pool.Stocks.Where(s=>s.Cost==cost&&s.Available>0&&PokeChess.Core.Battle.SynergyTraits.ForPokemon(s.DefinitionId).Contains(player.Synergy.ProphecyOrigin)).ToArray();
                         int weight=available.Sum(s=>s.Available);
-                        if(weight>0){int roll=random.NextInt(weight);foreach(var entry in available){if(roll<entry.Available){definition=match.Pool.Definition(entry.DefinitionId);break;}roll-=entry.Available;}}
+                        if(weight>0){favoredOrigin=player.Synergy.ProphecyOrigin;int roll=random.NextInt(weight);foreach(var entry in available){if(roll<entry.Available){definition=match.Pool.Definition(entry.DefinitionId);break;}roll-=entry.Available;}}
                     }
                 }
                 else
@@ -70,8 +71,8 @@ namespace PokeChess.Core.Match
                     definition = list[random.NextInt(list.Length)];
                 }
                 slots[i] = player.ShopEvolutions.TryGetValue(definition.Id, out var evolution)
-                    ? new ShopSlot(i, evolution.DefinitionId, cost, definition.Id, evolution.Stage)
-                    : new ShopSlot(i, definition.Id, cost);
+                    ? new ShopSlot(i, evolution.DefinitionId, cost, definition.Id, evolution.Stage, favoredOrigin)
+                    : new ShopSlot(i, definition.Id, cost, prophecyOrigin: favoredOrigin);
             }
             state = random.State;
             drawCount = checked(player.Shop.RandomDrawCount + random.DrawCount);
@@ -102,9 +103,13 @@ namespace PokeChess.Core.Match
             bool free=player.Synergy.FreeRerollRound==match.RoundNumber;
             if (!free && player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
             var revision = checked(player.Shop.Revision + 1);
-            var slots = Generate(match, player, out var state, out var count);
+            var slots = Generate(match, player, out var state, out var count, free);
             player.SetProgress(player.Gold - (free?0:Rules.RerollGoldCost), player.XP, player.Level);
-            if(free)player.Synergy.FreeRerollRound=0;
+            if (free)
+            {
+                player.Synergy.FreeRerollRound = 0;
+                player.Synergy.FreeRerollConsumedRound = match.RoundNumber;
+            }
             player.Shop.Apply(slots, state, count, null, revision);
             return slots;
         }

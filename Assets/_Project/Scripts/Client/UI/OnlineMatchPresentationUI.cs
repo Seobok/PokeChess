@@ -63,6 +63,7 @@ namespace PokeChess.Client.UI
             combatInfo.text="VS "+PlayerLabel(frame.one==onlineService.WatchingPlayerId?frame.two:frame.one,owner.playerId)+(frame.shadow?" / SHADOW":"");
             double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
             var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
+            visuals.SetVenomHud(venomHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
             visuals.RenderPlayback(frame,tick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
             foreach(var unit in frame.units){
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
@@ -77,7 +78,9 @@ namespace PokeChess.Client.UI
                 position=ThrowPresentation.Playback(frame,unit.id,tick,position,(c,r)=>CombatPoint(new BoardPosition(c,r)));
                 ((RectTransform)label.transform.parent).anchoredPosition=position;fighterSprites[unit.id].ShowPlayback(unit,tick,30,facing,1.5f);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
-                RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
+                var healthBar = RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
+                BruiserVisuals.Render(label.transform.parent, healthBar, unit.hp > 0 && unit.onBoard, unit.bruiserHealth,
+                    unit.bruiserSurvivalEndTick, tick, 30);
                 RenderUnitEnergyBar(label.transform.parent, unit.energy, unit.maxEnergy, unit.hp > 0);
                 RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
                 RenderUnitRank(label.transform.parent,unit.rank,PokeChess.Content.GameContent.Stage(unit.definitionId),unit.hp>0);
@@ -88,7 +91,7 @@ namespace PokeChess.Client.UI
                 if(unit.duelistStacks>0)label.text+=" AS+"+unit.duelistStacks;
                 if(unit.trackerStacks>0)label.text+=" TRACK "+unit.trackerStacks;
                 if(unit.guarded)label.text+=" GUARD";
-                if(unit.isSynergySummon)label.text+=" FOREST";
+                if(unit.contaminated)label.text+=" 오염";
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);
             }
             visuals.SortCombatDepth(combatTokens.Values.Select(label=>(RectTransform)label.transform.parent));

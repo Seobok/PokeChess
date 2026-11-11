@@ -23,9 +23,14 @@ namespace PokeChess.Client.UI
         private void RenderPreparationVitals(Transform unit,string definition,int rank,bool friendly)
         {
             var stats=RankRules.Default.Apply(catalog.Get(definition),(UnitRank)rank);
+            RenderPreparationVitals(unit, stats, rank, PokeChess.Content.GameContent.Stage(definition), friendly);
+        }
+
+        private void RenderPreparationVitals(Transform unit, PokemonStats stats, int rank, int evolutionStage, bool friendly)
+        {
             RenderUnitHealthBar(unit,stats.MaxHP,stats.MaxHP,friendly);
             RenderUnitEnergyBar(unit,stats.StartingEnergy,stats.MaxEnergy,true);
-            RenderUnitRank(unit,rank,PokeChess.Content.GameContent.Stage(definition));
+            RenderUnitRank(unit,rank,evolutionStage);
         }
         private void RenderEquippedItemIcon(Transform unit, IEnumerable<string> items, bool visible=true, float height=UnitItemHeight)
         {
@@ -60,7 +65,7 @@ namespace PokeChess.Client.UI
             track.SetAsLastSibling();
         }
 
-        private void RenderUnitHealthBar(Transform fighter, double hp, double maxHP, bool friendly, double shield = 0)
+        private RectTransform RenderUnitHealthBar(Transform fighter, double hp, double maxHP, bool friendly, double shield = 0)
         {
             var track = fighter.Find("HealthBar") as RectTransform;
             if (track == null)
@@ -79,7 +84,7 @@ namespace PokeChess.Client.UI
 
             track.anchoredPosition=new Vector2(0,UnitBarHeight(fighter));
             track.gameObject.SetActive(hp > 0);
-            var image = track.GetChild(0).GetComponent<UnityEngine.UI.Image>();
+            var image = track.Find("Fill").GetComponent<UnityEngine.UI.Image>();
             // Keep the bar width fixed, including when full health gains a shield.
             double capacity = maxHP > 0 ? System.Math.Max(maxHP, System.Math.Max(0, hp) + System.Math.Max(0, shield)) : 0;
             float ratio = capacity > 0 ? Mathf.Clamp01((float)(hp / capacity)) : 0;
@@ -89,6 +94,7 @@ namespace PokeChess.Client.UI
             protection.gameObject.SetActive(shield > 0);
             protection.rectTransform.sizeDelta = new Vector2(capacity > 0 ? 40 * Mathf.Clamp01((float)(shield / capacity)) : 0, 4);
             track.SetAsLastSibling();
+            return track;
         }
     }
 }

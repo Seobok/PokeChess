@@ -43,7 +43,7 @@ namespace PokeChess.Core.Battle
             !u.HasCrowdControl(CrowdControlKind.Root)&&!battle.StatusEffects.BlocksMovement(u)&&policy.CanMove(battle,u);
         private bool CanAttack(UnitCombatState u)=>!u.IsSynergyStealthed&&!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Disarm)&&!battle.StatusEffects.BlocksAttacks(u)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanAttack(battle,u);
-        private bool CanUseSkill(UnitCombatState u)=>!u.IsSynergyStealthed&&!u.IsSynergySummon&&!u.HasCrowdControl(CrowdControlKind.Stun)&&
+        private bool CanUseSkill(UnitCombatState u)=>!u.IsSynergyStealthed&&!u.HasCrowdControl(CrowdControlKind.Stun)&&
             !u.HasCrowdControl(CrowdControlKind.Silence)&&!battle.StatusEffects.BlocksActions(u)&&policy.CanUseSkill(battle,u);
         private void OnRelocating(UnitCombatState unit,bool forced)
         {
@@ -303,10 +303,14 @@ namespace PokeChess.Core.Battle
             return ids.Any(id=>policy.TryGetSkillById(id,out var v)&&VariantAvailable(unit,v,depth+1));
         }
         private bool FocusRecast(UnitCombatState unit,SkillDefinition skill)=>battle.StatusEffects.HasBehavior(unit,StatusBehavior.Focus)&&skill.Effects.Any(e=>e.Type==SkillEffectType.ApplyStatus&&battle.StatusEffects.GetDefinition(e.ResolveStatusId(unit.Rank)).Behavior==StatusBehavior.Focus);
+        private bool TrySkillDefinition(UnitCombatState unit,out SkillDefinition skill) {
+            if(unit.IsSynergySummon){skill=battle.Synergies.GuardianDefinition(unit);return true;}
+            return policy.TryGetSkillDefinition(battle,unit,out skill);
+        }
         private bool TryStartDataSkill(UnitCombatState unit,UnitActionRuntime runtime)
         {
             if(!battle.Energy.IsSkillReady(unit)||!CanUseSkill(unit)||
-                !policy.TryGetSkillDefinition(battle,unit,out var skill))return false;
+                !TrySkillDefinition(unit,out var skill))return false;
             if(FocusRecast(unit,skill))return false;
             for(int depth=0;skill.VariantIds.Count>0;depth++) {
                 if(depth>=8)return false;
@@ -366,6 +370,7 @@ namespace PokeChess.Core.Battle
                 Emit(unit,CombatActionSignalKind.TimingReached);
                 if(next.Step.Lifetime==SkillStepLifetime.Independent)
                     battle.SkillTimeline.Spawn(cast,next.Index,policy.PrepareSkillStep(battle,unit,target,skill,next.Step,cast.CastId,next.Index));
+                else if(unit.IsSynergySummon)battle.Synergies.GuardianSkill(unit);
                 else policy.ExecuteSkillStep(battle,unit,target,skill,next.Step,cast.CastId,next.Index,next.Iteration);
                 if(battle.Movement.IsTravelling(unit)) {
                     cast.EndTick=Math.Max(cast.EndTick,checked(battle.Movement.ArrivalTick(unit)+ToTicks(skill.PostCastTime,battle.TickRate,false)));

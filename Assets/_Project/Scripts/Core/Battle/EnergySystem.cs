@@ -47,7 +47,10 @@ namespace PokeChess.Core.Battle
                 battle.CurrentTick<unit.EnergyLockUntilTick?EnergyBlockReason.Locked:EnergyBlockReason.None;
             float before=unit.CurrentEnergy;
             if(block==EnergyBlockReason.None)
+            {
                 unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+amount));
+                battle.Synergies.RecordVenomManaErosion(unit, before, amount);
+            }
             events.Add(new EnergyEvent(unit,battle.CurrentTick,reason,block,before,amount));
             return block==EnergyBlockReason.None;
         }
@@ -55,7 +58,9 @@ namespace PokeChess.Core.Battle
         {
             Validate(unit);DamageCalculator.Validate(amount,true);float before=unit.CurrentEnergy;
             if(!unit.IsAlive||!unit.IsOnBoard)return false;
-            unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+amount));
+            float reduced = amount * (1 - battle.StatusEffects.ManaGainPenalty(unit));
+            unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+reduced));
+            battle.Synergies.RecordVenomManaErosion(unit, before, reduced);
             events.Add(new EnergyEvent(unit,battle.CurrentTick,EnergyChangeReason.SkillRefund,EnergyBlockReason.None,before,amount));return true;
         }
         internal bool TryConsumeSkill(UnitCombatState unit)

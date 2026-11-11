@@ -90,7 +90,7 @@ namespace PokeChess.Client.UI
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
             ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();BuildSynergyUI();
-            BuildItemWildUI();
+            BuildItemWildUI();BuildAdversityUI();
             BuildEvolutionUI();
         }
         private void ConfigureShopPanel()
@@ -211,7 +211,7 @@ namespace PokeChess.Client.UI
             if(!selectingHover){unitInfoPinned=true;hoveredUnitId=id;hoveredShopSlot=-1;}
             if(IsOnlineMatch){SelectOnlineUnit(id);return;}
             if(IsDragging) return;
-            selectedUnitId=Match.Players.SelectMany(p=>p.Units).Any(u=>u.InstanceId==id)||RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units.Any(u=>u.UnitInstanceId==id)==true ? id : null;Render();
+            selectedUnitId=(id == NatureGuardianPreviewId && natureGuardianTile.HasValue) || Match.Players.SelectMany(p=>p.Units).Any(u=>u.InstanceId==id)||RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units.Any(u=>u.UnitInstanceId==id)==true ? id : null;Render();
         }
         public void SellSelected()
         {
@@ -222,13 +222,17 @@ namespace PokeChess.Client.UI
         public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
         private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board ? new Color(.35f,.62f,.65f,.6f) : slot.Color;
 
+        private Color PlacementTokenColor(string id, bool highlighted) => highlighted
+            ? new Color(.22f,.85f,.53f,.25f) : id == selectedUnitId ? new Color(.3f,.73f,.94f,.2f) : Color.clear;
+
         private void UpdateTokenFeedback()
         {
             foreach(var pair in tokens)
             {
                 bool highlighted=highlights.TryGetValue(pair.Key,out float end) && end>Time.unscaledTime;
-                pair.Value.GetComponent<UnityEngine.UI.Image>().color=highlighted ? new Color(.22f,.85f,.53f,.25f) : pair.Key==selectedUnitId ? new Color(.3f,.73f,.94f,.2f) : Color.clear;
+                pair.Value.GetComponent<UnityEngine.UI.Image>().color=PlacementTokenColor(pair.Key, highlighted);
             }
+            RenderNatureGuardianSelection();
         }
         private void RenderMinimumUI()
         {

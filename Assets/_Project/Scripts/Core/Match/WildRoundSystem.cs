@@ -40,7 +40,7 @@ namespace PokeChess.Core.Match
                     round>=16?UnitRank.Two:UnitRank.One,0,UnitPlacement.OnBoard(position));
                 enemies.Add(new BattleUnitSetup(unit,2,position));
             }
-            return BattleStateFactory.Create(match.MatchId+"-wild-"+round+"-"+player.PlayerId,round,
+            var battle=BattleStateFactory.Create(match.MatchId+"-wild-"+round+"-"+player.PlayerId,round,
                 unchecked(match.MatchSeed^(ulong)round*0x9E3779B97F4A7C15UL),tickRate,catalog,allies.Concat(enemies),
                 (unit,definition)=>{
                     var s=RankRules.Default.Apply(definition,unit.Rank);
@@ -49,7 +49,8 @@ namespace PokeChess.Core.Match
                     return new PokemonStats(s.MaxHP*scale,s.Attack*scale,s.SpellPower,s.AttackSpeed,
                         s.Armor,s.MagicResistance,s.AttackRange,s.MoveSpeed,
                         round<=3?0:s.MaxEnergy,round<=3?0:s.StartingEnergy,s.AttackHitTime,s.AttackDelivery,s.ProjectileSpeed,s.CritChance,s.CritMultiplier,s.EnergyLockSeconds);
-                });
+                }, guardianOne: SynergyPreparation.PreparationGuardian(player, catalog));
+            battle.IsPvP=false;return battle;
         }
     }
 }

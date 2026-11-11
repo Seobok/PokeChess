@@ -11,11 +11,9 @@ namespace PokeChess.Core.Battle
         private sealed class Fire { public BoardPosition Tile; public UnitCombatState Source; public long End,Next; public bool Spread; }
         private sealed class PoisonZone { public UnitCombatState Source; public BoardPosition Tile; public long End,Next; public float Damage; }
         private readonly List<PoisonZone> poisonZones=new List<PoisonZone>();
-        private readonly HashSet<string> poisonTransferred=new HashSet<string>();
         private readonly List<Fire> fires=new List<Fire>();
         private readonly HashSet<string> ignited=new HashSet<string>();
         private readonly Dictionary<string,string> circuits=new Dictionary<string,string>();
-        private readonly Dictionary<string,int> charges=new Dictionary<string,int>();
         private readonly Dictionary<string,long> stormReady=new Dictionary<string,long>();
         private readonly Dictionary<int,List<BoardPosition>> rocks=new Dictionary<int,List<BoardPosition>>();
         private readonly HashSet<string> rockShielded=new HashSet<string>();
@@ -26,7 +24,6 @@ namespace PokeChess.Core.Battle
         private readonly Dictionary<string,long> royalReady=new Dictionary<string,long>();
         private readonly HashSet<string> starterMarks=new HashSet<string>();
         private readonly HashSet<int> starterDone=new HashSet<int>();
-        private readonly Dictionary<int,int> natureCasts=new Dictionary<int,int>();
         public IReadOnlyList<BoardPosition> RockTiles(int team)=>rocks.TryGetValue(team,out var r)?r.AsReadOnly():Array.Empty<BoardPosition>();
         public IReadOnlyList<BoardPosition> FireTiles=>Array.AsReadOnly(fires.Where(f=>f.End>battle.CurrentTick).Select(f=>f.Tile).Distinct().ToArray());
         private UnitCombatState Representative(int team,string species)=>battle.Units.Where(u=>u.TeamId==team&&SynergyTraits.Family(u.DefinitionId)==SynergyTraits.Family(species)).OrderByDescending(u=>u.EvolutionStage).ThenByDescending(u=>u.Rank).ThenBy(u=>u.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();
@@ -37,11 +34,32 @@ namespace PokeChess.Core.Battle
                 int earth=TeamTier(team,SynergyTraits.Earth);
                 var members=battle.Units.Where(u=>u.TeamId==team&&u.TraitIds.Contains(SynergyTraits.Earth)).OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
                 rocks[team]=new List<BoardPosition>();
-                if(earth>0&&battle.PreparedRocks.TryGetValue(team,out var prepared))rocks[team].AddRange(prepared.Where(p=>battle.Board.Contains(p)&&!battle.Board.IsOccupied(p)).Distinct().Take(earth>=4?2:1));
-                if(earth>0&&rocks[team].Count==0)foreach(var u in members)
+                if (earth > 0)
                 {
-                    var tile=HexCoordinates.Neighbors(HexCoordinates.ToAxial(u.Position)).Select(a=>HexCoordinates.TryToOffset(a,out var p)?(BoardPosition?)p:null).Where(p=>p.HasValue&&battle.Board.Contains(p.Value)&&!battle.Board.IsOccupied(p.Value)&&!rocks[team].Contains(p.Value)).OrderBy(p=>p.Value.Row).ThenBy(p=>p.Value.Column).FirstOrDefault();
-                    if(tile.HasValue)rocks[team].Add(tile.Value);if(rocks[team].Count>=(earth>=4?2:1))break;
+                    var tiles = rocks[team];
+                    int limit = earth >= 4 ? 2 : 1;
+                    if (battle.PreparedRocks.TryGetValue(team, out var prepared))
+                    {
+                        foreach (var tile in prepared)
+                        {
+                            if (tiles.Count == limit) break;
+                            if (battle.TryAddObstacle(tile)) tiles.Add(tile);
+                        }
+                    }
+                    if (tiles.Count == 0)
+                    {
+                        foreach (var member in members)
+                        {
+                            var tile = battle.Board.EmptyNeighbors(member.Position)
+                                .OrderBy(position => position.Row).ThenBy(position => position.Column)
+                                .Select(position => (BoardPosition?)position).FirstOrDefault();
+                            if (tile.HasValue && battle.TryAddObstacle(tile.Value)) tiles.Add(tile.Value);
+                            if (tiles.Count == limit) break;
+                        }
+                    }
+                    foreach (var tile in tiles)
+                        events.Add(new SynergyEvent(SynergyTraits.Earth, members[0].UnitInstanceId,
+                            members[0].UnitInstanceId, "rock-spawn", team, battle.CurrentTick, tile));
                 }
                 var storm=battle.Units.Where(u=>u.TeamId==team&&Tier(u,SynergyTraits.Storm)>0).OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal).ToArray();
                 foreach(var u in storm)
@@ -49,7 +67,9 @@ namespace PokeChess.Core.Battle
                     if(circuits.ContainsKey(u.UnitInstanceId))continue;
                     string key=u.UnitInstanceId;var queue=new Queue<UnitCombatState>();queue.Enqueue(u);circuits[key]=key;
                     while(queue.Count>0){var at=queue.Dequeue();foreach(var next in storm.Where(v=>!circuits.ContainsKey(v.UnitInstanceId)&&HexCoordinates.Distance(at.Position,v.Position)==1)){circuits[next.UnitInstanceId]=key;queue.Enqueue(next);}}
-                    charges[key]=0;
+                    var group=storm.Where(v=>circuits.TryGetValue(v.UnitInstanceId,out var k)&&k==key).ToArray();
+                    int families=group.Select(v=>SynergyTraits.Family(v.DefinitionId)).Distinct().Count();
+                    foreach(var v in group)circuitBonus[v.UnitInstanceId]=families>=3?.25f:families==2?.15f:0;
                 }
                 var lapras=Representative(team,"lapras");if(lapras!=null)AssignPassenger(lapras,false);
                 var snorlax=Representative(team,"snorlax");if(snorlax!=null)AssignPassenger(snorlax,true);
@@ -64,7 +84,18 @@ namespace PokeChess.Core.Battle
                         Push(source,enemy,2);
                     }
                 }
-                if(TeamTier(team,SynergyTraits.Nature)==10){var source=battle.Units.First(u=>u.TeamId==team&&Tier(u,SynergyTraits.Nature)>0);foreach(var enemy in Enemies(source).ToArray())Control(source,enemy,CrowdControlKind.Root,rules.Origins.WorldTreeRootSeconds);}
+                int nature = TeamTier(team, SynergyTraits.Nature);
+                var guardian = battle.Units.FirstOrDefault(unit => unit.TeamId == team && unit.IsSynergySummon);
+                if (guardian != null)
+                {
+                    RecordNature(guardian, guardian, "SUMMON", nature);
+                    if (nature == 10)
+                    {
+                        foreach (var enemy in Enemies(guardian).ToArray())
+                            Control(guardian, enemy, CrowdControlKind.Root, rules.Origins.WorldTreeRootSeconds);
+                        Shield(SynergyTraits.Nature, guardian, guardian, 1000, 5);
+                    }
+                }
             }
         }
         private void AssignPassenger(UnitCombatState source,bool mountain)
@@ -78,13 +109,65 @@ namespace PokeChess.Core.Battle
             if(forced&&SynergyTraits.Family(unit.DefinitionId)==SynergyTraits.Family("snorlax"))return true;
             foreach(var source in passengers.Keys.OrderBy(id=>id,StringComparer.Ordinal))if(passengers[source]==unit.UnitInstanceId&&!protectedOnce.Contains(source)&&(forced||!protectionForcedOnly[source])){protectedOnce.Add(source);Record("passenger",unit,unit,"IMMUNE",1);return true;}return false;
         }
-        private float OriginIncoming(UnitCombatState u,DamageRequest request)
+        public const string EarthPulseShieldGroup = "earth-pulse";
+
+        private bool InEarthRange(UnitCombatState unit)
+            => rocks.TryGetValue(unit.TeamId, out var tiles) &&
+               tiles.Any(tile => HexCoordinates.Distance(tile, unit.Position) == 1);
+
+        private float EarthReduction(UnitCombatState target, DamageRequest request, int tier)
         {
-            if(TeamTier(u.TeamId,SynergyTraits.Earth)==0)return 1;
-            bool near=rocks[u.TeamId].Any(p=>HexCoordinates.Distance(p,u.Position)<=1);
-            var source=battle.Units.First(x=>x.UnitInstanceId==request.SourceId);
-            return near&&source.Stats.AttackDelivery==AttackDeliveryType.Projectile?1-rules.Origins.EarthReduction:1;
+            if (tier == 0 || request.Type == DamageType.True || !InEarthRange(target))
+                return 0;
+            if (tier >= 6)
+                return rules.Origins.EarthFortressReduction;
+
+            if (request.Origin != DamageOrigin.Direct || (!request.IsBasicAttack && request.SkillPolicy == null))
+                return 0;
+            var source = battle.Units.FirstOrDefault(unit => unit.UnitInstanceId == request.SourceId);
+            return source != null && source.IsOnBoard && HexCoordinates.Distance(source.Position, target.Position) >= 2
+                ? rules.Origins.EarthReduction : 0;
         }
+
+        private float OriginIncoming(UnitCombatState target, DamageRequest request)
+            => 1 - EarthReduction(target, request, TeamTier(target.TeamId, SynergyTraits.Earth));
+
+        internal void BeforeEarthDamage(UnitCombatState source, UnitCombatState target, DamageRequest request, float damage)
+        {
+            if (damage <= 0)
+                return;
+
+            int tier = TeamTier(target.TeamId, SynergyTraits.Earth);
+            float reduction = EarthReduction(target, request, tier);
+            if (reduction > 0)
+                Record(SynergyTraits.Earth, source, target, tier >= 6 ? "FORTRESS_GUARD" : "RANGED_GUARD", reduction);
+
+            if (tier >= 4 && InEarthRange(target) && rockShielded.Add(target.UnitInstanceId))
+                Shield(SynergyTraits.Earth, target, target, rules.Origins.EarthShield, 4);
+        }
+
+        private void AdvanceEarthPulse(int team)
+        {
+            if (TeamTier(team, SynergyTraits.Earth) < 6 || rocks[team].Count == 0)
+                return;
+            long elapsed = battle.CurrentTick - T(rules.Origins.EarthFirstPulseSeconds);
+            if (elapsed < 0 || elapsed % T(rules.Origins.EarthPulseSeconds) != 0)
+                return;
+
+            // The fixed structures keep working after their Earth members fall.
+            var source = battle.Units.First(unit => unit.TeamId == team && unit.TraitIds.Contains(SynergyTraits.Earth));
+            foreach (var tile in rocks[team])
+                events.Add(new SynergyEvent(SynergyTraits.Earth, source.UnitInstanceId, source.UnitInstanceId,
+                    "protective-pulse", team, battle.CurrentTick, tile));
+
+            foreach (var ally in Allies(source).Where(InEarthRange))
+            {
+                float amount = Math.Min(ally.Stats.MaxHP * rules.Origins.EarthPulseHealthFraction,
+                    rules.Origins.EarthPulseShieldCap);
+                Shield(EarthPulseShieldGroup, source, ally, amount, 4);
+            }
+        }
+
         private void AdvanceOrigins()
         {
             foreach(var fire in fires.ToArray()) {
@@ -102,6 +185,7 @@ namespace PokeChess.Core.Battle
             }
             foreach(int team in new[]{1,2})
             {
+                AdvanceEarthPulse(team);
                 int torrent=TeamTier(team,SynergyTraits.Torrent);long interval=T(torrent==10?4:7);
                 if(torrent>0&&battle.CurrentTick>=T(4)&&(battle.CurrentTick-T(4))%interval==0)
                 {
@@ -138,10 +222,8 @@ namespace PokeChess.Core.Battle
                     }
                     Record(SynergyTraits.Torrent,source,source,flood?"FLOOD":"EBB",torrent);
                 }
-                if(TeamTier(team,SynergyTraits.Earth)>=6&&battle.CurrentTick>0&&battle.CurrentTick%T(rules.Origins.EarthPulseSeconds)==0)
-                {var source=battle.Units.FirstOrDefault(u=>u.TeamId==team&&Tier(u,SynergyTraits.Earth)>0&&u.CurrentHP>0&&u.IsOnBoard);if(source!=null)foreach(var enemy in Enemies(source).Where(e=>rocks[team].Any(p=>HexCoordinates.Distance(p,e.Position)<=1)).ToArray())Control(source,enemy,CrowdControlKind.Slow,rules.Origins.EarthSlowSeconds,rules.Origins.EarthSlow);}
                 var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==team&&u.IsSynergySummon&&u.CurrentHP>0&&u.IsOnBoard);
-                if(guardian!=null&&battle.CurrentTick>0&&battle.CurrentTick%T(rules.Origins.GuardianPeriod)==0)GuardianSkill(guardian);
+                if(guardian!=null&&TeamTier(team,SynergyTraits.Nature)==10&&battle.CurrentTick>0&&battle.CurrentTick%T(rules.Origins.GuardianPeriod)==0)WorldTreePulse(guardian);
             }
         }
         private void Control(UnitCombatState source,UnitCombatState target,CrowdControlKind kind,float duration,float slow=0)
@@ -157,54 +239,15 @@ namespace PokeChess.Core.Battle
             if(movement!=null&&movement.Path.Count>1)
                 RecordTorrent(source,origin,"arrow",movement.Path.Last());
         }
-        private void OriginSkill(UnitCombatState u)
-        {
-            if(Tier(u,SynergyTraits.Storm)>0&&circuits.TryGetValue(u.UnitInstanceId,out var key)&&circuits.Count(c=>c.Value==key)>=2&&(!stormReady.TryGetValue(u.UnitInstanceId,out long ready)||battle.CurrentTick>=ready))
-            {
-                stormReady[u.UnitInstanceId]=battle.CurrentTick+T(2);int tier=Tier(u,SynergyTraits.Storm);var targets=Enemies(u).OrderBy(e=>HexCoordinates.Distance(u.Position,e.Position)).ThenBy(e=>e.UnitInstanceId,StringComparer.Ordinal).ToArray();
-                var previous=u;
-                foreach(var enemy in targets.Take(tier>=4&&circuits.Count(c=>c.Value==key)>=3?2:1))
-                {
-                    Record(SynergyTraits.Storm,previous,enemy,previous==u?"ARC":"CHAIN",0);
-                    Deal(u,enemy,rules.StormDamage);
-                    previous=enemy;
-                }
-                if(tier>=6)
-                {
-                    if(++charges[key]>=4)
-                    {
-                        charges[key]=0;
-                        foreach(var enemy in targets.Where(e=>e.CurrentHP>0))
-                        {
-                            Record(SynergyTraits.Storm,u,enemy,"DISCHARGE",0);
-                            Deal(u,enemy,rules.StormDamage);
-                        }
-                    }
-                    var circuit=battle.Units.First(member=>member.UnitInstanceId==key);
-                    Record(SynergyTraits.Storm,circuit,u,"CHARGE",charges[key]);
-                }
-                Record(SynergyTraits.Storm,u,u,"CURRENT",charges[key]);
-            }
-            if(Tier(u,SynergyTraits.Nature)>=6){natureCasts.TryGetValue(u.TeamId,out int count);natureCasts[u.TeamId]=++count;if(count%3==0){var guardian=Allies(u).FirstOrDefault(x=>x.IsSynergySummon);if(guardian!=null)GuardianSkill(guardian);}}
-        }
-        private void GuardianSkill(UnitCombatState guardian)
-        {
-            int level=battle.NatureExperience.TryGetValue(guardian.TeamId,out var xp)?xp:0;int tier=TeamTier(guardian.TeamId,SynergyTraits.Nature);
-            if(level>=6||tier==10){var enemy=Enemies(guardian).OrderBy(e=>HexCoordinates.Distance(e.Position,guardian.Position)).ThenBy(e=>e.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();if(enemy!=null){if(tier==10){int row=Enemies(guardian).Select(e=>e.Position.Row).OrderBy(r=>guardian.TeamId==1?r:-r).First();foreach(var front in Enemies(guardian).Where(e=>e.Position.Row==row).ToArray())Deal(guardian,front,rules.Origins.WorldTreeDamage);}else {Deal(guardian,enemy,rules.Origins.GuardianDamage);if(enemy.IsTargetable)Control(guardian,enemy,CrowdControlKind.Root,1);}}}
-            if(level>=16||tier==10)foreach(var ally in Allies(guardian).Where(a=>tier==10||HexCoordinates.Distance(a.Position,guardian.Position)<=1).ToArray())battle.Healing.Apply(ally,ally.Stats.MaxHP*rules.Origins.GuardianHeal);
-        }
         private void OriginDamage(UnitCombatState source,UnitCombatState target,DamageResult result)
         {
             if(result.Request.Origin!=DamageOrigin.Synergy&&Tier(source,SynergyTraits.Flame)>0&&!result.Request.IsBasicAttack&&result.Request.Origin==DamageOrigin.Direct&&result.Request.SkillPolicy!=null&&ignited.Add(source.UnitInstanceId))Ignite(source,target.Position,3,false);
-            if(TeamTier(target.TeamId,SynergyTraits.Earth)>=4&&rocks[target.TeamId].Any(p=>HexCoordinates.Distance(p,target.Position)<=1)&&target.CurrentHP>0&&rockShielded.Add(target.UnitInstanceId))Shield(SynergyTraits.Earth,target,target,rules.Origins.EarthShield,4);
             if(result.Killed)
             {
                 foreach(var fire in fires.Where(f=>!f.Spread&&f.Tile.Equals(target.Position)&&Tier(f.Source,SynergyTraits.Flame)>=3).ToArray())
                 if(battle.StatusEffects.HasBehavior(target,StatusBehavior.Burn)){
                     var tile=HexCoordinates.Neighbors(HexCoordinates.ToAxial(target.Position)).Select(a=>HexCoordinates.TryToOffset(a,out var p)?(BoardPosition?)p:null).Where(p=>p.HasValue&&battle.Board.Contains(p.Value)&&!fires.Any(f=>f.Tile.Equals(p.Value))).OrderBy(p=>p.Value.Row).ThenBy(p=>p.Value.Column).FirstOrDefault();if(tile.HasValue)Ignite(fire.Source,tile.Value,2,true);}
-                int venom=TeamTier(source.TeamId,SynergyTraits.Venom);
-                if(venom>0&&!target.IsSynergySummon&&battle.StatusEffects.Active.Any(s=>s.TargetId==target.UnitInstanceId&&s.Definition.Behavior==StatusBehavior.Poison&&battle.Units.Any(u=>u.UnitInstanceId==s.SourceId&&Tier(u,SynergyTraits.Venom)>0)))
-                {battle.VenomEarned.TryGetValue(source.TeamId,out int earned);battle.VenomEarned[source.TeamId]=Math.Min(venom>=4?6:4,earned+1);int samples=battle.VenomSamples.TryGetValue(source.TeamId,out var n)?n:0;if(venom>=4&&samples>=10&&poisonTransferred.Add(target.UnitInstanceId)){var next=Enemies(source).OrderBy(e=>HexCoordinates.Distance(target.Position,e.Position)).ThenBy(e=>e.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();if(next!=null&&source.CurrentHP>0)battle.StatusEffects.Apply(new StatusEffectDefinition("synergy-venom-transfer",3,behavior:StatusBehavior.Poison),source.UnitInstanceId,next.UnitInstanceId);}}
+                ContaminatedDeath(target);
             }
         }
         private void Ignite(UnitCombatState source,BoardPosition tile,float duration,bool spread)

@@ -5,24 +5,43 @@ using PokeChess.Core.Pokemon;
 using PokeChess.Core.Board;
 namespace PokeChess.Core.Match
 {
+    [Serializable]
+    public struct AdversitySettlement
+    {
+        public int round, resolveDelta, gold;
+        public bool berry, choice;
+    }
+
+    [Serializable]
+    public struct AdversityChoice
+    {
+        public int sequence, slot;
+    }
+
     public sealed class SynergyProgress
     {
-        public int NatureXP { get; internal set; }
         public int VenomSamples { get; internal set; }
+        public int VenomMinimumRewardRound { get; internal set; }
         public int MysticTier { get; internal set; }
         public int MysticBattles { get; internal set; }
         public int Resolve { get; internal set; }
+        public AdversitySettlement LastAdversitySettlement { get; internal set; }
+        public AdversityChoice LastAdversityChoice { get; internal set; }
         public int FreeRerollRound { get; internal set; }
+        public int FreeRerollConsumedRound { get; internal set; }
         public int SettledRound { get; internal set; }
         public int EquipmentFragments { get; internal set; }
         public int EmblemFragments { get; internal set; }
         public int RewardChoices { get; internal set; }
         public int PendingGold { get; internal set; }
         public string ProphecyOrigin { get; internal set; }
+        public BoardPosition? GuardianTile { get; internal set; }
         public BoardPosition[] RockTiles { get; internal set; } = Array.Empty<BoardPosition>();
     }
     public static class SynergyPreparation
     {
+        public const int GuardianPlacementMode = 4;
+
         // mode 0: texture/passenger, 1: rock slot, 2: prophecy, 3: adversity reward.
         public static void Configure(MatchState match,PokemonCatalog catalog,string playerId,int mode,string unitId,string value,int slot=0,int column=0,int row=0)
         {
@@ -43,7 +62,8 @@ namespace PokeChess.Core.Match
                 if(tier==0||slot<0||slot>=(tier>=4?2:1))throw new ArgumentException("대지 구조물 슬롯이 없습니다.");
                 var tile=new BoardPosition(column,row);
                 if(!HexBoardBounds.Preparation.Contains(tile)||player.Units.Any(u=>u.Placement.Kind==PlacementKind.Board&&u.Placement.Position.Value.Equals(tile)))throw new ArgumentException("빈 아군 칸을 지정하세요.");
-                var next=player.Synergy.RockTiles.ToList();if(next.Where((p,i)=>i!=slot).Contains(tile))throw new ArgumentException("구조물 위치가 겹칩니다.");
+                if (PreparationGuardian(player,catalog) is BoardPosition guardian && guardian.Equals(tile)) throw new ArgumentException("수호자가 있는 칸입니다.");
+                var next=PreparationRocks(player,catalog).ToList();if(next.Where((p,i)=>i!=slot).Contains(tile))throw new ArgumentException("구조물 위치가 겹칩니다.");
                 while(next.Count<slot)next.Add(HexBoardBounds.Preparation.Cells().First(p=>!p.Equals(tile)&&!next.Contains(p)&&!player.Units.Any(u=>u.Placement.Kind==PlacementKind.Board&&u.Placement.Position.Value.Equals(p))));if(next.Count==slot)next.Add(tile);else next[slot]=tile;player.Synergy.RockTiles=next.ToArray();
             }
             else if(mode==2)
@@ -51,14 +71,62 @@ namespace PokeChess.Core.Match
             else if(mode==3)
             {
                 if(player.Synergy.RewardChoices==0||slot<0||slot>2)throw new InvalidOperationException("선택할 보상이 없습니다.");
+                int sequence = checked(player.Synergy.LastAdversityChoice.sequence + 1);
                 int share=player.Synergy.PendingGold/player.Synergy.RewardChoices;
                 if(slot==0)player.SetProgress(checked(player.Gold+share),player.XP,player.Level);
                 else if(slot==1)player.Synergy.EquipmentFragments=checked(player.Synergy.EquipmentFragments+1);
                 else player.Synergy.EmblemFragments=checked(player.Synergy.EmblemFragments+1);
                 player.Synergy.RewardChoices--;player.Synergy.PendingGold-=share;
+                player.Synergy.LastAdversityChoice = new AdversityChoice { sequence = sequence, slot = slot };
+            }
+            else if (mode == GuardianPlacementMode)
+            {
+                if (!PreparationGuardian(player, catalog).HasValue)
+                    throw new InvalidOperationException("배치할 자연 수호자가 없습니다.");
+                var tile = new BoardPosition(column, row);
+                if (!HexBoardBounds.Preparation.Contains(tile) ||
+                    player.Units.Any(unit => unit.Placement.Position.HasValue && unit.Placement.Position.Value.Equals(tile)) ||
+                    PreparationRocks(player, catalog).Contains(tile))
+                    throw new ArgumentException("빈 아군 칸을 지정하세요.");
+                player.Synergy.GuardianTile = tile;
             }
             else throw new ArgumentOutOfRangeException(nameof(mode));
         }
+        public static BoardPosition[] PreparationRocks(PlayerState player,PokemonCatalog catalog)
+        {
+            int tier=Count(player,catalog).First(c=>c.TraitId==SynergyTraits.Earth).Tier;
+            if(tier==0)return Array.Empty<BoardPosition>();
+            int count=tier>=4?2:1;
+            var occupied=player.Units.Where(u=>u.Placement.Kind==PlacementKind.Board).Select(u=>u.Placement.Position.Value).ToArray();
+            var result=player.Synergy.RockTiles.Where(p=>HexBoardBounds.Preparation.Contains(p)&&!occupied.Contains(p)).Distinct().Take(count).ToList();
+            var members=player.Units.Where(u=>u.Placement.Kind==PlacementKind.Board&&Traits(u,catalog,player).Contains(SynergyTraits.Earth)).OrderBy(u=>u.InstanceId,StringComparer.Ordinal);
+            foreach(var unit in members) {
+                if(result.Count>=count)break;
+                var tile=HexCoordinates.Neighbors(HexCoordinates.ToAxial(unit.Placement.Position.Value)).Select(a=>HexCoordinates.TryToOffset(a,out var p)?(BoardPosition?)p:null)
+                    .Where(p=>p.HasValue&&HexBoardBounds.Preparation.Contains(p.Value)&&!occupied.Contains(p.Value)&&!result.Contains(p.Value)).OrderBy(p=>p.Value.Row).ThenBy(p=>p.Value.Column).FirstOrDefault();
+                if(tile.HasValue)result.Add(tile.Value);
+            }
+            foreach(var tile in HexBoardBounds.Preparation.Cells()) {
+                if(result.Count>=count)break;
+                if(!occupied.Contains(tile)&&!result.Contains(tile))result.Add(tile);
+            }
+            return result.ToArray();
+        }
+        public static BoardPosition? PreparationGuardian(PlayerState player, PokemonCatalog catalog)
+        {
+            if (player.IsEliminated || Count(player, catalog).First(count => count.TraitId == SynergyTraits.Nature).Tier == 0)
+                return null;
+
+            var occupied = player.Units.Where(unit => unit.Placement.Kind == PlacementKind.Board)
+                .Select(unit => unit.Placement.Position.Value).Concat(PreparationRocks(player, catalog)).ToHashSet();
+            var preferred = player.Synergy.GuardianTile;
+            if (preferred.HasValue && HexBoardBounds.Preparation.Contains(preferred.Value) && !occupied.Contains(preferred.Value))
+                return preferred;
+
+            return HexBoardBounds.Preparation.Cells().Where(tile => !occupied.Contains(tile))
+                .Select(tile => (BoardPosition?)tile).FirstOrDefault();
+        }
+
         public static string[] Traits(UnitInstance unit,PokemonCatalog catalog,PlayerState player=null)
         {
             var traits=catalog.Get(unit.DefinitionId).TraitIds.ToList();
@@ -83,18 +151,41 @@ namespace PokeChess.Core.Match
             int team=pair.Pairing.PlayerOneId==player.PlayerId?1:2;var battle=pair.Battle;
             // Empty-board battles still snapshot the persistent deployed board at combat start in the coordinator.
             int Tier(string id)=>battle?.Synergies.TeamTier(team,id)??(team==1?pair.OneSynergies:pair.TwoSynergies)?.First(c=>c.TraitId==id).Tier??0;
-            int nature=Tier(SynergyTraits.Nature),venom=Tier(SynergyTraits.Venom),mystic=Tier(SynergyTraits.Mystic),adversity=Tier(SynergyTraits.Adversity);
-            if(nature>0&&battle!=null){var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==team&&u.IsSynergySummon);int kills=battle.NatureEarned.TryGetValue(team,out var earned)?earned:0;int alive=guardian!=null&&guardian.CurrentHP>0&&guardian.IsOnBoard?1:0;int heal=battle.NatureHealBonus.Contains(team)?1:0;p.NatureXP=checked(p.NatureXP+Math.Min(3,kills+alive+(nature>=6?alive:0))+heal);}
-            if(venom>0&&battle!=null&&battle.VenomEarned.TryGetValue(team,out var samples))p.VenomSamples=checked(p.VenomSamples+samples);
+            int venom=Tier(SynergyTraits.Venom),mystic=Tier(SynergyTraits.Mystic),adversity=Tier(SynergyTraits.Adversity);
+            if (venom > 0 && battle != null)
+            {
+                int reward = battle.Synergies.VenomReward(team);
+                p.VenomSamples = checked(p.VenomSamples + reward);
+                if (reward > 0 && (!battle.VenomEarned.TryGetValue(team, out int earned) || earned == 0))
+                    p.VenomMinimumRewardRound = round;
+            }
             p.MysticTier=mystic;
             if(mystic>0){p.MysticBattles++;if(mystic>=4||p.MysticBattles%2==0)p.FreeRerollRound=round+1;}
-            if(adversity>0&&outcome==RoundOutcome.Loss)p.Resolve=checked(p.Resolve+(adversity==6?3:adversity==4?2:1));
-            if(adversity>0&&outcome==RoundOutcome.Win&&p.Resolve>0)
+            if (adversity > 0 && outcome == RoundOutcome.Loss)
             {
-                int gold=checked(p.Resolve*(adversity>=4?2:1));
-                if(adversity==6&&p.Resolve>=7){p.RewardChoices=checked(p.RewardChoices+1);p.PendingGold=checked(p.PendingGold+gold);}
-                else {player.SetProgress(checked(player.Gold+gold),player.XP,player.Level);if(adversity>=4)player.AddInventoryItem("item:"+ItemCatalog.SitrusBerry+":"+round+":"+player.PlayerId+":adversity");}
-                p.Resolve=0;
+                int earned = adversity == 6 ? 3 : adversity == 4 ? 2 : 1;
+                p.Resolve = checked(p.Resolve + earned);
+                p.LastAdversitySettlement = new AdversitySettlement { round = round, resolveDelta = earned };
+            }
+            if (adversity > 0 && outcome == RoundOutcome.Win && p.Resolve > 0)
+            {
+                int gold = checked(p.Resolve * (adversity >= 4 ? 2 : 1));
+                bool choice = adversity == 6 && p.Resolve >= 7;
+                bool berry = adversity >= 4 && !choice;
+                if (choice)
+                {
+                    int choices = checked(p.RewardChoices + 1);
+                    p.PendingGold = checked(p.PendingGold + gold);
+                    p.RewardChoices = choices;
+                }
+                else
+                {
+                    player.SetProgress(checked(player.Gold + gold), player.XP, player.Level);
+                    if (berry) player.AddInventoryItem("item:" + ItemCatalog.SitrusBerry + ":" + round + ":" + player.PlayerId + ":adversity");
+                }
+                p.LastAdversitySettlement = new AdversitySettlement
+                    { round = round, resolveDelta = -p.Resolve, gold = choice ? 0 : gold, berry = berry, choice = choice };
+                p.Resolve = 0;
             }
         }
     }

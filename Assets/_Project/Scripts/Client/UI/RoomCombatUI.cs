@@ -63,6 +63,7 @@ namespace PokeChess.Client.UI
                 else {var target=frame.units.FirstOrDefault(v=>v.id==u.target);if(target!=null)facing=ReplayPoint(target.column,target.row)-position;}
                 position=ThrowPresentation.Playback(frame,u.id,renderTick,position,ReplayPoint);
                 f.root.anchoredPosition=position;f.sprite.ShowPlayback(u,renderTick,30,facing);
+                BruiserVisuals.Render(f.root, null, u.hp > 0 && u.onBoard, u.bruiserHealth, u.bruiserSurvivalEndTick, renderTick, 30);
                 f.label.text="R"+u.rank+" / "+Math.Ceiling(u.hp)+"HP"+(u.shield>0?" S"+Math.Ceiling(u.shield):"")+"\n"+Math.Floor(u.energy)+"E"+(u.statuses.Length>0?" / "+string.Join("/",u.statuses):"");
                 f.label.color=u.team==1?new Color(.5f,.85f,1):new Color(1,.65f,.55f);f.popup.gameObject.SetActive(Time.unscaledTimeAsDouble<f.popupUntil);
             }

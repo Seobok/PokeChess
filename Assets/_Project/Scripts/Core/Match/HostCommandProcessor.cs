@@ -21,7 +21,7 @@ namespace PokeChess.Core.Match
         public MatchCommand Copy()=>(MatchCommand)MemberwiseClone();
         public bool SamePayload(MatchCommand b)=>b!=null&&evolutionRevision==b.evolutionRevision&&itemId==b.itemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
     }
-    [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId; }
+    [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId,prophecyOrigin; }
     [Serializable] public sealed class OwnerUnit { public string id,definitionId;public int rank,column,row,bench,saleGold,evolutionStage,bountyStacks;public PlacementKind placement;public string[] items; }
     [Serializable] public sealed class OwnerShopEvolution { public string rootDefinitionId,definitionId;public int stage; }
     [Serializable] public sealed class OwnerMatchState
@@ -30,7 +30,9 @@ namespace PokeChess.Core.Match
         public long revision,playerRevision,shopRevision,placementRevision,nextSequence;
         public bool locked,eliminated;public OwnerShopSlot[] shop;public OwnerUnit[] units;public string[] inventory;public OwnerRoundReward reward;
         public long itemRevision;public int itemRewardRound;public string[] itemCandidates;
-        public int natureXP,venomSamples,resolve,freeRerollRound,synergyRewardChoices,equipmentFragments,emblemFragments;public string prophecyOrigin;
+        public int venomSamples,venomMinimumRewardRound,resolve,freeRerollRound,freeRerollConsumedRound,mysticBattles,mysticTier,synergyRewardChoices,equipmentFragments,emblemFragments;public string prophecyOrigin;public CombatCellView[] rockTiles;public CombatCellView guardianTile;
+        public AdversitySettlement adversitySettlement;
+        public AdversityChoice adversityChoice;
         public int evolutionPoints,lastEvolutionPointRound,nextEvolutionPointRound;
         public long evolutionRevision;
         public OwnerShopEvolution[] shopEvolutions;
@@ -72,13 +74,15 @@ namespace PokeChess.Core.Match
         public OwnerMatchState Snapshot(string playerId)
         {
             var p=match.GetPlayer(playerId);var ledger=ledgers[playerId];
-            return new OwnerMatchState{matchId=match.MatchId,playerId=playerId,round=match.RoundNumber,phase=match.Phase,revision=revision,playerRevision=ledger.revision,nextSequence=ledger.sequence+1,
+            var guardian = match.Phase == MatchPhase.Preparation ? SynergyPreparation.PreparationGuardian(p, catalog) : null;
+            return new OwnerMatchState{guardianTile=guardian.HasValue ? new CombatCellView{column=guardian.Value.Column,row=guardian.Value.Row} : null,matchId=match.MatchId,playerId=playerId,round=match.RoundNumber,phase=match.Phase,revision=revision,playerRevision=ledger.revision,nextSequence=ledger.sequence+1,
                 gold=p.Gold,xp=p.XP,level=p.Level,hp=p.HP,winStreak=p.WinStreak,loseStreak=p.LoseStreak,eliminated=p.IsEliminated,locked=p.Shop.IsLocked,shopRevision=p.Shop.Revision,placementRevision=p.PlacementRevision,
-                shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId}).ToArray(),
+                shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId,prophecyOrigin=s.ProphecyOrigin}).ToArray(),
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,rank=(int)u.Rank,bountyStacks=u.BountyStacks,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
                 inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
                 itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>(),
-                equipmentFragments=p.Synergy.EquipmentFragments,emblemFragments=p.Synergy.EmblemFragments,natureXP=p.Synergy.NatureXP,venomSamples=p.Synergy.VenomSamples,resolve=p.Synergy.Resolve,freeRerollRound=p.Synergy.FreeRerollRound,synergyRewardChoices=p.Synergy.RewardChoices,prophecyOrigin=p.Synergy.ProphecyOrigin,
+                equipmentFragments=p.Synergy.EquipmentFragments,emblemFragments=p.Synergy.EmblemFragments,venomSamples=p.Synergy.VenomSamples,venomMinimumRewardRound=p.Synergy.VenomMinimumRewardRound,resolve=p.Synergy.Resolve,freeRerollRound=p.Synergy.FreeRerollRound,freeRerollConsumedRound=p.Synergy.FreeRerollConsumedRound,mysticBattles=p.Synergy.MysticBattles,mysticTier=p.Synergy.MysticTier,synergyRewardChoices=p.Synergy.RewardChoices,prophecyOrigin=p.Synergy.ProphecyOrigin,rockTiles=SynergyPreparation.PreparationRocks(p,catalog).Select(tile=>new CombatCellView{column=tile.Column,row=tile.Row}).ToArray(),
+                adversitySettlement=p.Synergy.LastAdversitySettlement,adversityChoice=p.Synergy.LastAdversityChoice,
                 evolutionPoints=p.EvolutionPoints,lastEvolutionPointRound=p.LastEvolutionPointRound,nextEvolutionPointRound=EvolutionPointRules.NextGrantRound(match.RoundNumber),evolutionRevision=p.EvolutionRevision,
                 shopEvolutions=p.ShopEvolutions.Values.OrderBy(e=>e.RootDefinitionId,StringComparer.Ordinal).Select(e=>new OwnerShopEvolution{rootDefinitionId=e.RootDefinitionId,definitionId=e.DefinitionId,stage=e.Stage}).ToArray()};
         }

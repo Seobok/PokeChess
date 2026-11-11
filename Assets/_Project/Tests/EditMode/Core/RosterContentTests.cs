@@ -149,5 +149,20 @@ namespace PokeChess.Core.Tests
             Assert.That(library.Find("geodude","Idle").PokemonId,Is.EqualTo("geodude"));
             Assert.That(library.Find("clefairy","Idle").PokemonId,Is.EqualTo("clefairy"));
         }
+        [Test]
+        public void NatureSummonsHaveCommonDefinitionsButAreNotShopCandidates()
+        {
+            var catalog = PokeChess.Content.GameContent.CreateCatalog();
+            var shop = PokeChess.Content.GameContent.CreateDefinitions().Select(definition => definition.Id).ToArray();
+            foreach (string id in new[] { "exeggcute", "exeggutor" })
+            {
+                var definition = catalog.Get(id);
+                Assert.That(definition.Evolutions, Is.Empty);
+                Assert.That(definition.TraitIds, Is.Empty);
+                Assert.That(shop.Contains(id), Is.False);
+            }
+            Assert.That(PokeChess.Content.GameContent.DisplayName("exeggcute"), Is.EqualTo("아라리"));
+            Assert.That(PokeChess.Content.GameContent.DisplayName("exeggutor"), Is.EqualTo("나시"));
+        }
     }
 }

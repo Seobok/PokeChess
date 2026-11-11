@@ -365,7 +365,7 @@ namespace PokeChess.Core.Battle
                     if(e.Type==SkillEffectType.RandomStatus) {
                         var id=e.StatusChoices[battle.RngStreams.Skill.NextInt(e.StatusChoices.Count)];
                         var status=independent?battle.StatusEffects.ApplyPersistent(id,caster.UnitInstanceId,t.UnitInstanceId):battle.StatusEffects.Apply(id,caster.UnitInstanceId,t.UnitInstanceId);
-                        applied=new SkillEffectApplication(status?.StackCount??0);
+                        applied=status==null?new SkillEffectApplication(0,SkillEffectOutcome.Skipped):new SkillEffectApplication(status.StackCount);
                     } else if(e.Type==SkillEffectType.HealthCost) {
                         float before=t.CurrentHP;if(!battle.PreserveHealthForPreview)t.SetVitals(Math.Max(1,before-actualValue),t.CurrentEnergy);applied=new SkillEffectApplication(before-t.CurrentHP);
                     } else if(e.Type==SkillEffectType.EnergyRefund) {
@@ -378,6 +378,7 @@ namespace PokeChess.Core.Battle
                         : sourceSnapshot.HasValue&&handlers[e.Type] is DamageSkillEffectHandler damageHandler
                         ? damageHandler.ApplySnapshot(battle,caster,t,e,values[i],sourceSnapshot.Value,snapshotOrigin)
                         : handlers[e.Type].Apply(battle,caster,t,e,actualValue);
+                    if(!e.IsDamage&&e.RequiresEnemy&&applied.Outcome==SkillEffectOutcome.Applied&&applied.ActualValue>0)battle.Synergies.OnEnemySkillEffectApplied(caster,t);
                     Record(battle,skill,castId,stepIndex,iteration,caster,t,i,e,values[i],applied.ActualValue,applied.Outcome,
                         applied.Outcome==SkillEffectOutcome.Skipped?
                             (applied.Reason==SkillEffectSkipReason.None?SkillEffectSkipReason.NoValidTarget:applied.Reason):SkillEffectSkipReason.None,conditionMatched);
@@ -416,6 +417,7 @@ namespace PokeChess.Core.Battle
             // A blocked knockback still deals its hit; throws and charges only hit after arrival.
             if(move.Kind==SkillMovementKind.Knockback)impact();
             bool started=battle.Movement.TryStart(caster,target,move,move.Kind==SkillMovementKind.Knockback?null:impact,generated,castId,stepIndex,iteration,sourceOrigin);
+            if(started&&move.Forced&&target!=null)battle.Synergies.OnEnemySkillEffectApplied(caster,target);
             Record(battle,skill,castId,stepIndex,iteration,caster,target,effectIndex,effect,0,0,
                 started?SkillEffectOutcome.Spawned:SkillEffectOutcome.Skipped,started?SkillEffectSkipReason.None:SkillEffectSkipReason.NoValidTarget);
         }

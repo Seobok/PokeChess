@@ -75,9 +75,21 @@ namespace PokeChess.Client.UI
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")"+(ItemFeedbackText.Length>0?" · "+ItemFeedbackText:"")+"\n"+
                 (Player.ItemInventory.Count==0?"No items":string.Join("\n",Player.ItemInventory.Take(3).Select(ItemCatalog.DisplayName)))+
                 (Player.ItemInventory.Count>3?"\n+"+(Player.ItemInventory.Count-3)+" more":"");
+            if (RenderNatureGuardianInfo()) return;
             var selected=Match.Players.SelectMany(p=>p.Units).FirstOrDefault(u=>u.InstanceId==selectedUnitId);
-            var fighter=Match.Phase==MatchPhase.Combat?RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units.FirstOrDefault(u=>u.UnitInstanceId==selectedUnitId):null;
-            if(selected==null&&fighter!=null){var d=catalog.Get(fighter.DefinitionId);RenderUnitInfoIcons(d,fighter.Rank,fighter.Stats,fighter.CurrentHP,fighter.Stats.MaxHP,fighter.CurrentEnergy,fighter.Stats.MaxEnergy,fighter.CurrentShield,fighter.ItemInstanceIds.ToArray());sellButton.interactable=false;ButtonText(sellButton,"판매 불가");return;}
+            var battle = Match.Phase == MatchPhase.Combat ? RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle : null;
+            var fighter = battle?.Units.FirstOrDefault(unit => unit.UnitInstanceId == selectedUnitId);
+            if (selected == null && fighter != null)
+            {
+                var fighterDefinition = catalog.Get(fighter.DefinitionId);
+                int natureTier = fighter.IsSynergySummon ? battle.Synergies.TeamTier(fighter.TeamId, SynergyTraits.Nature) : 0;
+                RenderUnitInfoIcons(fighterDefinition, fighter.Rank, fighter.Stats, fighter.CurrentHP, fighter.Stats.MaxHP,
+                    fighter.CurrentEnergy, fighter.Stats.MaxEnergy, fighter.CurrentShield, fighter.ItemInstanceIds.ToArray(),
+                    natureTier: natureTier);
+                sellButton.interactable = false;
+                ButtonText(sellButton, "판매 불가");
+                return;
+            }
             if(selected==null){selectedUnitId=null;RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
             var definition=catalog.Get(selected.DefinitionId);var rank=selected.Rank;
             var stats=RankRules.Default.Apply(definition,rank);

@@ -59,7 +59,7 @@ namespace PokeChess.Core.Battle
                     HexCoordinates.Distance(g.View.Center,u.Position)<=g.View.Radius).ToArray();
                 foreach(var id in g.Members.Keys.ToArray())if(!eligible.Any(u=>u.UnitInstanceId==id)) {battle.StatusEffects.Remove(g.Members[id]);g.Members.Remove(id);}
                 if(battle.CurrentTick>g.View.StartTick)foreach(var unit in eligible)if(!g.Members.ContainsKey(unit.UnitInstanceId)) {
-                    var status=battle.StatusEffects.ApplyGround(g.Status,g.View.SourceId,unit.UnitInstanceId);g.Members[unit.UnitInstanceId]=status.InstanceId;
+                    var status=battle.StatusEffects.ApplyGround(g.Status,g.View.SourceId,unit.UnitInstanceId);if(status!=null){g.Members[unit.UnitInstanceId]=status.InstanceId;battle.Synergies.OnEnemySkillEffectApplied(source,unit);}
                 }
                 if(battle.CurrentTick>=g.View.EndTick)grounds.Remove(g);
             }

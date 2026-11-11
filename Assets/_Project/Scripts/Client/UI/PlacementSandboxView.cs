@@ -41,7 +41,9 @@ namespace PokeChess.Client.UI
         private void Awake() { BuildUI();ResetMatchUI(); }
         private void Update()
         {
-            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelItemDrag();HideItemHint();HideUnitInfoHint();}
+            venomHud?.Tick(Time.unscaledTimeAsDouble);
+            adversityHud?.Tick(Time.unscaledTimeAsDouble);
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CancelEarthRockDrag();CancelNatureGuardianDrag();CancelItemDrag();HideItemHint();HideUnitInfoHint();}
             if(IsOnlineMatch){UpdateOnlineMatch();UpdateTablePresentation();return;}
             var keyboard=Keyboard.current;
             if(keyboard!=null && keyboard.escapeKey.wasPressedThisFrame) CancelDrag("Drag cancelled.");
@@ -51,10 +53,10 @@ namespace PokeChess.Client.UI
                 var source=Player.Units.FirstOrDefault(u=>u.InstanceId==dragged);
                 if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (Match.Phase!=MatchPhase.Combat || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
             }
-            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();AnimateRosterSprites();UpdateTablePresentation();
+            UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();RenderLocalMystic();AnimateRosterSprites();UpdateTablePresentation();
         }
-        private void OnApplicationFocus(bool focus) { if(!focus){CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled.");} }
-        private void OnDisable() { combatAudio?.ResetPlayback();CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
+        private void OnApplicationFocus(bool focus) { if(!focus){CancelEarthRockDrag();CancelNatureGuardianDrag();CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled.");} }
+        private void OnDisable() { CancelEarthRockDrag();CancelNatureGuardianDrag();combatAudio?.ResetPlayback();CancelItemDrag();HideItemHint();if(canvasRect!=null && IsDragging) CancelDrag("Drag cancelled."); }
         private RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 position)
         {
             var obj=new GameObject(name,typeof(RectTransform));var rect=obj.GetComponent<RectTransform>();
@@ -117,12 +119,22 @@ namespace PokeChess.Client.UI
             for(int i=0;i<4;i++) SharedPoolSystem.RegisterUnit(Match,catalog.CreateUnit(((char)('A'+i)).ToString(),definitions[i].Id,"p1",UnitRank.One,0,initial[i]),definitions[i].Id);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;Feedback("Ready. Board is full: swap a bench token with a board token, or move a board token to the bench.");Render();
         }
+        private RectTransform CreatePlacementToken(string id, out CanvasGroup group)
+        {
+            var rect = Rect("Unit_" + id, canvasRect, new Vector2(60, 44), Vector2.zero);
+            rect.gameObject.AddComponent<UnityEngine.UI.Image>().color = Color.clear;
+            group = rect.gameObject.AddComponent<CanvasGroup>();
+            var input = rect.gameObject.AddComponent<PlacementDragToken>();
+            input.View = this;
+            input.UnitId = id;
+            return rect;
+        }
+
         private void CreateToken(string id)
         {
-            var rect=Rect("Unit_"+id,canvasRect,new Vector2(60,44),Vector2.zero);
-            rect.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.88f,.63f,.22f);
-            groups[id]=rect.gameObject.AddComponent<CanvasGroup>();tokens[id]=rect;
-            var drag=rect.gameObject.AddComponent<PlacementDragToken>();drag.View=this;drag.UnitId=id;
+            var rect = CreatePlacementToken(id, out var group);
+            tokens[id] = rect;
+            groups[id] = group;
             tokenLabels[id]=Label("Name",rect,id,15,rect.sizeDelta,Vector2.zero);tokenLabels[id].color=new Color(.08f,.11f,.16f);
         }
         public void ResetRankDemo()
@@ -194,6 +206,8 @@ namespace PokeChess.Client.UI
         }
         public void BeginDrag(string id,Vector2 point)
         {
+            if (id == NatureGuardianPreviewId) { BeginNatureGuardianDrag(point); return; }
+            CancelEarthRockDrag();CancelNatureGuardianDrag();
             if(IsItemDragging)return;
             if(IsOnlineMatch){BeginOnlineDrag(id,point);return;}
             if(localViewedPlayerId!="p1"){Feedback("Observed units are read only. Select YOU to place units.");return;}
@@ -206,6 +220,7 @@ namespace PokeChess.Client.UI
         }
         public void Drag(Vector2 point)
         {
+            if (draggingNatureGuardian) { DragNatureGuardian(point); return; }
             if(IsOnlineMatch){DragOnline(point);return;}
             if(!IsDragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
@@ -219,6 +234,7 @@ namespace PokeChess.Client.UI
         }
         public void EndDrag(Vector2 point)
         {
+            if (draggingNatureGuardian) { EndNatureGuardianDrag(point); return; }
             if(IsOnlineMatch){EndOnlineDrag(point);return;}
             if(!IsDragging) return;
             if(HitShop(point))
@@ -233,7 +249,7 @@ namespace PokeChess.Client.UI
         }
         public void CancelDrag(string message)
         {
-            CancelItemDrag();HideItemHint();
+            CancelEarthRockDrag();CancelNatureGuardianDrag();CancelItemDrag();HideItemHint();
             dragged=null;if(ghost!=null) ghost.gameObject.SetActive(false);
             if(Match!=null) Render();Feedback(message);
         }

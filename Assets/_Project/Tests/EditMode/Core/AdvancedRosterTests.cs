@@ -166,7 +166,7 @@ namespace PokeChess.Core.Tests
             while(match.Phase==MatchPhase.Combat&&ticks++<1400)
             {loop.Step();foreach(var e in loop.Battle.SkillEventsThisTick.Where(e=>e.Kind==SkillEventKind.EffectApplied))seen.Add(e.SkillId);}
             Assert.That(match.Phase,Is.EqualTo(MatchPhase.Result));
-            Assert.That(seen,Is.EquivalentTo(defs.Select(d=>d.SkillId)));match.Pool.AssertConservation(match);
+            Assert.That(seen.Where(id=>!id.StartsWith("synergy-nature-",StringComparison.Ordinal)),Is.EquivalentTo(defs.Select(d=>d.SkillId)));match.Pool.AssertConservation(match);
         }
     }
 }

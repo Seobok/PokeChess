@@ -187,6 +187,7 @@ namespace PokeChess.Client.UI
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
                 var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
                 var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
+                visuals.SetVenomHud(venomHud, ownPair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2);
                 visuals.RenderLocal(ownPair,battle.CurrentTick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
                 if(lastVisualBattle!=battle)
                 {

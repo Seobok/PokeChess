@@ -132,6 +132,7 @@ namespace PokeChess.Core.Battle
                 mr,critical,source.Stats.CritMultiplier+battle.Synergies.CriticalBonus(source),
                 amplification,reduction);
             float post=calculation.FinalDamage;
+            battle.Synergies.BeforeEarthDamage(source,target,request,post);
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));
             hpDamage=battle.Items.AdjustHPDamage(target,hpDamage);

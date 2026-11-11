@@ -142,7 +142,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -156,7 +156,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -180,7 +180,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -218,793 +218,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hurt-Anim_0
+      name: exeggcute_Hurt_d0_f0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 363
-        width: 31
-        height: 17
+        x: 0
+        y: 336
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d7d823ca8e58afc0800000000000000
-      internalID: -3483430361698347056
+      spriteID: 207196d29481e55459f2a807e56c12bb
+      internalID: -1327835164
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_1
+      name: exeggcute_Hurt_d0_f1
       rect:
         serializedVersion: 2
-        x: 11
-        y: 352
-        width: 12
-        height: 13
+        x: 48
+        y: 336
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3dc4e6b78fecf3b20800000000000000
-      internalID: 3116437033781710035
+      spriteID: 580d2bb7a6fd40d4f81be804a1a912b3
+      internalID: 180391354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_2
+      name: exeggcute_Hurt_d1_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 352
-        width: 11
-        height: 12
+        x: 0
+        y: 288
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 31ca6a4573f357d00800000000000000
-      internalID: 969750801644170259
+      spriteID: bea6ccb853042d4468da5d37038eda56
+      internalID: 2132308788
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_3
+      name: exeggcute_Hurt_d1_f1
       rect:
         serializedVersion: 2
-        x: 55
-        y: 364
-        width: 31
-        height: 17
+        x: 48
+        y: 288
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67df9872e8036e8e0800000000000000
-      internalID: -1664589625159975562
+      spriteID: e637b45b02dcb03419c8ecebad5dfbce
+      internalID: -756083527
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_4
+      name: exeggcute_Hurt_d2_f0
       rect:
         serializedVersion: 2
-        x: 59
-        y: 353
-        width: 12
-        height: 13
+        x: 0
+        y: 240
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6c04b091dab7f7850800000000000000
-      internalID: 6376951580759638214
+      spriteID: 3692245a754c07d4485bde59ad77cc4d
+      internalID: 1751878622
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_5
+      name: exeggcute_Hurt_d2_f1
       rect:
         serializedVersion: 2
-        x: 77
-        y: 353
-        width: 11
-        height: 12
+        x: 48
+        y: 240
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47122dd0325d17f00800000000000000
-      internalID: 1112904929469669748
+      spriteID: f0d0d18c7229cb247a6ebffc2d6d2a75
+      internalID: -1015608763
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_6
+      name: exeggcute_Hurt_d3_f0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 323
-        width: 11
-        height: 12
+        x: 0
+        y: 192
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: af704407fb1cbb9a0800000000000000
-      internalID: -6216161832688416774
+      spriteID: f545529fc84a82741aaa330cf99b7871
+      internalID: -987645099
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_7
+      name: exeggcute_Hurt_d3_f1
       rect:
         serializedVersion: 2
-        x: 10
-        y: 313
-        width: 12
-        height: 12
+        x: 48
+        y: 192
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e9b278e42359e1740800000000000000
-      internalID: 5124697469292587934
+      spriteID: 3ba1dfff3230f27428913747ed8baed6
+      internalID: -1996082256
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_8
+      name: exeggcute_Hurt_d4_f0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 312
-        width: 19
-        height: 24
+        x: 0
+        y: 144
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7e5be99fabcb80680800000000000000
-      internalID: -8788567161575655961
+      spriteID: 4c03d6f806baeeb498a70ec281c8a194
+      internalID: 1269131057
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_9
+      name: exeggcute_Hurt_d4_f1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 324
-        width: 11
-        height: 12
+        x: 48
+        y: 144
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7d61d8e8821bf1a0800000000000000
-      internalID: -6774800835217887876
+      spriteID: 1bfc5e66081139546b173d3161177660
+      internalID: -1196152139
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_10
+      name: exeggcute_Hurt_d5_f0
       rect:
         serializedVersion: 2
-        x: 57
-        y: 314
-        width: 12
-        height: 12
+        x: 0
+        y: 96
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 536378b7b408597f0800000000000000
-      internalID: -606437513128102347
+      spriteID: 77a1ec78c3bcf9949ab44adc175220f3
+      internalID: -81986677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_11
+      name: exeggcute_Hurt_d5_f1
       rect:
         serializedVersion: 2
-        x: 63
-        y: 313
-        width: 19
-        height: 24
+        x: 48
+        y: 96
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8337f82768a049750800000000000000
-      internalID: 6310680550416806712
+      spriteID: 0c3b01d1c8a4f384abc520571d59f32d
+      internalID: -92808961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_12
+      name: exeggcute_Hurt_d6_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 302
-        width: 11
-        height: 12
+        x: 0
+        y: 48
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43ad087235cedbff0800000000000000
-      internalID: -18598981550417356
+      spriteID: f2b5a4fd222112747b495d805bff2939
+      internalID: -826272761
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_13
+      name: exeggcute_Hurt_d6_f1
       rect:
         serializedVersion: 2
-        x: 58
-        y: 303
-        width: 11
-        height: 12
+        x: 48
+        y: 48
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 15cf488c8b49efda0800000000000000
-      internalID: -5909122139704460207
+      spriteID: f19ac751ca923d041aec97349ad934c2
+      internalID: -700261949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_14
+      name: exeggcute_Hurt_d7_f0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 254
-        width: 29
-        height: 28
+        x: 0
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9897b71e3001257e0800000000000000
-      internalID: -1778341294004012663
+      spriteID: e185174ea9fc0bd449b995ac708b8733
+      internalID: -719165537
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hurt-Anim_15
+      name: exeggcute_Hurt_d7_f1
       rect:
         serializedVersion: 2
-        x: 52
-        y: 254
-        width: 29
-        height: 28
+        x: 48
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5caaca2df1910980800000000000000
-      internalID: -8574411699006034854
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_16
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 203
-        width: 34
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a0a36e79069d22c20800000000000000
-      internalID: 3180343295765527050
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_17
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 202
-        width: 34
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a9a8c909c5451cc20800000000000000
-      internalID: 3224951564713888410
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_18
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 158
-        width: 20
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 07781d5b21c15ff50800000000000000
-      internalID: 6914463669582661488
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_19
-      rect:
-        serializedVersion: 2
-        x: 20
-        y: 168
-        width: 19
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 10da7cffc3e907840800000000000000
-      internalID: 5219845952948907265
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_20
-      rect:
-        serializedVersion: 2
-        x: 55
-        y: 157
-        width: 20
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2a359fb4622111140800000000000000
-      internalID: 4688548642762085282
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_21
-      rect:
-        serializedVersion: 2
-        x: 68
-        y: 167
-        width: 19
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a65d7ee226b13ec20800000000000000
-      internalID: 3234459065889838442
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_22
-      rect:
-        serializedVersion: 2
-        x: 27
-        y: 155
-        width: 13
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8e7300d53a1b48850800000000000000
-      internalID: 6378418287461545960
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_23
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 154
-        width: 13
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5e082f1f3eb7cbc60800000000000000
-      internalID: 7835273670664814821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_24
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 107
-        width: 34
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3f260c67332903220800000000000000
-      internalID: 2463629745904968435
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_25
-      rect:
-        serializedVersion: 2
-        x: 60
-        y: 106
-        width: 34
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 28da9ae460d89bf20800000000000000
-      internalID: 3438934848703147394
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_26
-      rect:
-        serializedVersion: 2
-        x: 14
-        y: 62
-        width: 29
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: addb3a9053bbabdc0800000000000000
-      internalID: -3622377113796756006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_27
-      rect:
-        serializedVersion: 2
-        x: 63
-        y: 62
-        width: 29
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d11d5de88bfb81270800000000000000
-      internalID: 8221531919156105501
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_28
-      rect:
-        serializedVersion: 2
-        x: 13
-        y: 24
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5b54f8da1921aad20800000000000000
-      internalID: 3290462894638974389
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_29
-      rect:
-        serializedVersion: 2
-        x: 26
-        y: 25
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3111376d29e1c6090800000000000000
-      internalID: -8040017618751254253
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_30
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 35
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 184a59a6b6165ec80800000000000000
-      internalID: -8294116024755313535
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_31
-      rect:
-        serializedVersion: 2
-        x: 62
-        y: 25
-        width: 19
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 08523982579599ac0800000000000000
-      internalID: -3847946046884600448
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_32
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 26
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7b05d94a6c9529400800000000000000
-      internalID: 329424432451637431
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_33
-      rect:
-        serializedVersion: 2
-        x: 82
-        y: 36
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e7b21121287478d00800000000000000
-      internalID: 974826468323437438
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_34
-      rect:
-        serializedVersion: 2
-        x: 26
-        y: 14
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 46653e3a801ac68b0800000000000000
-      internalID: -5157570414764665244
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Hurt-Anim_35
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 15
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e5b089ebbc0722c50800000000000000
-      internalID: 6638992821075839838
+      spriteID: 36b4196451a24e6419a0ad758216955b
+      internalID: -1726569961
       vertices: []
       indices: 
       edges: []
@@ -1013,7 +573,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 450f4284a271e89459c312d147bad1dc
     internalID: 0
     vertices: []
     indices: 
@@ -1023,42 +583,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Hurt-Anim_0: -3483430361698347056
-      Hurt-Anim_1: 3116437033781710035
-      Hurt-Anim_10: -606437513128102347
-      Hurt-Anim_11: 6310680550416806712
-      Hurt-Anim_12: -18598981550417356
-      Hurt-Anim_13: -5909122139704460207
-      Hurt-Anim_14: -1778341294004012663
-      Hurt-Anim_15: -8574411699006034854
-      Hurt-Anim_16: 3180343295765527050
-      Hurt-Anim_17: 3224951564713888410
-      Hurt-Anim_18: 6914463669582661488
-      Hurt-Anim_19: 5219845952948907265
-      Hurt-Anim_2: 969750801644170259
-      Hurt-Anim_20: 4688548642762085282
-      Hurt-Anim_21: 3234459065889838442
-      Hurt-Anim_22: 6378418287461545960
-      Hurt-Anim_23: 7835273670664814821
-      Hurt-Anim_24: 2463629745904968435
-      Hurt-Anim_25: 3438934848703147394
-      Hurt-Anim_26: -3622377113796756006
-      Hurt-Anim_27: 8221531919156105501
-      Hurt-Anim_28: 3290462894638974389
-      Hurt-Anim_29: -8040017618751254253
-      Hurt-Anim_3: -1664589625159975562
-      Hurt-Anim_30: -8294116024755313535
-      Hurt-Anim_31: -3847946046884600448
-      Hurt-Anim_32: 329424432451637431
-      Hurt-Anim_33: 974826468323437438
-      Hurt-Anim_34: -5157570414764665244
-      Hurt-Anim_35: 6638992821075839838
-      Hurt-Anim_4: 6376951580759638214
-      Hurt-Anim_5: 1112904929469669748
-      Hurt-Anim_6: -6216161832688416774
-      Hurt-Anim_7: 5124697469292587934
-      Hurt-Anim_8: -8788567161575655961
-      Hurt-Anim_9: -6774800835217887876
+      exeggcute_Hurt_d0_f0: -1327835164
+      exeggcute_Hurt_d0_f1: 180391354
+      exeggcute_Hurt_d1_f0: 2132308788
+      exeggcute_Hurt_d1_f1: -756083527
+      exeggcute_Hurt_d2_f0: 1751878622
+      exeggcute_Hurt_d2_f1: -1015608763
+      exeggcute_Hurt_d3_f0: -987645099
+      exeggcute_Hurt_d3_f1: -1996082256
+      exeggcute_Hurt_d4_f0: 1269131057
+      exeggcute_Hurt_d4_f1: -1196152139
+      exeggcute_Hurt_d5_f0: -81986677
+      exeggcute_Hurt_d5_f1: -92808961
+      exeggcute_Hurt_d6_f0: -826272761
+      exeggcute_Hurt_d6_f1: -700261949
+      exeggcute_Hurt_d7_f0: -719165537
+      exeggcute_Hurt_d7_f1: -1726569961
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

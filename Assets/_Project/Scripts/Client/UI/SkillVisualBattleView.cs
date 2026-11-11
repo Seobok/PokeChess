@@ -52,10 +52,46 @@ namespace PokeChess.Client.UI
         private int rate=30;
         private float pixelScale=1.5f;
         private double lastTick=-1;
+        private readonly VenomBattleVisuals venom = new VenomBattleVisuals();
+        private VenomHud venomHud;
+        private int venomHudTeam;
+
+        internal void SetVenomHud(VenomHud hud, int team)
+        {
+            venomHud = hud;
+            venomHudTeam = team;
+        }
+
+        private void VenomSignal(object battleId, string clip, string target, int sourceTeam, float value,
+            PokeChess.Core.Pokemon.BoardPosition cell, PokeChess.Core.Pokemon.BoardPosition? destination, long tick)
+        {
+            if (clip == "SAMPLE")
+            {
+                if (venomHud != null && venomHudTeam == sourceTeam)
+                {
+                    var origin = point(cell.Column, cell.Row);
+                    venomHud.Sample(battleId, target, (int)value, transform.TransformPoint(origin));
+                }
+                return;
+            }
+            venom.Signal(transform, clip, target, cell, destination, tick);
+        }
+
+        private readonly NatureBattleVisuals nature = new NatureBattleVisuals();
+        private readonly EarthBattleVisuals earth=new EarthBattleVisuals();
+        private (int team,int column,int row)[] earthTiles=Array.Empty<(int,int,int)>();
+        private bool earthComplete;
         private readonly StormBattleVisuals storm=new StormBattleVisuals();
         private readonly TorrentBattleVisuals torrent = new TorrentBattleVisuals();
         private readonly FlameBattleVisuals flame = new FlameBattleVisuals();
         private IEnumerable<(int column,int row)> flameTiles=Array.Empty<(int,int)>();
+        private readonly SupporterBattleVisuals supporter = new SupporterBattleVisuals();
+        private readonly AssassinBattleVisuals assassin = new AssassinBattleVisuals();
+        private readonly DisruptorBattleVisuals disruptor = new DisruptorBattleVisuals();
+        private readonly InvokerBattleVisuals invoker = new InvokerBattleVisuals();
+        private readonly SorcererBattleVisuals sorcerer = new SorcererBattleVisuals();
+        private readonly TrackerBattleVisuals tracker = new TrackerBattleVisuals();
+        private readonly DuelistBattleVisuals duelist = new DuelistBattleVisuals();
         private readonly GuardianBattleVisuals guardian = new GuardianBattleVisuals();
         private void GuardianSignal(string target, string clip, long tick)
         {
@@ -78,9 +114,56 @@ namespace PokeChess.Client.UI
             units=SkillVisualSnapshot.Local(pair,tick,point);
             CaptureLocal(pair.Battle);Render(tick);
         }
+        private void TrackerSignal(string detail, string source, string target, long tick, Vector2 position)
+        {
+            if (detail == "COMPLETION") tracker.Completion(source, tick, position);
+            if (detail == "TRANSFER") tracker.Transfer(source, target, tick, position + Vector2.up * 72);
+        }
+
         private void CaptureLocal(BattleState battle)
         {
             if(localRuntime==null||point==null)return;
+            earthTiles=battle.Synergies.RockTiles(1).Select(p=>(1,p.Column,p.Row)).Concat(battle.Synergies.RockTiles(2).Select(p=>(2,p.Column,p.Row))).ToArray();
+            earthComplete=battle.Result!=BattleResult.InProgress;
+            foreach (var e in battle.Synergies.EventsThisTick)
+                if (e.TraitId == SynergyTraits.Venom && e.Cell.HasValue)
+                    VenomSignal(battle.BattleId, e.Detail, e.TargetId,
+                        e.Detail == "SAMPLE" ? battle.Units.FirstOrDefault(unit => unit.UnitInstanceId == e.SourceId)?.TeamId ?? 0 : 0,
+                        e.Value, e.Cell.Value, e.Destination, e.Tick);
+            foreach (var e in battle.Synergies.EventsThisTick)
+                if (e.TraitId == SynergyTraits.Nature && e.Cell.HasValue)
+                    nature.Signal(transform, e.Detail, e.TargetId, e.Cell.Value, e.Tick, (int)e.Value);
+            foreach (var e in battle.Shields.EventsThisTick)
+                if (e.Shield.Group == SynergyTraits.Nature)
+                    nature.ShieldSignal(transform, e.Shield.TargetId, e.Kind.ToString(), e.Shield.Remaining, e.Tick);
+            foreach(var e in battle.Synergies.EventsThisTick)if(e.TraitId==SynergyTraits.Earth) {
+                if(e.Cell.HasValue)earth.TileSignal(transform,e.Detail,(int)e.Value,e.Cell.Value.Column,e.Cell.Value.Row,e.Tick);
+                else if(e.Detail=="RANGED_GUARD"||e.Detail=="FORTRESS_GUARD")earth.GuardSignal(transform,e.SourceId,e.TargetId,e.Tick,e.Detail=="FORTRESS_GUARD");
+            }
+            foreach(var e in battle.Shields.EventsThisTick)if(e.Shield.Group==SynergyTraits.Earth||e.Shield.Group==SynergySystem.EarthPulseShieldGroup)
+                earth.ShieldSignal(transform,e.Shield.TargetId,e.Shield.Group,e.Kind.ToString(),e.Shield.Remaining,e.Tick);
+            foreach (var e in battle.Synergies.EventsThisTick)
+            {
+                if (e.TraitId == SynergyTraits.Tracker && e.Cell.HasValue)
+                    TrackerSignal(e.Detail, e.SourceId, e.TargetId, e.Tick, point(e.Cell.Value.Column, e.Cell.Value.Row));
+                if (e.TraitId == SynergyTraits.Supporter)
+                {
+                    if (e.Detail == "SHIELD") supporter.Apply(e.SourceId, e.TargetId, e.Tick);
+                    if (e.Detail == "MANA" && e.Value > 0) supporter.Mana(e.TargetId, e.Tick);
+                }
+                if (e.TraitId == SynergyTraits.Invoker && e.Cell.HasValue)
+                    invoker.Signal(e.Detail, e.TargetId, e.Tick);
+                if (e.TraitId == SynergyTraits.Sorcerer && e.Detail == "AP")
+                    sorcerer.Stack(e.SourceId, e.Tick, (int)e.Value);
+                if (e.TraitId == SynergyTraits.Assassin && e.Cell.HasValue &&
+                    (e.Detail == "CRITICAL" || e.Detail == "EMPOWERED_HIT"))
+                    assassin.Hit(e.SourceId, e.TargetId, e.Tick, e.Detail == "EMPOWERED_HIT",
+                        point(e.Cell.Value.Column, e.Cell.Value.Row));
+                if (e.TraitId != SynergyTraits.Duelist) continue;
+                if (e.Detail == "HASTE") duelist.Stack(e.SourceId, e.Tick, (int)e.Value);
+                if (e.Detail == "EMPOWERED_HIT" && e.Cell.HasValue)
+                    duelist.Hit(e.SourceId, e.TargetId, e.Tick, point(e.Cell.Value.Column, e.Cell.Value.Row));
+            }
             flameTiles=battle.Synergies.FireTiles.Select(p=>(p.Column,p.Row));
             foreach(var e in battle.Synergies.EventsThisTick)
                 if(e.TraitId==SynergyTraits.Flame && e.Cell.HasValue)
@@ -88,6 +171,9 @@ namespace PokeChess.Client.UI
             foreach(var e in battle.Synergies.EventsThisTick)
                 if(e.TraitId==SynergyTraits.Guardian)
                     GuardianSignal(e.TargetId,e.Detail=="FIRST_HIT"?"first-hit":e.Detail=="GUARD_START"?"battle-guard":null,battle.CurrentTick);
+            foreach (var e in battle.Shields.EventsThisTick)
+                if (e.Shield.Group == SynergyTraits.Supporter)
+                    supporter.ShieldEnded(e.Shield.TargetId, e.Kind.ToString(), e.Shield.Remaining, e.Tick);
             foreach(var e in battle.Shields.EventsThisTick)
                 if(e.Shield.Group==SynergyTraits.Guardian)
                     GuardianSignal(e.Shield.TargetId,GuardianBattleVisuals.ShieldClip(e.Kind.ToString(),e.Shield.Remaining),e.Tick);
@@ -167,6 +253,27 @@ namespace PokeChess.Client.UI
         public void PlaybackEvent(CombatEventView e,CombatFrame frame,Func<int,int,Vector2> project,float scale=1.5f)
         {
             Context(frame.battleId);point=project;pixelScale=scale;rate=frame.tickRate;
+            if (e.kind == "SynergyTile" && e.synergyCell != null &&
+                e.detail?.StartsWith("venom:", StringComparison.Ordinal) == true)
+            {
+                var cell = new PokeChess.Core.Pokemon.BoardPosition(e.synergyCell.column, e.synergyCell.row);
+                var destination = e.synergyDestination == null ? (PokeChess.Core.Pokemon.BoardPosition?)null :
+                    new PokeChess.Core.Pokemon.BoardPosition(e.synergyDestination.column, e.synergyDestination.row);
+                VenomSignal(frame.battleId, e.detail.Substring(6), e.target,
+                    e.detail == "venom:SAMPLE" ? frame.units.FirstOrDefault(unit => unit.id == e.source)?.team ?? 0 : 0,
+                    e.value, cell, destination, e.tick);
+            }
+            if (e.kind == "SynergyTile" && e.synergyCell != null &&
+                e.detail?.StartsWith("nature:", StringComparison.Ordinal) == true)
+                nature.Signal(transform, e.detail.Substring(7), e.target,
+                    new PokeChess.Core.Pokemon.BoardPosition(e.synergyCell.column, e.synergyCell.row), e.tick, (int)e.value);
+            if (e.detail == SynergyTraits.Nature && e.kind?.StartsWith("Shield", StringComparison.Ordinal) == true)
+                nature.ShieldSignal(transform, e.target, e.kind.Substring(6), e.value, e.tick);
+            if(e.kind=="SynergyTile"&&e.synergyCell!=null&&e.detail?.StartsWith("earth:",StringComparison.Ordinal)==true)
+                earth.TileSignal(transform,e.detail.Substring(6),(int)e.value,e.synergyCell.column,e.synergyCell.row,e.tick);
+            if(e.kind=="Synergy"&&(e.detail=="earth:RANGED_GUARD"||e.detail=="earth:FORTRESS_GUARD"))earth.GuardSignal(transform,e.source,e.target,e.tick,e.detail=="earth:FORTRESS_GUARD");
+            if(e.kind?.StartsWith("Shield",StringComparison.Ordinal)==true&&(e.detail==SynergyTraits.Earth||e.detail==SynergySystem.EarthPulseShieldGroup))
+                earth.ShieldSignal(transform,e.target,e.detail,e.kind.Substring(6),e.value,e.tick);
             if(e.kind=="Synergy"&&e.detail?.StartsWith("storm:",StringComparison.Ordinal)==true)
                 storm.Signal(transform,e.detail.Substring(6),e.source,e.target,(int)e.value,e.tick);
             if(e.kind=="SynergyTile"&&e.synergyCell!=null&&e.detail?.StartsWith("torrent:",StringComparison.Ordinal)==true)
@@ -175,6 +282,26 @@ namespace PokeChess.Client.UI
                 torrent.Mana(transform,e.target,e.tick);
             if(e.kind=="SynergyTile" && e.synergyCell!=null && e.detail?.StartsWith("flame:",StringComparison.Ordinal)==true)
                 flame.Trigger(transform,(e.synergyCell.column,e.synergyCell.row),e.detail.Substring(6),e.tick);
+            if (e.kind == "SynergyTile" && e.synergyCell != null && e.detail?.StartsWith("tracker:", StringComparison.Ordinal) == true)
+                TrackerSignal(e.detail.Substring(8), e.source, e.target, e.tick, point(e.synergyCell.column, e.synergyCell.row));
+            if (e.kind == "SynergyTile" && e.synergyCell != null && e.detail?.StartsWith("invoker:", StringComparison.Ordinal) == true)
+                invoker.Signal(e.detail.Substring(8), e.target, e.tick);
+            if (e.kind == "Synergy" && e.detail == "supporter:SHIELD")
+                supporter.Apply(e.source, e.target, e.tick);
+            if (e.kind == "Synergy" && e.detail == "supporter:MANA" && e.value > 0)
+                supporter.Mana(e.target, e.tick);
+            if (e.detail == SynergyTraits.Supporter && e.kind?.StartsWith("Shield", StringComparison.Ordinal) == true)
+                supporter.ShieldEnded(e.target, e.kind.Substring(6), e.value, e.tick);
+            if (e.kind == "Synergy" && e.detail == "sorcerer:AP")
+                sorcerer.Stack(e.source, e.tick, (int)e.value);
+            if (e.kind == "Synergy" && e.detail == "duelist:HASTE")
+                duelist.Stack(e.source, e.tick, (int)e.value);
+            if (e.kind == "SynergyTile" && e.synergyCell != null &&
+                (e.detail == "assassin:CRITICAL" || e.detail == "assassin:EMPOWERED_HIT"))
+                assassin.Hit(e.source, e.target, e.tick, e.detail == "assassin:EMPOWERED_HIT",
+                    point(e.synergyCell.column, e.synergyCell.row));
+            if (e.kind == "SynergyTile" && e.detail == "duelist:EMPOWERED_HIT" && e.synergyCell != null)
+                duelist.Hit(e.source, e.target, e.tick, point(e.synergyCell.column, e.synergyCell.row));
             if(e.kind=="Synergy")
                 GuardianSignal(e.target,e.detail=="guardian:FIRST_HIT"?"first-hit":e.detail=="guardian:GUARD_START"?"battle-guard":null,e.tick);
             if(e.detail==SynergyTraits.Guardian && e.kind?.StartsWith("Shield",StringComparison.Ordinal)==true)
@@ -228,6 +355,8 @@ namespace PokeChess.Client.UI
             foreach(var e in frame.events??Array.Empty<CombatEventView>())PlaybackEvent(e,frame,project,scale);
             units=SkillVisualSnapshot.Playback(frame,tick,point);projectiles=frame.projectiles??Array.Empty<CombatProjectileView>();
             paths=frame.pathProjectiles??Array.Empty<CombatPathProjectileView>();grounds=frame.grounds??Array.Empty<CombatGroundView>();
+            earthTiles=(frame.synergyRocksOne??Array.Empty<CombatCellView>()).Select(p=>(1,p.column,p.row)).Concat((frame.synergyRocksTwo??Array.Empty<CombatCellView>()).Select(p=>(2,p.column,p.row))).ToArray();
+            earthComplete=frame.complete;
             flameTiles=(frame.synergyFire??Array.Empty<CombatCellView>()).Select(p=>(p.column,p.row));
             Render(tick);
         }
@@ -326,7 +455,7 @@ namespace PokeChess.Client.UI
         {
             var ground=visuals.Where(v=>v.Image.enabled&&v.Entry.Trigger==SkillVisualTrigger.GroundActive)
                 .Select(v=>v.Image.rectTransform);
-            SortBoardDepth(transform,fighters,ground.Concat(flame.VisibleLayers).Concat(torrent.VisibleLayers));
+            SortBoardDepth(transform,fighters.Concat(earth.VisibleRocks),ground.Concat(flame.VisibleLayers).Concat(torrent.VisibleLayers));
         }
 
         internal static void SortBoardDepth(Transform parent,IEnumerable<RectTransform> fighters,IEnumerable<RectTransform> foreground=null)
@@ -349,7 +478,17 @@ namespace PokeChess.Client.UI
             lastTick=tick;
             flame.Render(transform,flameTiles,point,tick,rate);
             torrent.Render(transform,units,point,tick,rate);
-            storm.Render(units,tick,rate,point);
+            earth.Render(transform,units,earthTiles,earthComplete,tick,rate,point);
+            nature.Render(transform, units, point, tick, rate, earthComplete);
+            venom.Render(transform, units, point, tick, rate, earthComplete);
+            storm.Render(transform,units,tick,rate,point);
+            duelist.Render(transform, units, tick, rate, earthComplete);
+            tracker.Render(transform, units, tick, rate, earthComplete);
+            sorcerer.Render(transform, units, tick, rate, earthComplete);
+            invoker.Render(transform, units, tick, rate);
+            disruptor.Render(transform, units, tick, rate, earthComplete);
+            assassin.Render(transform, units, tick, rate, earthComplete);
+            supporter.Render(transform, units, tick, rate, earthComplete);
             guardian.Render(transform,units,tick,rate,pixelScale);if(catalog==null)return;
             foreach(var bolt in bolts.ToArray()) {
                 double elapsed=(tick-bolt.Start)/Math.Max(1,rate);var source=Find(bolt.Source);var target=Find(bolt.Target);
@@ -594,7 +733,7 @@ namespace PokeChess.Client.UI
             foreach(var bolt in bolts.ToArray())RemoveBolt(bolt);
             foreach(var actor in GetComponentsInChildren<PokemonSpriteView>()){actor.SetSkillLungeOffset(Vector2.zero);actor.SetSkillHidden(false);actor.SetSkillScale(1);}
             lunges.Clear();
-            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();guardian.Clear();flame.Clear();torrent.Clear();storm.Clear();flameTiles=Array.Empty<(int,int)>();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
+            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();guardian.Clear();duelist.Clear();tracker.Clear();sorcerer.Clear();invoker.Clear();disruptor.Clear();assassin.Clear();supporter.Clear();flame.Clear();torrent.Clear();storm.Clear();earth.Clear();nature.Clear();venom.Clear();earthTiles=Array.Empty<(int,int,int)>();earthComplete=false;flameTiles=Array.Empty<(int,int)>();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
         }
         private void RemoveBolt(BoltVisual bolt)
         {
@@ -603,6 +742,6 @@ namespace PokeChess.Client.UI
         }
         private void Unsubscribe(){if(localPair!=null)localPair.Stepped-=CaptureLocal;localPair=null;localRuntime=null;}
         private void Reset(){Unsubscribe();ResetVisuals();context=null;units=Array.Empty<SkillVisualUnit>();}
-        private void OnDisable()=>Reset();
+        private void OnDisable(){if(earthComplete)earth.Finish(transform);Reset();}
     }
 }

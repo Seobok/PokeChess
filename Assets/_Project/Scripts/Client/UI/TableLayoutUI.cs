@@ -44,7 +44,7 @@ namespace PokeChess.Client.UI
         }
         public void HoverUnit(string id)
         {
-            if(unitInfoPinned||IsDragging||IsItemDragging)return;
+            if(unitInfoPinned||IsDragging||IsItemDragging||draggingNatureGuardian)return;
             hoveredShopSlot=-1;hoveredUnitId=id;
             selectingHover=true;try{SelectUnit(id);}finally{selectingHover=false;}
         }

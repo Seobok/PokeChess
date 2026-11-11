@@ -8,7 +8,17 @@ namespace PokeChess.Core.Match
     [Serializable] public sealed class CombatUnitView
     {
         public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,duelistStacks,trackerStacks;
-        public string trackerTarget; public bool guarded,isSynergySummon;
+        public bool assassinReady;
+        public int sorcererTier, sorcererStacks;
+        public int trackerTier;
+        public long trackerExpiryTick;
+        public string trackerTarget; public bool guarded,isSynergySummon,contaminated; public int natureTier,stormEnergy,venomResearch;
+        public long contaminationEndTick; public bool venomErosion;
+        public BruiserHealthBonus bruiserHealth;
+        public long bruiserSurvivalEndTick;
+        public int duelistTier;
+        public long duelistChaseEndTick, duelistAttackEndTick;
+        public int stormTier; public float stormCircuitBonus;
         public float hp,maxHP,energy,maxEnergy,shield;public bool onBoard;public CombatActionState action;
         public string[] items,synergyIds;
         public string skillId;
@@ -173,7 +183,13 @@ namespace PokeChess.Core.Match
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;var effective=u.EffectiveStats;
                     return new CombatUnitView{id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
                         hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,maxEnergy=u.Stats.MaxEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
-                        synergyIds=u.TraitIds.ToArray(),duelistStacks=battle.Synergies.DuelistStacks(u),trackerStacks=battle.Synergies.TrackerStacks(u),trackerTarget=battle.Synergies.TrackerTarget(u),guarded=battle.Synergies.IsGuarded(u),isSynergySummon=u.IsSynergySummon,skillId=cast?.Definition.Id,castId=cast?.CastId??0,
+                        assassinReady=battle.Synergies.AssassinAttackReady(u),
+                        sorcererTier=battle.Synergies.Tier(u,SynergyTraits.Sorcerer),sorcererStacks=battle.Synergies.SorcererStacks(u),
+                        trackerTier=battle.Synergies.Tier(u,SynergyTraits.Tracker),trackerExpiryTick=battle.Synergies.TrackerExpiry(u),
+                        duelistTier=battle.Synergies.Tier(u,SynergyTraits.Duelist),duelistChaseEndTick=battle.Synergies.DuelistChaseEnd(u),
+                        duelistAttackEndTick=battle.Synergies.DuelistAttackEnd(u),
+                        bruiserHealth=battle.Synergies.AppliedBruiserHealth(u),bruiserSurvivalEndTick=battle.Synergies.BruiserSurvivalEnd(u),
+                        synergyIds=u.TraitIds.ToArray(),duelistStacks=battle.Synergies.DuelistStacks(u),trackerStacks=battle.Synergies.TrackerStacks(u),trackerTarget=battle.Synergies.TrackerTarget(u),guarded=battle.Synergies.IsGuarded(u),isSynergySummon=u.IsSynergySummon,contaminated=battle.Synergies.IsContaminated(u),contaminationEndTick=battle.Synergies.ContaminationEnd(u),venomErosion=battle.Synergies.HasVenomManaErosion(u),natureTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Nature),stormEnergy=battle.Synergies.StormEnergy(u.TeamId),stormTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Storm),stormCircuitBonus=battle.Synergies.StormCircuitBonus(u),venomResearch=battle.Synergies.VenomResearch(u.TeamId),skillId=cast?.Definition.Id,castId=cast?.CastId??0,
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
                         untargetable=u.IsUntargetable,isBoss=u.IsBoss,accuracy=effective.Accuracy,evasion=effective.Evasion,

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using PokeChess.Client.Data;
+using PokeChess.Core.Battle;
 using PokeChess.Core.Match;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -118,18 +119,26 @@ namespace PokeChess.Client.UI
         private void ShowUnitInfoHint(int index)
         {hoveredUnitInfo=index;unitInfoTooltip.sizeDelta=new Vector2(370,index<0?175:90);unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,index<0?157:72);unitInfoTooltipText.text=index<0?unitSkillHint:unitStatHints[index];unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();}
         private void HideUnitInfoHint(){hoveredUnitItem=null;hoveredUnitInfo=-2;if(unitInfoTooltip!=null)unitInfoTooltip.gameObject.SetActive(false);}
-        private void RenderUnitInfoIcons(PokemonDefinition definition,UnitRank rank,PokemonStats stats,double hp,double maxHP,double energy,double maxEnergy,double shield,string[] items,bool baseStats=false)
+        private static string NatureGuardianSkillHint(int tier) => tier switch
+        {
+            2 => "수호자 포효\n주변 1칸의 적을 1.25초 도발하고 자신에게 3초 동안 보호막 120을 부여합니다.",
+            4 => "수호자 포효\n주변 1칸의 적을 도발하고 2칸 안의 가까운 적 최대 3명을 속박합니다. 제어는 1.25초, 자신 보호막 200은 3초 동안 지속됩니다.",
+            6 => "강화 수호자 포효\n주변 1칸의 적을 도발하고 2칸 안의 가까운 적 최대 4명을 속박합니다. 제어는 1.5초, 자신 보호막 300은 3초 동안 지속됩니다.",
+            _ => "세계수의 심판\n주변 2칸의 적을 1.5초 도발합니다. 모든 적에게 특수 피해를 주고 아군의 잃은 체력 중 15%를 회복합니다."
+        };
+
+        private void RenderUnitInfoIcons(PokemonDefinition definition,UnitRank rank,PokemonStats stats,double hp,double maxHP,double energy,double maxEnergy,double shield,string[] items,bool baseStats=false,int natureTier=0)
         {
             BuildUnitInfoIcons();bool has=definition!=null;unitInfoRoot.gameObject.SetActive(has);detailLabel.gameObject.SetActive(!has);
             if(!has){detailLabel.font=itemFont;detailLabel.text="포켓몬을 선택하세요\n보드 또는 벤치의 포켓몬을\n클릭하면 정보를 볼 수 있습니다.";HideUnitInfoHint();return;}
-            unitInfoTitle.text=KoreanInfo(definition.Id)+"  "+new string('★',(int)rank);
+            unitInfoTitle.text=(natureTier>0?SynergySystem.GuardianForm(natureTier):KoreanInfo(definition.Id))+"  "+new string('★',(int)rank);
             unitInfoTypes.text=KoreanInfo(definition.RoleId)+" · "+string.Join(" / ",definition.TypeIds.Select(KoreanInfo));
-            unitInfoTraits.text=string.Join(" · ",definition.TraitIds.Select(KoreanInfo));
+            unitInfoTraits.text=natureTier>0?"자연 소환수":string.Join(" · ",definition.TraitIds.Select(KoreanInfo));
             string[] values={Number((float)hp)+"/"+Number((float)maxHP),Number(stats.Attack),Number(stats.AttackSpeed),Number(stats.Armor),Number(stats.MagicResistance),stats.AttackRange.ToString(),Number((float)energy)+"/"+Number((float)maxEnergy)};
             string[] hints={"현재 체력 / 최대 체력"+(shield>0?"\n보호막: "+Number((float)shield):""),"기본 공격의 피해량","초당 기본 공격 횟수","물리 피해를 줄이는 능력치","마법 피해를 줄이는 능력치","기본 공격이 닿는 칸 수","현재 에너지 / 기술에 필요한 에너지"};
             for(int i=0;i<7;i++){unitStatValues[i].text=values[i];unitStatHints[i]=statNames[i]+"\n"+hints[i]+(baseStats&&i>0&&i<6?"\n성급 기준 수치 (전투 중 강화 효과 제외)":"");}
             RenderUnitPanelImages(definition,stats,items);
-            unitSkillHint=ContextSkill(definition,rank,stats);
+            unitSkillHint=natureTier>0?NatureGuardianSkillHint(natureTier):ContextSkill(definition,rank,stats);
             unitSkillHint=unitSkillHint.Replace(Readable(definition.SkillId),KoreanInfo(definition.SkillId));
             foreach(var pair in new[]{("Lowest HP ally","체력이 가장 낮은 아군"),("Enemies r","범위 내 적 · 반경 "),("Allies r","범위 내 아군 · 반경 "),(" + splash r"," · 폭발 반경 "),("True damage","고정 피해"),("AttackSpeed","공격속도"),("Attack","공격력"),("SpellPower","주문력"),("Duration","지속 시간")})unitSkillHint=unitSkillHint.Replace(pair.Item1,pair.Item2);
             foreach(var pair in new[]{("Self","자신"),("Target","대상"),("Enemies","적"),("Allies","아군"),("Physical damage","물리 피해"),("Magic damage","마법 피해"),("Shield","보호막"),("Heal","회복"),("cast","시전"),("Stun","기절"),("Taunt","도발"),("Slow","둔화"),("AttackSpeed","공격속도"),("Armor","방어력"),("MagicResistance","마법저항")})unitSkillHint=unitSkillHint.Replace(pair.Item1,pair.Item2);

@@ -102,6 +102,7 @@ namespace PokeChess.Client.UI
 
         private void AnimateRosterSprites()
         {
+            AnimateNatureGuardian();
             AnimateGuardianLinks();
             AnimateStormLinks();
             foreach(var unit in ViewedPlayer.Units)
@@ -119,7 +120,7 @@ namespace PokeChess.Client.UI
             if(Match.Phase==MatchPhase.Preparation)
                 SkillVisualBattleView.SortBoardDepth(canvasRect,ViewedPlayer.Units
                     .Where(u=>u.Placement.Kind==PokeChess.Core.Pokemon.PlacementKind.Board&&tokens.ContainsKey(u.InstanceId))
-                    .Select(u=>tokens[u.InstanceId]));
+                    .Select(u=>tokens[u.InstanceId]).Concat(earthPreparation.VisibleRocks).Concat(VisibleNatureGuardian()));
             for(int slot=0;slot<Player.Shop.Slots.Count;slot++)
             {
                 var offer=Player.Shop.Slots[slot];
@@ -156,8 +157,11 @@ namespace PokeChess.Client.UI
             root.anchoredPosition=ThrowPresentation.Local(pair.Battle,unit.UnitInstanceId,root.anchoredPosition,
                 (c,r)=>CombatPoint(new PokeChess.Core.Pokemon.BoardPosition(c,r)));
             sprite.ShowCombat(pair.Battle,unit,action,facing);
-            RenderUnitHealthBar(label.transform.parent, unit.CurrentHP, unit.Stats.MaxHP,
+            var healthBar = RenderUnitHealthBar(root, unit.CurrentHP, unit.Stats.MaxHP,
                 unit.TeamId == (pair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2), unit.CurrentShield);
+            var battle = pair.Battle;
+            BruiserVisuals.Render(root, healthBar, unit.IsAlive && unit.IsOnBoard, battle.Synergies.AppliedBruiserHealth(unit),
+                battle.Synergies.BruiserSurvivalEnd(unit), battle.CurrentTick, battle.TickRate);
             RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
             RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
             RenderUnitRank(label.transform.parent,(int)unit.Rank,unit.EvolutionStage,unit.IsAlive);
@@ -170,7 +174,7 @@ namespace PokeChess.Client.UI
                 if (charges > 0) state = "AS+ " + charges;
                 if(pair.Battle.Synergies.TrackerStacks(unit)>0)state="TRACK "+pair.Battle.Synergies.TrackerStacks(unit);
                 if(pair.Battle.Synergies.IsGuarded(unit))state="GUARD";
-                if(unit.IsSynergySummon)state="FOREST";
+                if(pair.Battle.Synergies.IsContaminated(unit))state+=" 오염";
                 string synergyFlash = LocalSynergyFlash(unit);
                 if (synergyFlash.Length > 0) state = synergyFlash;
                 if(unit.ActionState!=CombatActionState.Casting)

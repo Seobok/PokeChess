@@ -61,7 +61,11 @@ namespace PokeChess.Content
         }
         [ContextMenu("Validate Roster")]
         private void ValidateInEditor(){Validate(); Debug.Log("Roster validated: "+Pokemon.Length+" Pokemon",this);}
-        public PokemonCatalog CreateCatalog()=>new PokemonCatalog(Pokemon.Select(p=>p.ToCore()));
+        public PokemonCatalog CreateCatalog() => new PokemonCatalog(Pokemon.Select(p => p.ToCore()).Concat(new[]
+        {
+            SynergySystem.NatureGuardianDefinition(2),
+            SynergySystem.NatureGuardianDefinition(4)
+        }));
         public PokemonDefinition[] CreateDefinitions()=>ShopPokemon.Select(p=>p.ToCore()).ToArray();
         public SkillCatalog CreateSkills()=>new SkillCatalog(Skills.Select(s=>s.ToCore()));
         public StatusCatalog CreateStatuses()=>new StatusCatalog(Statuses.Select(s=>s.ToCore()));

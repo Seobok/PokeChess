@@ -12,9 +12,10 @@ namespace PokeChess.Core.Match
         public int Cost { get; }
         public string PoolOriginDefinitionId { get; }
         public int EvolutionStage { get; }
+        public string ProphecyOrigin { get; }
         public bool IsEmpty => DefinitionId == null;
-        internal ShopSlot(int index, string definitionId = null, int cost = 0, string poolOriginDefinitionId = null, int evolutionStage = 0)
-        { Index = index; DefinitionId = definitionId; Cost = cost; PoolOriginDefinitionId = poolOriginDefinitionId ?? definitionId; EvolutionStage = evolutionStage; }
+        internal ShopSlot(int index, string definitionId = null, int cost = 0, string poolOriginDefinitionId = null, int evolutionStage = 0, string prophecyOrigin = null)
+        { Index = index; DefinitionId = definitionId; Cost = cost; PoolOriginDefinitionId = poolOriginDefinitionId ?? definitionId; EvolutionStage = evolutionStage; ProphecyOrigin = prophecyOrigin; }
     }
 
     // Host-only RNG state. Expose filtered slot/lock DTOs to the owner, never the RNG.
@@ -66,7 +67,7 @@ namespace PokeChess.Core.Match
                 var slot=slots[i];
                 if(slot.IsEmpty || slot.PoolOriginDefinitionId!=root || slot.EvolutionStage>=stage)continue;
                 if(replacement==null){replacement=new ShopSlot[slots.Count];for(int j=0;j<slots.Count;j++)replacement[j]=slots[j];}
-                replacement[i]=new ShopSlot(slot.Index,definition,slot.Cost,slot.PoolOriginDefinitionId,stage);
+                replacement[i]=new ShopSlot(slot.Index,definition,slot.Cost,slot.PoolOriginDefinitionId,stage,slot.ProphecyOrigin);
             }
             if(replacement==null)return;
             long revision=checked(Revision+1);

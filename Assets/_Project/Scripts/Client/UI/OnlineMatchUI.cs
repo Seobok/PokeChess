@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using PokeChess.Core.Match;
+using PokeChess.Core.Battle;
 using PokeChess.Core.Pokemon;
 using PokeChess.Network.Session;
 
@@ -149,6 +150,9 @@ namespace PokeChess.Client.UI
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
             RenderOnlineSynergies(pub);
+            if (guardianPreviewBoard != null)
+                SkillVisualBattleView.SortBoardDepth(canvasRect,
+                    guardianPreviewBoard.Select(unit => tokens[unit.id]).Concat(earthPreparation.VisibleRocks).Concat(VisibleNatureGuardian()));
             RenderItemWildUI();
             RenderEvolutionUI();
             RenderUnitCryAudio();
@@ -193,7 +197,6 @@ namespace PokeChess.Client.UI
             }
             AnimateGuardianLinks();
             AnimateStormLinks();
-            if(previewBoard!=null)SkillVisualBattleView.SortBoardDepth(canvasRect,previewBoard.Select(u=>tokens[u.id]));
             foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
         }
         private void ShowOnlineToken(string id,string definition,int rank,UnitPlacement placement)
@@ -206,16 +209,20 @@ namespace PokeChess.Client.UI
         {
             inventoryLabel.font=itemFont;
             inventoryLabel.text="ITEMS ("+owner.inventory.Length+")\n"+(owner.inventory.Length==0?"No items":string.Join("\n",owner.inventory.Take(3).Select(ItemCatalog.DisplayName)))+"\n"+ItemFeedbackText;
+            if (RenderNatureGuardianInfo()) return;
             var unit=owner.units.FirstOrDefault(u=>u.id==selectedUnitId);var board=pub.players.SelectMany(p=>p.board).FirstOrDefault(u=>u.id==selectedUnitId);
             var activeFrame=onlineService.Combat.Current;
             var fighter=activeFrame?.round==pub.round&&(pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying)?activeFrame.units.FirstOrDefault(u=>u.id==selectedUnitId):null;
             string definition=unit?.definitionId??board?.definitionId??fighter?.definitionId;int rank=unit?.rank??board?.rank??fighter?.rank??1;
             if(definition==null){RenderUnitInfoIcons(null,UnitRank.One,null,0,0,0,0,0,Array.Empty<string>());sellButton.interactable=false;ButtonText(sellButton,"판매");return;}
-            var d=catalog.Get(definition);var stats=RankRules.Default.Apply(d,(UnitRank)rank);var items=unit?.items??board?.items??fighter?.items??Array.Empty<string>();
+            var d = catalog.Get(definition);
+            int natureTier = fighter?.isSynergySummon == true ? fighter.natureTier : 0;
+            var stats = natureTier > 0 ? SynergySystem.NatureGuardianDefinition(natureTier).BaseStats : RankRules.Default.Apply(d, (UnitRank)rank);
+            var items = unit?.items ?? board?.items ?? fighter?.items ?? Array.Empty<string>();
             detailLabel.font=itemFont;
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+
                 (fighter==null?"Base HP "+Number(stats.MaxHP):"HP "+Number(fighter.hp)+" / "+Number(fighter.maxHP)+" · S "+Number(fighter.shield))+"\nBase AT "+Number(stats.Attack)+" · Range "+stats.AttackRange+"\n"+ContextSkill(d,(UnitRank)rank,stats)+"\nItems ("+items.Length+"): "+(items.Length==0?"None":string.Join(", ",items.Select(ItemCatalog.DisplayName)))+"\n"+RankFeedbackText;
-            RenderUnitInfoIcons(d,(UnitRank)rank,stats,fighter?.hp??stats.MaxHP,fighter?.maxHP??stats.MaxHP,fighter?.energy??stats.StartingEnergy,fighter?.maxEnergy??stats.MaxEnergy,fighter?.shield??0,items,true);
+            RenderUnitInfoIcons(d,(UnitRank)rank,stats,fighter?.hp??stats.MaxHP,fighter?.maxHP??stats.MaxHP,fighter?.energy??stats.StartingEnergy,fighter?.maxEnergy??stats.MaxEnergy,fighter?.shield??0,items,true,natureTier);
             sellButton.interactable=CanOnlineSell(unit);ButtonText(sellButton,sellButton.interactable?"판매 / +"+unit.saleGold+"G":"판매 불가");
         }
     }

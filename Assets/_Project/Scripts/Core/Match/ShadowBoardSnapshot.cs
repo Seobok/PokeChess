@@ -34,7 +34,7 @@ namespace PokeChess.Core.Match
     // Never register these copies in PlayerState or the shared pool.
     public sealed class ShadowBoardSnapshot
     {
-        public int NatureXP { get; private set; }
+        public BoardPosition? GuardianTile { get; private set; }
         public int VenomSamples { get; private set; }
         public IReadOnlyList<BoardPosition> RockTiles { get; private set; }
         public string SourcePlayerId { get; }
@@ -53,9 +53,9 @@ namespace PokeChess.Core.Match
             var units=source.Units.Where(u=>u.Placement.Kind==PlacementKind.Board || deployments.ContainsKey(u.InstanceId))
                 .Select(u=>new ShadowUnitSnapshot(u,deployments.TryGetValue(u.InstanceId,out var placement) ? placement.Position.Value : u.Placement.Position.Value,
                     RankRules.Default.Apply(catalog.Get(u.DefinitionId),u.Rank))).ToArray();
-            return new ShadowBoardSnapshot(source.PlayerId,round,units){NatureXP=source.Synergy.NatureXP,VenomSamples=source.Synergy.VenomSamples,RockTiles=Array.AsReadOnly(source.Synergy.RockTiles.ToArray())};
+            return new ShadowBoardSnapshot(source.PlayerId,round,units){VenomSamples=source.Synergy.VenomSamples,RockTiles=Array.AsReadOnly(SynergyPreparation.PreparationRocks(source,catalog)),GuardianTile=SynergyPreparation.PreparationGuardian(source,catalog)};
         }
-        public BattleState CreateBattle(string battleId,ulong seed,int tickRate,PokemonCatalog catalog,IEnumerable<BattleUnitSetup> challenger)
+        public BattleState CreateBattle(string battleId,ulong seed,int tickRate,PokemonCatalog catalog,IEnumerable<BattleUnitSetup> challenger, BoardPosition? guardianOne = null)
         {
             if(challenger==null)throw new ArgumentNullException(nameof(challenger));
             var entries=challenger.ToArray();
@@ -63,10 +63,9 @@ namespace PokeChess.Core.Match
                 throw new ArgumentException("Shadow challenger must be a different player's team one.",nameof(challenger));
             var stats=Units.ToDictionary(u=>u.UnitInstanceId,u=>u.Stats,StringComparer.Ordinal);
             var battle=BattleStateFactory.Create(battleId,Round,seed,tickRate,catalog,entries.Concat(Units.Select(u=>u.CreateSetup(SourcePlayerId))),
-                (unit,definition)=>unit.OwnerPlayerId==SourcePlayerId ? stats[unit.InstanceId] : RankRules.Default.Apply(definition,unit.Rank));
-            battle.NatureExperience[2]=NatureXP;battle.VenomSamples[2]=VenomSamples;battle.PreparedRocks[2]=RockTiles.Select(HexCoordinates.MirrorCombat).ToArray();
-            var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==2&&u.IsSynergySummon);
-            if(guardian!=null&&battle.Synergies.TeamTier(2,SynergyTraits.Nature)<10)guardian.ScaleMaxHP(NatureXP>=30?1.5f:NatureXP>=16?.8f:NatureXP>=6?.35f:0);
+                (unit,definition)=>unit.OwnerPlayerId==SourcePlayerId ? stats[unit.InstanceId] : RankRules.Default.Apply(definition,unit.Rank),
+                guardianOne: guardianOne, guardianTwo: GuardianTile.HasValue ? HexCoordinates.MirrorCombat(GuardianTile.Value) : (BoardPosition?)null);
+            battle.VenomSamples[2]=VenomSamples;battle.PreparedRocks[2]=RockTiles.Select(HexCoordinates.MirrorCombat).ToArray();
             return battle;
         }
     }

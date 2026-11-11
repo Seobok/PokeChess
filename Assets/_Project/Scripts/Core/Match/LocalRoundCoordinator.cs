@@ -43,7 +43,7 @@ namespace PokeChess.Core.Match
         private bool survivorCountsFrozen;
         internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0,
             SkillCatalog skills=null,StatusCatalog statuses=null)
-        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null)simulation=new BattleSimulation(battle,skillCatalog:skills,statusCatalog:statuses);FreezeSurvivors(); }
+        { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null){battle.IsPvP=!pair.IsWild;simulation=new BattleSimulation(battle,skillCatalog:skills,statusCatalog:statuses);}FreezeSurvivors(); }
         internal void Step() { if(!IsComplete){simulation.Step();Stepped?.Invoke(Battle);}FreezeSurvivors(); }
         internal void Surrender(string playerId)
         {
@@ -192,16 +192,21 @@ namespace PokeChess.Core.Match
                     // Canonical pair order is stable; a distinct seed isolates each battle's RNG.
                     ulong seed=BattleSeed(expectedRound,pair);
                     string battleId=Match.MatchId+"-round-"+expectedRound+"-pair-"+nextBattles.Count;
-                    battle=pair.IsShadow ? shadowSnapshot.CreateBattle(battleId,seed,TickRate,catalog,setup.Where(s=>s.TeamId==1))
-                        : BattleStateFactory.Create(battleId,expectedRound,seed,TickRate,catalog,setup);
+                    var guardianOne = SynergyPreparation.PreparationGuardian(Match.GetPlayer(pair.PlayerOneId), catalog);
+                    if (pair.IsShadow)
+                        battle = shadowSnapshot.CreateBattle(battleId, seed, TickRate, catalog, setup.Where(s => s.TeamId == 1), guardianOne);
+                    else
+                    {
+                        var guardianTwo = SynergyPreparation.PreparationGuardian(Match.GetPlayer(pair.PlayerTwoId), catalog);
+                        battle = BattleStateFactory.Create(battleId, expectedRound, seed, TickRate, catalog, setup,
+                            guardianOne: guardianOne, guardianTwo: guardianTwo.HasValue ? HexCoordinates.MirrorCombat(guardianTwo.Value) : (BoardPosition?)null);
+                    }
                 }
                 var emptyResult=one.Length==0 && twoCount==0 ? BattleResult.Draw : one.Length==0 ? BattleResult.TeamTwoWin : BattleResult.TeamOneWin;
                 if(battle!=null)foreach(var playerId in pair.ParticipantIds) {
                     var player=Match.GetPlayer(playerId);int team=pair.PlayerOneId==playerId?1:2;
-                    battle.NatureExperience[team]=player.Synergy.NatureXP;battle.VenomSamples[team]=player.Synergy.VenomSamples;
-                    battle.PreparedRocks[team]=player.Synergy.RockTiles.Select(p=>team==1?p:HexCoordinates.MirrorCombat(p)).ToArray();
-                    var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==team&&u.IsSynergySummon);
-                    if(guardian!=null&&battle.Synergies.TeamTier(team,PokeChess.Core.Battle.SynergyTraits.Nature)<10)guardian.ScaleMaxHP(player.Synergy.NatureXP>=30?1.5f:player.Synergy.NatureXP>=16?.8f:player.Synergy.NatureXP>=6?.35f:0);
+                    battle.VenomSamples[team]=player.Synergy.VenomSamples;
+                    battle.PreparedRocks[team]=SynergyPreparation.PreparationRocks(player,catalog).Select(p=>team==1?p:HexCoordinates.MirrorCombat(p)).ToArray();
                 }
                 var pairBattle=new LocalPairBattle(pair,battle,emptyResult,shadowSnapshot,one.Length,twoCount,skills,statuses);
                 pairBattle.OneSynergies=battle?.Synergies.TeamCounts(1)??SynergyPreparation.CountUnits(one,catalog);
@@ -223,7 +228,7 @@ namespace PokeChess.Core.Match
                 var pair=new RoundPairing(p.PlayerId,"wild-"+WildRoundSystem.Pattern(round),isWild:true);
                 var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[p.PlayerId])));
                 var battle=one.Length==0?null:WildRoundSystem.CreateBattle(Match,catalog,p,setup,TickRate);
-                if(battle!=null){battle.NatureExperience[1]=p.Synergy.NatureXP;battle.VenomSamples[1]=p.Synergy.VenomSamples;battle.PreparedRocks[1]=p.Synergy.RockTiles.ToArray();var guardian=battle.Units.FirstOrDefault(u=>u.TeamId==1&&u.IsSynergySummon);if(guardian!=null&&battle.Synergies.TeamTier(1,SynergyTraits.Nature)<10)guardian.ScaleMaxHP(p.Synergy.NatureXP>=30?1.5f:p.Synergy.NatureXP>=16?.8f:p.Synergy.NatureXP>=6?.35f:0);}
+                if(battle!=null){battle.IsPvP=false;battle.VenomSamples[1]=p.Synergy.VenomSamples;battle.PreparedRocks[1]=SynergyPreparation.PreparationRocks(p,catalog);}
                 next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses));
             }
             foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);

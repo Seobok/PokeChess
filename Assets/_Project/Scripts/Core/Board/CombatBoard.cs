@@ -21,6 +21,7 @@ namespace PokeChess.Core.Board
     public sealed class CombatBoard : IReadOnlyCombatBoard
     {
         private readonly string[] occupants = new string[56];
+        private readonly bool[] obstacles = new bool[56];
         private readonly Dictionary<string, BoardPosition> positions =
             new Dictionary<string, BoardPosition>(StringComparer.Ordinal);
         private readonly IReadOnlyCombatBoard readOnly;
@@ -38,7 +39,8 @@ namespace PokeChess.Core.Board
         public bool IsOccupied(BoardPosition position)
         {
             RequireInside(position);
-            return occupants[Index(position)] != null;
+            int index = Index(position);
+            return occupants[index] != null || obstacles[index];
         }
         public bool TryGetOccupant(BoardPosition position, out string unitId)
         {
@@ -54,12 +56,19 @@ namespace PokeChess.Core.Board
         public IReadOnlyList<BoardPosition> EmptyNeighbors(BoardPosition position) =>
             Array.AsReadOnly(HexBoardBounds.Combat.Neighbors(position).Where(p => !IsOccupied(p)).ToArray());
 
+        internal bool TryAddObstacle(BoardPosition position)
+        {
+            if (!Contains(position) || IsOccupied(position)) return false;
+            obstacles[Index(position)] = true;
+            return true;
+        }
+
         public BoardOperationResult TryPlace(string unitId, BoardPosition destination)
         {
             if (string.IsNullOrWhiteSpace(unitId)) return BoardOperationResult.InvalidUnitId;
             if (!Contains(destination)) return BoardOperationResult.OutOfBounds;
             if (positions.ContainsKey(unitId)) return BoardOperationResult.UnitAlreadyPlaced;
-            if (occupants[Index(destination)] != null) return BoardOperationResult.CellOccupied;
+            if (IsOccupied(destination)) return BoardOperationResult.CellOccupied;
             positions.Add(unitId, destination);
             occupants[Index(destination)] = unitId;
             return BoardOperationResult.Success;
@@ -70,7 +79,7 @@ namespace PokeChess.Core.Board
             if (!Contains(destination)) return BoardOperationResult.OutOfBounds;
             if (!positions.TryGetValue(unitId, out var source)) return BoardOperationResult.UnitNotFound;
             if (source.Equals(destination)) return BoardOperationResult.Success;
-            if (occupants[Index(destination)] != null) return BoardOperationResult.CellOccupied;
+            if (IsOccupied(destination)) return BoardOperationResult.CellOccupied;
             positions[unitId] = destination;
             occupants[Index(source)] = null;
             occupants[Index(destination)] = unitId;

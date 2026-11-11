@@ -172,7 +172,7 @@ namespace PokeChess.Core.Battle
                     if(e.Def.CrowdControl==CrowdControlKind.Root&&e.Def.EffectValue>0)
                         new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,e.RestAmount,DamageType.Physical,origin:DamageOrigin.Periodic,sourceSnapshot:e.Offense));
                     else if(e.Def.Behavior==StatusBehavior.Poison||e.Def.Behavior==StatusBehavior.Burn)
-                        new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,target.Stats.MaxHP*.025f*e.Count*(e.Def.Behavior==StatusBehavior.Poison?battle.Synergies.PoisonMultiplier(Unit(e.Source)):1),
+                        new DamageProcessor().Apply(battle,new DamageRequest(e.Source,e.Target,target.Stats.MaxHP*.025f*e.Count,
                             DamageType.True,origin:DamageOrigin.Debuff));
                     else if(e.Def.Behavior==StatusBehavior.RestSleep) {
                         if(e.Pulses<=4)battle.Healing.Apply(target,e.RestAmount);
@@ -224,15 +224,17 @@ namespace PokeChess.Core.Battle
                     .ThenBy(e=>e.Source,StringComparer.Ordinal).ThenBy(e=>e.Id).First();
             }
         }
+        internal float ManaGainPenalty(UnitCombatState u)=>Math.Max(battle.Synergies.ContaminationManaReduction(u),
+            StatEntries(u).SelectMany(e=>e.Def.Modifiers).Where(m=>m.Stat==CombatStat.EnergyGain&&m.Type==StatModifierType.Percentage&&m.Value<0).Select(m=>-m.Value).DefaultIfEmpty(0).Max());
         private double Calculate(UnitCombatState u,CombatStat stat,double original)
         {
-            double flat=0,percent=0,multi=1;
+            double flat=0,percent=0,multi=1,penalty=stat==CombatStat.EnergyGain?battle.Synergies.ContaminationManaReduction(u):0;
             foreach(var e in StatEntries(u))foreach(var m in e.Def.Modifiers.Where(m=>m.Stat==stat)) {
                 if(m.Type==StatModifierType.Flat)flat+=m.Value*e.Count;
-                else if(m.Type==StatModifierType.Percentage)percent+=m.Value*e.Count;
+                else if(m.Type==StatModifierType.Percentage) {if(stat==CombatStat.EnergyGain&&m.Value<0)penalty=Math.Max(penalty,-m.Value);else percent+=m.Value*e.Count;}
                 else multi*=Math.Pow(m.Value,e.Count);
             }
-            return (original+flat)*(1+percent)*multi;
+            return (original+flat)*Math.Max(0,1+percent-penalty)*multi;
         }
         private static float Store(double value,double minimum=0,double maximum=float.MaxValue)
         {
@@ -243,7 +245,7 @@ namespace PokeChess.Core.Battle
         {
             var s=u.Stats;double power=battle.IsOvertime?2:1;double speed=battle.IsOvertime?3:1;double slow=Live(u).Where(e=>e.Def.CrowdControl==CrowdControlKind.Slow)
                 .Select(e=>(double)e.Def.SlowFraction).DefaultIfEmpty(0).Max();
-            bool extra=Live(u).Any(e=>e.Def.Modifiers.Any(m=>(int)m.Stat>=(int)CombatStat.Accuracy));
+            bool extra=battle.Synergies.ContaminationManaReduction(u)>0||Live(u).Any(e=>e.Def.Modifiers.Any(m=>(int)m.Stat>=(int)CombatStat.Accuracy));
             return new EffectiveCombatStats(Store(Calculate(u,CombatStat.Attack,s.Attack)*power),
                 Store(Calculate(u,CombatStat.SpellPower,s.SpellPower)*power),Store(Calculate(u,CombatStat.Armor,s.Armor),-float.MaxValue),
                 Store(Calculate(u,CombatStat.MagicResistance,s.MagicResistance),-float.MaxValue),

@@ -24,6 +24,8 @@ namespace PokeChess.Client.UI
         private bool skillHidden;
         private float drawnAlpha=1;
         private float skillScale=1;
+        private float guardianScale=1;
+        private Color guardianTint=Color.white;
         public Vector2 SkillLungeOffset {get;private set;}
         private const float PixelScale=1.5f;
         private const float UnitSizeMultiplier=1.5f;
@@ -42,7 +44,7 @@ namespace PokeChess.Client.UI
                     id=round==1||round==2?"magikarp":round==3?"rattata":id;
             }
             pokemon=id;library=PokemonAnimationLibrary.Load();
-            animationPokemon=library?.Find(id,"Idle")!=null ? id : PokeChess.Content.GameContent.BaseForm(id);
+            animationPokemon=library?.Find(id,"Idle")!=null ? id : (id=="exeggcute"||id=="exeggutor"?"tangela":PokeChess.Content.GameContent.BaseForm(id));
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();
             SetHardened(false);
             image.raycastTarget=false;image.color=Color.white;
@@ -54,6 +56,7 @@ namespace PokeChess.Client.UI
         public void ShowCombat(BattleState battle,UnitCombatState unit,UnitActionRuntime action,Vector2 facing,float pixelScale=PixelScale)
         {
             UnitInstanceId=unit.UnitInstanceId;
+            SetGuardianForm(unit.IsSynergySummon?battle.Synergies.TeamTier(unit.TeamId,SynergyTraits.Nature):0);
             if(facing.sqrMagnitude>.001f)
                 direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
             if(previousHP>=0 && unit.CurrentHP<previousHP && unit.IsAlive)hurtStart=battle.CurrentTick;
@@ -76,7 +79,7 @@ namespace PokeChess.Client.UI
             }
             bool loop=name=="Idle"||name=="Walk";
             if(name=="Idle")time=(battle.CurrentTick-idleStart)/(double)battle.TickRate;
-            float alpha=1;
+            float alpha = unit.IsSynergyStealthed ? AssassinBattleVisuals.StealthAlpha : 1;
             if(!unit.IsAlive)
             {
                 if(deathStart<0)deathStart=battle.CurrentTick;
@@ -99,6 +102,7 @@ namespace PokeChess.Client.UI
         {
             UnitInstanceId=unit.id;
             if(facing.sqrMagnitude>.001f)direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
+            SetGuardianForm(unit.isSynergySummon?unit.natureTier:0);
             if(previousHP>=0&&unit.hp<previousHP&&unit.hp>0)hurtStart=(long)tick;previousHP=unit.hp;
             string name=unit.action==CombatActionState.Moving?"Walk":unit.action==CombatActionState.Attacking?
                 AttackAnimation():
@@ -107,7 +111,11 @@ namespace PokeChess.Client.UI
             double seconds=(tick-unit.startTick)/tickRate;var animation=library?.Find(animationPokemon,name);
             if(animation!=null&&(unit.action==CombatActionState.Attacking||unit.action==CombatActionState.Casting))seconds=animation.ActionTime(seconds,(unit.effectTick-unit.startTick)/(double)tickRate,(unit.endTick-unit.startTick)/(double)tickRate);
             if(name=="Idle")seconds=(tick-idleStart)/tickRate;
-            float alpha=1;if(unit.hp<=0){if(deathStart<0)deathStart=(long)tick;name="Hurt";seconds=(tick-deathStart)/tickRate;alpha=Mathf.Clamp01(1-(float)seconds/.45f);}
+            bool stealthed = unit.statusDetails != null
+                ? unit.statusDetails.Any(s => s.definition == AssassinBattleVisuals.Stealth && s.startTick <= tick && s.endTick > tick)
+                : (unit.statuses ?? Array.Empty<string>()).Contains(AssassinBattleVisuals.Stealth);
+            float alpha = stealthed ? AssassinBattleVisuals.StealthAlpha : 1;
+            if(unit.hp<=0){if(deathStart<0)deathStart=(long)tick;name="Hurt";seconds=(tick-deathStart)/tickRate;alpha=Mathf.Clamp01(1-(float)seconds/.45f);}
             else if(name=="Idle"&&tick-hurtStart<tickRate/6d){name="Hurt";seconds=(tick-hurtStart)/tickRate;}
             bool hardened=unit.statusDetails!=null
                 ?unit.statusDetails.Any(s=>s.startTick<=tick && s.endTick>tick && IsHarden(s.definition))
@@ -121,17 +129,22 @@ namespace PokeChess.Client.UI
         }
         private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
-            scale*=UnitSizeMultiplier*skillScale;
+            scale*=UnitSizeMultiplier*skillScale*guardianScale;
             var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);
             image.enabled=true;image.sprite=anim.Frames[index];
             var tint=PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Tint ?? Color.white;
+            tint*=guardianTint;
             drawnAlpha=alpha;
             image.color=new Color(tint.r,tint.g,tint.b,skillHidden?0:alpha);
             image.rectTransform.sizeDelta=anim.Frames[index].rect.size*scale;
             image.rectTransform.anchoredPosition=anim.GroundOffsets[index]*scale+SkillLungeOffset;
             return true;
+        }
+        internal void SetGuardianForm(int tier) {
+            guardianScale=tier>=10?1.45f:tier>=6?1.15f:1;
+            guardianTint=tier>=10?new Color(.75f,1,.55f):tier>=6?new Color(.8f,1,.8f):Color.white;
         }
         private string AttackAnimation()
             =>PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Attack ?? "Attack";

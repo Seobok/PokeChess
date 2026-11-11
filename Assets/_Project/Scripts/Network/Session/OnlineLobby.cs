@@ -19,6 +19,7 @@ namespace PokeChess.Network.Session
 
     public sealed partial class OnlineConnection
     {
+        internal const string RulesVersion = "pokechess-alpha-v8-synergy-v12";
         private readonly HashSet<ulong> verifiedPeers=new HashSet<ulong>();
         private bool lobbyPublishing,connectedPublished;
         private double nextLobbyAttempt;
@@ -81,7 +82,7 @@ namespace PokeChess.Network.Session
                 var networkInfo=JsonUtility.FromJson<RecoveryNetworkMetadata>(SessionValue("_session_network")??"");
                 if(string.IsNullOrEmpty(networkInfo?.RelayJoinCode))throw new InvalidOperationException("ReconnectNetworkMetadataMissing");
                 host.SetProperty("reconnectRelay",new SessionProperty(networkInfo.RelayJoinCode,VisibilityPropertyOptions.Member));
-                var info=new MatchStartInfo{matchId=Guid.NewGuid().ToString("N"),gameVersion=Application.version,ruleVersion="pokechess-alpha-v7-wild",players=roster};
+                var info=new MatchStartInfo{matchId=Guid.NewGuid().ToString("N"),gameVersion=Application.version,ruleVersion=RulesVersion,players=roster};
                 host.SetProperty("matchStart",new SessionProperty(JsonUtility.ToJson(info),VisibilityPropertyOptions.Member));await host.SavePropertiesAsync();
                 var deadline=Time.realtimeSinceStartupAsDouble+20;
                 while(true){
@@ -118,7 +119,7 @@ namespace PokeChess.Network.Session
                 try {
                     var info=JsonUtility.FromJson<MatchStartInfo>(SessionValue("matchStart")??"");
                     if(info==null)return;
-                    if(string.IsNullOrEmpty(info.matchId)||info.gameVersion!=Application.version||info.ruleVersion!="pokechess-alpha-v7-wild"||info.players==null||info.players.Length<2||info.players.Length>8||info.players.Distinct().Count()!=info.players.Length||!info.players.Contains(session.CurrentPlayer.Id))throw new InvalidOperationException("InvalidMatchStart");
+                    if(string.IsNullOrEmpty(info.matchId)||info.gameVersion!=Application.version||info.ruleVersion!=RulesVersion||info.players==null||info.players.Length<2||info.players.Length>8||info.players.Distinct().Count()!=info.players.Length||!info.players.Contains(session.CurrentPlayer.Id))throw new InvalidOperationException("InvalidMatchStart");
                     if(LobbyState==LobbyPhase.Starting&&acknowledgedMatch!=info.matchId&&!IsBusy){PublishLobbyState(true,info.matchId);return;}
                     if(LobbyState==LobbyPhase.Started&&acknowledgedMatch==info.matchId)StartInfo=info;
                 }catch(Exception e){Error=e.Message;nextLobbyAttempt=Time.realtimeSinceStartupAsDouble+2;}

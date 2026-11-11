@@ -42,7 +42,8 @@ namespace PokeChess.Content
         {
             var p=FindPokemon(id);
             if(p!=null)return string.IsNullOrEmpty(p.LocalizedName)?p.DisplayName:p.LocalizedName;
-            return id!=null&&skillById.TryGetValue(id,out var s)?s.DisplayName:null;
+            if (id != null && skillById.TryGetValue(id, out var skill)) return skill.DisplayName;
+            return !string.IsNullOrWhiteSpace(id) && catalog.TryGet(id, out var definition) ? definition.DisplayName : null;
         }
         public static string BaseForm(string id)=>FindPokemon(id)==null?id:CreateCatalog().EvolutionRoot(id,out _);
         public static int Stage(string id)
