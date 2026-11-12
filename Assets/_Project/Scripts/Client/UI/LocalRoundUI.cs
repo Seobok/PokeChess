@@ -158,6 +158,12 @@ namespace PokeChess.Client.UI
         {
             if(roundButton==null || RoundLoop==null)return;
             RoundFlow.RefreshState();
+            if (Match.Phase != MatchPhase.Finished && ViewedPlayer.IsEliminated &&
+                (localViewedPlayerId != "p1" || ReferenceEquals(resultPresentationMatch, Match) && eliminationDismissed))
+            {
+                var next = Match.Players.FirstOrDefault(player => !player.IsEliminated);
+                if (next != null) SetLocalPlayerView(next.PlayerId);
+            }
             displayedRound=Match.RoundNumber;displayedPhase=Match.Phase;RenderMatchHud();
             string clock;
             if(Match.Phase==MatchPhase.Finished) clock="MATCH COMPLETE";

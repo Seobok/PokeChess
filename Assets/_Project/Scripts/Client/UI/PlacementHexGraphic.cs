@@ -25,7 +25,10 @@ namespace PokeChess.Client.UI
             foreach(var point in points) vh.AddVert(rect.center+Vector2.Scale(point,rect.size),color,Vector2.zero);
             for(int i=0;i<6;i++) vh.AddTriangle(0,i+1,(i+1)%6+1);
         }
-        public bool IsRaycastLocationValid(Vector2 screenPoint,Camera eventCamera)
+        public bool IsRaycastLocationValid(Vector2 screenPoint,Camera eventCamera) =>
+            ContainsPoint(rectTransform, screenPoint, eventCamera);
+
+        internal static bool ContainsPoint(RectTransform rectTransform, Vector2 screenPoint, Camera eventCamera)
         {
             if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform,screenPoint,eventCamera,out var p)) return false;
             var rect=rectTransform.rect; p-=rect.center;

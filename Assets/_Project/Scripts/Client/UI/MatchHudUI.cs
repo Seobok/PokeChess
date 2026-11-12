@@ -3,19 +3,18 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using PokeChess.Core.Match;
+using PokeChess.Core.Pokemon;
 namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
-        private sealed class ProfileRow {
-            public RectTransform Rect; public UnityEngine.UI.Image Background,HP;
-            public UnityEngine.UI.Text Name,State,Damage;
-            public int PreviousHP;public float DamageUntil;public int DamageValue;
-        }
         private readonly Dictionary<string,ProfileRow> hudProfiles=new Dictionary<string,ProfileRow>();
         private MatchState hudMatch;
-        private RectTransform sidebar;
-        private UnityEngine.UI.Text hudRound,hudNotice,hudPlayers;
+        private UnityEngine.UI.Text hudRound,hudNotice,hudTime,hudCapacityText;
+        private RectTransform hudCapacity;
+        private readonly UnityEngine.UI.Image[] hudRoundIcons = new UnityEngine.UI.Image[7];
+        private UnityEngine.UI.Image hudRoundPointer;
+        private Sprite[] hudBattleIcons, hudWildIcons;
         private UnityEngine.UI.Image hudTimer,hudTimerBorder;
         public float HudTimerProgress {get;private set;}
         public string HudTimerKind {get;private set;}
@@ -29,32 +28,121 @@ namespace PokeChess.Client.UI
         public void RequestPlayerView(string id) {
             if(IsOnlineMatch){WatchOnlinePlayer(id);return;}
             if(Match==null||!Match.Players.Any(p=>p.PlayerId==id)||localViewedPlayerId==id)return;
-            CancelDrag("View changed.");selectedUnitId=null;localViewedPlayerId=id;
+            SetLocalPlayerView(id);
+            Render();
+        }
+
+        private void SetLocalPlayerView(string id)
+        {
+            CloseSynergyTarget();
+            ClearDragState();
+            selectedUnitId = hoveredUnitId = null;
+            hoveredShopSlot = -1;
+            unitInfoPinned = false;
+            HideUnitInfoHint();
+            localViewedPlayerId = id;
+            Feedback("View changed.");
             foreach(var token in combatTokens.Values)Destroy(token.transform.parent.gameObject);combatTokens.Clear();ClearFighterSprites();lastVisualBattle=null;
-            Render();PlayerViewRequested?.Invoke(id);
+            PlayerViewRequested?.Invoke(id);
         }
         private UnityEngine.UI.Image HudImage(string name,Transform parent,Vector2 size,Vector2 pos,Color color) {
             var rect=Rect(name,parent,size,pos);var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();
             image.color=color;image.raycastTarget=false;return image;
         }
         private void BuildMatchHud() {
-            var badge=HudImage("RoundBadge",canvasRect,new Vector2(180,30),new Vector2(0,337),new Color(.12f,.2f,.3f));
-            hudRound=Label("RoundBadgeText",badge.transform,"",19,new Vector2(175,28),Vector2.zero);
-            hudTimerBorder=HudImage("TimerBorder",canvasRect,new Vector2(286,14),new Vector2(0,310),new Color(.3f,.4f,.5f));
-            var track=HudImage("TimerTrack",hudTimerBorder.transform,new Vector2(280,8),Vector2.zero,new Color(.04f,.07f,.11f));
-            hudTimer=HudImage("TimerFill",track.transform,new Vector2(280,8),Vector2.zero,Color.white);
-            hudTimer.rectTransform.anchorMin=hudTimer.rectTransform.anchorMax=new Vector2(0,.5f);
-            hudTimer.rectTransform.pivot=new Vector2(0,.5f);hudTimer.rectTransform.anchoredPosition=Vector2.zero;
-            hudNotice=Label("HudNotice",canvasRect,"",12,new Vector2(600,20),new Vector2(0,288));
-            sidebar=Panel("PlayerSidebar",new Vector2(205,334),new Vector2(-510,130));
-            sidebar.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;
-            hudPlayers=Label("PlayerCount",sidebar,"",13,new Vector2(195,24),new Vector2(0,149));
+            var frame = HudSprite("RoundBadge", canvasRect, new Vector2(600, 50), new Vector2(0, 331), "HudRoundFrame");
+            var ink = new Color32(13, 23, 55, 255);
+            hudRound = Label("RoundBadgeText", frame.transform, "", 25, new Vector2(82, 35), new Vector2(-202, 3));
+            hudRound.fontStyle = FontStyle.Bold;
+            hudRound.color = ink;
+            hudTime = Label("RoundTime", frame.transform, "", 19, new Vector2(75, 32), new Vector2(217, 3));
+            hudTime.fontStyle = FontStyle.Bold;
+            hudTime.color = ink;
+            var clock = HudSprite("RoundClock", frame.transform, new Vector2(23, 23), new Vector2(166, 3), "HudClock");
+            clock.color = ink;
+            for (int i = 0; i < hudRoundIcons.Length; i++)
+                hudRoundIcons[i] = HudImage("RoundIcon_" + i, frame.transform, new Vector2(25, 25),
+                    new Vector2((i - 3) * 35, 3), Color.white);
+            hudRoundPointer = HudSprite("CurrentRoundPointer", frame.transform, new Vector2(16, 9), Vector2.zero, "HudPhasePointer");
+            hudBattleIcons = LoadRoundIcons("HudPhaseBattle");
+            hudWildIcons = LoadRoundIcons("HudPhaseWild");
+
+            hudTimerBorder = HudSprite("TimerTrack", canvasRect, new Vector2(443, 16), new Vector2(0, 299), "HudTimerTrack");
+            hudTimer = HudSprite("TimerFill", hudTimerBorder.transform, new Vector2(424, 10), Vector2.zero, "HudTimerFill");
+            hudTimer.type = UnityEngine.UI.Image.Type.Filled;
+            hudTimer.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
+            hudNotice = Label("HudNotice", canvasRect, "", 12, new Vector2(600, 20), new Vector2(0, 279));
+
+            Vector2 enemyCenter = (TablePoint(new BoardPosition(3, 4)) + TablePoint(new BoardPosition(3, 7))) * .5f;
+            hudCapacity = Rect("BoardCapacity", canvasRect, new Vector2(270, 80), enemyCenter);
+            hudCapacity.localScale = new Vector3(1, .78f, 1);
+            var ball = HudSprite("CapacityBall", hudCapacity, new Vector2(72, 56), new Vector2(-77, 0), "HudCapacityBall");
+            ball.color = new Color(1, 1, 1, .67f);
+            hudCapacityText = Label("CapacityCount", hudCapacity, "", 58, new Vector2(178, 80), new Vector2(35, 0));
+            hudCapacityText.fontStyle = FontStyle.BoldAndItalic;
+            hudCapacity.gameObject.SetActive(false);
+
         }
+
+        private UnityEngine.UI.Image HudSprite(string name, Transform parent, Vector2 size, Vector2 position, string asset)
+        {
+            var image = HudImage(name, parent, size, position, Color.white);
+            image.sprite = Resources.Load<Sprite>("MainGameHud/" + asset);
+            return image;
+        }
+
+        private static Sprite[] LoadRoundIcons(string asset) => new[]
+        {
+            Resources.Load<Sprite>("MainGameHud/" + asset),
+            Resources.Load<Sprite>("MainGameHud/" + asset + "Active"),
+            Resources.Load<Sprite>("MainGameHud/" + asset + "Upcoming")
+        };
+
+        private void RenderRoundStrip(int round, bool wildRoundsEnabled, double? remaining)
+        {
+            hudRound.text = round.ToString("00");
+            if (remaining.HasValue)
+            {
+                int seconds = (int)Math.Ceiling(Math.Max(0, remaining.Value));
+                hudTime.text = $"{seconds / 60:00}:{seconds % 60:00}";
+            }
+            else hudTime.text = "–";
+
+            int first = Math.Max(1, round - 3);
+            for (int i = 0; i < hudRoundIcons.Length; i++)
+            {
+                int iconRound = first + i;
+                var icons = wildRoundsEnabled && WildRoundSystem.IsWildRound(iconRound) ? hudWildIcons : hudBattleIcons;
+                hudRoundIcons[i].sprite = icons[iconRound < round ? 0 : iconRound == round ? 1 : 2];
+            }
+            hudRoundPointer.gameObject.SetActive(round >= 1);
+            hudRoundPointer.rectTransform.anchoredPosition = new Vector2((round - first - 3) * 35, -15);
+        }
+
+        private void RenderHudTimer(bool visible, bool warning)
+        {
+            hudTimerBorder.gameObject.SetActive(visible);
+            hudTimer.fillAmount = HudTimerProgress;
+            hudTime.color = warning ? new Color32(160, 54, 19, 255) : new Color32(13, 23, 55, 255);
+            hudTimer.color = warning
+                ? new Color(1, 1, 1, .75f + .25f * Mathf.Sin(Time.unscaledTime * 5))
+                : Color.white;
+        }
+
+        private void RenderBoardCapacity(bool visible, int deployed, int capacity)
+        {
+            hudCapacity.gameObject.SetActive(visible);
+            if (!visible) return;
+            hudCapacityText.text = $"{deployed} / {capacity}";
+            hudCapacityText.color = deployed < capacity
+                ? new Color(.58f, 1f, .82f, .78f)
+                : new Color(.76f, .9f, .96f, .66f);
+        }
+
         private void RenderMatchHud() {
             if(hudRound==null||RoundFlow==null)return;
-            hudRound.text=Match.RoundNumber+"   "+(Match.Phase==MatchPhase.Preparation?"◇":Match.Phase==MatchPhase.Combat?"◆":Match.Phase==MatchPhase.Result?"□":"✓");
             var own=RoundLoop.GetBattleFor(localViewedPlayerId);
-            string notice="";string kind="Idle";double progress=0;
+            string notice="";string kind="Idle";double progress=0; double? remaining=null;
             if(Match.Phase==MatchPhase.Finished)notice="MATCH COMPLETE";
             else if(!automaticRoundFlow)notice="Paused for input test";
             else if(RoundFlow.Fault!=null)notice="Round paused — retry required";
@@ -63,9 +151,9 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Preparation&&!RoundLoop.PreparationReady)notice="Preparing round…";
             else if(Match.Phase==MatchPhase.Result&&!RoundLoop.IsSettled)notice="Settling results…";
             else if(Match.Phase==MatchPhase.Preparation) {
-                kind="Preparation";progress=RoundFlow.RemainingSeconds/RoundFlow.Rules.PreparationSeconds;
+                kind="Preparation";remaining=RoundFlow.RemainingSeconds;progress=remaining.Value/RoundFlow.Rules.PreparationSeconds;
             } else if(Match.Phase==MatchPhase.Result) {
-                kind="Result";progress=RoundFlow.Rules.ResultSeconds>0?RoundFlow.RemainingSeconds/RoundFlow.Rules.ResultSeconds:0;
+                kind="Result";remaining=RoundFlow.RemainingSeconds;progress=RoundFlow.Rules.ResultSeconds>0?remaining.Value/RoundFlow.Rules.ResultSeconds:0;
             } else if(Match.Phase==MatchPhase.Combat) {
                 if(own==null||own.IsComplete)notice="Waiting for other battles";
                 else if(own.Battle!=null) {
@@ -73,63 +161,20 @@ namespace PokeChess.Client.UI
                     kind=own.Battle.IsOvertime?"Overtime":"Combat";
                     double overtime=own.Battle.OvertimeStartTick/(double)own.Battle.TickRate;
                     double limit=own.Battle.TimeLimitTick/(double)own.Battle.TickRate;
-                    progress=kind=="Overtime"?(limit-elapsed)/(limit-overtime):(overtime-elapsed)/overtime;
+                    remaining=(kind=="Overtime"?limit:overtime)-elapsed;
+                    double duration=kind=="Overtime"?limit-overtime:overtime;
+                    progress=duration>0?remaining.Value/duration:0;
                 }
             }
             if(kind=="Idle"&&Match.Phase!=MatchPhase.Finished&&ReferenceEquals(hudMatch,Match))progress=HudTimerProgress;
             HudTimerKind=kind;HudTimerProgress=Mathf.Clamp01((float)progress);
-            var color=kind=="Preparation"?new Color(.2f,.6f,1):kind=="Combat"?new Color(1,.58f,.18f):
-                kind=="Overtime"?new Color(1,.22f,.25f):kind=="Result"?new Color(.7f,.4f,.95f):new Color(.45f,.5f,.6f);
-            bool warning=kind=="Overtime"||kind=="Preparation"&&RoundFlow.RemainingSeconds<=5;
-            float pulse=warning?.7f+.3f*Mathf.Abs(Mathf.Sin(Time.unscaledTime*5)):1;
-            hudTimer.color=new Color(color.r,color.g,color.b,kind=="Result"?.55f+.45f*HudTimerProgress:pulse);
-            hudTimerBorder.color=warning?Color.Lerp(color,Color.white,1-pulse):color*.65f;
-            hudTimer.rectTransform.sizeDelta=new Vector2(280*HudTimerProgress,8);
-            hudNotice.text=(localViewedPlayerId=="p1"?"":"WATCHING "+localViewedPlayerId+" · ")+notice;
-            hudTimerBorder.gameObject.SetActive(Match.Phase!=MatchPhase.Finished&&!(Match.Phase==MatchPhase.Combat&&(own==null||own.IsComplete)));
-            if(!ReferenceEquals(hudMatch,Match)) {
-                foreach(var row in hudProfiles.Values){row.Rect.gameObject.SetActive(false);Destroy(row.Rect.gameObject);}
-                hudProfiles.Clear();hudMatch=Match;
-            }
-            var ordered=Match.Players.OrderBy(p=>p.PlayerId=="p1"?0:p.IsEliminated?2:1).ToArray();
-            hudPlayers.text="ALIVE "+ordered.Count(p=>p.HP>0&&!p.IsEliminated)+" / "+ordered.Length;
-            float top=135;
-            foreach(var p in ordered) {
-                bool self=p.PlayerId=="p1";float height=self?48:32;
-                if(!hudProfiles.TryGetValue(p.PlayerId,out var row)) {
-                    var image=HudImage("Profile_"+p.PlayerId,sidebar,new Vector2(195,height),Vector2.zero,Color.white);
-                    row=new ProfileRow{Rect=image.rectTransform,Background=image,PreviousHP=p.HP};
-                    image.raycastTarget=true;var button=image.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;string viewId=p.PlayerId;button.onClick.AddListener(()=>RequestPlayerView(viewId));
-                    var avatar=HudImage("Avatar",row.Rect,new Vector2(self?32:22,self?32:22),new Vector2(-79,0),new Color(.22f,.35f,.46f));
-                    Label("AvatarText",avatar.transform,p.PlayerId.ToUpperInvariant(),11,new Vector2(32,24),Vector2.zero);
-                    row.Name=Label("Name",row.Rect,"",self?14:12,new Vector2(108,18),new Vector2(-5,self?12:8));
-                    row.Name.alignment=TextAnchor.MiddleLeft;
-                    row.State=Label("Status",row.Rect,"",self?10:9,new Vector2(130,16),new Vector2(2,-4));
-                    row.State.alignment=TextAnchor.MiddleLeft;
-                    var track=HudImage("HPTrack",row.Rect,new Vector2(125,3),new Vector2(8,-height/2+4),new Color(.05f,.08f,.11f));
-                    row.HP=HudImage("HPFill",track.transform,new Vector2(125,3),Vector2.zero,new Color(.25f,.85f,.55f));
-                    row.HP.rectTransform.anchorMin=row.HP.rectTransform.anchorMax=new Vector2(0,.5f);row.HP.rectTransform.pivot=new Vector2(0,.5f);
-                    row.Damage=Label("Damage",row.Rect,"",12,new Vector2(35,18),new Vector2(77,8));
-                    row.Damage.color=new Color(1,.45f,.4f);hudProfiles.Add(p.PlayerId,row);
-                }
-                row.Rect.anchoredPosition=new Vector2(0,top-height/2);top-=height+4;
-                if(p.HP<row.PreviousHP){row.DamageValue=row.PreviousHP-p.HP;row.DamageUntil=Time.unscaledTime+1.5f;}
-                row.PreviousHP=p.HP;row.Damage.text=Time.unscaledTime<row.DamageUntil?"-"+row.DamageValue:"";
-                row.Name.text=(self?"YOU · ":"")+p.PlayerId+"  "+p.HP+" HP";
-                string state=p.FinalPlacement==1?"#1 WINNER":p.IsEliminated?"#"+p.FinalPlacement+" "+
-                    (p.Elimination?.Reason==EliminationReason.Surrender?"SURRENDER":"OUT"):"IN MATCH";
-                bool opponent=Match.Phase==MatchPhase.Combat&&own!=null&&own.Pairing.OpponentOf(localViewedPlayerId)==p.PlayerId;
-                if(!p.IsEliminated&&p.FinalPlacement!=1) {
-                    var pair=RoundLoop.GetBattleFor(p.PlayerId);
-                    if(Match.Phase==MatchPhase.Combat)state=pair==null?"WAITING":pair.IsComplete?"BATTLE DONE":"IN BATTLE";
-                    else if(Match.Phase==MatchPhase.Preparation)state="READY TO DEPLOY";
-                    else if(Match.Phase==MatchPhase.Result)state="ROUND COMPLETE";
-                }
-                row.State.text=(p.PlayerId==localViewedPlayerId?"VIEW · ":opponent?"VS · ":"")+state;
-                row.Background.color=p.PlayerId==localViewedPlayerId?new Color(.16f,.35f,.43f):p.IsEliminated?new Color(.09f,.12f,.16f):opponent?new Color(.32f,.23f,.13f):self?new Color(.1f,.27f,.36f):new Color(.12f,.18f,.25f);
-                row.Name.color=row.State.color=p.IsEliminated?new Color(.55f,.6f,.65f):Color.white;
-                row.HP.rectTransform.sizeDelta=new Vector2(125*Mathf.Clamp01(p.HP/(float)p.Rules.StartingHP),3);
-            }
+            RenderRoundStrip(Match.RoundNumber, Match.Rules.EnableWildRounds, remaining);
+            RenderHudTimer(Match.Phase!=MatchPhase.Finished&&!(Match.Phase==MatchPhase.Combat&&(own==null||own.IsComplete)),
+                kind=="Overtime"||kind=="Preparation"&&remaining<=5);
+            hudNotice.text=notice;
+            RenderBoardCapacity(Match.Phase==MatchPhase.Preparation&&localViewedPlayerId=="p1"&&!Player.IsEliminated,
+                Player.DeployedUnitCount, Player.BoardCapacity);
+            RenderLocalSpectators(own);
         }
     }
 }

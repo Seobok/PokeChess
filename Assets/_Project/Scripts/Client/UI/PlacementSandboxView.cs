@@ -216,7 +216,7 @@ namespace PokeChess.Client.UI
             if(IsDragging) CancelDrag("New drag.");
             var unit=Player.GetUnit(id);var preview=placements.Preview(Match,"p1",id,unit.Placement,Player.PlacementRevision);
             if(!preview.Accepted) { LastResult=preview;Feedback("Rejected: "+preview.Reason);Render();return; }
-            dragged=id;dragRevision=Player.PlacementRevision;ghostLabel.text=id;ghost.gameObject.SetActive(true);ghost.SetAsLastSibling();Render();Drag(point);
+            dragged=id;dragRevision=Player.PlacementRevision;ShowDraggedPokemon(unit.DefinitionId,unit.Placement);Render();Drag(point);
         }
         public void Drag(Vector2 point)
         {
@@ -224,33 +224,45 @@ namespace PokeChess.Client.UI
             if(IsOnlineMatch){DragOnline(point);return;}
             if(!IsDragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
-            foreach(var slot in slots) slot.Graphic.color=BaseSlotColor(slot);var destination=Hit(point);
-            shopFrame.GetComponent<UnityEngine.UI.Image>().color=new Color(.065f,.105f,.16f);
-            if(HitShop(point)) { PreviewShopSale();return; }
-            if(destination==null) { Feedback("Outside board / bench / shop: release to cancel.");return; }
-            var preview=placements.Preview(Match,"p1",dragged,destination.Placement,dragRevision);
-            destination.Graphic.color=preview.Accepted ? (preview.Outcome==PlacementOutcome.Swapped ? new Color(.45f,.31f,.10f) : new Color(.08f,.36f,.29f)) : new Color(.48f,.12f,.17f);
-            Feedback(preview.Accepted ? preview.Outcome+ (preview.TargetUnitId==null ? "" : " with "+preview.TargetUnitId) : "Rejected: "+preview.Reason);
+            var destination = Hit(point);
+            var preview = destination == null ? null : placements.Preview(Match, "p1", dragged, destination.Placement, dragRevision);
+            int? price = CanSellDraggedUnit() ? commands.SalePrice(dragged) : (int?)null;
+            UpdatePlacementDragArt(point, destination, preview?.Accepted == true, price);
+            if (sellHovered)
+            {
+                Feedback(price.HasValue ? $"Release to sell / +{price.Value}G" : "Sale unavailable for this unit.");
+                return;
+            }
+            if (preview == null) { Feedback("Outside board / bench / sale area: release to cancel."); return; }
+            Feedback(preview.Accepted ? preview.Outcome.ToString() : "Rejected: " + preview.Reason);
         }
         public void EndDrag(Vector2 point)
         {
             if (draggingNatureGuardian) { EndNatureGuardianDrag(point); return; }
             if(IsOnlineMatch){EndOnlineDrag(point);return;}
             if(!IsDragging) return;
-            if(HitShop(point))
+            if(HitSellDrop(point))
             {
-                string id=dragged;long revision=dragRevision;LastResult=null;Perform(()=>commands.Sell(id,revision));return;
+                string id=dragged;long revision=dragRevision;LastResult=null;
+                if(CanSellDraggedUnit()) Perform(()=>commands.Sell(id,revision));
+                else CancelDrag("Sale unavailable for this unit.");
+                return;
             }
             var destination=Hit(point);
             if(destination!=null) { LastResult=placements.Move(Match,"p1",dragged,destination.Placement,dragRevision);Feedback(LastResult.Accepted ? LastResult.Outcome.ToString() : "Rejected: "+LastResult.Reason); }
             else { LastResult=null;Feedback("Cancelled: dropped outside board / bench."); }
             if(LastResult?.Accepted==true&&LastResult.Outcome!=PlacementOutcome.Unchanged)PlayActionSound(ActionSoundKind.Placement);
-            dragged=null;ghost.gameObject.SetActive(false);Render();Match.Pool.AssertConservation(Match);
+            dragged=null;ClearPlacementDragArt();ghost.gameObject.SetActive(false);Render();Match.Pool.AssertConservation(Match);
         }
-        public void CancelDrag(string message)
+        private void ClearDragState()
         {
             CancelEarthRockDrag();CancelNatureGuardianDrag();CancelItemDrag();HideItemHint();
-            dragged=null;if(ghost!=null) ghost.gameObject.SetActive(false);
+            dragged=null;ClearPlacementDragArt();if(ghost!=null) ghost.gameObject.SetActive(false);
+        }
+
+        public void CancelDrag(string message)
+        {
+            ClearDragState();
             if(Match!=null) Render();Feedback(message);
         }
     }

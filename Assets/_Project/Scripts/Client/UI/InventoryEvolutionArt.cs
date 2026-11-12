@@ -1,0 +1,256 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using PokeChess.Core.Pokemon;
+
+namespace PokeChess.Client.UI
+{
+    public sealed partial class PlacementSandboxView
+    {
+        private const int ToolsPerPage = 5;
+        private int inventoryPage;
+        private UnityEngine.UI.Button inventoryPrev, inventoryNext;
+        private UnityEngine.UI.Text inventoryPageText;
+        private Sprite inventoryToolSlot, inventoryEmptySlot, inventoryMoonStoneSlot, inventoryMoonStone;
+        private Sprite evolutionBoardTarget, evolutionBoardHovered, evolutionBenchTarget, evolutionBenchHovered;
+        private readonly Dictionary<Slot, UnityEngine.UI.Image> evolutionMarks = new Dictionary<Slot, UnityEngine.UI.Image>();
+        private readonly Dictionary<Slot, PokemonDefinition> evolutionTargets = new Dictionary<Slot, PokemonDefinition>();
+        private RectTransform evolutionDragPreview;
+        private EvolutionCard primaryEvolutionCard, nextEvolutionCard;
+        private Slot evolutionHoveredSlot;
+
+        private sealed class EvolutionCard
+        {
+            public RectTransform Root;
+            public UnityEngine.UI.Text Header, Forms, Skill, Cost;
+            public UnityEngine.UI.Image From, To, SkillIcon;
+        }
+
+        private static Sprite InventorySprite(string name) => Resources.Load<Sprite>("InventoryEvolution/" + name);
+
+        private UnityEngine.UI.Image InventoryImage(string name, Transform parent, Vector2 size, Vector2 position, Sprite sprite)
+        {
+            var image = HudImage(name, parent, size, position, Color.white);
+            image.sprite = sprite;
+            return image;
+        }
+
+        private UnityEngine.UI.Text InventoryText(string name, Transform parent, string text, int size, Vector2 bounds,
+            Vector2 position, bool light = false)
+        {
+            var label = ItemLabel(name, parent, text, size, bounds, position);
+            label.color = light ? Color.white : new Color32(19, 23, 55, 255);
+            label.fontStyle = FontStyle.Bold;
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 8;
+            label.resizeTextMaxSize = size;
+            return label;
+        }
+
+        private void BuildInventoryArt()
+        {
+            inventoryToolSlot = InventorySprite("InventoryToolSlot");
+            inventoryEmptySlot = InventorySprite("InventoryEmptySlot");
+            inventoryMoonStoneSlot = InventorySprite("InventoryMoonStoneSlot");
+            inventoryMoonStone = InventorySprite("InventoryMoonStone");
+            itemInventoryPanel = InventoryImage("ItemIcons", canvasRect, new Vector2(134, 302),
+                new Vector2(-389, 114), InventorySprite("InventoryFrame")).rectTransform;
+            var header = InventoryImage("Header", itemInventoryPanel, new Vector2(120, 34), new Vector2(0, 127), InventorySprite("InventoryHeader"));
+            InventoryText("Title", header.transform, "도구 보관함", 15, new Vector2(111, 30), Vector2.zero, true);
+            var ep = InventoryImage("EPBadge", itemInventoryPanel, new Vector2(116, 24), new Vector2(0, 95), InventorySprite("InventoryEpBadge"));
+            itemInventoryTitle = InventoryText("EP", ep.transform, "", 13, new Vector2(109, 21), Vector2.zero);
+
+            for (int i = 0; i < inventoryChoices.Length; i++)
+            {
+                bool returnTools = i == 1;
+                int gridIndex = i == 0 ? 0 : i - 1;
+                var size = returnTools ? new Vector2(107, 21) : new Vector2(51, 45);
+                var position = returnTools ? new Vector2(0, -130) :
+                    new Vector2(gridIndex % 2 == 0 ? -28 : 28, 58 - (gridIndex / 2) * 50);
+                var button = ItemButton("InventoryItem_" + i, itemInventoryPanel, size, position, () => {});
+                inventoryChoices[i] = button;
+                button.GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
+                var background = button.GetComponent<UnityEngine.UI.Image>();
+                background.sprite = i == 0 ? inventoryMoonStoneSlot : inventoryToolSlot;
+                background.color = Color.white;
+                InventoryImage("Icon", button.transform, new Vector2(31, 31), new Vector2(0, i == 0 ? 4 : 0), null).preserveAspect = true;
+                if (i == 0) InventoryText("Count", button.transform, "", 9, new Vector2(44, 14), new Vector2(0, -15));
+                if (returnTools) InventoryText("ReturnGlyph", button.transform, "↶ 도구 회수", 11, size, Vector2.zero);
+                var drag = button.gameObject.AddComponent<ItemDragToken>();
+                drag.View = this;
+                drag.Slot = i;
+            }
+            itemReturnButton = inventoryChoices[1];
+
+            var page = InventoryImage("PageBadge", itemInventoryPanel, new Vector2(59, 20), new Vector2(0, -101), InventorySprite("InventoryPageBadge"));
+            inventoryPageText = InventoryText("Page", page.transform, "", 12, new Vector2(56, 19), Vector2.zero);
+            inventoryPrev = BuildInventoryPageButton("PreviousPage", -44, -1, InventorySprite("InventoryPagePrev"));
+            inventoryNext = BuildInventoryPageButton("NextPage", 44, 1, InventorySprite("InventoryPageNext"));
+        }
+
+        private UnityEngine.UI.Button BuildInventoryPageButton(string name, float x, int direction, Sprite sprite)
+        {
+            var image = InventoryImage(name, itemInventoryPanel, new Vector2(20, 23), new Vector2(x, -101), sprite);
+            image.raycastTarget = true;
+            var button = image.gameObject.AddComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = image;
+            button.onClick.AddListener(() =>
+            {
+                if (IsItemDragging || !button.interactable) return;
+                inventoryPage += direction;
+                HideItemHint();
+                RenderItemWildUI();
+            });
+            return button;
+        }
+
+        private void BuildEvolutionDragPreview()
+        {
+            evolutionBoardTarget = InventorySprite("EvolutionBoardTarget");
+            evolutionBoardHovered = InventorySprite("EvolutionBoardHovered");
+            evolutionBenchTarget = InventorySprite("EvolutionBenchTarget");
+            evolutionBenchHovered = InventorySprite("EvolutionBenchHovered");
+            evolutionDragPreview = Rect("MoonStonePreview", canvasRect, Vector2.zero, Vector2.zero);
+            var arrow = InventorySprite("EvolutionArrow");
+            primaryEvolutionCard = BuildEvolutionCard("CurrentEvolution", true, arrow);
+            nextEvolutionCard = BuildEvolutionCard("NextEvolution", false, arrow);
+            evolutionDragPreview.gameObject.SetActive(false);
+        }
+
+        private EvolutionCard BuildEvolutionCard(string name, bool primary, Sprite arrow)
+        {
+            var card = new EvolutionCard();
+            string asset = primary ? "EvolutionPreviewFrame" : "EvolutionNextFrame";
+            Vector2 size = primary ? new Vector2(251, 139) : new Vector2(207, 104);
+            card.Root = InventoryImage(name, evolutionDragPreview, size,
+                primary ? new Vector2(0, 0) : new Vector2(0, -126), InventorySprite(asset)).rectTransform;
+            card.Header = InventoryText("Title", card.Root, primary ? "" : "다음 진화", primary ? 14 : 10,
+                primary ? new Vector2(228, 24) : new Vector2(78, 17), new Vector2(0, primary ? 49 : 39), true);
+            float formX = primary ? 58 : 44;
+            float imageY = primary ? 2 : 5;
+            Vector2 portraitSize = primary ? new Vector2(52, 48) : new Vector2(39, 36);
+            card.From = InventoryImage("From", card.Root, portraitSize, new Vector2(-formX, imageY), null);
+            card.To = InventoryImage("To", card.Root, portraitSize, new Vector2(formX, imageY), null);
+            card.From.preserveAspect = card.To.preserveAspect = true;
+            InventoryImage("Arrow", card.Root, new Vector2(20, 15), new Vector2(0, imageY), arrow);
+            if (!primary)
+                card.Forms = InventoryText("Forms", card.Root, "", 11, new Vector2(187, 17), new Vector2(0, -21));
+            float skillY = primary ? -45 : -38;
+            card.SkillIcon = InventoryImage("SkillIcon", card.Root, new Vector2(17, 17),
+                new Vector2(primary ? -99 : -80, skillY), null);
+            card.SkillIcon.preserveAspect = true;
+            card.Skill = InventoryText("Skill", card.Root, "", primary ? 12 : 10,
+                new Vector2(primary ? 158 : 144, 23), new Vector2(primary ? -16 : 4, skillY));
+            if (primary)
+                card.Cost = InventoryText("Cost", card.Root, "", 12, new Vector2(45, 23), new Vector2(93, skillY));
+            return card;
+        }
+
+        private void SetEvolutionCard(EvolutionCard card, PokemonDefinition from, PokemonDefinition to, int cost)
+        {
+            string forms = KoreanInfo(from.Id) + " → " + KoreanInfo(to.Id);
+            if (card.Forms == null) card.Header.text = forms;
+            else card.Forms.text = forms;
+            SetEvolutionPortrait(card.From, from.Id);
+            SetEvolutionPortrait(card.To, to.Id);
+            card.SkillIcon.sprite = unitPanelLibrary?.GetSkillIcon(to.SkillId) ?? Resources.Load<Sprite>("SkillIcons/" + to.SkillId);
+            card.SkillIcon.enabled = card.SkillIcon.sprite != null;
+            card.Skill.text = (card.Cost != null ? "진화 후 기술 · " : "") + KoreanInfo(to.SkillId);
+            if (card.Cost != null) card.Cost.text = $"{cost} EP";
+        }
+
+        private void SetEvolutionPortrait(UnityEngine.UI.Image image, string id)
+        {
+            var idle = unitPortraitLibrary?.Find(id, "Idle")
+                ?? unitPortraitLibrary?.Find(PokeChess.Content.GameContent.BaseForm(id), "Idle");
+            image.sprite = idle?.Frames?.FirstOrDefault();
+            image.enabled = image.sprite != null;
+        }
+
+        private void BeginEvolutionHighlights()
+        {
+            if (IsOnlineMatch)
+            {
+                foreach (var unit in onlineService.LocalMatchState.units)
+                    if (CanEvolveTarget(unit.id))
+                        evolutionTargets.Add(FindSlot(OnlinePlacement(unit)), catalog.Get(unit.definitionId));
+            }
+            else
+            {
+                foreach (var unit in Player.Units)
+                    if (CanEvolveTarget(unit.InstanceId))
+                        evolutionTargets.Add(FindSlot(unit.Placement), catalog.Get(unit.DefinitionId));
+            }
+            var layer = canvasRect.Find("PlacementArt");
+            foreach (var slot in evolutionTargets.Keys)
+            {
+                if (!evolutionMarks.TryGetValue(slot, out var mark))
+                {
+                    mark = InventoryImage("EvolutionTarget", layer, slot.Rect.sizeDelta, slot.Rect.anchoredPosition, null);
+                    evolutionMarks.Add(slot, mark);
+                }
+                mark.sprite = slot.Placement.Kind == PlacementKind.Board ? evolutionBoardTarget : evolutionBenchTarget;
+                mark.gameObject.SetActive(true);
+            }
+        }
+
+        private Slot EvolutionSlotAt(Vector2 point, Slot tile)
+        {
+            if (ItemTarget(tile) != null) return tile;
+            Slot hit = null;
+            int frontmost = -1;
+            foreach (var slot in evolutionTargets.Keys)
+            {
+                var id = ItemTarget(slot);
+                if (id == null || !tokens.TryGetValue(id, out var token) || !token.gameObject.activeInHierarchy) continue;
+                var sprite = token.Find("PokemonSprite")?.GetComponent<PokemonSpriteView>()?.CharacterImage;
+                if (sprite == null || !sprite.enabled || !RectTransformUtility.RectangleContainsScreenPoint(sprite.rectTransform, point, null)) continue;
+                int order = token.GetSiblingIndex();
+                if (order <= frontmost) continue;
+                frontmost = order;
+                hit = slot;
+            }
+            return hit;
+        }
+
+        private void UpdateEvolutionHover(Slot slot)
+        {
+            if (slot == evolutionHoveredSlot) return;
+            if (evolutionHoveredSlot != null && evolutionMarks.TryGetValue(evolutionHoveredSlot, out var previous))
+                previous.sprite = evolutionHoveredSlot.Placement.Kind == PlacementKind.Board ? evolutionBoardTarget : evolutionBenchTarget;
+            evolutionHoveredSlot = slot;
+            if (slot == null || !evolutionTargets.TryGetValue(slot, out var definition))
+            {
+                evolutionDragPreview.gameObject.SetActive(false);
+                return;
+            }
+
+            evolutionMarks[slot].sprite = slot.Placement.Kind == PlacementKind.Board ? evolutionBoardHovered : evolutionBenchHovered;
+            var option = definition.Evolutions[0];
+            var target = catalog.Get(option.TargetDefinitionId);
+            SetEvolutionCard(primaryEvolutionCard, definition, target, option.EvolutionPointCost);
+            bool hasNext = target.Evolutions.Count == 1;
+            nextEvolutionCard.Root.gameObject.SetActive(hasNext);
+            if (hasNext)
+            {
+                var next = target.Evolutions[0];
+                SetEvolutionCard(nextEvolutionCard, target, catalog.Get(next.TargetDefinitionId), next.EvolutionPointCost);
+            }
+            var targetPoint = slot.Rect.anchoredPosition;
+            float x = targetPoint.x + (targetPoint.x > 65 ? -155 : 155);
+            float y = Mathf.Clamp(targetPoint.y + 55, hasNext ? 62 : -43, 230);
+            evolutionDragPreview.anchoredPosition = new Vector2(Mathf.Clamp(x, -200, 250), y);
+            evolutionDragPreview.gameObject.SetActive(true);
+            evolutionDragPreview.SetAsLastSibling();
+            itemDragGhost.SetAsLastSibling();
+        }
+
+        private void ClearEvolutionHighlights()
+        {
+            foreach (var mark in evolutionMarks.Values) mark.gameObject.SetActive(false);
+            evolutionTargets.Clear();
+            evolutionHoveredSlot = null;
+            if (evolutionDragPreview != null) evolutionDragPreview.gameObject.SetActive(false);
+        }
+    }
+}

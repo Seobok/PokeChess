@@ -21,38 +21,37 @@ namespace PokeChess.Client.UI
         }
         private void RenderOnlineHud(OwnerMatchState owner,PublicMatchState pub)
         {
-            hudRound.text=pub.round+"   "+(pub.phase==MatchPhase.Preparation?"◇":pub.phase==MatchPhase.Combat?"◆":pub.phase==MatchPhase.Result?"□":"✓");
-            HudTimerKind=pub.phase.ToString();double remaining=onlineService.PhaseRemainingSeconds;
-            double duration=pub.phase==MatchPhase.Preparation?30:pub.wildRound?12:3;
-            var frame=onlineService.Combat.Current;
-            bool overtime=frame!=null&&frame.overtimeTick>0&&frame.tick>=frame.overtimeTick;
-            if(pub.phase==MatchPhase.Combat&&frame!=null)HudTimerKind=overtime?"Overtime":"Combat";
-            HudTimerProgress=pub.hasPhaseDeadline?Mathf.Clamp01((float)(remaining/duration)):pub.phase==MatchPhase.Combat&&frame!=null?Mathf.Clamp01(overtime?(frame.timeLimitTick-frame.tick)/(float)Math.Max(1,frame.timeLimitTick-frame.overtimeTick):(frame.overtimeTick-frame.tick)/(float)Math.Max(1,frame.overtimeTick)):0;
-            hudTimer.rectTransform.sizeDelta=new Vector2(280*HudTimerProgress,8);hudTimer.color=pub.phase==MatchPhase.Preparation?new Color(.2f,.6f,1):pub.phase==MatchPhase.Result?new Color(.7f,.4f,.95f):new Color(1,.58f,.18f);
-            hudTimerBorder.gameObject.SetActive(pub.phase!=MatchPhase.Finished);
-            hudNotice.text=onlineService.CombatError??(pub.phase==MatchPhase.Finished?"MATCH COMPLETE":!onlineService.StateSynchronized?"Synchronizing…":pub.hasPhaseDeadline?Math.Ceiling(remaining)+"s · "+pub.phase:pub.phase==MatchPhase.Combat?"Watching "+PlayerLabel(onlineService.WatchingPlayerId,owner.playerId)+(frame?.complete==true?" · Battle complete":""):pub.phase.ToString());
-            hudPlayers.text="ALIVE "+pub.players.Count(p=>!p.eliminated)+" / "+pub.players.Length;
-            float top=135;
-            foreach(var player in pub.players.OrderBy(p=>p.id==owner.playerId?0:p.eliminated?2:1)){
-                bool self=player.id==owner.playerId;float height=self?48:32;
-                if(!hudProfiles.TryGetValue(player.id,out var row)){
-                    var background=HudImage("Profile_"+player.id,sidebar,new Vector2(195,height),Vector2.zero,Color.white);background.raycastTarget=true;
-                    row=new ProfileRow{Rect=background.rectTransform,Background=background,PreviousHP=player.hp};
-                    row.Name=Label("Name",row.Rect,"",self?13:11,new Vector2(182,18),new Vector2(0,self?12:8));
-                    row.State=Label("Status",row.Rect,"",10,new Vector2(182,16),new Vector2(0,-4));
-                    var track=HudImage("HPTrack",row.Rect,new Vector2(160,3),new Vector2(0,-height/2+4),new Color(.05f,.08f,.11f));
-                    row.HP=HudImage("HPFill",track.transform,new Vector2(160,3),Vector2.zero,new Color(.25f,.85f,.55f));row.HP.rectTransform.anchorMin=row.HP.rectTransform.anchorMax=row.HP.rectTransform.pivot=new Vector2(0,.5f);
-                    row.Damage=Label("Damage",row.Rect,"",11,new Vector2(35,18),new Vector2(80,8));row.Damage.color=new Color(1,.45f,.4f);
-                    var button=row.Rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=background;string id=player.id;button.onClick.AddListener(()=>RequestPlayerView(id));hudProfiles[player.id]=row;
-                }
-                row.Rect.gameObject.SetActive(true);row.Rect.anchoredPosition=new Vector2(0,top-height/2);top-=height+4;
-                if(player.hp<row.PreviousHP){row.DamageValue=row.PreviousHP-player.hp;row.DamageUntil=Time.unscaledTime+1.5f;}
-                row.PreviousHP=player.hp;row.Damage.text=Time.unscaledTime<row.DamageUntil?"-"+row.DamageValue:"";
-                row.Name.text=PlayerLabel(player.id,owner.playerId)+" · "+player.hp+" HP";
-                row.State.text=player.eliminated?"#"+player.placement+" OUT":player.disconnected?"DISCONNECTED · "+Math.Ceiling(Math.Max(0,player.reconnectDeadline-onlineService.NetworkServerTime))+"s":player.placement==1?"#1 WINNER":"Lv "+player.level+" · "+(pub.phase==MatchPhase.Combat?"IN BATTLE":"IN MATCH");
-                row.Background.color=player.id==onlineService.WatchingPlayerId?new Color(.1f,.27f,.36f):player.eliminated?new Color(.09f,.12f,.16f):new Color(.12f,.18f,.25f);
-                row.HP.rectTransform.sizeDelta=new Vector2(160*Mathf.Clamp01(player.hp/(float)Math.Max(1,player.maxHP)),3);
+            HudTimerKind = pub.phase.ToString();
+            bool synchronized = onlineService.StateSynchronized;
+            bool watchingOwnBoard = onlineService.WatchingPlayerId == owner.playerId;
+            var playback = onlineService.Combat;
+            var frame = playback.Current;
+            bool hasBattle = pub.phase == MatchPhase.Combat && frame != null && frame.round == pub.round && !frame.complete;
+            double? remaining = null;
+            double duration = 0;
+            if (synchronized && pub.hasPhaseDeadline)
+            {
+                remaining = onlineService.PhaseRemainingSeconds;
+                duration = pub.phase == MatchPhase.Preparation ? 30 : pub.wildRound ? 12 : 3;
             }
+            else if (synchronized && hasBattle)
+            {
+                bool overtime = frame.overtimeTick > 0 && playback.Tick >= frame.overtimeTick;
+                HudTimerKind = overtime ? "Overtime" : "Combat";
+                long endTick = overtime ? frame.timeLimitTick : frame.overtimeTick;
+                remaining = (endTick - playback.Tick) / frame.tickRate;
+                duration = (endTick - (overtime ? frame.overtimeTick : 0)) / (double)frame.tickRate;
+            }
+            HudTimerProgress = remaining.HasValue && duration > 0 ? Mathf.Clamp01((float)(remaining.Value / duration)) : 0;
+            RenderRoundStrip(pub.round, true, remaining);
+            RenderHudTimer(pub.phase != MatchPhase.Finished && (pub.phase != MatchPhase.Combat || hasBattle),
+                HudTimerKind == "Overtime" || pub.phase == MatchPhase.Preparation && remaining <= 5);
+            hudNotice.text = onlineService.CombatError ?? (pub.phase == MatchPhase.Finished ? "MATCH COMPLETE"
+                : !synchronized ? "Synchronizing…"
+                : pub.phase == MatchPhase.Combat && !hasBattle ? "Waiting for battle" : "");
+            RenderBoardCapacity(synchronized && pub.phase == MatchPhase.Preparation && watchingOwnBoard && !owner.eliminated,
+                owner.units.Count(u => u.placement == PlacementKind.Board), owner.level);
+            RenderOnlineSpectators(owner, pub, synchronized, frame);
         }
         private void RenderOnlineCombat(OwnerMatchState owner,PublicMatchState pub)
         {
@@ -78,15 +77,17 @@ namespace PokeChess.Client.UI
                 position=ThrowPresentation.Playback(frame,unit.id,tick,position,(c,r)=>CombatPoint(new BoardPosition(c,r)));
                 ((RectTransform)label.transform.parent).anchoredPosition=position;fighterSprites[unit.id].ShowPlayback(unit,tick,30,facing,1.5f);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
+                RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
                 var healthBar = RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
                 BruiserVisuals.Render(label.transform.parent, healthBar, unit.hp > 0 && unit.onBoard, unit.bruiserHealth,
                     unit.bruiserSurvivalEndTick, tick, 30);
                 RenderUnitEnergyBar(label.transform.parent, unit.energy, unit.maxEnergy, unit.hp > 0);
-                RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
+
                 RenderUnitRank(label.transform.parent,unit.rank,PokeChess.Content.GameContent.Stage(unit.definitionId),unit.hp>0);
-                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+28);
-                onlineEffects[unit.id].rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+50);
-                label.text=unit.hp<=0?"":unit.statuses.Length>0?unit.statuses[0]:"";
+                RenderOnlineUnitStatuses(label.transform.parent, unit, tick);
+                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+UnitStatusStackHeight(label.transform.parent)+32);
+                onlineEffects[unit.id].rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+UnitStatusStackHeight(label.transform.parent)+52);
+                label.text="";
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
                 if(unit.duelistStacks>0)label.text+=" AS+"+unit.duelistStacks;
                 if(unit.trackerStacks>0)label.text+=" TRACK "+unit.trackerStacks;
@@ -146,7 +147,6 @@ namespace PokeChess.Client.UI
                 for(int i=0;i<8;i++){finalRowBackgrounds[i].gameObject.SetActive(i<standings.Length);if(i>=standings.Length)continue;var p=standings[i];finalCells[i,0].text="#"+p.placement;finalCells[i,1].text=PlayerLabel(p.id,owner.playerId);finalCells[i,2].text=p.hp.ToString();finalCells[i,3].text=p.id==pub.winnerPlayerId?"WINNER":p.eliminationReason+" / R"+p.eliminationRound;finalRowBackgrounds[i].color=p.id==owner.playerId?new Color(.13f,.32f,.43f):new Color(.1f,.17f,.24f);}
                 newMatchButton.interactable=true;finalBackdrop.SetAsLastSibling();finalRoot.SetAsLastSibling();
             }
-            if(owner.eliminated&&eliminationDismissed&&!playing&&!final&&onlineService.WatchingPlayerId==owner.playerId){var alive=pub.players.FirstOrDefault(p=>!p.eliminated);if(alive!=null)WatchOnlinePlayer(alive.id);}
         }
     }
 }

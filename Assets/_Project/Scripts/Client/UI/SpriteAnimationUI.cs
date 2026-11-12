@@ -121,19 +121,8 @@ namespace PokeChess.Client.UI
                 SkillVisualBattleView.SortBoardDepth(canvasRect,ViewedPlayer.Units
                     .Where(u=>u.Placement.Kind==PokeChess.Core.Pokemon.PlacementKind.Board&&tokens.ContainsKey(u.InstanceId))
                     .Select(u=>tokens[u.InstanceId]).Concat(earthPreparation.VisibleRocks).Concat(VisibleNatureGuardian()));
-            for(int slot=0;slot<Player.Shop.Slots.Count;slot++)
-            {
-                var offer=Player.Shop.Slots[slot];
-                if(offer.IsEmpty)continue;
-                if(!shopSprites.TryGetValue(slot,out var sprite)||sprite==null)
-                    shopSprites[slot]=sprite=AddSprite(shopCards[slot].transform,offer.DefinitionId);
-                if(sprite.PokemonId!=offer.DefinitionId)sprite.Initialize(offer.DefinitionId);
-                if(sprite.ShowIdle(Time.unscaledTimeAsDouble))
-                {
-                    sprite.transform.localPosition+=new Vector3(-50,16,0);
-                }
-            }
-            foreach(var entry in shopSprites)entry.Value.gameObject.SetActive(!Player.Shop.Slots[entry.Key].IsEmpty);
+            for (int slot = 0; slot < Player.Shop.Slots.Count; slot++)
+                RenderShopPortrait(slot, Player.Shop.Slots[slot].DefinitionId);
         }
         private bool RenderFighterSprite(LocalPairBattle pair,UnitCombatState unit,UnityEngine.UI.Text label)
         {
@@ -157,17 +146,19 @@ namespace PokeChess.Client.UI
             root.anchoredPosition=ThrowPresentation.Local(pair.Battle,unit.UnitInstanceId,root.anchoredPosition,
                 (c,r)=>CombatPoint(new PokeChess.Core.Pokemon.BoardPosition(c,r)));
             sprite.ShowCombat(pair.Battle,unit,action,facing);
+            RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
             var healthBar = RenderUnitHealthBar(root, unit.CurrentHP, unit.Stats.MaxHP,
                 unit.TeamId == (pair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2), unit.CurrentShield);
             var battle = pair.Battle;
             BruiserVisuals.Render(root, healthBar, unit.IsAlive && unit.IsOnBoard, battle.Synergies.AppliedBruiserHealth(unit),
                 battle.Synergies.BruiserSurvivalEnd(unit), battle.CurrentTick, battle.TickRate);
             RenderUnitEnergyBar(label.transform.parent, unit.CurrentEnergy, unit.Stats.MaxEnergy, unit.IsAlive);
-            RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
+
             RenderUnitRank(label.transform.parent,(int)unit.Rank,unit.EvolutionStage,unit.IsAlive);
+            RenderLocalUnitStatuses(root, battle, unit);
             if(sprite.Visible)
             {
-                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+28);label.rectTransform.sizeDelta=new Vector2(64,18);
+                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+UnitStatusStackHeight(label.transform.parent)+32);label.rectTransform.sizeDelta=new Vector2(64,18);
                 label.fontSize=9;label.transform.SetAsLastSibling();
                 string state=label.text.Split('\n').Last();
                 int charges = pair.Battle.Synergies.DuelistStacks(unit);

@@ -17,6 +17,7 @@ namespace PokeChess.Client.UI
         private GameObject onlineControls;
         private UnityEngine.UI.Button onlineRetry,onlineSync;
         private string onlineMatchId;
+        private readonly ShopRules onlineShopRules = new ShopRules();
         public bool IsOnlineMatch {get;private set;}
         public string OnlineObservedPlayerId=>onlineService?.WatchingPlayerId;
         private bool OnlineInputReady=>IsOnlineMatch&&onlineService.State==ConnectionState.Connected&&onlineService.StateSynchronized&&onlineService.PendingCommand==null&&onlineService.LocalMatchState?.eliminated==false&&onlineService.PublicState?.phase!=MatchPhase.Finished;
@@ -29,7 +30,7 @@ namespace PokeChess.Client.UI
             CancelDrag("Online match starting.");Simulation?.Cancel();Simulation=null;
             savedLocalCatalog=catalog;catalog=PokeChess.Content.GameContent.CreateCatalog();onlineService=connection;onlineMatchId=connection.StartInfo.matchId;
             IsOnlineMatch=true;enabled=true;canvasRect.gameObject.SetActive(true);previousOwner=null;selectedUnitId=null;shopPhase=null;shopCollapsed=false;presentationRound=-1;eliminationDismissed=false;resultExpanded=false;
-            ClearOnlineFighters();foreach(var row in hudProfiles.Values)Destroy(row.Rect.gameObject);hudProfiles.Clear();hudMatch=null;
+            ClearOnlineFighters();ClearSpectatorRows();hudMatch=null;
             if(onlineControls==null)BuildOnlineControls();onlineControls.SetActive(true);
             SetLocalControls(false);ButtonText(newMatchButton,"Return to rooms");newMatchButton.onClick.RemoveAllListeners();newMatchButton.onClick.AddListener(LeaveOnlineMatch);
             onlineService.Combat.EventPlayed+=ShowOnlineEffect;RenderOnlineMatch();
@@ -37,7 +38,8 @@ namespace PokeChess.Client.UI
         public void ExitOnlineMatch()
         {
             if(!IsOnlineMatch)return;onlineService.Combat.EventPlayed-=ShowOnlineEffect;IsOnlineMatch=false;
-            dragged=null;ghost.gameObject.SetActive(false);ClearOnlineFighters();catalog=savedLocalCatalog;previousOwner=null;onlineMatchId=null;selectedUnitId=null;
+            CloseSynergyTarget();
+            ClearDragState();ClearOnlineFighters();catalog=savedLocalCatalog;previousOwner=null;onlineMatchId=null;selectedUnitId=null;
             onlineControls.SetActive(false);SetLocalControls(true);hudMatch=null;shopPhase=null;
             newMatchButton.onClick.RemoveAllListeners();newMatchButton.onClick.AddListener(ResetMatchUI);ButtonText(newMatchButton,"New match");Render();
             canvasRect.gameObject.SetActive(false);enabled=false;
@@ -68,9 +70,15 @@ namespace PokeChess.Client.UI
         private async void LeaveOnlineMatch(){await onlineService.LeaveAsync();}
         public void WatchOnlinePlayer(string id)
         {
-            if(onlineService?.IsRecovering==true)return;
-            if(!IsOnlineMatch)return;dragged=null;ghost.gameObject.SetActive(false);selectedUnitId=null;
-            if(onlineService.WatchPlayer(id)){ClearOnlineFighters();Feedback(id==onlineService.LocalMatchState.playerId?"Your board":"Observing public board / combat");}
+            if (!IsOnlineMatch || onlineService.IsRecovering || !onlineService.WatchPlayer(id)) return;
+            CloseSynergyTarget();
+            ClearDragState();
+            selectedUnitId = hoveredUnitId = null;
+            hoveredShopSlot = -1;
+            unitInfoPinned = false;
+            HideUnitInfoHint();
+            ClearOnlineFighters();
+            Feedback(id == onlineService.LocalMatchState.playerId ? "Your board" : "Observing public board / combat");
         }
         private void UpdateOnlineMatch()
         {
@@ -107,23 +115,23 @@ namespace PokeChess.Client.UI
         {
             var owner=onlineService.LocalMatchState;var unit=owner?.units.FirstOrDefault(u=>u.id==id);
             if(unit==null||!CanOnlinePlace(unit,OnlinePlacement(unit))){Feedback("Placement unavailable for this view or phase.");return;}
-            dragged=id;dragRevision=owner.placementRevision;ghostLabel.text=unit.definitionId;ghost.gameObject.SetActive(true);ghost.SetAsLastSibling();DragOnline(point);
+            dragged=id;dragRevision=owner.placementRevision;ShowDraggedPokemon(unit.definitionId,OnlinePlacement(unit));DragOnline(point);
         }
         private void DragOnline(Vector2 point)
         {
             if(!IsDragging)return;RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
             var unit=onlineService.LocalMatchState.units.FirstOrDefault(u=>u.id==dragged);var destination=Hit(point);
-            foreach(var slot in slots)slot.Graphic.color=slot.Color;
-            if(HitShop(point)){Feedback(CanOnlineSell(unit)?"Release to request sale":"Sale unavailable for this unit");return;}
-            if(destination!=null)destination.Graphic.color=CanOnlinePlace(unit,destination.Placement)?new Color(.08f,.36f,.29f):new Color(.48f,.12f,.17f);
+            int? price = CanOnlineSell(unit) ? unit.saleGold : (int?)null;
+            UpdatePlacementDragArt(point, destination, destination != null && CanDropOnlineUnit(unit, destination.Placement), price);
+            if (sellHovered) Feedback(price.HasValue ? $"Release to sell / +{price.Value}G" : "Sale unavailable for this unit");
         }
         private void EndOnlineDrag(Vector2 point)
         {
             if(IsDragging&&onlineService.LocalMatchState?.placementRevision!=dragRevision){CancelDrag("State changed; drag cancelled.");return;}
             if(!IsDragging)return;string id=dragged;var unit=onlineService.LocalMatchState.units.FirstOrDefault(u=>u.id==id);var destination=Hit(point);
-            dragged=null;ghost.gameObject.SetActive(false);
-            if(HitShop(point)){if(CanOnlineSell(unit))SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=id);return;}
-            if(destination!=null&&CanOnlinePlace(unit,destination.Placement))SendOnlineCommand(MatchCommandKind.Move,c=>{c.unitId=id;c.destination=destination.Placement.Kind;c.column=destination.Placement.Position?.Column??0;c.row=destination.Placement.Position?.Row??0;c.bench=destination.Placement.BenchSlot??0;});
+            dragged=null;ClearPlacementDragArt();ghost.gameObject.SetActive(false);RenderPlacementArt();
+            if(HitSellDrop(point)){if(CanOnlineSell(unit))SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=id);return;}
+            if(destination!=null&&CanDropOnlineUnit(unit,destination.Placement))SendOnlineCommand(MatchCommandKind.Move,c=>{c.unitId=id;c.destination=destination.Placement.Kind;c.column=destination.Placement.Position?.Column??0;c.row=destination.Placement.Position?.Row??0;c.bench=destination.Placement.BenchSlot??0;});
             else Feedback("Move cancelled or unavailable.");
         }
         private void RenderOnlineMatch()
@@ -138,6 +146,14 @@ namespace PokeChess.Client.UI
                 if(owner.inventory.Length>previousOwner.inventory.Length){itemNotice="+"+(owner.inventory.Length-previousOwner.inventory.Length)+" 도구 획득 / 회수";itemNoticeUntil=Time.unscaledTime+2;}
             }
             previousOwner=owner;
+            string watched = onlineService.WatchingPlayerId;
+            if (pub.phase != MatchPhase.Finished && onlineService.StateSynchronized &&
+                (watched != owner.playerId || eliminationDismissed && !onlineService.Combat.IsPlaying) &&
+                pub.players.Any(player => player.id == watched && player.eliminated))
+            {
+                var next = pub.players.FirstOrDefault(player => !player.eliminated);
+                if (next != null) WatchOnlinePlayer(next.id);
+            }
             if(shopPhase!=pub.phase){shopCollapsed=pub.phase!=MatchPhase.Preparation;shopPhase=pub.phase;}
             bool finished=pub.phase==MatchPhase.Finished;
             shopFrame.gameObject.SetActive(!finished);header.gameObject.SetActive(!finished&&pub.phase!=MatchPhase.Combat);resources.gameObject.SetActive(false);
@@ -145,7 +161,9 @@ namespace PokeChess.Client.UI
             status.text=onlineService.IsRecovering?onlineService.RecoveryFeedback:onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
             onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineRetry.interactable=!onlineService.IsRecovering;onlineSync.interactable=!onlineService.IsRecovering&&onlineService.PendingCommand==null;
             bool trade=OnlineInputReady&&pub.phase==MatchPhase.Preparation;
-            rerollButton.interactable=trade&&(owner.gold>=2||owner.freeRerollRound==owner.round);xpButton.interactable=trade&&owner.gold>=4&&owner.level<onlineLevelRules.MaxLevel;lockButton.interactable=trade;ButtonText(rerollButton,owner.freeRerollRound==owner.round?"신비 무료 새로고침":"Reroll / 2G");ButtonText(xpButton,"Buy XP / 4G");ButtonText(lockButton,owner.locked?"Unlock shop":"Lock shop");
+            rerollButton.interactable = trade && (owner.gold >= onlineShopRules.RerollGoldCost || owner.freeRerollRound == owner.round);
+            xpButton.interactable = trade && owner.gold >= onlineLevelRules.PurchaseGoldCost && owner.level < onlineLevelRules.MaxLevel;
+            lockButton.interactable = trade;
             surrenderButton.interactable=OnlineInputReady;
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
@@ -160,21 +178,18 @@ namespace PokeChess.Client.UI
         }
         private void RenderOnlineShop(OwnerMatchState owner)
         {
-            economyGold.text="GOLD "+owner.gold;var rules=onlineLevelRules;bool max=owner.level>=rules.MaxLevel;
-            economyLevel.text="Lv "+owner.level+" · "+(max?"XP MAX":"XP "+owner.xp+" / "+rules.XPToNextLevel(owner.level));
-            ShopXPProgress=max?1:Mathf.Clamp01(owner.xp/(float)rules.XPToNextLevel(owner.level));economyXP.rectTransform.sizeDelta=new Vector2(200*ShopXPProgress,4);
-            economyLock.text=owner.locked?"[LOCKED]\nKeep next refresh":"[UNLOCKED]\nAuto refresh next round";
-            economyStreak.text=owner.winStreak>0?"WIN STREAK "+owner.winStreak:owner.loseStreak>0?"LOSS STREAK "+owner.loseStreak:"STREAK —";economyDelta.text=Time.unscaledTime<economyMessageUntil?economyMessage:"";
+            RenderShopToolbar(owner.gold, owner.level, owner.xp, owner.winStreak, owner.loseStreak,
+                owner.locked, owner.freeRerollRound == owner.round, onlineLevelRules, onlineShopRules.RerollGoldCost);
             for(int i=0;i<shopCards.Length;i++){
-                var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].interactable=OnlineInputReady&&available&&owner.gold>=offer.cost;
-                if(!available){card.Name.text="NO OFFER";card.Price.text=card.Types.text=card.Owned.text="";card.Action.text="Wait for refresh";}
-                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=offer.cost+"G · C"+offer.cost;card.Types.text=TraitList(d);
+                var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].gameObject.SetActive(ShopExpanded);shopCards[i].interactable=OnlineInputReady&&available&&owner.gold>=offer.cost;
+                if(!available){card.Name.text="빈 슬롯";card.Price.text=card.Types.text=card.Owned.text="";card.Action.text="다음 새로고침 대기";}
+                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=offer.cost+"G";RenderShopCardTraits(card, d);
                     card.Owned.text=string.Join(" · ",Enumerable.Range(1,3).Select(r=>"R"+r+" "+owner.units.Count(u=>u.definitionId==d.Id&&u.rank==r)));
                     card.Action.text=owner.eliminated?"ELIMINATED":!onlineService.StateSynchronized||onlineService.PendingCommand!=null?"WAITING":owner.gold<offer.cost?"NOT ENOUGH GOLD":"BUY";
-                    if(!shopSprites.TryGetValue(i,out var sprite)||sprite==null)shopSprites[i]=sprite=AddSprite(shopCards[i].transform,d.Id);if(sprite.PokemonId!=d.Id)sprite.Initialize(d.Id);sprite.ShowIdle(Time.unscaledTimeAsDouble);sprite.transform.localPosition+=new Vector3(-50,16,0);
                 }
-                if(shopSprites.TryGetValue(i,out var image))image.gameObject.SetActive(available);
-                card.Action.color=shopCards[i].interactable?new Color(.5f,1,.7f):new Color(1,.65f,.4f);card.Stripe.color=available?Color.Lerp(new Color(.3f,.7f,1),new Color(1,.7f,.3f),offer.cost/5f):Color.gray;
+                RenderShopPortrait(i, offer.definitionId);
+                card.Action.color = shopCards[i].interactable ? ShopInk : new Color32(139, 55, 23, 255);
+                ApplyShopCardArt(i, available ? offer.cost : 0);
             }
         }
         private PublicBoardUnit[] guardianPreviewBoard;
@@ -184,7 +199,7 @@ namespace PokeChess.Client.UI
             bool combat=pub.phase==MatchPhase.Combat||onlineService.Combat.IsPlaying&&onlineService.Combat.Current?.round==pub.round;
             var observed=pub.players.FirstOrDefault(p=>p.id==onlineService.WatchingPlayerId);
             foreach(var slot in slots){slot.Graphic.color=slot.Color;if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat&&pub.phase==MatchPhase.Preparation);}
-            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,observed.id==owner.playerId);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
+            if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderEquippedItemIcon(tokens[unit.id],unit.items);RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,observed.id==owner.playerId);}
             var previewBoard=!combat&&pub.phase==MatchPhase.Preparation?observed?.board:null;
             if(guardianPreviewBoard!=previewBoard || (previewBoard==null && (guardianLinks.Count>0||stormLinks.Count>0)))
             {
@@ -197,7 +212,7 @@ namespace PokeChess.Client.UI
             }
             AnimateGuardianLinks();
             AnimateStormLinks();
-            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);RenderEquippedItemIcon(tokens[unit.id],unit.items);}
+            foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderEquippedItemIcon(tokens[unit.id],unit.items);RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);}
         }
         private void ShowOnlineToken(string id,string definition,int rank,UnitPlacement placement)
         {
@@ -227,7 +242,3 @@ namespace PokeChess.Client.UI
         }
     }
 }
-
-
-
-

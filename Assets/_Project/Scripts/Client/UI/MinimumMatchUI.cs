@@ -21,14 +21,7 @@ namespace PokeChess.Client.UI
         private void AnimateShop()
         {
             float target=ShopExpanded ? 10 : ShopHandleHeight-ShopHeight;
-            shopFrame.anchoredPosition=new Vector2(0,Mathf.MoveTowards(shopFrame.anchoredPosition.y,target,900*Time.unscaledDeltaTime));
-        }
-        private bool HitShop(Vector2 point) => RectTransformUtility.RectangleContainsScreenPoint(canvasRect,point,null) && RectTransformUtility.RectangleContainsScreenPoint(shopFrame,point,null);
-        private void PreviewShopSale()
-        {
-            bool allowed=commands.CanSell(dragged) && Player.PlacementRevision==dragRevision;
-            shopFrame.GetComponent<UnityEngine.UI.Image>().color=allowed ? new Color(.08f,.36f,.29f) : new Color(.48f,.12f,.17f);
-            Feedback(allowed ? "Release to sell / +"+commands.SalePrice(dragged)+"G; equipped items return to inventory." : "Sale unavailable: combat requires a bench unit, or placement changed.");
+            shopFrame.anchoredPosition=new Vector2(shopFrame.anchoredPosition.x,Mathf.MoveTowards(shopFrame.anchoredPosition.y,target,900*Time.unscaledDeltaTime));
         }
         private string selectedUnitId;
         private long displayedShopRevision,displayedPlacementRevision;
@@ -89,8 +82,8 @@ namespace PokeChess.Client.UI
             rerollButton=ActionButton("Reroll",new Vector2(170,32),new Vector2(490,-224),RequestReroll);
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
             xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
-            ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();BuildSynergyUI();
-            BuildItemWildUI();BuildAdversityUI();
+            ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();
+            BuildItemWildUI();BuildSynergyUI();BuildAdversityUI();
             BuildEvolutionUI();
         }
         private void ConfigureShopPanel()
@@ -208,6 +201,7 @@ namespace PokeChess.Client.UI
         private void RequestLock() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Lock,c=>c.locked=!onlineService.LocalMatchState.locked);return;}long revision=displayedShopRevision;bool locked=!displayedLocked;Perform(()=>commands.Lock(locked,revision)); }
         public void SelectUnit(string id)
         {
+            if (!selectingHover && TrySelectSynergyTarget(id)) return;
             if(!selectingHover){unitInfoPinned=true;hoveredUnitId=id;hoveredShopSlot=-1;}
             if(IsOnlineMatch){SelectOnlineUnit(id);return;}
             if(IsDragging) return;
@@ -250,7 +244,6 @@ namespace PokeChess.Client.UI
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;
             debugLabel.text=Match.Phase+" / Shop "+Player.Shop.Revision+" / Board "+Player.PlacementRevision;
-            shopFrame.GetComponent<UnityEngine.UI.Image>().color=new Color(.065f,.105f,.16f);
             shopToggle.interactable=live && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
             for(int i=0;i<shopCards.Length;i++)
             {
@@ -261,11 +254,9 @@ namespace PokeChess.Client.UI
                 cardText[i].text=definition.DisplayName+"\nCost "+offer.Cost+" / "+offer.Cost+"G\nOwned units: "+owned+"\n"+(availability.Accepted ? availability.Preview.MergeNextPreparation ? (availability.Preview.RankUpCount>0 ? "BENCH RANK UP + NEXT PREP MERGE" : "BUY / MERGE NEXT PREP") : availability.Preview.RankUpCount>0 ? "BUY + RANK UP" : "BUY" : availability.Message);
                 shopCards[i].interactable=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability.Accepted;
             }
-            rerollButton.gameObject.SetActive(ShopExpanded);lockButton.gameObject.SetActive(ShopExpanded);xpButton.gameObject.SetActive(ShopExpanded);
-            rerollButton.interactable=trade && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);ButtonText(rerollButton,Player.Synergy.FreeRerollRound==Match.RoundNumber?"신비 무료 새로고침":"Reroll / "+commands.ShopRules.RerollGoldCost+"G");
-            lockButton.interactable=trade;ButtonText(lockButton,Player.Shop.IsLocked ? "LOCKED / Unlock" : "Lock next refresh");
+            rerollButton.interactable=trade && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);
+            lockButton.interactable=trade;
             xpButton.interactable=trade && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
-            ButtonText(xpButton,Player.Level==commands.LevelRules.MaxLevel ? "XP MAX" : "Buy "+commands.LevelRules.PurchaseXP+" XP / "+commands.LevelRules.PurchaseGoldCost+"G");
             RenderUnitContext();
             RenderEvolutionUI();
             RenderShopEconomyUI();UpdateTokenFeedback();RenderRoundUI();

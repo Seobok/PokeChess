@@ -29,7 +29,7 @@ namespace PokeChess.Core.Match
         public long startTick,effectTick,endTick;public string[] statuses;
     }
     [Serializable] public sealed class CombatStatusView
-    {public long id,startTick,endTick,nextTick;public string definition,source;public int behavior,crowdControl,stacks,pulses;}
+    {public long id,startTick,endTick,nextTick;public string definition,source;public int behavior,crowdControl,stacks,pulses,polarity;}
     [Serializable] public sealed class CombatShieldView
     {public long id,endTick;public string source,group;public float remaining;}
     [Serializable] public sealed class CombatProjectileView
@@ -195,7 +195,7 @@ namespace PokeChess.Core.Match
                         untargetable=u.IsUntargetable,isBoss=u.IsBoss,accuracy=effective.Accuracy,evasion=effective.Evasion,
                         critChance=effective.CritChance,attackSpeed=effective.AttackSpeed,attackRange=battle.StatusEffects.AttackRange(u),bountyStacks=u.BountyStacks,
                         statusDetails=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatStatusView{id=s.InstanceId,
-                            definition=s.Definition.Id,source=s.SourceId,behavior=(int)s.Definition.Behavior,crowdControl=(int)s.Definition.CrowdControl,stacks=s.StackCount,
+                            definition=s.Definition.Id,source=s.SourceId,behavior=(int)s.Definition.Behavior,crowdControl=(int)s.Definition.CrowdControl,stacks=s.StackCount, polarity=s.Definition.TargetTeam==StatusTargetTeam.Ally?1:-1,
                             startTick=s.StartTick,endTick=s.ExpireTick,nextTick=s.NextTick,pulses=s.Pulses}).ToArray(),
                         shields=battle.Shields.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatShieldView{id=s.Id,source=s.SourceId,
                             group=s.Group,remaining=s.Remaining,endTick=s.ExpireTick}).ToArray(),
