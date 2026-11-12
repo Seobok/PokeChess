@@ -142,16 +142,21 @@ namespace PokeChess.Core.Match
                 holding.Unit.SetPoolOrigin(null);
             }
         }
-        internal PoolHolding[] ValidateRankUp(RankUpPlan plan,PoolHolding purchase)
+        internal PoolHolding[] ValidateRankUp(RankUpPlan plan,PoolHolding[] purchases)
         {
             ValidateRelease(plan.Before);
+            var acquisitions = purchases == null ? new Dictionary<UnitInstance,PoolHolding>()
+                : plan.Added.Zip(purchases, (unit, holding) => (unit, holding)).ToDictionary(pair => pair.unit, pair => pair.holding);
+            foreach (var group in acquisitions.Values.GroupBy(holding => holding.Origin))
+                if (GetStock(group.Key).Available < group.Sum(holding => holding.Copies))
+                    throw new InvalidOperationException("PoolUnavailable: insufficient copies.");
             var result=new List<PoolHolding>();
             foreach(var node in plan.Final)
             {
                 var sources=new List<PoolHolding>();
                 foreach(var unit in node.Originals)
                 {
-                    if(ReferenceEquals(unit,plan.Added)) { if(purchase!=null) sources.Add(purchase); }
+                    if(acquisitions.TryGetValue(unit,out var acquired)) sources.Add(acquired);
                     else if(holdings.TryGetValue(unit.InstanceId,out var holding)) sources.Add(holding);
                 }
                 if(sources.Count==0) continue;
@@ -161,10 +166,11 @@ namespace PokeChess.Core.Match
             }
             return result.ToArray();
         }
-        internal void ApplyRankUp(RankUpPlan plan,PoolHolding[] result,PoolHolding purchase)
+        internal void ApplyRankUp(RankUpPlan plan,PoolHolding[] result,PoolHolding[] purchases)
         {
             foreach(var unit in plan.Before) { holdings.Remove(unit.InstanceId);unit.SetPoolOrigin(null); }
-            if(purchase!=null) available[purchase.Origin]-=purchase.Copies;
+            if (purchases != null)
+                foreach (var holding in purchases) available[holding.Origin] -= holding.Copies;
             foreach(var holding in result) { holdings.Add(holding.Unit.InstanceId,holding);holding.Unit.SetPoolOrigin(holding.Origin); }
         }
         public void AssertConservation(MatchState match)

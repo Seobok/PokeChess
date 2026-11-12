@@ -61,7 +61,7 @@ namespace PokeChess.Core.Match
         }
         private void CheckShopRevision(long expected)
         {
-            if(!CanTrade) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");
+            if(!CanBuy) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");
             if(Player.Shop.Revision!=expected) throw new InvalidOperationException("Stale shop revision.");
         }
         public MatchCommandResult PreviewBuy(int slot,long revision) => Run(()=>new MatchCommandResult("Available.",preview:trades.PreviewBuy(match,playerId,slot,revision)));
@@ -83,10 +83,6 @@ namespace PokeChess.Core.Match
         public MatchCommandResult EquipItem(string unitId,string itemId,long revision)=>Run(()=>{
             new ItemSystem().Equip(match,playerId,unitId,itemId,revision);
             return new MatchCommandResult(ItemCatalog.DisplayName(itemId)+" 장착");
-        });
-        public MatchCommandResult UnequipItem(string unitId,long revision)=>Run(()=>{
-            new ItemSystem().Unequip(match,playerId,unitId,revision);
-            return new MatchCommandResult("도구를 보관함으로 회수했습니다.");
         });
         public MatchCommandResult Sell(string id,long revision) => Run(()=>
         {

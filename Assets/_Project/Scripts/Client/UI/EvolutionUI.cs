@@ -44,7 +44,7 @@ namespace PokeChess.Client.UI
             string id = selectedUnitId; long revision = displayedEvolutionRevision;
             if (IsOnlineMatch)
             {
-                SendOnlineCommand(MatchCommandKind.Evolve, c => { c.unitId = id; c.evolutionRevision = revision; });
+                SendOnlineCommand(MatchCommandKind.Evolve, c => { c.unitId = id; c.evolutionRevision = revision; c.placementRevision = displayedPlacementRevision; });
                 return;
             }
             long placement = displayedPlacementRevision;
@@ -63,7 +63,7 @@ namespace PokeChess.Client.UI
                 id = selected?.definitionId; rank = (UnitRank)(selected?.rank ?? 1);
                 points = owner.evolutionPoints; nextRound = owner.nextEvolutionPointRound;
                 displayedEvolutionRevision = owner.evolutionRevision;
-                allowed = selected != null && OnlineInputReady && owner.phase == MatchPhase.Preparation &&
+                allowed = selected != null && OnlineInputReady && (owner.phase == MatchPhase.Preparation || owner.phase == MatchPhase.Combat) &&
                     (selected.placement == PlacementKind.Board || selected.placement == PlacementKind.Bench);
             }
             else
@@ -72,7 +72,7 @@ namespace PokeChess.Client.UI
                 id = selected?.DefinitionId; rank = selected?.Rank ?? UnitRank.One;
                 points = Player.EvolutionPoints; nextRound = EvolutionPointRules.NextGrantRound(Match.RoundNumber);
                 displayedEvolutionRevision = Player.EvolutionRevision;
-                allowed = selected != null && commands.CanTrade && !busy && !RoundLoop.NextPreparationPending &&
+                allowed = selected != null && commands.CanBuy && !busy && !RoundLoop.NextPreparationPending &&
                     Simulation?.Status != SimulationStatus.Running;
                 if (allowed)
                 {
@@ -85,7 +85,7 @@ namespace PokeChess.Client.UI
             if (finished) evolutionHintPanel.gameObject.SetActive(false);
             evolutionPointsLabel.text = "진화포인트 " + points + " EP\n다음 지급: " + nextRound + "라운드";
             evolveButton.interactable = false;
-            if (id == null) { ButtonText(evolveButton,"진화 / 포켓몬 선택"); evolutionHint.text = "준비 단계에서 보유 포켓몬을\n선택해 진화할 수 있습니다."; return; }
+            if (id == null) { ButtonText(evolveButton,"진화 / 포켓몬 선택"); evolutionHint.text = "보유 포켓몬을\n선택해 진화할 수 있습니다."; return; }
             var d = catalog.Get(id);
             if (d.Evolutions.Count != 1)
             {

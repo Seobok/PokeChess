@@ -43,7 +43,8 @@ namespace PokeChess.Core.Match
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.HP == 0 || player.IsEliminated) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation) throw new InvalidOperationException("Requires Preparation.");
+            if (match.Phase != MatchPhase.Preparation && match.Phase != MatchPhase.Combat)
+                throw new InvalidOperationException("Requires Preparation or Combat.");
             if (player.EvolutionRevision != expectedEvolutionRevision || player.PlacementRevision != expectedPlacementRevision)
                 throw new InvalidOperationException("Stale evolution state.");
             var unit = player.GetUnit(unitId);
@@ -76,7 +77,8 @@ namespace PokeChess.Core.Match
             int cost = catalog.Get(unit.DefinitionId).Evolutions[0].EvolutionPointCost;
             string root = catalog.EvolutionRoot(target.Id, out int stage);
             // Keep the owned instance, rank, placement, items and pool ledger intact.
-            player.CommitEvolution(unit, target, root, stage, cost);
+            foreach (var evolved in player.CommitEvolution(unit, target, root, stage, cost))
+                match.RefreshCombatUnit(evolved);
             return unit;
         }
     }

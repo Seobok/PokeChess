@@ -46,13 +46,67 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void BuyUsesFirstEmptyBenchAndDoesNotConsumeRng()
         {
-            Add("existing",1,bench:0); var rng=player.Shop.RandomState; var revision=player.Shop.Revision;
+            Add("existing",2,bench:0); player.SetProgress(1,0,1); var rng=player.Shop.RandomState; var revision=player.Shop.Revision;
             var unit=trades.Buy(match,"p1",2,revision);
             Assert.That(unit.Placement.BenchSlot,Is.EqualTo(1)); Assert.That(unit.Rank,Is.EqualTo(UnitRank.One));
             Assert.That(unit.EvolutionStage,Is.Zero); Assert.That(unit.ItemInstanceIds,Is.Empty);
-            Assert.That(player.Gold,Is.EqualTo(4)); Assert.That(player.Shop.Slots[2].IsEmpty,Is.True);
+            Assert.That(player.Gold,Is.Zero); Assert.That(player.Shop.Slots[2].IsEmpty,Is.True);
             Assert.That(player.Shop.Revision,Is.EqualTo(revision+1)); Assert.That(player.Shop.RandomState,Is.EqualTo(rng));
         }
+        [TestCase(MatchPhase.Preparation)]
+        [TestCase(MatchPhase.Combat)]
+        public void FullBenchCanBuyTwoCopiesToUpgradeAnExistingUnit(MatchPhase phase)
+        {
+            var survivor = Add("survivor", 1);
+            for (int i = 1; i < player.Bench.Count; i++) Add("filler" + i, 2, UnitRank.Three, i);
+            player.AddUnit(catalog.CreateUnit("board", "c1", "p1", UnitRank.One, 0,
+                UnitPlacement.OnBoard(new BoardPosition(0,0))));
+            if (phase == MatchPhase.Combat) match.TransitionTo(phase);
+            else player.SetPlacement("board", UnitPlacement.Unplaced);
+
+            long revision = player.Shop.Revision;
+            var preview = trades.PreviewBuy(match, "p1", 2, revision);
+            var result = trades.BuyWithRankUp(match, "p1", 2, revision);
+
+            Assert.That(preview.Quantity, Is.EqualTo(2));
+            Assert.That(preview.Price, Is.EqualTo(2));
+            Assert.That(result.PurchasedSlots, Is.EqualTo(new[]{2,0}));
+            Assert.That(result.Unit, Is.SameAs(survivor));
+            Assert.That(survivor.Rank, Is.EqualTo(UnitRank.Two));
+            Assert.That(survivor.Placement.BenchSlot, Is.Zero);
+            Assert.That(player.GetUnit("board").Rank, Is.EqualTo(UnitRank.One));
+            Assert.That(player.Gold, Is.EqualTo(3));
+            Assert.That(player.Shop.Revision, Is.EqualTo(revision+1));
+        }
+
+        [TestCase(0, true, 2)]
+        [TestCase(1, false, 0)]
+        [TestCase(2, false, 3)]
+        public void ThreeCopyBundleRequiresSpaceForTheFinalSurvivor(int ownedTwos, bool hasBenchSpace, int expectedRank)
+        {
+            for (int i = 0; i < ownedTwos; i++) Add("owned" + i, 1, UnitRank.Two, i);
+            int filled = player.Bench.Count - (hasBenchSpace ? 1 : 0);
+            for (int i = ownedTwos; i < filled; i++) Add("filler" + i, 2, UnitRank.Three, i);
+            var board = player.AddUnit(catalog.CreateUnit("board", "c1", "p1", UnitRank.Two, 0,
+                UnitPlacement.OnBoard(new BoardPosition(0,0))));
+            match.TransitionTo(MatchPhase.Combat);
+            var before = Snapshot();
+
+            if (expectedRank == 0)
+            {
+                Assert.Throws<InvalidOperationException>(()=>trades.Buy(match,"p1",0,player.Shop.Revision));
+                Assert.That(Snapshot(), Is.EqualTo(before));
+                return;
+            }
+
+            var result = trades.BuyWithRankUp(match,"p1",0,player.Shop.Revision);
+            Assert.That(result.PurchasedSlots.Count, Is.EqualTo(3));
+            Assert.That((int)result.Unit.Rank, Is.EqualTo(expectedRank));
+            Assert.That(result.Unit.Placement.BenchSlot, Is.EqualTo(hasBenchSpace ? filled : 0));
+            Assert.That(board.Rank, Is.EqualTo(UnitRank.Two));
+            Assert.That(player.Gold, Is.EqualTo(2));
+        }
+
         [Test] public void FullBenchRejectsWithoutAutoDeployAndSaleFreesSlot()
         {
             for(int i=0;i<player.Bench.Count;i++) Add("b"+i,1,rank:UnitRank.Three,bench:i);
@@ -111,7 +165,7 @@ namespace PokeChess.Core.Tests
             Add("a",1,items:new[]{"tool"});player.AddUnit(catalog.CreateUnit("board","c1","p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0))));match.TransitionTo(MatchPhase.Combat);var before=Snapshot();
             Assert.That(trades.Buy(match,"p1",0,player.Shop.Revision),Is.Not.Null);before=Snapshot();
             Assert.Throws<InvalidOperationException>(()=>trades.Sell(match,"p1","board"));Assert.That(Snapshot(),Is.EqualTo(before));
-            int gold=player.Gold;Assert.That(trades.Sell(match,"p1","a"),Is.EqualTo(1));Assert.That(player.Gold,Is.EqualTo(gold+1));Assert.That(player.ItemInventory,Does.Contain("tool"));
+            int gold=player.Gold;Assert.That(trades.Sell(match,"p1","a"),Is.EqualTo(3));Assert.That(player.Gold,Is.EqualTo(gold+3));Assert.That(player.ItemInventory,Does.Contain("tool"));
         }
         [Test] public void CatalogCostMismatchAndEmptySlotAreAtomic()
         {

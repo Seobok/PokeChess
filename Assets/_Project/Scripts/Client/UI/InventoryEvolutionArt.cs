@@ -62,11 +62,8 @@ namespace PokeChess.Client.UI
 
             for (int i = 0; i < inventoryChoices.Length; i++)
             {
-                bool returnTools = i == 1;
-                int gridIndex = i == 0 ? 0 : i - 1;
-                var size = returnTools ? new Vector2(107, 21) : new Vector2(51, 45);
-                var position = returnTools ? new Vector2(0, -130) :
-                    new Vector2(gridIndex % 2 == 0 ? -28 : 28, 58 - (gridIndex / 2) * 50);
+                var size = new Vector2(51, 45);
+                var position = new Vector2(i % 2 == 0 ? -28 : 28, 58 - (i / 2) * 50);
                 var button = ItemButton("InventoryItem_" + i, itemInventoryPanel, size, position, () => {});
                 inventoryChoices[i] = button;
                 button.GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
@@ -75,12 +72,10 @@ namespace PokeChess.Client.UI
                 background.color = Color.white;
                 InventoryImage("Icon", button.transform, new Vector2(31, 31), new Vector2(0, i == 0 ? 4 : 0), null).preserveAspect = true;
                 if (i == 0) InventoryText("Count", button.transform, "", 9, new Vector2(44, 14), new Vector2(0, -15));
-                if (returnTools) InventoryText("ReturnGlyph", button.transform, "↶ 도구 회수", 11, size, Vector2.zero);
                 var drag = button.gameObject.AddComponent<ItemDragToken>();
                 drag.View = this;
                 drag.Slot = i;
             }
-            itemReturnButton = inventoryChoices[1];
 
             var page = InventoryImage("PageBadge", itemInventoryPanel, new Vector2(59, 20), new Vector2(0, -101), InventorySprite("InventoryPageBadge"));
             inventoryPageText = InventoryText("Page", page.transform, "", 12, new Vector2(56, 19), Vector2.zero);

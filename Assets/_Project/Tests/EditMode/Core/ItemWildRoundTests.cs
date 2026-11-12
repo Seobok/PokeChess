@@ -136,16 +136,22 @@ namespace PokeChess.Core.Tests
             Assert.That(f.match.GetPlayer("p2").PendingItemReward,Is.Not.Null); f.rounds.StartCombat(4);
             Assert.That(ItemCatalog.DefinitionId(f.match.GetPlayer("p2").ItemInventory.Single()),Is.EqualTo(expected));Assert.That(p.PendingItemReward,Is.Null);
         }
-        [Test] public void EquipSwapRecoveryAndForeignOwnershipAreValidated()
+        [Test] public void EquipSwapAndForeignOwnershipAreValidated()
         {
             var f=Match(units:true);var p=f.match.GetPlayer("p1");var unit=p.Units.Single();var items=new ItemSystem();
-            string helmet=Id(ItemCatalog.RockyHelmet),berry=Id(ItemCatalog.SitrusBerry);p.AddInventoryItem(helmet);p.AddInventoryItem(berry);
+            string helmet=Id(ItemCatalog.ChoiceScarf),berry=Id(ItemCatalog.SitrusBerry);p.AddInventoryItem(helmet);p.AddInventoryItem(berry);
             items.Equip(f.match,"p1",unit.InstanceId,helmet,p.ItemRevision);long stale=p.ItemRevision;
             items.Equip(f.match,"p1",unit.InstanceId,berry,p.ItemRevision);Assert.That(unit.ItemInstanceIds,Is.EqualTo(new[]{berry}));Assert.That(p.ItemInventory,Is.EqualTo(new[]{helmet}));
-            Assert.Throws<InvalidOperationException>(()=>items.Unequip(f.match,"p1",unit.InstanceId,stale));
+            Assert.Throws<InvalidOperationException>(()=>items.Equip(f.match,"p1",unit.InstanceId,helmet,stale));
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>items.Equip(f.match,"p2",unit.InstanceId,helmet,0));
-            items.Unequip(f.match,"p1",unit.InstanceId,p.ItemRevision);Assert.That(p.ItemInventory.Count,Is.EqualTo(2));Assert.That(unit.ItemInstanceIds,Is.Empty);
-            f.rounds.StartCombat(1);Assert.Throws<InvalidOperationException>(()=>items.Equip(f.match,"p1",unit.InstanceId,helmet,p.ItemRevision));
+            Assert.That(f.rounds.StartCombat(1), Is.True);
+            var fighter = f.rounds.GetBattleFor("p1").Battle.Units.Single(u => u.UnitInstanceId == unit.InstanceId);
+            float attackSpeed = fighter.Stats.AttackSpeed;
+            items.Equip(f.match,"p1",unit.InstanceId,helmet,p.ItemRevision);
+            Assert.That(unit.ItemInstanceIds, Is.EqualTo(new[]{helmet}));
+            Assert.That(p.ItemInventory, Does.Not.Contain(helmet));
+            Assert.That(fighter.ItemInstanceIds, Is.EqualTo(new[]{helmet}));
+            Assert.That(fighter.Stats.AttackSpeed, Is.EqualTo(attackSpeed * 1.25f));
         }
         [Test] public void SaleReturnsEquippedTool()
         {

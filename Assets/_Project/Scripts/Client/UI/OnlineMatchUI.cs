@@ -154,16 +154,16 @@ namespace PokeChess.Client.UI
                 var next = pub.players.FirstOrDefault(player => !player.eliminated);
                 if (next != null) WatchOnlinePlayer(next.id);
             }
-            if(shopPhase!=pub.phase){shopCollapsed=pub.phase!=MatchPhase.Preparation;shopPhase=pub.phase;}
+            if(shopPhase!=pub.phase){if(pub.phase==MatchPhase.Preparation)shopCollapsed=false;shopPhase=pub.phase;}
             bool finished=pub.phase==MatchPhase.Finished;
             shopFrame.gameObject.SetActive(!finished);header.gameObject.SetActive(!finished&&pub.phase!=MatchPhase.Combat);resources.gameObject.SetActive(false);
             header.text="ONLINE / "+PlayerLabel(onlineService.WatchingPlayerId,owner.playerId)+" / BOARD "+owner.units.Count(u=>u.placement==PlacementKind.Board)+" / "+owner.level;
             status.text=onlineService.IsRecovering?onlineService.RecoveryFeedback:onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
             onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineRetry.interactable=!onlineService.IsRecovering;onlineSync.interactable=!onlineService.IsRecovering&&onlineService.PendingCommand==null;
-            bool trade=OnlineInputReady&&pub.phase==MatchPhase.Preparation;
-            rerollButton.interactable = trade && (owner.gold >= onlineShopRules.RerollGoldCost || owner.freeRerollRound == owner.round);
-            xpButton.interactable = trade && owner.gold >= onlineLevelRules.PurchaseGoldCost && owner.level < onlineLevelRules.MaxLevel;
-            lockButton.interactable = trade;
+            bool economy=OnlineInputReady&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);
+            rerollButton.interactable = economy && (owner.gold >= onlineShopRules.RerollGoldCost || owner.freeRerollRound == owner.round);
+            xpButton.interactable = economy && owner.gold >= onlineLevelRules.PurchaseGoldCost && owner.level < onlineLevelRules.MaxLevel;
+            lockButton.interactable = economy;
             surrenderButton.interactable=OnlineInputReady;
             shopToggle.interactable=!owner.eliminated&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded?"Collapse shop":"Open shop"+(owner.locked?" / LOCKED":""));
             RenderOnlineShop(owner);RenderOnlineUnits(owner,pub);RenderOnlineHud(owner,pub);RenderOnlineCombat(owner,pub);RenderOnlineResults(owner,pub);RenderOnlineContext(owner,pub);
@@ -181,14 +181,12 @@ namespace PokeChess.Client.UI
             RenderShopToolbar(owner.gold, owner.level, owner.xp, owner.winStreak, owner.loseStreak,
                 owner.locked, owner.freeRerollRound == owner.round, onlineLevelRules, onlineShopRules.RerollGoldCost);
             for(int i=0;i<shopCards.Length;i++){
-                var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].gameObject.SetActive(ShopExpanded);shopCards[i].interactable=OnlineInputReady&&available&&owner.gold>=offer.cost;
-                if(!available){card.Name.text="빈 슬롯";card.Price.text=card.Types.text=card.Owned.text="";card.Action.text="다음 새로고침 대기";}
-                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=offer.cost+"G";RenderShopCardTraits(card, d);
-                    card.Owned.text=string.Join(" · ",Enumerable.Range(1,3).Select(r=>"R"+r+" "+owner.units.Count(u=>u.definitionId==d.Id&&u.rank==r)));
-                    card.Action.text=owner.eliminated?"ELIMINATED":!onlineService.StateSynchronized||onlineService.PendingCommand!=null?"WAITING":owner.gold<offer.cost?"NOT ENOUGH GOLD":"BUY";
-                }
+                var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].gameObject.SetActive(ShopExpanded);shopCards[i].interactable=OnlineInputReady&&available&&offer.canPurchase;
+                if(!available){card.Name.text="빈 슬롯";card.Price.text=card.Types.text="";}
+                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=ShopPurchasePrice(offer.purchasePrice, offer.purchaseQuantity);RenderShopCardTraits(card, d);}
+                bool owned = available && owner.units.Any(unit => unit.definitionId == offer.definitionId);
+                SetShopPurchaseEffect(card, owned, available ? (UnitRank)offer.projectedRank : UnitRank.One);
                 RenderShopPortrait(i, offer.definitionId);
-                card.Action.color = shopCards[i].interactable ? ShopInk : new Color32(139, 55, 23, 255);
                 ApplyShopCardArt(i, available ? offer.cost : 0);
             }
         }

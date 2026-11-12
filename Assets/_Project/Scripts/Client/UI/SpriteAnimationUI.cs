@@ -128,6 +128,7 @@ namespace PokeChess.Client.UI
         {
             if(!fighterSprites.TryGetValue(unit.UnitInstanceId,out var sprite)||sprite==null)
                 fighterSprites[unit.UnitInstanceId]=sprite=AddSprite(label.transform.parent,unit.DefinitionId,unit.UnitInstanceId);
+            if(sprite.PokemonId!=unit.DefinitionId)sprite.Initialize(unit.DefinitionId,unit.UnitInstanceId);
             var action=pair.GetActionRuntime(unit.UnitInstanceId);
             Vector2 current=CombatPoint(unit.Position),facing=Vector2.zero;
             if(action.MoveDestination.HasValue)

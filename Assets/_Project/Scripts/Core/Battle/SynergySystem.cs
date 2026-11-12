@@ -78,7 +78,13 @@ namespace PokeChess.Core.Battle
             this.battle=battle;this.rules=rules??new SynergyRules();
             runtime=battle.Units.ToDictionary(u=>u.UnitInstanceId,_=>new Runtime(),StringComparer.Ordinal);
             teams=new Dictionary<int,IReadOnlyList<SynergyCount>>();
-            foreach(int team in new[]{1,2}) teams[team]=Array.AsReadOnly(SynergyTraits.All.Select(t=>new SynergyCount(t,battle.Units.Where(u=>u.TeamId==team&&u.IsOnBoard&&u.TraitIds.Contains(t)).Select(u=>SynergyTraits.Family(u.DefinitionId)).Distinct(StringComparer.Ordinal).Count())).ToArray());
+            foreach (int team in new[]{1,2}) RefreshTeamCounts(team);
+        }
+        internal void RefreshTeamCounts(int team)
+        {
+            // Deployed units contribute for the whole battle, including after defeat.
+            teams[team] = CountAssignments(battle.Units.Where(u => u.TeamId == team)
+                .Select(u => new KeyValuePair<string, IReadOnlyList<string>>(u.DefinitionId, u.TraitIds)));
         }
         public IReadOnlyList<SynergyCount> TeamCounts(int team)=>teams[team];
         public int TeamTier(int team,string trait)=>rules.Enabled?teams[team].First(c=>c.TraitId==trait).Tier:0;
@@ -116,7 +122,7 @@ namespace PokeChess.Core.Battle
             if(tier==0)yield break;
             var units=board.Select(u=>{
                 var definition=catalog.Get(u.DefinitionId);
-                var stats=ItemCombatSystem.ApplyStats(u,RankRules.Default.Apply(definition,u.Rank));
+                var stats=RankRules.Default.Apply(definition,u.Rank);
                 return new UnitCombatState(u,stats,1,u.Placement.Position.Value,definition.SkillId,SynergyPreparation.Traits(u,catalog));
             }).ToArray();
             foreach(var guardian in units.Where(u=>u.TraitIds.Contains(SynergyTraits.Guardian)))

@@ -26,7 +26,8 @@ namespace PokeChess.Core.Match
         public UnitInstance Unit { get; }
         public IReadOnlyList<UnitRankedUp> RankUps { get; }
         public bool MergeNextPreparation { get; }
-        internal PurchaseResult(UnitInstance unit,IReadOnlyList<UnitRankedUp> rankUps,bool mergeNextPreparation=false) { Unit=unit;RankUps=rankUps;MergeNextPreparation=mergeNextPreparation; }
+        public IReadOnlyList<int> PurchasedSlots { get; }
+        internal PurchaseResult(UnitInstance unit,IReadOnlyList<UnitRankedUp> rankUps,bool mergeNextPreparation,int[] purchasedSlots) { Unit=unit;RankUps=rankUps;MergeNextPreparation=mergeNextPreparation;PurchasedSlots=Array.AsReadOnly(purchasedSlots); }
     }
     internal sealed class RankNode
     {
@@ -35,23 +36,49 @@ namespace PokeChess.Core.Match
         internal UnitPlacement Placement;
         internal readonly List<UnitInstance> Originals;
         internal RankNode(UnitInstance unit) { Unit=unit;Rank=unit.Rank;Placement=unit.Placement;Originals=new List<UnitInstance>{unit}; }
+        internal RankNode(RankNode node)
+        { Unit=node.Unit;Rank=node.Rank;Placement=node.Placement;Originals=new List<UnitInstance>(node.Originals); }
     }
     internal sealed class RankUpPlan
     {
         internal readonly UnitInstance[] Before;
-        internal readonly UnitInstance Added;
+        internal readonly UnitInstance[] Added;
         internal readonly RankNode[] Final;
         internal readonly IReadOnlyList<UnitRankedUp> Events;
         internal bool PendingPreparationMerge => Final.Where(n=>n.Rank!=UnitRank.Three && n.Placement.Kind!=PlacementKind.Unplaced).GroupBy(n=>new {n.Unit.DefinitionId,n.Unit.EvolutionStage,n.Rank}).Any(g=>g.Count()>=3);
-        internal bool Changed => Added!=null || Events.Count>0;
-        internal UnitInstance PurchaseSurvivor => Final.Single(n=>n.Originals.Contains(Added)).Unit;
-        private RankUpPlan(UnitInstance[] before,UnitInstance added,RankNode[] final,List<UnitRankedUp> events)
+        internal UnitRank ProjectedPurchaseRank()
+        {
+            if (!PendingPreparationMerge) return Final.Single(node => node.Originals.Contains(Added[0])).Rank;
+            var nodes = Final.Select(node => new RankNode(node)).ToList();
+            Merge(nodes, new List<UnitRankedUp>(), benchOnly: false);
+            return nodes.Single(node => node.Originals.Contains(Added[0])).Rank;
+        }
+        internal bool Changed => Added.Length>0 || Events.Count>0;
+        internal UnitInstance PurchaseSurvivor => Final.Single(n=>n.Originals.Contains(Added[0])).Unit;
+        private RankUpPlan(UnitInstance[] before,UnitInstance[] added,RankNode[] final,List<UnitRankedUp> events)
         { Before=before;Added=added;Final=final;Events=events.AsReadOnly(); }
-        internal static RankUpPlan Build(PlayerState player,PokemonCatalog catalog,UnitInstance added=null,bool benchOnly=false)
+        internal static RankUpPlan Build(PlayerState player,PokemonCatalog catalog,UnitInstance[] added=null,bool benchOnly=false)
         {
             var before=player.Units.ToArray();var nodes=before.Select(u=>new RankNode(u)).ToList();
-            if(added!=null) nodes.Add(new RankNode(added));
+            added ??= Array.Empty<UnitInstance>();
+            nodes.AddRange(added.Select(unit => new RankNode(unit)));
             var events=new List<UnitRankedUp>();
+            Merge(nodes, events, benchOnly);
+            int capacity = player.Rules.BenchCapacity;
+            var used = new HashSet<int>(nodes.Where(n => n.Placement.Kind == PlacementKind.Bench &&
+                n.Placement.BenchSlot.Value < capacity).Select(n => n.Placement.BenchSlot.Value));
+            foreach (var node in nodes.Where(n => n.Placement.Kind == PlacementKind.Bench && n.Placement.BenchSlot.Value >= capacity))
+            {
+                int? free = Enumerable.Range(0, capacity).Where(i => !used.Contains(i)).Select(i => (int?)i).FirstOrDefault();
+                if (!free.HasValue) throw new InvalidOperationException("Bench is full after rank-up planning.");
+                node.Placement = UnitPlacement.OnBench(free.Value);
+                used.Add(free.Value);
+            }
+            foreach(var node in nodes.Where(n=>n.Rank!=n.Unit.Rank)) RankRules.Default.Apply(catalog.Get(node.Unit.DefinitionId),node.Rank);
+            return new RankUpPlan(before,added,nodes.ToArray(),events);
+        }
+        private static void Merge(List<RankNode> nodes, List<UnitRankedUp> events, bool benchOnly)
+        {
             foreach(var rank in new[]{UnitRank.One,UnitRank.Two})
             {
                 var groups=nodes.Where(n=>n.Rank==rank && n.Placement.Kind!=PlacementKind.Unplaced && (!benchOnly || n.Placement.Kind==PlacementKind.Bench))
@@ -71,19 +98,6 @@ namespace PokeChess.Core.Match
                     }
                 }
             }
-            if(added!=null)
-            {
-                var newNode=nodes.FirstOrDefault(n=>ReferenceEquals(n.Unit,added));
-                if(newNode!=null && newNode.Placement.BenchSlot==player.Rules.BenchCapacity)
-                {
-                    var used=new HashSet<int>(nodes.Where(n=>n!=newNode && n.Placement.Kind==PlacementKind.Bench).Select(n=>n.Placement.BenchSlot.Value));
-                    int? free=Enumerable.Range(0,player.Rules.BenchCapacity).Where(i=>!used.Contains(i)).Select(i=>(int?)i).FirstOrDefault();
-                    if(!free.HasValue) throw new InvalidOperationException("Bench is full after rank-up planning.");
-                    newNode.Placement=UnitPlacement.OnBench(free.Value);
-                }
-            }
-            foreach(var node in nodes.Where(n=>n.Rank!=n.Unit.Rank)) RankRules.Default.Apply(catalog.Get(node.Unit.DefinitionId),node.Rank);
-            return new RankUpPlan(before,added,nodes.ToArray(),events);
         }
     }
     // Trusted host service; callers serialize commands and invoke after acquisitions/imports.
@@ -100,18 +114,18 @@ namespace PokeChess.Core.Match
             var plan=RankUpPlan.Build(player,catalog);if(!plan.Changed) return plan.Events;
             Commit(match,player,plan);return plan.Events;
         }
-        internal static void Validate(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding purchase=null)
+        internal static void Validate(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding[] purchases=null)
         {
-            player.ValidateRankUp(plan);match.Pool?.ValidateRankUp(plan,purchase);
+            player.ValidateRankUp(plan);match.Pool?.ValidateRankUp(plan,purchases);
             if(match.Pool==null && plan.Before.Any(u=>u.PoolOriginDefinitionId!=null)) throw new InvalidOperationException("Missing owning pool.");
         }
-        internal static void Commit(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding purchase=null)
+        internal static void Commit(MatchState match,PlayerState player,RankUpPlan plan,PoolHolding[] purchases=null)
         {
             long revision=player.ValidateRankUp(plan);
-            var poolPlan=match.Pool?.ValidateRankUp(plan,purchase);
+            var poolPlan=match.Pool?.ValidateRankUp(plan,purchases);
             if(match.Pool==null && plan.Before.Any(u=>u.PoolOriginDefinitionId!=null)) throw new InvalidOperationException("Missing owning pool.");
             player.ApplyRankUp(plan,revision);
-            if(poolPlan!=null) match.Pool.ApplyRankUp(plan,poolPlan,purchase);
+            if(poolPlan!=null) match.Pool.ApplyRankUp(plan,poolPlan,purchases);
         }
     }
 }

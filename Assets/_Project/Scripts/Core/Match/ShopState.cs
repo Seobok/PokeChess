@@ -51,10 +51,10 @@ namespace PokeChess.Core.Match
             IsLocked = false;
             Revision = revision;
         }
-        internal void ClearSlot(int index, long revision)
+        internal void ClearSlots(int[] indices, long revision)
         {
             var copy = new ShopSlot[ShopRules.SlotCount];
-            for (int i = 0; i < copy.Length; i++) copy[i] = i == index ? new ShopSlot(i) : slots[i];
+            for (int i = 0; i < copy.Length; i++) copy[i] = Array.IndexOf(indices, i) >= 0 ? new ShopSlot(i) : slots[i];
             slots = Array.AsReadOnly(copy);
             Revision = revision;
         }

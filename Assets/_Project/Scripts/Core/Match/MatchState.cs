@@ -14,9 +14,9 @@ namespace PokeChess.Core.Match
         private readonly List<PlayerState> players = new List<PlayerState>();
         private readonly ReadOnlyCollection<PlayerState> playerView;
         private long unitSequence;
-        internal string NextUnitId(out long sequence)
+        internal string NextUnitId(out long sequence, long? after = null)
         {
-            sequence = unitSequence;
+            sequence = after ?? unitSequence;
             string id;
             do { sequence = checked(sequence + 1); id = "unit-" + sequence.ToString(System.Globalization.CultureInfo.InvariantCulture); }
             while (players.Any(p => p.Units.Any(u => u.InstanceId == id)));
@@ -31,6 +31,20 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<PlayerState> Players => playerView;
         public int RoundNumber { get; private set; }
         public MatchPhase Phase { get; private set; } = MatchPhase.Waiting;
+        internal IReadOnlyList<LocalPairBattle> CombatPairs { get; set; } = Array.Empty<LocalPairBattle>();
+
+        internal void RefreshCombatUnit(UnitInstance unit)
+        {
+            if (Phase != MatchPhase.Combat) return;
+            foreach (var pair in CombatPairs)
+            {
+                if (pair.IsComplete || pair.Battle == null || !pair.Pairing.Contains(unit.OwnerPlayerId)) continue;
+                var fighter = pair.Battle.Units.FirstOrDefault(candidate => ReferenceEquals(candidate.PersistentUnit, unit));
+                if (fighter == null) continue;
+                pair.Battle.RefreshLoadout(fighter);
+            }
+        }
+
         public MatchFinalResult FinalResult { get; private set; }
         internal void CommitFinalResult(MatchFinalResult result)
         {

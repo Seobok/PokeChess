@@ -163,7 +163,7 @@ namespace PokeChess.Core.Tests
         }
         [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)] [TestCase(MatchPhase.Combat)]
         [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
-        public void AllShopMutationsRequirePreparation(MatchPhase phase)
+        public void CombatAllowsManualShopCommandsWhileAutomaticRefreshRequiresPreparation(MatchPhase phase)
         {
             var m=Prepared();var p=m.GetPlayer("p1");var system=new ShopSystem(Source());system.RefreshForRound(m,"p1");
             if(phase==MatchPhase.Waiting || phase==MatchPhase.Starting)
@@ -173,8 +173,31 @@ namespace PokeChess.Core.Tests
             else {m.TransitionTo(MatchPhase.Combat);if(phase==MatchPhase.Result)m.TransitionTo(MatchPhase.Result);if(phase==MatchPhase.Finished)m.TransitionTo(MatchPhase.Finished);}
             var before=Snapshot(p);
             Assert.Throws<InvalidOperationException>(()=>system.RefreshForRound(m,"p1"));
-            Assert.Throws<InvalidOperationException>(()=>system.Reroll(m,"p1"));
-            Assert.Throws<InvalidOperationException>(()=>system.SetLocked(m,"p1",true));Assert.That(Snapshot(p),Is.EqualTo(before));
+            Assert.That(Snapshot(p),Is.EqualTo(before));
+            if (phase == MatchPhase.Combat)
+            {
+                int gold = p.Gold;
+                long revision = p.Shop.Revision;
+                system.Reroll(m,"p1");
+                Assert.That(p.Gold, Is.EqualTo(gold - system.Rules.RerollGoldCost));
+                Assert.That(p.Shop.Revision, Is.GreaterThan(revision));
+                system.SetLocked(m,"p1",true);
+                Assert.That(p.Shop.IsLocked, Is.True);
+                system.SetLocked(m,"p1",false);
+                Assert.That(p.Shop.IsLocked, Is.False);
+                system.SetLocked(m,"p1",true);
+                var slots = p.Shop.Slots;
+                m.TransitionTo(MatchPhase.Result);
+                m.TransitionTo(MatchPhase.Preparation);
+                system.RefreshForRound(m,"p1");
+                Assert.That(p.Shop.Slots, Is.SameAs(slots));
+            }
+            else
+            {
+                Assert.Throws<InvalidOperationException>(()=>system.Reroll(m,"p1"));
+                Assert.Throws<InvalidOperationException>(()=>system.SetLocked(m,"p1",true));
+                Assert.That(Snapshot(p),Is.EqualTo(before));
+            }
         }
         [Test]
         public void ManualCommandsWaitForCurrentRoundRefresh()

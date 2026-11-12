@@ -214,7 +214,7 @@ namespace PokeChess.Core.Match
                 nextBattles.Add(pairBattle);
             }
             foreach(var player in players)if(deployments[player.PlayerId].Count>0)player.ApplyPlacements(deployments[player.PlayerId]);
-            Match.TransitionTo(MatchPhase.Combat);battles=nextBattles.AsReadOnly();LastResult=null;
+            Match.TransitionTo(MatchPhase.Combat);Match.CombatPairs=battles=nextBattles.AsReadOnly();LastResult=null;
             if(battles.All(b=>b.IsComplete))Finish();
             return true;
         }
@@ -232,7 +232,7 @@ namespace PokeChess.Core.Match
                 next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses));
             }
             foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);
-            Match.TransitionTo(MatchPhase.Combat);battles=next.AsReadOnly();LastResult=null;
+            Match.TransitionTo(MatchPhase.Combat);Match.CombatPairs=battles=next.AsReadOnly();LastResult=null;
             if(battles.All(b=>b.IsComplete))Finish();return true;
         }
         private ulong BattleSeed(int round,RoundPairing pair)
@@ -278,7 +278,7 @@ namespace PokeChess.Core.Match
         private void Finish()
         {
             LastResult=new LocalRoundResult(Match.RoundNumber,battles);
-            Match.TransitionTo(MatchPhase.Result);SettleResult();
+            Match.TransitionTo(MatchPhase.Result);Match.CombatPairs=Array.Empty<LocalPairBattle>();SettleResult();
         }
         public void SettleResult()
         {

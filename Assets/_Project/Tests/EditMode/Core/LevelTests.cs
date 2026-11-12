@@ -67,7 +67,7 @@ namespace PokeChess.Core.Tests
             Assert.Throws<InvalidOperationException>(() => new LevelSystem().BuyXP(m,"p1"));
             Assert.That(State(p), Is.EqualTo(before));
         }
-        [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)] [TestCase(MatchPhase.Combat)]
+        [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)]
         [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
         public void PurchaseRejectsAllOtherPhases(MatchPhase phase)
         {

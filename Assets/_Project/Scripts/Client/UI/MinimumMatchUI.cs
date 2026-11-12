@@ -12,7 +12,6 @@ namespace PokeChess.Client.UI
     {
         private LocalMatchCommandGateway commands;
         private readonly UnityEngine.UI.Button[] shopCards=new UnityEngine.UI.Button[ShopRules.SlotCount];
-        private readonly UnityEngine.UI.Text[] cardText=new UnityEngine.UI.Text[ShopRules.SlotCount];
         private UnityEngine.UI.Button rerollButton,lockButton,xpButton,sellButton,shopToggle;
         private UnityEngine.UI.Text resources,inventoryLabel,detailLabel,debugLabel;
         private RectTransform shopFrame;
@@ -21,6 +20,9 @@ namespace PokeChess.Client.UI
         private void AnimateShop()
         {
             float target=ShopExpanded ? 10 : ShopHandleHeight-ShopHeight;
+            float now = Time.unscaledTime;
+            foreach (var card in shopViews)
+                if (card != null && card.PurchaseEffect.enabled) AnimateShopPurchaseEffect(card, now);
             shopFrame.anchoredPosition=new Vector2(shopFrame.anchoredPosition.x,Mathf.MoveTowards(shopFrame.anchoredPosition.y,target,900*Time.unscaledDeltaTime));
         }
         private string selectedUnitId;
@@ -77,7 +79,7 @@ namespace PokeChess.Client.UI
             for(int i=0;i<ShopRules.SlotCount;i++)
             {
                 int slot=i;shopCards[i]=ActionButton("ShopCard_"+i,new Vector2(170,100),new Vector2(-500+i*190,-260),()=>BuySlot(slot));
-                cardText[i]=shopCards[i].GetComponentInChildren<UnityEngine.UI.Text>();cardText[i].fontSize=13;
+                shopCards[i].GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
             }
             rerollButton=ActionButton("Reroll",new Vector2(170,32),new Vector2(490,-224),RequestReroll);
             lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
@@ -188,10 +190,14 @@ namespace PokeChess.Client.UI
             Render();
         }
         public void BuySlot(int slot) { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Buy,c=>c.slot=slot);return;}long revision=displayedShopRevision;Perform(()=> {
-            var result=commands.Buy(slot,revision);if(slot>=0&&slot<shopViews.Length)RecordShopPurchase(slot,result);return result;
+            var result=commands.Buy(slot,revision);
+            if(result.Accepted)
+                foreach (int purchasedSlot in result.Purchase.PurchasedSlots)
+                    shopViews[purchasedSlot].PurchasedSlot=Player.Shop.Slots[purchasedSlot];
+            return result;
         }); }
         private void RequestReroll() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Reroll);return;}long revision=displayedShopRevision;Perform(()=> {
-            var result=commands.Reroll(revision);if(result.Accepted)foreach(var card in shopViews){card.Purchased=false;card.Flash=null;card.FlashUntil=0;}return result;
+            return commands.Reroll(revision);
         }); }
         private void RequestBuyXP() { if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.BuyXP);return;}Perform(()=> {
             int gold=Player.Gold;var result=commands.BuyXP();
@@ -230,7 +236,7 @@ namespace PokeChess.Client.UI
         }
         private void RenderMinimumUI()
         {
-            if(shopPhase!=Match.Phase) { shopCollapsed=Match.Phase!=MatchPhase.Preparation;shopPhase=Match.Phase; }
+            if(shopPhase!=Match.Phase) { if(Match.Phase==MatchPhase.Preparation)shopCollapsed=false;shopPhase=Match.Phase; }
             if(Simulation!=null)shopCollapsed=true;
             if(commands==null) return;
             bool finished=Match.Phase==MatchPhase.Finished;
@@ -248,15 +254,17 @@ namespace PokeChess.Client.UI
             for(int i=0;i<shopCards.Length;i++)
             {
                 shopCards[i].gameObject.SetActive(ShopExpanded);var offer=Player.Shop.Slots[i];
-                if(offer.IsEmpty) { cardText[i].text="EMPTY SLOT";shopCards[i].interactable=false;continue; }
-                var availability=commands.PreviewBuy(i,displayedShopRevision);var definition=catalog.Get(offer.DefinitionId);
-                int owned=Player.Units.Count(u=>u.DefinitionId==offer.DefinitionId);
-                cardText[i].text=definition.DisplayName+"\nCost "+offer.Cost+" / "+offer.Cost+"G\nOwned units: "+owned+"\n"+(availability.Accepted ? availability.Preview.MergeNextPreparation ? (availability.Preview.RankUpCount>0 ? "BENCH RANK UP + NEXT PREP MERGE" : "BUY / MERGE NEXT PREP") : availability.Preview.RankUpCount>0 ? "BUY + RANK UP" : "BUY" : availability.Message);
-                shopCards[i].interactable=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability.Accepted;
+                var availability = offer.IsEmpty ? null : commands.PreviewBuy(i, displayedShopRevision);
+                shopCards[i].interactable = commands.CanBuy && !busy && !RoundLoop.NextPreparationPending && availability?.Accepted == true;
+                bool owned = !offer.IsEmpty && Player.Units.Any(unit => unit.DefinitionId == offer.DefinitionId);
+                shopViews[i].PurchasePrice = availability?.Preview?.Price ?? offer.Cost;
+                shopViews[i].PurchaseQuantity = availability?.Preview?.Quantity ?? 1;
+                SetShopPurchaseEffect(shopViews[i], owned, availability?.Preview?.ProjectedRank ?? UnitRank.One);
             }
-            rerollButton.interactable=trade && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);
-            lockButton.interactable=trade;
-            xpButton.interactable=trade && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
+            bool economy=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending;
+            rerollButton.interactable=economy && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);
+            lockButton.interactable=economy;
+            xpButton.interactable=economy && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
             RenderUnitContext();
             RenderEvolutionUI();
             RenderShopEconomyUI();UpdateTokenFeedback();RenderRoundUI();

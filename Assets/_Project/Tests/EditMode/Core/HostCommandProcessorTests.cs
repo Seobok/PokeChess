@@ -44,12 +44,25 @@ namespace PokeChess.Core.Tests
             var move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Board;Assert.That(processor.Process("p1",move).code,Is.EqualTo("UnitNotOwned"));Assert.That(Owned(),Is.EqualTo(before));
             var snapshot=processor.Snapshot("p1");Assert.That(snapshot.units,Is.Empty);Assert.That(processor.PublicSnapshot().players.Select(p=>p.id),Does.Contain("p2"));Assert.That(processor.Process(null,Next(MatchCommandKind.Sync)).state,Is.Null);
         }
-        [Test] public void CombatKeepsBuyAndBenchMovesButRejectsBoardEconomyActions()
+        [Test] public void CombatAllowsEconomyAndBenchMovesButRejectsBoardMovesAndUnequip()
         {
             match.TransitionTo(MatchPhase.Combat);var buy=Next(MatchCommandKind.Buy);Assert.That(processor.Process("p1",buy).accepted,Is.True);var unit=match.GetPlayer("p1").Units.Single();
             var move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Bench;move.bench=2;Assert.That(processor.Process("p1",move).accepted,Is.True);
             string before=Owned();move=Next(MatchCommandKind.Move);move.unitId=unit.InstanceId;move.destination=PlacementKind.Board;Assert.That(processor.Process("p1",move).accepted,Is.False);Assert.That(Owned(),Is.EqualTo(before));
-            foreach(var kind in new[]{MatchCommandKind.Reroll,MatchCommandKind.BuyXP}){var c=Next(kind);c.unitId=unit.InstanceId;before=Owned();Assert.That(processor.Process("p1",c).accepted,Is.False);Assert.That(Owned(),Is.EqualTo(before));}
+            var player = match.GetPlayer("p1");
+            int economyGold = player.Gold;
+            Assert.That(processor.Process("p1",Next(MatchCommandKind.Reroll)).accepted,Is.True);
+            Assert.That(processor.Process("p1",Next(MatchCommandKind.BuyXP)).accepted,Is.True);
+            Assert.That(player.Gold,Is.EqualTo(economyGold-6));
+            var lockShop = Next(MatchCommandKind.Lock);
+            lockShop.locked = true;
+            Assert.That(processor.Process("p1",lockShop).accepted, Is.True);
+            Assert.That(player.Shop.IsLocked, Is.True);
+            before=Owned();
+            var removedUnequip = Next((MatchCommandKind)10);
+            removedUnequip.unitId=unit.InstanceId;
+            Assert.That(processor.Process("p1",removedUnequip).accepted,Is.False);
+            Assert.That(Owned(),Is.EqualTo(before));
             var sale=Next(MatchCommandKind.Sell);sale.unitId=unit.InstanceId;int gold=match.GetPlayer("p1").Gold;
             Assert.That(processor.Process("p1",sale).accepted,Is.True);Assert.That(match.GetPlayer("p1").Units,Is.Empty);Assert.That(match.GetPlayer("p1").Gold,Is.GreaterThan(gold));
             before=Owned();Assert.That(processor.Process("p1",sale.Copy()).accepted,Is.True);Assert.That(Owned(),Is.EqualTo(before));match.Pool.AssertConservation(match);

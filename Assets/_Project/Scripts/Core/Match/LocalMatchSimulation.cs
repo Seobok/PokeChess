@@ -115,10 +115,12 @@ namespace PokeChess.Core.Match
             {
                 var slot=p.Shop.Slots[i];if(slot.IsEmpty || p.Gold-slot.Cost<reserve)continue;
                 // Capacity and depleted shared stock are expected purchase rejections.
-                try { trades.PreviewBuy(match,p.PlayerId,i,p.Shop.Revision); }
+                PurchasePreview preview;
+                try { preview = trades.PreviewBuy(match,p.PlayerId,i,p.Shop.Revision); }
                 catch(InvalidOperationException) { continue; }
-                trades.BuyWithRankUp(match,p.PlayerId,i,p.Shop.Revision);
-                purchaseCounts.TryGetValue(slot.DefinitionId,out int count);purchaseCounts[slot.DefinitionId]=count+1;
+                if (p.Gold - preview.Price < reserve) continue;
+                var purchase = trades.BuyWithRankUp(match,p.PlayerId,i,p.Shop.Revision);
+                purchaseCounts.TryGetValue(slot.DefinitionId,out int count);purchaseCounts[slot.DefinitionId]=count+purchase.PurchasedSlots.Count;
             }
         }
     }

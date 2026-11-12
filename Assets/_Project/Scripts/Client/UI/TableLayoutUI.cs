@@ -38,7 +38,7 @@ namespace PokeChess.Client.UI
             }
             var definition=catalog.Get(definitionId);
             var stats=RankRules.Default.Apply(definition,UnitRank.One);
-            int cost = IsOnlineMatch ? onlineService.LocalMatchState.shop[hoveredShopSlot].cost : Player.Shop.Slots[hoveredShopSlot].Cost;
+            int cost = IsOnlineMatch ? onlineService.LocalMatchState.shop[hoveredShopSlot].purchasePrice : shopViews[hoveredShopSlot].PurchasePrice;
             int owned = IsOnlineMatch ? onlineService.LocalMatchState.units.Count(unit => unit.definitionId == definitionId)
                 : Player.Units.Count(unit => unit.DefinitionId == definitionId);
             RenderUnitInfoIcons(definition, UnitRank.One, stats, stats.MaxHP, stats.MaxHP, stats.StartingEnergy,

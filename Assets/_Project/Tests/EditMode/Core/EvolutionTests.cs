@@ -65,12 +65,11 @@ namespace PokeChess.Core.Tests
             Assert.Throws<InvalidOperationException>(()=>system.Evolve(f.m,"p1","a",p.EvolutionRevision,revision-1));
             Assert.That(p.EvolutionPoints,Is.EqualTo(1));Assert.That(p.ShopEvolutions,Is.Empty);
         }
-        [Test] public void PreviewIsReadOnlyAndForeignOrCombatEvolutionIsRejected()
+        [Test] public void PreviewIsReadOnlyAndForeignEvolutionIsRejected()
         {
             var f=Fixture();Add(f.m,f.c);var p=f.m.GetPlayer("p1");var system=new EvolutionSystem(f.c);
             Assert.That(system.Preview(f.m,"p1","a",p.EvolutionRevision,p.PlacementRevision).Id,Is.EqualTo("ivysaur"));Assert.That(p.EvolutionPoints,Is.EqualTo(1));
             Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>system.Evolve(f.m,"p2","a",f.m.GetPlayer("p2").EvolutionRevision,0));
-            f.m.TransitionTo(MatchPhase.Combat);Assert.Throws<InvalidOperationException>(()=>Evolve(f.m,f.c));Assert.That(p.EvolutionPoints,Is.EqualTo(1));
         }
         [Test] public void RefreshReplacesOnlyOwnersShopAndBuyingConsumesBasePool()
         {
@@ -81,7 +80,8 @@ namespace PokeChess.Core.Tests
             Assert.That(f.m.GetPlayer("p2").Shop.Slots.All(s=>s.DefinitionId=="bulbasaur"),Is.True);
             var trades=new ShopTransactionSystem(f.c);var bought=trades.Buy(f.m,"p1",0,p.Shop.Revision);
             Assert.That(bought.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(bought.EvolutionStage,Is.EqualTo(1));Assert.That(bought.PoolOriginDefinitionId,Is.EqualTo("bulbasaur"));f.m.Pool.AssertConservation(f.m);
-            trades.Sell(f.m,"p1",bought.InstanceId);trades.Sell(f.m,"p1","a");Assert.That(p.ShopEvolutions["bulbasaur"].Stage,Is.EqualTo(1));f.m.Pool.AssertConservation(f.m);
+            Assert.That(bought.InstanceId,Is.EqualTo("a"));
+            trades.Sell(f.m,"p1",bought.InstanceId);Assert.That(p.ShopEvolutions["bulbasaur"].Stage,Is.EqualTo(1));f.m.Pool.AssertConservation(f.m);
         }
         [Test] public void LockedOffersEvolveImmediatelyAndStayEvolvedNextRound()
         {
@@ -96,10 +96,10 @@ namespace PokeChess.Core.Tests
         [Test] public void EvolutionDoesNotRefillAlreadyPurchasedShopSlot()
         {
             var f=Fixture();var p=f.m.GetPlayer("p1");
-            var bought=new ShopTransactionSystem(f.c).Buy(f.m,"p1",0,p.Shop.Revision);
-            new EvolutionSystem(f.c).Evolve(f.m,"p1",bought.InstanceId,p.EvolutionRevision,p.PlacementRevision);
-            Assert.That(p.Shop.Slots[0].IsEmpty,Is.True);
-            Assert.That(p.Shop.Slots.Skip(1).All(s=>s.DefinitionId=="ivysaur"&&s.Cost==1&&s.EvolutionStage==1),Is.True);
+            var purchase=new ShopTransactionSystem(f.c).BuyWithRankUp(f.m,"p1",0,p.Shop.Revision);
+            new EvolutionSystem(f.c).Evolve(f.m,"p1",purchase.Unit.InstanceId,p.EvolutionRevision,p.PlacementRevision);
+            Assert.That(p.Shop.Slots.Where(s=>s.IsEmpty).Select(s=>s.Index), Is.EquivalentTo(purchase.PurchasedSlots));
+            Assert.That(p.Shop.Slots.Where(s=>!s.IsEmpty).All(s=>s.DefinitionId=="ivysaur"&&s.Cost==1&&s.EvolutionStage==1),Is.True);
             f.m.Pool.AssertConservation(f.m);
         }
         [TestCase(PlacementKind.Board)] [TestCase(PlacementKind.Bench)]
@@ -136,7 +136,8 @@ namespace PokeChess.Core.Tests
         [Test] public void EvolvedShopCopiesMergeWithoutChangingFamilyPool()
         {
             var f=Fixture();Add(f.m,f.c);var p=f.m.GetPlayer("p1");Evolve(f.m,f.c);new ShopSystem().Reroll(f.m,"p1");var trades=new ShopTransactionSystem(f.c);
-            trades.Buy(f.m,"p1",0,p.Shop.Revision);var result=trades.BuyWithRankUp(f.m,"p1",1,p.Shop.Revision);
+            var result=trades.BuyWithRankUp(f.m,"p1",0,p.Shop.Revision);
+            Assert.That(result.PurchasedSlots, Is.EqualTo(new[]{0,1}));
             Assert.That(result.Unit.Rank,Is.EqualTo(UnitRank.Two));Assert.That(result.Unit.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(result.Unit.EvolutionStage,Is.EqualTo(1));
             f.m.Pool.AssertConservation(f.m);trades.Sell(f.m,"p1",result.Unit.InstanceId);Assert.That(f.m.Pool.GetStock("bulbasaur").Available,Is.EqualTo(f.m.Pool.GetStock("bulbasaur").Initial));
         }
@@ -146,6 +147,26 @@ namespace PokeChess.Core.Tests
             SharedPoolSystem.RegisterUnit(f.m,f.c.CreateUnit("enemy","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBench(0)),"bulbasaur");
             f.rounds.StartCombat(5);var unit=f.rounds.Battle.Units.Single(u=>u.UnitInstanceId=="a");Assert.That(unit.DefinitionId,Is.EqualTo("ivysaur"));Assert.That(unit.EvolutionStage,Is.EqualTo(1));Assert.That(unit.Stats.MaxHP,Is.EqualTo(125));
         }
+        [Test] public void CombatEvolutionUpdatesExistingFighterAndPreservesVitals()
+        {
+            var f = Fixture();
+            Add(f.m,f.c);
+            SharedPoolSystem.RegisterUnit(f.m,f.c.CreateUnit("enemy","bulbasaur","p2",UnitRank.One,0,UnitPlacement.OnBench(0)),"bulbasaur");
+            Assert.That(f.rounds.StartCombat(5), Is.True);
+            var fighter = f.rounds.Battle.Units.Single(u => u.UnitInstanceId == "a");
+            var position = fighter.Position;
+            fighter.SetVitals(50, 12);
+
+            Evolve(f.m,f.c);
+
+            Assert.That(fighter.DefinitionId, Is.EqualTo("ivysaur"));
+            Assert.That(fighter.EvolutionStage, Is.EqualTo(1));
+            Assert.That(fighter.Stats.MaxHP, Is.EqualTo(125));
+            Assert.That(fighter.CurrentHP, Is.EqualTo(62.5f));
+            Assert.That(fighter.CurrentEnergy, Is.EqualTo(12));
+            Assert.That(fighter.Position, Is.EqualTo(position));
+        }
+
         [Test] public void HostRetryDeduplicatesEvolutionAndPublishesOwnerAndPublicState()
         {
             var f=Fixture();Add(f.m,f.c,placement:UnitPlacement.OnBoard(new BoardPosition(0,0)));var host=new HostCommandProcessor(f.m,f.c,f.rounds);var p=f.m.GetPlayer("p1");

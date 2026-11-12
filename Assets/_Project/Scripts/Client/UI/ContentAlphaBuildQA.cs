@@ -95,8 +95,6 @@ namespace PokeChess.Client.UI
             drag.OnBeginDrag(pointer);pointer.position=view.ScreenPoint(p.GetUnit("items-qa-0").Placement);drag.OnDrag(pointer);drag.OnEndDrag(pointer);
             if(!p.GetUnit("items-qa-0").ItemInstanceIds.Contains(helmet)||p.ItemInventory.Contains(helmet))throw new Exception("Drag equip failed.");
             Capture("item-inventory.png");
-            view.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single(b=>b.name=="장착 도구 회수").onClick.Invoke();
-            if(!p.ItemInventory.Contains(helmet)||p.GetUnit("items-qa-0").ItemInstanceIds.Count!=0)throw new Exception("Unequip button failed.");
             view.enabled=true;
         }
         private void Capture(string filename="final-result.png")

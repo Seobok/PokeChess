@@ -11,19 +11,17 @@ namespace PokeChess.Client.UI
         private RectTransform itemRewardPanel,itemInventoryPanel,itemDragGhost,itemTooltip;
         private UnityEngine.UI.Text itemTooltipLabel;
         private UnityEngine.UI.Text wildPreviewLabel,itemInventoryTitle;
-        private UnityEngine.UI.Button itemReturnButton;
         private readonly UnityEngine.UI.Button[] itemChoices=new UnityEngine.UI.Button[3];
-        private readonly UnityEngine.UI.Button[] inventoryChoices=new UnityEngine.UI.Button[ToolsPerPage + 2];
+        private readonly UnityEngine.UI.Button[] inventoryChoices=new UnityEngine.UI.Button[ToolsPerPage + 1];
         private string[] visibleInventory=Array.Empty<string>();
 
         private object itemSlotOwner;
-        private const string ReturnDragId="return-tools";
         private ItemIconLibrary itemIcons;
         private string draggedItem;
         private long draggedItemRevision;
         private const string EvolutionDragId="evolution-point";
         private long draggedEvolutionRevision,draggedEvolutionPlacementRevision;
-        private int InventoryIndex(int slot)=>slot < 2 ? -1 : inventoryPage * ToolsPerPage + slot - 2;
+        private int InventoryIndex(int slot)=>slot == 0 ? -1 : inventoryPage * ToolsPerPage + slot - 1;
         private int CurrentEvolutionPoints=>IsOnlineMatch?onlineService.LocalMatchState?.evolutionPoints??0:Player.EvolutionPoints;
         private long displayedItemRevision;
         private Font itemFont;
@@ -48,7 +46,6 @@ namespace PokeChess.Client.UI
             BuildInventoryArt();
             itemDragGhost=Rect("ItemDragPreview",canvasRect,new Vector2(40,40),Vector2.zero);
             var ghostIcon=itemDragGhost.gameObject.AddComponent<UnityEngine.UI.Image>();ghostIcon.preserveAspect=true;ghostIcon.raycastTarget=false;
-            ItemLabel("ReturnGlyph",itemDragGhost,"↶",30,new Vector2(40,40),Vector2.zero).gameObject.SetActive(false);
             itemDragGhost.gameObject.SetActive(false);
             BuildEvolutionDragPreview();
             itemTooltip=Panel("ItemTooltip",new Vector2(275,80),new Vector2(-260,-45));
@@ -67,7 +64,6 @@ namespace PokeChess.Client.UI
         {
             if(IsItemDragging||slot<0||slot>=inventoryChoices.Length)return;
             if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 필드·대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
-            if(slot==1){itemTooltipLabel.text="도구 회수\n내 유닛에 드래그하면 장착 도구를 모두 회수합니다.";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
             int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
             var definition=ItemCatalog.Get(key);itemTooltipLabel.text=definition.Name+"\n"+definition.Description;
@@ -82,7 +78,7 @@ namespace PokeChess.Client.UI
                 draggedItem=EvolutionDragId;
                 draggedEvolutionRevision=IsOnlineMatch?onlineService.LocalMatchState.evolutionRevision:Player.EvolutionRevision;
                 draggedEvolutionPlacementRevision=IsOnlineMatch?onlineService.LocalMatchState.placementRevision:Player.PlacementRevision;
-            }else if(slot==1){draggedItem=ReturnDragId;draggedItemRevision=displayedItemRevision;}
+            }
             else{
                 int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
                 if(ItemCatalog.DefinitionId(visibleInventory[index])==null)return;
@@ -90,15 +86,39 @@ namespace PokeChess.Client.UI
             }
             HideItemHint();
             itemDragGhost.GetComponent<UnityEngine.UI.Image>().sprite=draggedItem==EvolutionDragId?inventoryMoonStone:itemIcons?.Get(ItemCatalog.DefinitionId(draggedItem));
-            itemDragGhost.transform.Find("ReturnGlyph").gameObject.SetActive(draggedItem==ReturnDragId);
             itemDragGhost.gameObject.SetActive(true);itemDragGhost.SetAsLastSibling();
-            if (draggedItem == EvolutionDragId) BeginEvolutionHighlights();
+            if (draggedItem == EvolutionDragId && ItemPhase == MatchPhase.Preparation) BeginEvolutionHighlights();
             DragItem(point);
         }
-        private bool CanDragItems()=>IsOnlineMatch
-            ? onlineService.WatchingPlayerId==onlineService.LocalMatchState?.playerId&&OnlineInputReady&&onlineService.LocalMatchState?.phase==MatchPhase.Preparation&&!onlineService.LocalMatchState.eliminated&&onlineService.LocalMatchState.hp>0
-            : localViewedPlayerId=="p1"&&Match!=null&&Match.Phase==MatchPhase.Preparation&&!busy&&!RoundLoop.NextPreparationPending&&Simulation?.Status!=SimulationStatus.Running&&!Player.IsEliminated&&Player.HP>0;
-        private string ItemTarget(Vector2 point) => ItemTarget(Hit(point));
+        private MatchPhase? ItemPhase => IsOnlineMatch ? onlineService.LocalMatchState?.phase : Match?.Phase;
+        private bool CanDragItems() => CanDragItemsInPhase(ItemPhase);
+        private bool CanDragItemsInPhase(MatchPhase? phase) =>
+            (phase == MatchPhase.Preparation || phase == MatchPhase.Combat) && (IsOnlineMatch
+            ? onlineService.WatchingPlayerId==onlineService.LocalMatchState?.playerId&&OnlineInputReady&&!onlineService.LocalMatchState.eliminated&&onlineService.LocalMatchState.hp>0
+            : localViewedPlayerId=="p1"&&Match!=null&&!busy&&!RoundLoop.NextPreparationPending&&Simulation?.Status!=SimulationStatus.Running&&!Player.IsEliminated&&Player.HP>0);
+
+        private string ItemTarget(Vector2 point)
+        {
+            var slot = Hit(point);
+            if (ItemPhase != MatchPhase.Combat || slot?.Placement.Kind == PlacementKind.Bench)
+                return ItemTarget(slot);
+
+            if (combatRoot == null || !combatRoot.gameObject.activeInHierarchy) return null;
+            for (int i = combatRoot.childCount - 1; i >= 0; i--)
+            {
+                var fighter = combatRoot.GetChild(i) as RectTransform;
+                if (fighter == null || !fighter.gameObject.activeInHierarchy ||
+                    !fighter.name.StartsWith("Fighter_", StringComparison.Ordinal) ||
+                    !RectTransformUtility.RectangleContainsScreenPoint(fighter, point, null)) continue;
+
+                string id = fighter.name.Substring("Fighter_".Length);
+                bool owned = IsOnlineMatch
+                    ? onlineService.LocalMatchState.units.Any(unit => unit.id == id && unit.placement == PlacementKind.Board)
+                    : Player.Units.Any(unit => unit.InstanceId == id && unit.Placement.Kind == PlacementKind.Board);
+                if (owned) return id;
+            }
+            return null;
+        }
         private string ItemTarget(Slot slot)
         {
             if (slot == null) return null;
@@ -110,7 +130,7 @@ namespace PokeChess.Client.UI
             if(!IsItemDragging)return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);itemDragGhost.anchoredPosition=local;
             var destination = Hit(point);
-            if (draggedItem == EvolutionDragId)
+            if (draggedItem == EvolutionDragId && ItemPhase == MatchPhase.Preparation)
             {
                 UpdateEvolutionHover(EvolutionSlotAt(point, destination));
                 return;
@@ -123,12 +143,14 @@ namespace PokeChess.Client.UI
         {
             if(!IsItemDragging)return;
             string id = draggedItem;
-            string target = CanDragItems() ? ItemTarget(id == EvolutionDragId ? EvolutionSlotAt(point, Hit(point)) : Hit(point)) : null;
+            string target = null;
+            if (CanDragItems())
+                target = id == EvolutionDragId && ItemPhase == MatchPhase.Preparation
+                    ? ItemTarget(EvolutionSlotAt(point, Hit(point))) : ItemTarget(point);
             long revision = draggedItemRevision;
             CancelItemDrag();
-            if(target==null){Feedback((id==EvolutionDragId?"진화":"장착")+" 취소: 준비 단계에서 내 유닛 위에 놓으세요.");Render();return;}
+            if(target==null){Feedback((id==EvolutionDragId?"진화":"장착")+" 취소: 내 유닛 위에 놓으세요.");Render();return;}
             selectedUnitId=target;
-            if(id==ReturnDragId){if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.UnequipItem,c=>{c.unitId=target;c.itemRevision=revision;});return;}Feedback(commands.UnequipItem(target,revision).Message);Render();return;}
             if(id==EvolutionDragId){
                 if(!CanEvolveTarget(target)){Feedback("진화 취소: 진화 가능한 내 유닛 위에 놓으세요.");Render();return;}
                 if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.Evolve,c=>{c.unitId=target;c.evolutionRevision=draggedEvolutionRevision;c.placementRevision=draggedEvolutionPlacementRevision;});return;}
@@ -143,19 +165,13 @@ namespace PokeChess.Client.UI
             ClearEvolutionHighlights();
             if(Match!=null)foreach(var slot in slots)slot.Graphic.color=BaseSlotColor(slot);
         }
-        private void UnequipSelectedItem()
-        {
-            if(selectedUnitId==null)return;
-            if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.UnequipItem,c=>{c.unitId=selectedUnitId;c.itemRevision=displayedItemRevision;});return;}
-            Feedback(commands.UnequipItem(selectedUnitId,displayedItemRevision).Message);Render();
-        }
         private void RenderItemWildUI()
         {
             if(itemRewardPanel==null)return;
             var owner=IsOnlineMatch?onlineService?.LocalMatchState:null;
             var pub=IsOnlineMatch?onlineService?.PublicState:null;
             if(IsOnlineMatch&&(owner==null||pub==null)){
-                RenderWildRewardUI(false, false, null);wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);itemReturnButton.interactable=false;CancelItemDrag();return;
+                RenderWildRewardUI(false, false, null);wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);CancelItemDrag();return;
             }
             var phase=IsOnlineMatch?pub.phase:Match.Phase;
             bool wild=IsOnlineMatch?pub.wildRound:WildRoundSystem.IsWild(Match);
@@ -178,11 +194,10 @@ namespace PokeChess.Client.UI
             hudNotice.gameObject.SetActive(!(wild&&phase==MatchPhase.Preparation));
             wildPreviewLabel.text="야생 라운드 · "+(IsOnlineMatch?pub.wildPreview:WildRoundSystem.Preview(Match.RoundNumber));
             itemInventoryPanel.gameObject.SetActive(phase!=MatchPhase.Finished);
-            itemReturnButton.gameObject.SetActive(phase!=MatchPhase.Finished);
             inventoryLabel.text="ITEMS ("+visibleInventory.Length+")";
             if(IsItemDragging&&(!CanDragItems()||(draggedItem==EvolutionDragId
                 ? CurrentEvolutionPoints<=0||(IsOnlineMatch?owner.evolutionRevision:Player.EvolutionRevision)!=draggedEvolutionRevision||(IsOnlineMatch?owner.placementRevision:Player.PlacementRevision)!=draggedEvolutionPlacementRevision
-                : displayedItemRevision!=draggedItemRevision||draggedItem!=ReturnDragId&&!visibleInventory.Contains(draggedItem))))CancelItemDrag();
+                : displayedItemRevision!=draggedItemRevision||!visibleInventory.Contains(draggedItem))))CancelItemDrag();
             itemInventoryTitle.text = $"보유 {CurrentEvolutionPoints} EP";
             inventoryPageText.text = $"{inventoryPage + 1} / {pageCount}";
             inventoryPrev.interactable = !IsItemDragging && inventoryPage > 0;
@@ -198,12 +213,6 @@ namespace PokeChess.Client.UI
                     icon.enabled = true;
                     button.transform.Find("Count").GetComponent<UnityEngine.UI.Text>().text = $"{CurrentEvolutionPoints} EP";
                     button.interactable = canUseTools && CurrentEvolutionPoints > 0;
-                    continue;
-                }
-                if (i == 1)
-                {
-                    icon.enabled = false;
-                    button.interactable = canUseTools;
                     continue;
                 }
                 int index = InventoryIndex(i);

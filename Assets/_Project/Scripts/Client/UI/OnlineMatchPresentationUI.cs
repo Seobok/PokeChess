@@ -75,7 +75,9 @@ namespace PokeChess.Client.UI
                 if(unit.action==CombatActionState.Moving){var destination=CombatPoint(new BoardPosition(unit.moveColumn,unit.moveRow));facing=destination-position;position=Vector2.Lerp(position,destination,(float)((tick-unit.startTick)/Math.Max(1,unit.endTick-unit.startTick)));}
                 else{var target=frame.units.FirstOrDefault(u=>u.id==unit.target);if(target!=null)facing=CombatPoint(new BoardPosition(target.column,target.row))-position;}
                 position=ThrowPresentation.Playback(frame,unit.id,tick,position,(c,r)=>CombatPoint(new BoardPosition(c,r)));
-                ((RectTransform)label.transform.parent).anchoredPosition=position;fighterSprites[unit.id].ShowPlayback(unit,tick,30,facing,1.5f);
+                var sprite = fighterSprites[unit.id];
+                if (sprite.PokemonId != unit.definitionId) sprite.Initialize(unit.definitionId, unit.id);
+                ((RectTransform)label.transform.parent).anchoredPosition=position;sprite.ShowPlayback(unit,tick,30,facing,1.5f);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
                 RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
                 var healthBar = RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);

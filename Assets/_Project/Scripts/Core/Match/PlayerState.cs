@@ -25,8 +25,6 @@ namespace PokeChess.Core.Match
             long next=checked(ItemRevision+1);
             ReturnSoldItems(unit);inventoryItems.Remove(id);unit.AddItem(id);ItemRevision=next;
         }
-        internal void UnequipItem(UnitInstance unit)
-        { long next=checked(ItemRevision+1);ReturnSoldItems(unit);ItemRevision=next; }
         public void AddInventoryItem(string itemId)
         {
             ModelGuard.Id(itemId, nameof(itemId));
@@ -53,7 +51,7 @@ namespace PokeChess.Core.Match
             long revision = checked(EvolutionRevision + 1);
             EvolutionPoints = points; LastEvolutionPointRound = round; EvolutionRevision = revision;
         }
-        internal void CommitEvolution(UnitInstance unit, PokemonDefinition target, string root, int stage, int cost)
+        internal UnitInstance[] CommitEvolution(UnitInstance unit, PokemonDefinition target, string root, int stage, int cost)
         {
             var evolving=units.Where(u=>u==unit ||
                 ((u.Placement.Kind==PlacementKind.Bench || u.Placement.Kind==PlacementKind.Board) && u.DefinitionId==unit.DefinitionId)).ToArray();
@@ -66,6 +64,7 @@ namespace PokeChess.Core.Match
                 shopEvolutions[root] = new ShopEvolution(root, target.Id, stage);
             foreach(var copy in evolving)copy.ApplyEvolution(target.Id, stage);
             EvolutionPoints -= cost; EvolutionRevision = revision; PlacementRevision = placementRevision;
+            return evolving;
         }
         public MatchRules Rules { get; }
         public int HP { get; private set; }
@@ -135,7 +134,7 @@ namespace PokeChess.Core.Match
         internal long ValidateRankUp(RankUpPlan plan)
         {
             if(!units.SequenceEqual(plan.Before)) throw new InvalidOperationException("Stale rank-up plan.");
-            if(plan.Added!=null && (plan.Added.OwnerPlayerId!=PlayerId || matchContainsUnit(plan.Added.InstanceId)))
+            if(plan.Added.Any(unit => unit.OwnerPlayerId!=PlayerId || matchContainsUnit(unit.InstanceId)))
                 throw new InvalidOperationException("Invalid acquired unit identity.");
             var board=new HashSet<BoardPosition>();var bench=new HashSet<int>();var ids=new HashSet<string>(StringComparer.Ordinal);
             foreach(var node in plan.Final)
@@ -145,10 +144,12 @@ namespace PokeChess.Core.Match
                 else if(node.Placement.Kind==PlacementKind.Bench) { GetBenchUnit(node.Placement.BenchSlot.Value);if(!bench.Add(node.Placement.BenchSlot.Value)) throw new InvalidOperationException("Duplicate bench slot."); }
             }
             if(board.Count>BoardCapacity) throw new InvalidOperationException("Deployment cap exceeded.");
-            var all=plan.Before.Concat(plan.Added==null ? Array.Empty<UnitInstance>() : new[]{plan.Added});
+            var all=plan.Before.Concat(plan.Added);
             var items=new HashSet<string>(inventoryItems,StringComparer.Ordinal);
             foreach(var item in all.SelectMany(u=>u.ItemInstanceIds))
                 if(!items.Add(item)) throw new InvalidOperationException("Duplicate item ownership.");
+            _ = checked(ItemRevision + plan.Before.Count(unit => unit.ItemInstanceIds.Count > 0 &&
+                !plan.Final.Any(node => ReferenceEquals(node.Unit, unit))));
             return plan.Changed ? checked(PlacementRevision+1) : PlacementRevision;
         }
         internal void ApplyRankUp(RankUpPlan plan,long revision)
@@ -162,9 +163,8 @@ namespace PokeChess.Core.Match
             {
                 units.Remove(unit);unit.SetPlacementValidation(null);unit.ApplyPlacementUnchecked(UnitPlacement.Unplaced);ReturnSoldItems(unit);
             }
-            if(plan.Added!=null && survivors.Contains(plan.Added))
+            foreach (var owned in plan.Added.Where(survivors.Contains))
             {
-                var owned=plan.Added;
                 owned.SetPlacementValidation(placement=> { ValidatePlacement(owned.InstanceId,placement);if(!SamePlacement(owned.Placement,placement)) PlacementRevision=checked(PlacementRevision+1); });
                 units.Add(owned);
             }

@@ -10,23 +10,27 @@ namespace PokeChess.Client.UI
     public sealed partial class PlacementSandboxView
     {
         private sealed class ShopCardView {
-            public UnityEngine.UI.Text Name,Price,Types,Owned,Action;
+            public UnityEngine.UI.Text Name,Price,Types;
             public UnityEngine.UI.Image Frame, PriceBadge, TraitBadge;
             public RectTransform Portrait;
-            public bool Purchased;public ShopSlot PurchasedSlot;
-            public string Flash;public float FlashUntil;
+            public ShopSlot PurchasedSlot;
+            public int PurchasePrice, PurchaseQuantity;
+            public UnityEngine.UI.Image PurchaseEffect;
+            public Sprite[] PurchaseFrames;
         }
+        private ShopPurchaseEffects shopPurchaseEffects;
+        private const float ShopPurchaseFramesPerSecond = 12f;
         private readonly ShopCardView[] shopViews=new ShopCardView[ShopRules.SlotCount];
         private UnityEngine.UI.Text economyGold,economyLevel,economyStreak,economyDelta;
         private MatchState economyMatch;
-        private int economyPreviousGold,economyPreviousRound,shownIncomeRound,shownXPRound;
+        private int economyPreviousGold,shownIncomeRound,shownXPRound;
         private string economyMessage="";
         private float economyMessageUntil;
         public string EconomyFeedbackText=>economyDelta?.text;
         public float ShopXPProgress {get;private set;}
         public int EconomyFeedbackCount {get;private set;}
         public string ShopCardDisplay(int slot) {
-            var c=shopViews[slot];return c.Name.text+" / "+c.Price.text+" / "+c.Types.text+" / "+c.Owned.text+" / "+c.Action.text;
+            var c=shopViews[slot];return c.Name.text+" / "+c.Price.text+" / "+c.Types.text;
         }
         private static readonly Color32 ShopInk = new Color32(13, 23, 55, 255);
         private readonly Sprite[] shopCostFrames = new Sprite[5];
@@ -59,10 +63,11 @@ namespace PokeChess.Client.UI
         private void BuildShopEconomyUI()
         {
             resources.gameObject.SetActive(false);
+            shopPurchaseEffects = Resources.Load<ShopPurchaseEffects>("ShopEconomy/ShopPurchaseEffects");
             for (int i = 0; i < shopCostFrames.Length; i++)
                 shopCostFrames[i] = ShopSprite($"CardCost{i + 1}");
 
-            var toolbar = ShopImage("ShopToolbar", shopFrame, new Vector2(994, 60), new Vector2(-130, 136), ShopSprite("EconomyFrame"));
+            var toolbar = ShopImage("ShopToolbar", shopFrame, new Vector2(994, 60), new Vector2(0, 136), ShopSprite("EconomyFrame"));
             toolbar.transform.SetAsFirstSibling();
             var level = ShopImage("LevelPanel", toolbar.transform, new Vector2(302, 43), new Vector2(-331, 0), ShopSprite("LevelPanel"));
             economyLevel = ShopText("Level", level.transform, 17, new Vector2(70, 31), new Vector2(-114, 0), Color.white);
@@ -83,10 +88,10 @@ namespace PokeChess.Client.UI
             economyDelta = ShopText("EconomyDelta", gold.transform, 10, new Vector2(57, 19), new Vector2(102, 11), Color.white);
 
             var action = shopEmptyFrame = ShopSprite("ActionButton");
-            StyleShopButton(xpButton, action, new Vector2(114, 42), new Vector2(34, 136));
-            StyleShopButton(rerollButton, action, new Vector2(114, 42), new Vector2(153, 136));
-            StyleShopButton(lockButton, action, new Vector2(67, 42), new Vector2(248, 136));
-            StyleShopButton(shopToggle, action, new Vector2(52, 42), new Vector2(311, 136));
+            StyleShopButton(xpButton, action, new Vector2(114, 42), new Vector2(164, 136));
+            StyleShopButton(rerollButton, action, new Vector2(114, 42), new Vector2(283, 136));
+            StyleShopButton(lockButton, action, new Vector2(67, 42), new Vector2(378, 136));
+            StyleShopButton(shopToggle, action, new Vector2(52, 42), new Vector2(441, 136));
             ShopImage("RerollIcon", rerollButton.transform, new Vector2(14, 14), new Vector2(-42, 0), ShopSprite("RerollIcon"));
             shopLockIcon = ShopImage("LockIcon", lockButton.transform, new Vector2(15, 17), new Vector2(-19, 0), ShopSprite("LockIcon"));
             shopToggleIcon = ShopImage("CollapseIcon", shopToggle.transform, new Vector2(19, 15), Vector2.zero, ShopSprite("CollapseIcon"));
@@ -97,22 +102,22 @@ namespace PokeChess.Client.UI
             for (int i = 0; i < shopCards.Length; i++)
             {
                 var root = (RectTransform)shopCards[i].transform;
-                Place(root, new Vector2(190, 102), new Vector2(-526 + i * 198, 56));
-                cardText[i].gameObject.SetActive(false);
+                Place(root, new Vector2(190, 102), new Vector2((i - (shopCards.Length - 1) * .5f) * 198, 56));
                 var card = new ShopCardView();
                 shopViews[i] = card;
                 card.Frame = shopCards[i].GetComponent<UnityEngine.UI.Image>();
-                card.Frame.type = UnityEngine.UI.Image.Type.Simple;
+                card.Frame.pixelsPerUnitMultiplier = 1.4f;
                 card.Portrait = Rect("OfferPortrait", root, new Vector2(67, 60), new Vector2(-53, 8));
                 shopCards[i].transition = UnityEngine.UI.Selectable.Transition.None;
-                card.Name = ShopText("PokemonName", root, 17, new Vector2(104, 24), new Vector2(34, 28), ShopInk);
-                card.Owned = ShopText("RankOwned", root, 11, new Vector2(103, 16), new Vector2(34, 9), ShopInk);
-                card.PriceBadge = ShopImage("PriceBadge", root, new Vector2(57, 21), new Vector2(50, -9), price);
+                card.Name = ShopText("PokemonName", root, 17, new Vector2(104, 24), new Vector2(34, 22), ShopInk);
+                card.PriceBadge = ShopImage("PriceBadge", root, new Vector2(57, 21), new Vector2(50, -5), price);
                 ShopImage("Coin", card.PriceBadge.transform, new Vector2(13, 13), new Vector2(-17, 0), coin);
                 card.Price = ShopText("Price", card.PriceBadge.transform, 13, new Vector2(35, 21), new Vector2(8, 0), ShopInk);
-                card.TraitBadge = ShopImage("SynergyBadge", root, new Vector2(168, 17), new Vector2(0, -26), badge);
+                card.TraitBadge = ShopImage("SynergyBadge", root, new Vector2(168, 17), new Vector2(0, -32), badge);
                 card.Types = ShopText("Types", card.TraitBadge.transform, 11, new Vector2(161, 16), Vector2.zero, ShopInk);
-                card.Action = ShopText("BuyState", root, 9, new Vector2(164, 13), new Vector2(0, -40), ShopInk);
+                card.PurchaseEffect = ShopImage("PurchaseEffect", root, root.sizeDelta + new Vector2(7, 12), Vector2.zero, null);
+                card.PurchaseEffect.raycastTarget = false;
+                card.PurchaseEffect.enabled = false;
             }
         }
 
@@ -195,6 +200,7 @@ namespace PokeChess.Client.UI
             var card = shopViews[slot];
             bool hasOffer = cost > 0;
             card.Frame.sprite = hasOffer ? shopCostFrames[Mathf.Clamp(cost, 1, 5) - 1] : shopEmptyFrame;
+            card.Frame.type = hasOffer ? UnityEngine.UI.Image.Type.Sliced : UnityEngine.UI.Image.Type.Simple;
             card.Frame.color = !hasOffer || shopCards[slot].interactable ? Color.white : new Color(.81f, .85f, .9f);
             card.PriceBadge.gameObject.SetActive(hasOffer);
             card.TraitBadge.gameObject.SetActive(hasOffer);
@@ -203,32 +209,30 @@ namespace PokeChess.Client.UI
         private void ShowEconomyChange(string message) {
             economyMessage=message;economyMessageUntil=Time.unscaledTime+2;EconomyFeedbackCount++;
         }
-        private static string ShortBuyFailure(MatchCommandFailure failure) {
-            switch(failure) {
-                case MatchCommandFailure.NotEnoughGold:return "NOT ENOUGH GOLD";
-                case MatchCommandFailure.FullBench:return "BENCH FULL";
-                case MatchCommandFailure.Changed:return "STATE CHANGED / RETRY";
-                case MatchCommandFailure.PoolEmpty:return "POOL EMPTY";
-                case MatchCommandFailure.Eliminated:return "PLAYER ELIMINATED";
-                case MatchCommandFailure.WrongPhase:return "UNAVAILABLE NOW";
-                default:return "UNAVAILABLE";
-            }
+        internal static string ShopPurchasePrice(int price, int quantity) =>
+            quantity > 1 ? $"{quantity}장 · {price}G" : $"{price}G";
+
+        private void SetShopPurchaseEffect(ShopCardView card, bool owned, UnitRank projectedRank)
+        {
+            card.PurchaseFrames = projectedRank == UnitRank.Three ? shopPurchaseEffects?.UpgradeThree
+                : projectedRank == UnitRank.Two ? shopPurchaseEffects?.UpgradeTwo
+                : owned ? shopPurchaseEffects?.Owned : null;
+            card.PurchaseEffect.enabled = card.PurchaseFrames != null && card.PurchaseFrames.Length > 0;
+            if (card.PurchaseEffect.enabled) AnimateShopPurchaseEffect(card, Time.unscaledTime);
         }
-        private void RecordShopPurchase(int slot,MatchCommandResult result) {
-            var c=shopViews[slot];if(result.Accepted)c.PurchasedSlot=Player.Shop.Slots[slot];c.Purchased=result.Accepted;c.FlashUntil=Time.unscaledTime+1.5f;
-            c.Flash=result.Accepted?"PURCHASED":ShortBuyFailure(result.Failure);
+
+        private static void AnimateShopPurchaseEffect(ShopCardView card, float now)
+        {
+            int frame = Mathf.FloorToInt(now * ShopPurchaseFramesPerSecond) % card.PurchaseFrames.Length;
+            card.PurchaseEffect.sprite = card.PurchaseFrames[frame];
         }
         private void RenderShopEconomyUI() {
             if(economyGold==null)return;
             if(!ReferenceEquals(economyMatch,Match)) {
-                economyMatch=Match;economyPreviousGold=Player.Gold;economyPreviousRound=Match.RoundNumber;
+                economyMatch=Match;economyPreviousGold=Player.Gold;
                 shownIncomeRound=Player.LastEconomyRound;shownXPRound=Player.LastAutomaticXPRound;
                 economyMessage="";economyMessageUntil=0;EconomyFeedbackCount=0;
-                foreach(var c in shopViews){c.Purchased=false;c.PurchasedSlot=null;c.Flash=null;c.FlashUntil=0;}
-            }
-            if(economyPreviousRound!=Match.RoundNumber) {
-                if(!Player.Shop.IsLocked)foreach(var c in shopViews)c.Purchased=false;
-                economyPreviousRound=Match.RoundNumber;
+                foreach(var c in shopViews)c.PurchasedSlot=null;
             }
             var result=RoundLoop.LastResult;
             bool income=result!=null&&result.Income.TryGetValue("p1",out _)&&result.Round>shownIncomeRound;
@@ -247,20 +251,11 @@ namespace PokeChess.Client.UI
             for(int i=0;i<shopCards.Length;i++) {
                 var c=shopViews[i];var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) {
-                    c.Purchased=ReferenceEquals(c.PurchasedSlot,offer);
-                    c.Name.text=c.Purchased?"구매 완료":"빈 슬롯";c.Price.text=c.Types.text=c.Owned.text="";
-                    c.Action.text=c.Purchased?"":"다음 새로고침 대기";c.Action.color=ShopInk;
+                    c.Name.text=ReferenceEquals(c.PurchasedSlot,offer)?"구매 완료":"빈 슬롯";c.Price.text=c.Types.text="";
                     ApplyShopCardArt(i, 0);continue;
                 }
-                c.Purchased=false;c.PurchasedSlot=null;var d=catalog.Get(offer.DefinitionId);var availability=commands.PreviewBuy(i,displayedShopRevision);
-                c.Name.text=d.DisplayName;c.Price.text=offer.Cost+"G";RenderShopCardTraits(c, d);
-                c.Owned.text=string.Join(" · ",new[]{UnitRank.One,UnitRank.Two,UnitRank.Three}.Select(r=>"R"+(int)r+" "+Player.Units.Count(u=>u.DefinitionId==d.Id&&u.Rank==r)));
-                c.Action.text=!availability.Accepted?ShortBuyFailure(availability.Failure):availability.Preview.MergeNextPreparation?
-                    (availability.Preview.RankUpCount>0?"R"+(int)availability.Preview.FinalRank+" + NEXT PREP MERGE":"BUY / NEXT PREP MERGE"):
-                    availability.Preview.RankUpCount>0?"BUY / R"+(int)availability.Preview.FinalRank:"BUY";
-                bool flash=Time.unscaledTime<c.FlashUntil;
-                if(flash&&c.Flash!=null)c.Action.text=c.Flash;
-                c.Action.color = !availability.Accepted || flash ? new Color32(139, 55, 23, 255) : ShopInk;
+                c.PurchasedSlot=null;var d=catalog.Get(offer.DefinitionId);
+                c.Name.text=d.DisplayName;c.Price.text=ShopPurchasePrice(c.PurchasePrice, c.PurchaseQuantity);RenderShopCardTraits(c, d);
                 ApplyShopCardArt(i, offer.Cost);
             }
         }

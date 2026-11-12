@@ -5,7 +5,7 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
-    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, UnequipItem, Evolve, ConfigureSynergy }
+    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, Evolve = 11, ConfigureSynergy }
     [Serializable] public sealed class MatchCommand
     {
         public int protocol=1,round,slot,column,row,bench;
@@ -21,7 +21,7 @@ namespace PokeChess.Core.Match
         public MatchCommand Copy()=>(MatchCommand)MemberwiseClone();
         public bool SamePayload(MatchCommand b)=>b!=null&&evolutionRevision==b.evolutionRevision&&itemId==b.itemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
     }
-    [Serializable] public sealed class OwnerShopSlot { public int index,cost;public string definitionId,prophecyOrigin; }
+    [Serializable] public sealed class OwnerShopSlot { public int index,cost;public int projectedRank,purchasePrice,purchaseQuantity;public bool canPurchase;public string definitionId,prophecyOrigin; }
     [Serializable] public sealed class OwnerUnit { public string id,definitionId,synergyTargetId;public int rank,column,row,bench,saleGold,evolutionStage,bountyStacks;public PlacementKind placement;public string[] items; }
     [Serializable] public sealed class OwnerShopEvolution { public string rootDefinitionId,definitionId;public int stage; }
     [Serializable] public sealed class OwnerMatchState
@@ -74,10 +74,17 @@ namespace PokeChess.Core.Match
         public OwnerMatchState Snapshot(string playerId)
         {
             var p=match.GetPlayer(playerId);var ledger=ledgers[playerId];
+            var executor = new MatchCommandExecutor(match, catalog, playerId);
             var guardian = match.Phase == MatchPhase.Preparation ? SynergyPreparation.PreparationGuardian(p, catalog) : null;
             return new OwnerMatchState{guardianTile=guardian.HasValue ? new CombatCellView{column=guardian.Value.Column,row=guardian.Value.Row} : null,matchId=match.MatchId,playerId=playerId,round=match.RoundNumber,phase=match.Phase,revision=revision,playerRevision=ledger.revision,nextSequence=ledger.sequence+1,
                 gold=p.Gold,xp=p.XP,level=p.Level,hp=p.HP,winStreak=p.WinStreak,loseStreak=p.LoseStreak,eliminated=p.IsEliminated,locked=p.Shop.IsLocked,shopRevision=p.Shop.Revision,placementRevision=p.PlacementRevision,
-                shop=p.Shop.Slots.Select(s=>new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId,prophecyOrigin=s.ProphecyOrigin}).ToArray(),
+                shop=p.Shop.Slots.Select(s=>{
+                    var preview = executor.CanBuy && !s.IsEmpty && p.Gold >= s.Cost
+                        ? executor.PreviewBuy(s.Index, p.Shop.Revision).Preview : null;
+                    return new OwnerShopSlot{index=s.Index,cost=s.Cost,definitionId=s.DefinitionId,
+                        prophecyOrigin=s.ProphecyOrigin,canPurchase=preview!=null,purchasePrice=preview?.Price ?? s.Cost,
+                        purchaseQuantity=preview?.Quantity ?? 1,projectedRank=(int)(preview?.ProjectedRank ?? UnitRank.One)};
+                }).ToArray(),
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,synergyTargetId=u.SynergyTargetId,rank=(int)u.Rank,bountyStacks=u.BountyStacks,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
                 inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
                 itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>(),
@@ -120,7 +127,6 @@ namespace PokeChess.Core.Match
                             case MatchCommandKind.BuyXP:result=executor.BuyXP();break;
                             case MatchCommandKind.ChooseItem:result=executor.ChooseItem(c.slot,c.itemRevision);break;
                             case MatchCommandKind.EquipItem:result=executor.EquipItem(c.unitId,c.itemId,c.itemRevision);break;
-                            case MatchCommandKind.UnequipItem:result=executor.UnequipItem(c.unitId,c.itemRevision);break;
                             case MatchCommandKind.Evolve:result=executor.Evolve(c.unitId,c.evolutionRevision,c.placementRevision);break;
                             case MatchCommandKind.Move:
                                 if(c.destination!=PlacementKind.Board&&c.destination!=PlacementKind.Bench){code="InvalidDestination";break;}
@@ -128,6 +134,7 @@ namespace PokeChess.Core.Match
                                 var move=new PlayerPlacementSystem().Move(match,authenticatedPlayer,c.unitId,destination,c.placementRevision);code=move.Accepted?"None":move.Reason.ToString();changed=move.Accepted&&move.Outcome!=PlacementOutcome.Unchanged;break;
                             case MatchCommandKind.Surrender:
                                 var surrender=rounds.Surrender(authenticatedPlayer,c.round,c.phase);code=surrender.Accepted?"None":"SurrenderUnavailable";changed=surrender.Accepted&&!surrender.AlreadySurrendered;message=surrender.Message;break;
+                            default:code="InvalidRequest";break;
                         }
                         if(result!=null){code=result.Failure.ToString();message=result.Message;if(result.Accepted&&c.kind!=MatchCommandKind.Lock)changed=true;}
                     }catch(ArgumentException){code="InvalidRequest";changed=false;}

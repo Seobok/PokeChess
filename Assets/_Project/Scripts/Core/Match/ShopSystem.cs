@@ -20,12 +20,12 @@ namespace PokeChess.Core.Match
             this.candidates = candidates ?? throw new ArgumentNullException(nameof(candidates));
             Rules = rules ?? new ShopRules();
         }
-        private PlayerState PreparationPlayer(MatchState match, string playerId)
+        private PlayerState ShopPlayer(MatchState match, string playerId, bool allowCombat = false)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation)
+            if (match.Phase != MatchPhase.Preparation && !(allowCombat && match.Phase == MatchPhase.Combat))
                 throw new InvalidOperationException("Shop commands require Preparation.");
             return player;
         }
@@ -81,7 +81,7 @@ namespace PokeChess.Core.Match
         // Returns false when locked; even a skipped refresh completes the round once.
         public bool RefreshForRound(MatchState match, string playerId)
         {
-            var player = PreparationPlayer(match, playerId);
+            var player = ShopPlayer(match, playerId);
             var shop = player.Shop;
             if ((long)match.RoundNumber != (long)shop.LastRefreshRound + 1)
                 throw new InvalidOperationException("Automatic shop refresh must run once per round, in order.");
@@ -97,7 +97,7 @@ namespace PokeChess.Core.Match
         }
         public IReadOnlyList<ShopSlot> Reroll(MatchState match, string playerId)
         {
-            var player = PreparationPlayer(match, playerId);
+            var player = ShopPlayer(match, playerId, allowCombat: true);
             if (!player.Shop.IsInitialized || player.Shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
             bool free=player.Synergy.FreeRerollRound==match.RoundNumber;
@@ -115,7 +115,7 @@ namespace PokeChess.Core.Match
         }
         public void SetLocked(MatchState match, string playerId, bool locked)
         {
-            var player = PreparationPlayer(match, playerId);
+            var player = ShopPlayer(match, playerId, allowCombat: true);
             if (!player.Shop.IsInitialized || player.Shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
             player.Shop.SetLocked(locked);

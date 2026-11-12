@@ -51,7 +51,7 @@ namespace PokeChess.Core.Battle
         internal float AdjustHPDamage(UnitCombatState target,float hpDamage)
         {
             if(protection.TryGetValue(target.UnitInstanceId,out var until)&&battle.CurrentTick<until)return 0;
-            if(hpDamage>=target.CurrentHP&&target.CurrentHP>0&&Has(target,ItemCatalog.FocusSash)&&consumed.Add(target.UnitInstanceId)){
+            if(hpDamage>=target.CurrentHP&&target.CurrentHP>0&&TryConsume(target,ItemCatalog.FocusSash)){
                 protection[target.UnitInstanceId]=battle.CurrentTick+battle.TickRate;
                 Emit(ItemCatalog.FocusSash,target,target,Math.Max(0,hpDamage-target.CurrentHP+1));
                 return Math.Max(0,target.CurrentHP-1);
@@ -60,15 +60,26 @@ namespace PokeChess.Core.Battle
         }
         internal void AfterDamage(UnitCombatState source,UnitCombatState target,DamageResult result,DamageProcessor processor)
         {
-            if(target.CurrentHP>0&&target.IsOnBoard&&Has(target,ItemCatalog.SitrusBerry)&&
-                target.CurrentHP<=target.Stats.MaxHP*.4f&&consumed.Add(target.UnitInstanceId))
-                Heal(target,target.Stats.MaxHP*.25f,ItemCatalog.SitrusBerry);
+            TryTriggerSitrusBerry(target);
             if(result.Request.Origin!=DamageOrigin.Direct||result.AppliedDamage<=0||!Has(target,ItemCatalog.RockyHelmet)||
                 source.CurrentHP<=0||!source.IsOnBoard)return;
             var reflected=processor.Apply(battle,new DamageRequest(target.UnitInstanceId,source.UnitInstanceId,
                 result.AppliedDamage*.2f,DamageType.True,origin:DamageOrigin.Reflection));
             Emit(ItemCatalog.RockyHelmet,target,source,reflected.AppliedDamage);
         }
+        private bool TryConsume(UnitCombatState unit, string definition)
+        {
+            var instance = unit.ItemInstanceIds.FirstOrDefault(id => ItemCatalog.DefinitionId(id) == definition);
+            return instance != null && consumed.Add(instance);
+        }
+
+        internal void TryTriggerSitrusBerry(UnitCombatState unit)
+        {
+            if (unit.CurrentHP > 0 && unit.IsOnBoard && unit.CurrentHP <= unit.Stats.MaxHP * .4f &&
+                TryConsume(unit, ItemCatalog.SitrusBerry))
+                Heal(unit, unit.Stats.MaxHP * .25f, ItemCatalog.SitrusBerry);
+        }
+
         internal void OnSkillEffect(UnitCombatState caster)
         {
             foreach(var u in battle.Units.Where(u=>u.TeamId==caster.TeamId&&u!=caster&&u.CurrentHP>0&&u.IsOnBoard&&

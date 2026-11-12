@@ -82,7 +82,7 @@ namespace PokeChess.Core.Match
         {
             var p=match.GetPlayer(playerId);
             if(p.HP==0||p.IsEliminated)throw new InvalidOperationException("Player is eliminated.");
-            if(match.Phase!=MatchPhase.Preparation)throw new InvalidOperationException("Requires Preparation.");
+            if(match.Phase!=MatchPhase.Preparation && match.Phase!=MatchPhase.Combat)throw new InvalidOperationException("Requires Preparation.");
             if(p.ItemRevision!=revision)throw new InvalidOperationException("Stale item revision.");
             return p;
         }
@@ -92,12 +92,7 @@ namespace PokeChess.Core.Match
             if(unit.Placement.Kind==PlacementKind.Unplaced||!p.ItemInventory.Contains(itemId)||ItemCatalog.DefinitionId(itemId)==null)
                 throw new InvalidOperationException("Item is not available for this unit.");
             p.EquipInventoryItem(unit,itemId);
-        }
-        public void Unequip(MatchState match,string playerId,string unitId,long revision)
-        {
-            var p=Validate(match,playerId,revision);var unit=p.GetUnit(unitId);
-            if(unit.ItemInstanceIds.Count==0)throw new InvalidOperationException("No equipped item.");
-            p.UnequipItem(unit);
+            match.RefreshCombatUnit(unit);
         }
     }
 }

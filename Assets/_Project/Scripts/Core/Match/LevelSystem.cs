@@ -45,8 +45,8 @@ namespace PokeChess.Core.Match
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             Validate(player);
-            if (match.Phase != MatchPhase.Preparation)
-                throw new InvalidOperationException("XP can only be purchased during Preparation.");
+            if (match.Phase != MatchPhase.Preparation && match.Phase != MatchPhase.Combat)
+                throw new InvalidOperationException("XP requires Preparation or Combat.");
             if (player.Level == Rules.MaxLevel) throw new InvalidOperationException("Already at maximum level.");
             if (player.Gold < Rules.PurchaseGoldCost) throw new InvalidOperationException("Insufficient gold.");
             var change = Calculate(player, Rules.PurchaseXP, player.Gold - Rules.PurchaseGoldCost);
