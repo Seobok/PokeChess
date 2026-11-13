@@ -72,7 +72,7 @@ namespace PokeChess.Client.UI
         public void HideItemHint(){if(itemTooltip!=null)itemTooltip.gameObject.SetActive(false);}
         public void BeginItemDrag(int slot,Vector2 point)
         {
-            if(IsDragging||!CanDragItems()||slot<0||slot>=inventoryChoices.Length||!inventoryChoices[slot].interactable)return;
+            if(IsDragging||IsEarthRockDragging||draggingNatureGuardian||!CanDragItems()||slot<0||slot>=inventoryChoices.Length||!inventoryChoices[slot].interactable)return;
             if(slot==0){
                 if(CurrentEvolutionPoints<=0)return;
                 draggedItem=EvolutionDragId;

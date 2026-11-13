@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Battle;
 using PokeChess.Core.Pokemon;
@@ -46,7 +47,7 @@ namespace PokeChess.Core.Match
         public static void Configure(MatchState match,PokemonCatalog catalog,string playerId,int mode,string unitId,string value,int slot=0,int column=0,int row=0)
         {
             var player=match.GetPlayer(playerId);
-            if(match.Phase!=MatchPhase.Preparation||player.IsEliminated)throw new InvalidOperationException("준비 단계에서 설정할 수 있습니다.");
+            if(match.Phase!=MatchPhase.Preparation||player.IsEliminated||player.HP==0)throw new InvalidOperationException("준비 단계에서 설정할 수 있습니다.");
             if(mode==0)
             {
                 var source=player.Units.Single(u=>u.InstanceId==unitId&&u.Placement.Kind==PlacementKind.Board);
@@ -56,16 +57,8 @@ namespace PokeChess.Core.Match
                 if(family==SynergyTraits.Family("lapras")&&HexCoordinates.Distance(source.Placement.Position.Value,target.Placement.Position.Value)!=1)throw new ArgumentException("승객은 인접해야 합니다.");
                 source.SynergyTargetId=target.InstanceId;
             }
-            else if(mode==1)
-            {
-                var counts=Count(player,catalog);int tier=counts.First(c=>c.TraitId==SynergyTraits.Earth).Tier;
-                if(tier==0||slot<0||slot>=(tier>=4?2:1))throw new ArgumentException("대지 구조물 슬롯이 없습니다.");
-                var tile=new BoardPosition(column,row);
-                if(!HexBoardBounds.Preparation.Contains(tile)||player.Units.Any(u=>u.Placement.Kind==PlacementKind.Board&&u.Placement.Position.Value.Equals(tile)))throw new ArgumentException("빈 아군 칸을 지정하세요.");
-                if (PreparationGuardian(player,catalog) is BoardPosition guardian && guardian.Equals(tile)) throw new ArgumentException("수호자가 있는 칸입니다.");
-                var next=PreparationRocks(player,catalog).ToList();if(next.Where((p,i)=>i!=slot).Contains(tile))throw new ArgumentException("구조물 위치가 겹칩니다.");
-                while(next.Count<slot)next.Add(HexBoardBounds.Preparation.Cells().First(p=>!p.Equals(tile)&&!next.Contains(p)&&!player.Units.Any(u=>u.Placement.Kind==PlacementKind.Board&&u.Placement.Position.Value.Equals(p))));if(next.Count==slot)next.Add(tile);else next[slot]=tile;player.Synergy.RockTiles=next.ToArray();
-            }
+            else if(mode==1 || mode==GuardianPlacementMode)
+                MoveSpecial(player,catalog,mode,slot,new BoardPosition(column,row));
             else if(mode==2)
             {if(!SynergyTraits.Origins.Contains(value))throw new ArgumentException("계열을 선택하세요.");player.Synergy.ProphecyOrigin=value;}
             else if(mode==3)
@@ -79,19 +72,38 @@ namespace PokeChess.Core.Match
                 player.Synergy.RewardChoices--;player.Synergy.PendingGold-=share;
                 player.Synergy.LastAdversityChoice = new AdversityChoice { sequence = sequence, slot = slot };
             }
-            else if (mode == GuardianPlacementMode)
-            {
-                if (!PreparationGuardian(player, catalog).HasValue)
-                    throw new InvalidOperationException("배치할 자연 수호자가 없습니다.");
-                var tile = new BoardPosition(column, row);
-                if (!HexBoardBounds.Preparation.Contains(tile) ||
-                    player.Units.Any(unit => unit.Placement.Position.HasValue && unit.Placement.Position.Value.Equals(tile)) ||
-                    PreparationRocks(player, catalog).Contains(tile))
-                    throw new ArgumentException("빈 아군 칸을 지정하세요.");
-                player.Synergy.GuardianTile = tile;
-            }
             else throw new ArgumentOutOfRangeException(nameof(mode));
         }
+        internal static void MoveSpecial(PlayerState player, PokemonCatalog catalog, int mode, int slot, BoardPosition destination)
+        {
+            if (!HexBoardBounds.Preparation.Contains(destination))
+                throw new ArgumentException("아군 필드에 배치하세요.");
+
+            var rocks = PreparationRocks(player, catalog);
+            var guardian = PreparationGuardian(player, catalog);
+            bool movingGuardian = mode == GuardianPlacementMode;
+            BoardPosition? source = movingGuardian ? guardian
+                : slot >= 0 && slot < rocks.Length ? rocks[slot] : (BoardPosition?)null;
+            if (!source.HasValue) throw new ArgumentException("이동할 시너지 오브젝트가 없습니다.");
+            if (source.Value.Equals(destination)) return;
+
+            var target = player.GetBoardUnit(destination);
+            int targetRock = Array.IndexOf(rocks, destination);
+            if (targetRock >= 0) rocks[targetRock] = source.Value;
+            if (Nullable.Equals(guardian, destination)) guardian = source.Value;
+            if (movingGuardian) guardian = destination;
+            else rocks[slot] = destination;
+
+            if (target != null)
+                player.ApplyPlacements(new Dictionary<string, UnitPlacement>
+                    { [target.InstanceId] = UnitPlacement.OnBoard(source.Value) });
+            else
+                player.AdvancePlacementRevision();
+
+            player.Synergy.RockTiles = rocks;
+            player.Synergy.GuardianTile = guardian;
+        }
+
         public static BoardPosition[] PreparationRocks(PlayerState player,PokemonCatalog catalog)
         {
             int tier=Count(player,catalog).First(c=>c.TraitId==SynergyTraits.Earth).Tier;

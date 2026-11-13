@@ -18,13 +18,13 @@ namespace PokeChess.Client.UI
 
         private System.Collections.Generic.IEnumerable<RectTransform> VisibleNatureGuardian()
         {
-            if (natureGuardianTile.HasValue && !draggingNatureGuardian) yield return natureGuardianPreview;
+            if (natureGuardianTile.HasValue) yield return natureGuardianPreview;
         }
 
         private void RenderNatureGuardian(BoardPosition? tile, int tier)
         {
             if (tier == 0) tile = null;
-            if (!CanMoveSynergyPlacement || !tile.HasValue) CancelNatureGuardianDrag();
+            if (draggingNatureGuardian && (!CanContinueSpecialDrag || !System.Nullable.Equals(tile, natureGuardianTile))) CancelNatureGuardianDrag();
             natureGuardianTile = tile;
             natureGuardianTier = tile.HasValue ? tier : 0;
             if (!tile.HasValue)
@@ -88,7 +88,10 @@ namespace PokeChess.Client.UI
             if (!CanMoveSynergyPlacement || !natureGuardianTile.HasValue || IsDragging || IsItemDragging || IsEarthRockDragging) return;
             draggingNatureGuardian = true;
             natureGuardianGroup.blocksRaycasts = false;
-            natureGuardianGroup.alpha = .8f;
+            natureGuardianGroup.alpha = .35f;
+            specialDragRevision = SpecialPlacementRevision;
+            ShowDraggedPokemon(natureGuardianSprite.PokemonId, UnitPlacement.OnBoard(natureGuardianTile.Value));
+            draggedSprite.SetGuardianForm(natureGuardianTier);
             DeselectUnit();
             DragNatureGuardian(screen);
         }
@@ -96,18 +99,20 @@ namespace PokeChess.Client.UI
         private void DragNatureGuardian(Vector2 screen)
         {
             if (!draggingNatureGuardian) return;
-            if (!CanMoveSynergyPlacement) { CancelNatureGuardianDrag(); return; }
+            if (!CanContinueSpecialDrag) { CancelNatureGuardianDrag(); return; }
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, null, out var position);
-            natureGuardianPreview.anchoredPosition = position;
-            natureGuardianPreview.SetAsLastSibling();
+            ghost.anchoredPosition = position;
+            ghost.SetAsLastSibling();
+            UpdateSpecialDragArt(screen);
         }
 
         private void EndNatureGuardianDrag(Vector2 screen)
         {
             if (!draggingNatureGuardian) return;
             var target = Hit(screen);
+            bool allowed = CanContinueSpecialDrag;
             CancelNatureGuardianDrag();
-            if (!CanMoveSynergyPlacement || target == null || target.Placement.Kind != PlacementKind.Board)
+            if (!allowed || target == null || target.Placement.Kind != PlacementKind.Board)
             {
                 Feedback("수호자 이동 취소");
                 Render();
@@ -135,6 +140,10 @@ namespace PokeChess.Client.UI
             if (!draggingNatureGuardian) return;
             draggingNatureGuardian = false;
             natureGuardianGroup.alpha = 1;
+            draggedSprite.SetGuardianForm(0);
+            ghost.gameObject.SetActive(false);
+            ClearPlacementDragArt();
+            RenderPlacementArt();
             natureGuardianGroup.blocksRaycasts = true;
             if (natureGuardianTile.HasValue)
                 natureGuardianPreview.anchoredPosition = FindSlot(UnitPlacement.OnBoard(natureGuardianTile.Value)).Rect.anchoredPosition;

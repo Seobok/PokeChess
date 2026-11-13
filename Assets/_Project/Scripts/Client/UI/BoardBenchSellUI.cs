@@ -114,6 +114,9 @@ namespace PokeChess.Client.UI
             if (unit.placement != PlacementKind.Bench || target.Kind != PlacementKind.Board) return true;
             var owner = onlineService.LocalMatchState;
             var point = target.Position.Value;
+            if (owner.guardianTile != null && owner.guardianTile.column == point.Column && owner.guardianTile.row == point.Row ||
+                owner.rockTiles?.Any(tile => tile.column == point.Column && tile.row == point.Row) == true)
+                return false;
             return owner.units.Count(u => u.placement == PlacementKind.Board) < owner.level ||
                 owner.units.Any(u => u.placement == PlacementKind.Board && u.column == point.Column && u.row == point.Row);
         }
@@ -155,22 +158,23 @@ namespace PokeChess.Client.UI
                 ? onlineService.StateSynchronized && !onlineService.IsRecovering && !owner.eliminated
                 : Match != null && !Player.IsEliminated && Player.HP > 0);
             bool deploying = canInteract && phase == MatchPhase.Preparation;
+            bool placementDragging = IsDragging || IsEarthRockDragging || draggingNatureGuardian;
             int targetIndex = -1;
-            if (IsDragging && dragTarget?.Placement.Position is BoardPosition point)
+            if (placementDragging && dragTarget?.Placement.Position is BoardPosition point)
                 targetIndex = point.Row * BoardColumns + point.Column;
             for (int i = 0; i < boardMarks.Length; i++)
             {
-                bool hovered = IsDragging && (i == targetIndex || i == blockedBoardIndex);
+                bool hovered = placementDragging && (i == targetIndex || i == blockedBoardIndex);
                 var mark = boardMarks[i];
                 mark.enabled = hovered || deploying && i < BoardColumns * DeployRows;
                 if (mark.enabled) mark.sprite = hovered
                     ? i == targetIndex && dragTargetValid ? validTarget : blockedTarget
                     : deployOutline;
             }
-            int targetBench = IsDragging ? dragTarget?.Placement.BenchSlot ?? -1 : -1;
+            int targetBench = placementDragging ? dragTarget?.Placement.BenchSlot ?? -1 : -1;
             for (int i = 0; i < benchSlots.Length; i++)
             {
-                bool highlighted = IsDragging && (i == dragBenchOrigin || i == targetBench);
+                bool highlighted = placementDragging && (i == dragBenchOrigin || i == targetBench);
                 benchSlots[i].sprite = highlighted ? benchSlotActive : benchSlot;
                 benchSlots[i].color = i == targetBench && !dragTargetValid ? new Color(1f, .4f, .4f) : Color.white;
             }

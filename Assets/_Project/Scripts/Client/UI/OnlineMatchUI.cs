@@ -98,7 +98,7 @@ namespace PokeChess.Client.UI
                 var ack=await onlineService.SubmitCommandAsync(command);
                 if(IsOnlineMatch&&onlineMatchId==command.matchId&&ack?.accepted==true){
                     if(kind==MatchCommandKind.Buy)PlayActionSound(ActionSoundKind.Purchase);
-                    else if(moved)PlayActionSound(ActionSoundKind.Placement);
+                    else if(moved || kind==MatchCommandKind.ConfigureSynergy && (command.bench==1 || command.bench==SynergyPreparation.GuardianPlacementMode))PlayActionSound(ActionSoundKind.Placement);
                 }
             }catch(Exception e){Feedback(e.Message);}
         }

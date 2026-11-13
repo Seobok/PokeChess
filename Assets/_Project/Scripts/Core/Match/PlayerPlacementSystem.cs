@@ -20,6 +20,20 @@ namespace PokeChess.Core.Match
     // Host executes commands serially; preview is read-only and commit revalidates.
     public sealed class PlayerPlacementSystem
     {
+        private readonly PokemonCatalog catalog;
+        public PlayerPlacementSystem(PokemonCatalog catalog = null) => this.catalog = catalog;
+
+        private bool FindSpecial(PlayerState player, BoardPosition tile, out int mode, out int slot)
+        {
+            mode = 1;
+            slot = -1;
+            if (catalog == null) return false;
+            slot = Array.IndexOf(SynergyPreparation.PreparationRocks(player, catalog), tile);
+            if (slot >= 0) return true;
+            mode = SynergyPreparation.GuardianPlacementMode;
+            return Nullable.Equals(SynergyPreparation.PreparationGuardian(player, catalog), tile);
+        }
+
         private static PlacementCommandResult Reject(PlacementRejectReason reason, long revision=0) =>
             new PlacementCommandResult(PlacementOutcome.Rejected,reason,revision);
         public PlacementCommandResult Preview(MatchState match,string playerId,string unitId,UnitPlacement destination,long expectedRevision)
@@ -51,6 +65,13 @@ namespace PokeChess.Core.Match
             catch(ArgumentOutOfRangeException) { return Reject(PlacementRejectReason.InvalidDestination,revision); }
             if(PlayerState.SamePlacement(source.Placement,destination))
                 return new PlacementCommandResult(PlacementOutcome.Unchanged,PlacementRejectReason.None,revision);
+            if (target == null && destination.Position is BoardPosition tile && match.Phase == MatchPhase.Preparation &&
+                FindSpecial(player, tile, out _, out _))
+            {
+                if (source.Placement.Kind != PlacementKind.Board) return Reject(PlacementRejectReason.InvalidDestination, revision);
+                if (revision == long.MaxValue) return Reject(PlacementRejectReason.RevisionOverflow, revision);
+                return new PlacementCommandResult(PlacementOutcome.Swapped, PlacementRejectReason.None, revision);
+            }
             if(target==null && destination.Kind==PlacementKind.Board && source.Placement.Kind==PlacementKind.Bench
                 && player.RemainingDeploymentCapacity==0) return Reject(PlacementRejectReason.BoardLimit,revision);
             if(revision==long.MaxValue) return Reject(PlacementRejectReason.RevisionOverflow,revision);
@@ -63,6 +84,12 @@ namespace PokeChess.Core.Match
             if(!result.Accepted || result.Outcome==PlacementOutcome.Unchanged) return result;
             var player=match.GetPlayer(playerId);
             var source=player.GetUnit(unitId);
+            if (result.Outcome == PlacementOutcome.Swapped && result.TargetUnitId == null &&
+                FindSpecial(player, destination.Position.Value, out int mode, out int slot))
+            {
+                SynergyPreparation.MoveSpecial(player, catalog, mode, slot, source.Placement.Position.Value);
+                return new PlacementCommandResult(result.Outcome, PlacementRejectReason.None, player.PlacementRevision);
+            }
             var changes=new Dictionary<string,UnitPlacement>(StringComparer.Ordinal) { [unitId]=destination };
             if(result.TargetUnitId!=null) changes.Add(result.TargetUnitId,source.Placement);
             player.ApplyPlacements(changes);

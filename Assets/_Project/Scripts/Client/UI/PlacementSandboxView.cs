@@ -26,7 +26,7 @@ namespace PokeChess.Client.UI
         private readonly Dictionary<string,UnityEngine.UI.Text> tokenLabels=new Dictionary<string,UnityEngine.UI.Text>();
         private PokemonCatalog catalog;
         public PurchaseResult LastPurchase { get; private set; }
-        private readonly PlayerPlacementSystem placements=new PlayerPlacementSystem();
+        private PlayerPlacementSystem Placements => new PlayerPlacementSystem(catalog);
         private RectTransform canvasRect,ghost;
         private UnityEngine.UI.Text header,status,ghostLabel;
         private Font font;
@@ -214,7 +214,7 @@ namespace PokeChess.Client.UI
             if(Simulation?.Status==SimulationStatus.Running)return;
             if(RoundLoop.NextPreparationPending) { Feedback("Finish shop refresh before placement.");return; }
             if(IsDragging) CancelDrag("New drag.");
-            var unit=Player.GetUnit(id);var preview=placements.Preview(Match,"p1",id,unit.Placement,Player.PlacementRevision);
+            var unit=Player.GetUnit(id);var preview=Placements.Preview(Match,"p1",id,unit.Placement,Player.PlacementRevision);
             if(!preview.Accepted) { LastResult=preview;Feedback("Rejected: "+preview.Reason);Render();return; }
             dragged=id;dragRevision=Player.PlacementRevision;ShowDraggedPokemon(unit.DefinitionId,unit.Placement);Render();Drag(point);
         }
@@ -225,7 +225,7 @@ namespace PokeChess.Client.UI
             if(!IsDragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,point,null,out var local);ghost.anchoredPosition=local;
             var destination = Hit(point);
-            var preview = destination == null ? null : placements.Preview(Match, "p1", dragged, destination.Placement, dragRevision);
+            var preview = destination == null ? null : Placements.Preview(Match, "p1", dragged, destination.Placement, dragRevision);
             int? price = CanSellDraggedUnit() ? commands.SalePrice(dragged) : (int?)null;
             UpdatePlacementDragArt(point, destination, preview?.Accepted == true, price);
             if (sellHovered)
@@ -249,7 +249,7 @@ namespace PokeChess.Client.UI
                 return;
             }
             var destination=Hit(point);
-            if(destination!=null) { LastResult=placements.Move(Match,"p1",dragged,destination.Placement,dragRevision);Feedback(LastResult.Accepted ? LastResult.Outcome.ToString() : "Rejected: "+LastResult.Reason); }
+            if(destination!=null) { LastResult=Placements.Move(Match,"p1",dragged,destination.Placement,dragRevision);Feedback(LastResult.Accepted ? LastResult.Outcome.ToString() : "Rejected: "+LastResult.Reason); }
             else { LastResult=null;Feedback("Cancelled: dropped outside board / bench."); }
             if(LastResult?.Accepted==true&&LastResult.Outcome!=PlacementOutcome.Unchanged)PlayActionSound(ActionSoundKind.Placement);
             dragged=null;ClearPlacementDragArt();ghost.gameObject.SetActive(false);Render();Match.Pool.AssertConservation(Match);

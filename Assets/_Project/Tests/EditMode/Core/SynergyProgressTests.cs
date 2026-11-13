@@ -103,7 +103,13 @@ namespace PokeChess.Core.Tests
         }
         [Test] public void TextureAndEmblemsOnlyAddOriginsAndCountFamiliesOnce(){var m=Match(out var catalog,D("porygon",SynergyTraits.Mystic,SynergyTraits.Invoker),D("squirtle",SynergyTraits.Torrent,SynergyTraits.Guardian));var p=m.GetPlayer("p1");p.SetProgress(0,0,2);foreach(var id in new[]{"porygon","squirtle"})SharedPoolSystem.RegisterUnit(m,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(id=="porygon"?0:1,0))),id);SynergyPreparation.Configure(m,catalog,"p1",0,"porygon","squirtle");var counts=SynergyPreparation.Count(p,catalog);Assert.That(counts.Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(2));Assert.That(counts.Single(c=>c.TraitId==SynergyTraits.Guardian).Count,Is.EqualTo(1));p.GetUnit("porygon").AddItem("item:emblem-torrent:1:p1");Assert.That(SynergyPreparation.Count(p,catalog).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(2));}
         [Test] public void ConfigurationRejectsCombatPhase(){var m=Match(out var catalog);m.TransitionTo(MatchPhase.Combat);Assert.Throws<InvalidOperationException>(()=>SynergyPreparation.Configure(m,catalog,"p1",2,null,SynergyTraits.Flame));}
-        [Test] public void RockConfigurationRejectsOccupiedTiles(){var m=Match(out var catalog,D("a",SynergyTraits.Earth),D("b",SynergyTraits.Earth));m.GetPlayer("p1").SetProgress(0,0,2);foreach(var id in new[]{"a","b"})SharedPoolSystem.RegisterUnit(m,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(id=="a"?0:1,0))),id);Assert.Throws<ArgumentException>(()=>SynergyPreparation.Configure(m,catalog,"p1",1,null,null,0,0,0));SynergyPreparation.Configure(m,catalog,"p1",1,null,null,0,2,0);Assert.That(m.GetPlayer("p1").Synergy.RockTiles.Single(),Is.EqualTo(new BoardPosition(2,0)));}
+        [Test] public void RockAndUnitCanSwapInBothDirections(){var m=Match(out var catalog,D("a",SynergyTraits.Earth),D("b",SynergyTraits.Earth));m.GetPlayer("p1").SetProgress(0,0,2);foreach(var id in new[]{"a","b"})SharedPoolSystem.RegisterUnit(m,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(id=="a"?0:1,0))),id);var player=m.GetPlayer("p1");var origin=SynergyPreparation.PreparationRocks(player,catalog).Single();
+            SynergyPreparation.Configure(m,catalog,"p1",1,null,null,0,0,0);
+            Assert.That(player.GetUnit("a").Placement.Position,Is.EqualTo(origin));
+            Assert.That(player.Synergy.RockTiles.Single(),Is.EqualTo(new BoardPosition(0,0)));
+            var result=new PlayerPlacementSystem(catalog).Move(m,"p1","a",UnitPlacement.OnBoard(new BoardPosition(0,0)),player.PlacementRevision);
+            Assert.That(result.Outcome,Is.EqualTo(PlacementOutcome.Swapped));
+            Assert.That(player.Synergy.RockTiles.Single(),Is.EqualTo(origin));}
         [Test] public void ActiveEarthAutomaticallyPreviewsRocksAndDragChoicePersists()
         {
             var m=Match(out var catalog,D("a",SynergyTraits.Earth),D("b",SynergyTraits.Earth),D("c",SynergyTraits.Earth),D("d",SynergyTraits.Earth));
@@ -114,7 +120,9 @@ namespace PokeChess.Core.Tests
             Assert.That(rocks.Any(t=>p.Units.Any(u=>u.Placement.Position.Value.Equals(t))),Is.False);
             SynergyPreparation.Configure(m,catalog,"p1",1,null,null,0,6,3);
             Assert.That(SynergyPreparation.PreparationRocks(p,catalog)[0],Is.EqualTo(new BoardPosition(6,3)));
-            Assert.Throws<ArgumentException>(()=>SynergyPreparation.Configure(m,catalog,"p1",1,null,null,1,6,3));
+            var secondRock = SynergyPreparation.PreparationRocks(p,catalog)[1];
+            SynergyPreparation.Configure(m,catalog,"p1",1,null,null,1,6,3);
+            Assert.That(SynergyPreparation.PreparationRocks(p,catalog), Is.EqualTo(new[]{secondRock,new BoardPosition(6,3)}));
             var snapshot=new HostCommandProcessor(m,catalog,new LocalRoundCoordinator(m,catalog)).Snapshot("p1");
             Assert.That(snapshot.rockTiles.Select(t=>new BoardPosition(t.column,t.row)),Is.EqualTo(SynergyPreparation.PreparationRocks(p,catalog)));
         }
@@ -143,8 +151,11 @@ namespace PokeChess.Core.Tests
             var rock = SynergyPreparation.PreparationRocks(p1, catalog).Single();
             Assert.That(preview.Value, Is.Not.EqualTo(rock));
             const int mode = SynergyPreparation.GuardianPlacementMode;
-            Assert.Throws<ArgumentException>(()=>SynergyPreparation.Configure(m,catalog,"p1",mode,null,null,0,rock.Column,rock.Row));
-            Assert.Throws<ArgumentException>(()=>SynergyPreparation.Configure(m,catalog,"p1",mode,null,null,0,0,0));
+            SynergyPreparation.Configure(m,catalog,"p1",mode,null,null,0,rock.Column,rock.Row);
+            Assert.That(SynergyPreparation.PreparationGuardian(p1,catalog), Is.EqualTo(rock));
+            Assert.That(SynergyPreparation.PreparationRocks(p1,catalog).Single(), Is.EqualTo(preview.Value));
+            SynergyPreparation.Configure(m,catalog,"p1",mode,null,null,0,0,0);
+            Assert.That(p1.GetUnit("p1a").Placement.Position, Is.EqualTo(rock));
 
             var expected = new BoardPosition(6, 3);
             SynergyPreparation.Configure(m,catalog,"p1",mode,null,null,0,expected.Column,expected.Row);

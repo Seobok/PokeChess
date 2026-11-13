@@ -131,7 +131,7 @@ namespace PokeChess.Core.Match
                             case MatchCommandKind.Move:
                                 if(c.destination!=PlacementKind.Board&&c.destination!=PlacementKind.Bench){code="InvalidDestination";break;}
                                 var destination=c.destination==PlacementKind.Board?UnitPlacement.OnBoard(new BoardPosition(c.column,c.row)):UnitPlacement.OnBench(c.bench);
-                                var move=new PlayerPlacementSystem().Move(match,authenticatedPlayer,c.unitId,destination,c.placementRevision);code=move.Accepted?"None":move.Reason.ToString();changed=move.Accepted&&move.Outcome!=PlacementOutcome.Unchanged;break;
+                                var move=new PlayerPlacementSystem(catalog).Move(match,authenticatedPlayer,c.unitId,destination,c.placementRevision);code=move.Accepted?"None":move.Reason.ToString();changed=move.Accepted&&move.Outcome!=PlacementOutcome.Unchanged;break;
                             case MatchCommandKind.Surrender:
                                 var surrender=rounds.Surrender(authenticatedPlayer,c.round,c.phase);code=surrender.Accepted?"None":"SurrenderUnavailable";changed=surrender.Accepted&&!surrender.AlreadySurrendered;message=surrender.Message;break;
                             default:code="InvalidRequest";break;

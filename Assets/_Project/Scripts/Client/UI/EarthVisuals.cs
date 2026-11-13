@@ -275,6 +275,16 @@ namespace PokeChess.Client.UI
         private readonly Dictionary<BoardPosition,UnityEngine.UI.Image> ranges=new Dictionary<BoardPosition,UnityEngine.UI.Image>();
         private EarthVisuals art;
 
+        public void SetDraggedRock(int slot, bool dragging, bool editable)
+        {
+            foreach (var rock in rocks.Values.Where(rock => rock.enabled))
+            {
+                if (rock.GetComponent<EarthRockDragToken>().Slot != slot) continue;
+                rock.color = dragging ? new Color(1,1,1,.35f) : Color.white;
+                rock.raycastTarget = editable && !dragging;
+            }
+        }
+
         public IEnumerable<RectTransform> VisibleRocks => rocks.Values
             .Where(rock => rock.enabled).Select(rock => rock.rectTransform);
 
@@ -294,7 +304,7 @@ namespace PokeChess.Client.UI
                 }
                 EarthVisuals.Draw(image,art.idle,0,true);image.color=Color.white;
                 var token=image.GetComponent<EarthRockDragToken>()??image.gameObject.AddComponent<EarthRockDragToken>();
-                token.View=view;token.Slot=Array.IndexOf(ordered,tile);image.raycastTarget=editable;
+                token.View=view;token.Slot=Array.IndexOf(ordered,tile);image.raycastTarget=editable&&!view.IsDraggingRock(token.Slot);image.color=view.IsDraggingRock(token.Slot)?new Color(1,1,1,.35f):Color.white;
                 image.rectTransform.sizeDelta=Vector2.one*width;image.rectTransform.anchoredPosition=point(tile);
             }
             foreach(var tile in covered) {
@@ -309,7 +319,7 @@ namespace PokeChess.Client.UI
     {
         private readonly EarthPreparationVisuals earthPreparation=new EarthPreparationVisuals();
         private void RenderEarthPreparation(IEnumerable<BoardPosition> tiles) {
-            if(!CanMoveSynergyPlacement)CancelEarthRockDrag();
+            if(IsEarthRockDragging && !CanContinueSpecialDrag)CancelEarthRockDrag();
             Vector2 a=FindSlot(PokeChess.Core.Pokemon.UnitPlacement.OnBoard(new BoardPosition(0,0))).Rect.anchoredPosition;
             Vector2 b=FindSlot(PokeChess.Core.Pokemon.UnitPlacement.OnBoard(new BoardPosition(1,0))).Rect.anchoredPosition;
             earthPreparation.Render(canvasRect,tiles,p=>FindSlot(PokeChess.Core.Pokemon.UnitPlacement.OnBoard(p)).Rect.anchoredPosition,Vector2.Distance(a,b),this,CanMoveSynergyPlacement);

@@ -97,6 +97,7 @@ namespace PokeChess.Core.Match
             SetHP(plan.HPAfter);LastDamage=plan;LastDamageRound=plan.Round;
         }
         public long PlacementRevision { get; private set; }
+        internal void AdvancePlacementRevision() => PlacementRevision = checked(PlacementRevision + 1);
         internal void ValidatePlacementChanges(int count) { checked { var next = PlacementRevision + count; } }
         internal static bool SamePlacement(UnitPlacement a, UnitPlacement b) => a.Kind == b.Kind
             && Nullable.Equals(a.Position, b.Position) && a.BenchSlot == b.BenchSlot;
