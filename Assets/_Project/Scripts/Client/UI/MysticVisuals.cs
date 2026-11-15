@@ -32,19 +32,19 @@ namespace PokeChess.Client.UI
         private double tickAt, rerollAt, expireAt, selectionAt, revealAt;
         private Sprite[] rerollClip;
 
-        public MysticShopVisuals(Transform hud, Transform settings, RectTransform button, RectTransform card)
+        public MysticShopVisuals(Transform hud, Transform originVisuals, RectTransform button, RectTransform card)
         {
             slots = new[]
             {
-                Image(hud, "Progress1", new Vector2(-10, -291), new Vector2(21, 21)),
-                Image(hud, "Progress2", new Vector2(13, -291), new Vector2(21, 21))
+                Image(hud, "Progress1", new Vector2(-13, -8), new Vector2(21, 21)),
+                Image(hud, "Progress2", new Vector2(13, -8), new Vector2(21, 21))
             };
-            tick = Image(hud, "ProgressTick", new Vector2(-10, -291), new Vector2(36, 36));
-            expiry = Image(hud, "Expire", new Vector2(42, -291), new Vector2(34, 34));
+            tick = Image(hud, "ProgressTick", new Vector2(-13, -8), new Vector2(36, 36));
+            expiry = Image(hud, "Expire", new Vector2(42, -8), new Vector2(34, 34));
             token = Image(button, "FreeToken", new Vector2(-73, 0), new Vector2(18, 18));
             reroll = Image(button, "Reroll", Vector2.zero, new Vector2(170, 91));
-            glyph = Image(settings, "SelectedOrigin", new Vector2(-125, -4), new Vector2(24, 24));
-            selection = Image(settings, "SelectionFlash", new Vector2(-125, -4), new Vector2(42, 42));
+            glyph = Image(originVisuals, "SelectedOrigin", Vector2.zero, new Vector2(24, 24));
+            selection = Image(originVisuals, "SelectionFlash", Vector2.zero, new Vector2(42, 42));
             reveal = Image(card, "FavoredReveal", Vector2.zero, new Vector2(230, 113));
             badge = Image(card, "FavoredBadge", new Vector2(72, 31), new Vector2(27, 27));
             badgeGlyph = Image(badge.transform, "FavoredOrigin", Vector2.zero, new Vector2(18, 18));

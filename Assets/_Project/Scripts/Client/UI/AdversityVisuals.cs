@@ -65,7 +65,7 @@ namespace PokeChess.Client.UI
             Sprite[][] icons = { art.resolveIcon, art.equipment, art.emblem };
             for (int i = 0; i < 3; i++)
             {
-                var at = new Vector2(-64 + 50 * i, -273);
+                var at = new Vector2(-53 + 43 * i, -9);
                 counterIcons[i] = MakeImage(hud, "CounterIcon" + i, at, 16);
                 counterIcons[i].sprite = icons[i][0];
                 var node = new GameObject("Adversity_Count" + i, typeof(RectTransform), typeof(Text));
@@ -75,7 +75,7 @@ namespace PokeChess.Client.UI
                 label.fontSize = 11;
                 label.alignment = TextAnchor.MiddleLeft;
                 label.raycastTarget = false;
-                label.rectTransform.anchoredPosition = at + new Vector2(26, 0);
+                label.rectTransform.anchoredPosition = at + new Vector2(25, 0);
                 label.rectTransform.sizeDelta = new Vector2(32, 18);
                 choiceIcons[i] = MakeImage(buttons[i].transform, "ChoiceIcon" + i, new Vector2(-47, 0), 16);
                 choiceIcons[i].sprite = rewards[i][0];
@@ -111,8 +111,7 @@ namespace PokeChess.Client.UI
             if (newScope || !visible || phase == MatchPhase.Preparation)
                 choiceSequence = choice.sequence;
             resolve = currentResolve;
-            bool showCounters = visible && (tier > 0 || currentResolve > 0 || equipment > 0 || emblem > 0 ||
-                choices > 0 || now < resolveArrival || (phase == MatchPhase.Result && settlement.round == round && settlement.resolveDelta != 0));
+            bool showCounters = visible && tier > 0;
             counters[1].text = equipment.ToString();
             counters[2].text = emblem.ToString();
             for (int i = 0; i < 3; i++)

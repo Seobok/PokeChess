@@ -179,7 +179,7 @@ namespace PokeChess.Client.UI
         private void RenderOnlineShop(OwnerMatchState owner)
         {
             RenderShopToolbar(owner.gold, owner.level, owner.xp, owner.winStreak, owner.loseStreak,
-                owner.locked, owner.freeRerollRound == owner.round, onlineLevelRules, onlineShopRules.RerollGoldCost);
+                owner.locked, owner.freeRerollRound == owner.round, onlineLevelRules, onlineShopRules);
             for(int i=0;i<shopCards.Length;i++){
                 var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].gameObject.SetActive(ShopExpanded);shopCards[i].interactable=OnlineInputReady&&available&&offer.canPurchase;
                 if(!available){card.Name.text="빈 슬롯";card.Price.text=card.Types.text="";}

@@ -22,6 +22,10 @@ namespace PokeChess.Client.UI
         private const float ShopPurchaseFramesPerSecond = 12f;
         private readonly ShopCardView[] shopViews=new ShopCardView[ShopRules.SlotCount];
         private UnityEngine.UI.Text economyGold,economyLevel,economyStreak,economyDelta;
+        private UnityEngine.UI.Text shopOddsLabel;
+        private RectTransform streakTooltip;
+        private ShopRules displayedOddsRules;
+        private int displayedOddsLevel;
         private MatchState economyMatch;
         private int economyPreviousGold,shownIncomeRound,shownXPRound;
         private string economyMessage="";
@@ -72,6 +76,7 @@ namespace PokeChess.Client.UI
             economyInterest = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Interest");
             economyStreak = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Streak");
             economyDelta = UiPrefab.Get<UnityEngine.UI.Text>(gold, "EconomyDelta");
+            BindShopOddsAndStreakTooltip(level, gold);
             shopLockIcon = UiPrefab.Get<UnityEngine.UI.Image>(lockButton.transform, "LockIcon");
             shopToggleIcon = UiPrefab.Get<UnityEngine.UI.Image>(shopToggle.transform, "CollapseIcon");
 
@@ -97,13 +102,58 @@ namespace PokeChess.Client.UI
                 hover.ShopSlot = slot;
             }
         }
+        private void BindShopOddsAndStreakTooltip(Transform level, Transform gold)
+        {
+            var badge = HudImage("CostOdds", level, new Vector2(294, 17), new Vector2(0, 31),
+                new Color(.06f, .11f, .22f, .95f));
+            shopOddsLabel = Label("Percentages", badge.transform, "", 11, new Vector2(288, 17), Vector2.zero);
+
+            var backdrop = HudImage("StreakTooltip", gold, new Vector2(214, 103), new Vector2(62, 76),
+                new Color(.06f, .11f, .22f, .98f));
+            streakTooltip = backdrop.rectTransform;
+            var rules = shopEconomyRules;
+            string text = "연승·연패 추가 골드\n"
+                + $"0–{rules.FirstStreakThreshold - 1}회  +0G\n"
+                + $"{rules.FirstStreakThreshold}–{rules.SecondStreakThreshold - 1}회  +{rules.FirstStreakBonus}G\n"
+                + $"{rules.SecondStreakThreshold}–{rules.ThirdStreakThreshold - 1}회  +{rules.SecondStreakBonus}G\n"
+                + $"{rules.ThirdStreakThreshold}회 이상  +{rules.ThirdStreakBonus}G";
+            var label = Label("Bonuses", streakTooltip, text, 13, new Vector2(198, 95), Vector2.zero);
+            label.font = null;
+            streakTooltip.gameObject.SetActive(false);
+
+            economyStreak.raycastTarget = true;
+            var events = economyStreak.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerEnter, _ =>
+            {
+                streakTooltip.gameObject.SetActive(ShopExpanded);
+            });
+            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerExit, _ =>
+            {
+                streakTooltip.gameObject.SetActive(false);
+            });
+        }
+
+        private void RenderShopOdds(int level, ShopRules rules)
+        {
+            bool expanded = ShopExpanded;
+            shopOddsLabel.transform.parent.gameObject.SetActive(expanded);
+            if (!expanded) streakTooltip.gameObject.SetActive(false);
+            if (level == displayedOddsLevel && ReferenceEquals(rules, displayedOddsRules)) return;
+
+            var odds = rules.ForLevel(Mathf.Clamp(level, 1, rules.MaxLevel));
+            shopOddsLabel.text = string.Join("  |  ", odds.Select((percent, index) => $"{index + 1}C {percent}%"));
+            displayedOddsLevel = level;
+            displayedOddsRules = rules;
+        }
+
         private void RenderShopToolbar(int gold, int level, int xp, int wins, int losses, bool locked, bool freeReroll,
-            LevelRules levels, int rerollCost)
+            LevelRules levels, ShopRules shopRules)
         {
             bool max = level >= levels.MaxLevel;
             int required = max ? 0 : levels.XPToNextLevel(level);
             ShopXPProgress = max ? 1 : Mathf.Clamp01(xp / (float)required);
             economyLevel.text = $"Lv. {level}";
+            RenderShopOdds(level, shopRules);
             economyXPText.text = max ? "XP MAX" : $"{xp} / {required} XP";
             int filled = Mathf.FloorToInt(ShopXPProgress * shopXpSegments.Length);
             for (int i = 0; i < shopXpSegments.Length; i++)
@@ -115,7 +165,7 @@ namespace PokeChess.Client.UI
             economyDelta.text = Time.unscaledTime < economyMessageUntil ? economyMessage : "";
             economyDelta.color = economyMessage.StartsWith("-") ? new Color32(255, 168, 117, 255) : new Color32(108, 255, 187, 255);
             ButtonText(xpButton, max ? "XP 최대" : $"XP 구매\n{levels.PurchaseGoldCost}G");
-            ButtonText(rerollButton, freeReroll ? "새로고침\n무료" : $"새로고침\n{rerollCost}G");
+            ButtonText(rerollButton, freeReroll ? "새로고침\n무료" : $"새로고침\n{shopRules.RerollGoldCost}G");
             ButtonText(lockButton, locked ? "잠김" : "열림");
             shopLockIcon.color = locked ? new Color32(156, 92, 0, 255) : ShopInk;
             shopToggleIcon.rectTransform.localRotation = Quaternion.Euler(0, 0, ShopExpanded ? 0 : 180);
@@ -207,7 +257,7 @@ namespace PokeChess.Client.UI
             }
             economyPreviousGold=Player.Gold;
             RenderShopToolbar(Player.Gold, Player.Level, Player.XP, Player.WinStreak, Player.LoseStreak,
-                Player.Shop.IsLocked, Player.Synergy.FreeRerollRound == Match.RoundNumber, commands.LevelRules, commands.ShopRules.RerollGoldCost);
+                Player.Shop.IsLocked, Player.Synergy.FreeRerollRound == Match.RoundNumber, commands.LevelRules, commands.ShopRules);
             for(int i=0;i<shopCards.Length;i++) {
                 var c=shopViews[i];var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) {

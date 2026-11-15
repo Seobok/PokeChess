@@ -46,21 +46,34 @@ namespace PokeChess.Client.UI
             itemRecipeIcon = UiPrefab.Get<UnityEngine.UI.Image>(itemRecipePreview, "ResultIcon");
             itemRecipeName = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "ResultName");
             itemRecipeDescription = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "Description");
+            BuildComponentRecipeHint();
         }
 
         public bool IsItemDragging=>draggedItem!=null;
         public void ShowItemHint(int slot)
         {
             if(IsItemDragging||slot<0||slot>=inventoryChoices.Length)return;
+            HideItemHint();
             if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 필드·대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
             int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
             var definition = ItemCatalog.Get(key);
-            string recipeHint = definition.IsComponent ? "\n같은 포켓몬에 재료를 한 번 더 장착해 조합" : "";
-            itemTooltipLabel.text = definition.Name + "\n" + definition.Description + recipeHint;
+            if (definition.IsComponent)
+            {
+                ShowComponentRecipeHint(definition, slot, visibleInventory[index]);
+                return;
+            }
+            itemTooltipLabel.text = definition.Name + "\n" + definition.Description;
             itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();
         }
-        public void HideItemHint(){if(itemTooltip!=null)itemTooltip.gameObject.SetActive(false);}
+        public void HideItemHint()
+        {
+            if (itemTooltip != null) itemTooltip.gameObject.SetActive(false);
+            if (hoveredComponentItem == null) return;
+            hoveredComponentItem = null;
+            componentRecipes.gameObject.SetActive(false);
+            itemRecipePreview.gameObject.SetActive(false);
+        }
         public void BeginItemDrag(int slot,Vector2 point)
         {
             if(IsDragging||IsEarthRockDragging||draggingNatureGuardian||!CanDragItems()||slot<0||slot>=inventoryChoices.Length||!inventoryChoices[slot].interactable)return;
@@ -153,7 +166,7 @@ namespace PokeChess.Client.UI
                 : null;
         }
 
-        private void UpdateItemRecipePreview(ItemDefinition result, Vector2 pointer)
+        private void UpdateItemRecipePreview(ItemDefinition result, Vector2 pointer, bool besideRecipeList = false)
         {
             itemRecipePreview.gameObject.SetActive(result != null);
             if (result == null) return;
@@ -167,8 +180,11 @@ namespace PokeChess.Client.UI
             itemRecipeIcon.enabled = itemRecipeIcon.sprite != null;
             var bounds = canvasRect.rect;
             var half = itemRecipePreview.rect.size * .5f;
-            var position = pointer + new Vector2(half.x + 30, half.y + 15);
-            if (position.x + half.x > bounds.xMax) position.x = pointer.x - half.x - 30;
+            var position = besideRecipeList
+                ? pointer + new Vector2(half.x + 3, -half.y)
+                : pointer + new Vector2(half.x + 30, half.y + 15);
+            if (position.x + half.x > bounds.xMax)
+                position.x = besideRecipeList ? pointer.x - componentRecipes.rect.width - half.x - 3 : pointer.x - half.x - 30;
             itemRecipePreview.anchoredPosition = new Vector2(
                 Mathf.Clamp(position.x, bounds.xMin + half.x, bounds.xMax - half.x),
                 Mathf.Clamp(position.y, bounds.yMin + half.y, bounds.yMax - half.y));
@@ -231,7 +247,7 @@ namespace PokeChess.Client.UI
             var owner=IsOnlineMatch?onlineService?.LocalMatchState:null;
             var pub=IsOnlineMatch?onlineService?.PublicState:null;
             if(IsOnlineMatch&&(owner==null||pub==null)){
-                wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);CancelItemDrag();return;
+                wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);CancelItemDrag();HideItemHint();return;
             }
             var phase=IsOnlineMatch?pub.phase:Match.Phase;
             bool wild=IsOnlineMatch?pub.wildRound:WildRoundSystem.IsWild(Match);
@@ -249,6 +265,7 @@ namespace PokeChess.Client.UI
             hudNotice.gameObject.SetActive(!(wild&&phase==MatchPhase.Preparation));
             wildPreviewLabel.text="야생 라운드 · "+(IsOnlineMatch?pub.wildPreview:WildRoundSystem.Preview(Match.RoundNumber));
             itemInventoryPanel.gameObject.SetActive(phase!=MatchPhase.Finished);
+            ValidateComponentRecipeHint();
             inventoryLabel.text="ITEMS ("+visibleInventory.Length+")";
             if(IsItemDragging&&(!CanDragItems()||(draggedItem==EvolutionDragId
                 ? CurrentEvolutionPoints<=0||(IsOnlineMatch?owner.evolutionRevision:Player.EvolutionRevision)!=draggedEvolutionRevision||(IsOnlineMatch?owner.placementRevision:Player.PlacementRevision)!=draggedEvolutionPlacementRevision

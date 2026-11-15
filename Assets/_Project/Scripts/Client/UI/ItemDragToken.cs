@@ -11,6 +11,6 @@ namespace PokeChess.Client.UI
         public void OnDrag(PointerEventData e){if(e.button==PointerEventData.InputButton.Left)View.DragItem(e.position);}
         public void OnEndDrag(PointerEventData e){if(e.button==PointerEventData.InputButton.Left)View.EndItemDrag(e.position);}
         public void OnPointerEnter(PointerEventData e){View.ShowItemHint(Slot);}
-        public void OnPointerExit(PointerEventData e){View.HideItemHint();}
+        public void OnPointerExit(PointerEventData e){View.EndItemHint(e);}
     }
 }

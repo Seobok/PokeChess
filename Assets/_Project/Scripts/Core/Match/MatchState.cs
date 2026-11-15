@@ -65,15 +65,20 @@ namespace PokeChess.Core.Match
             foreach(var round in pairingHistory.Keys.Where(r=>r<RoundNumber-2).ToArray())pairingHistory.Remove(round);
         }
 
-        internal MatchState(string matchId, MatchRules rules, IReadOnlyList<string> playerIds, ulong matchSeed)
+        internal MatchState(string matchId, MatchRules rules, IReadOnlyList<string> playerIds, ulong matchSeed,
+            IReadOnlyDictionary<string, MatchRules> playerRules)
         {
             MatchId = ModelGuard.Id(matchId, nameof(matchId));
             Rules = rules;
             MatchSeed = matchSeed;
             playerView = players.AsReadOnly();
             foreach (var id in playerIds)
-                players.Add(new PlayerState(id, rules,
+            {
+                var rulesForPlayer = playerRules != null && playerRules.TryGetValue(id, out var customRules)
+                    ? customRules ?? rules : rules;
+                players.Add(new PlayerState(id, rulesForPlayer,
                     unitId => players.Any(p => p.Units.Any(u => u.InstanceId == unitId)), matchSeed));
+            }
         }
         public PlayerState GetPlayer(string playerId)
         {
@@ -104,20 +109,21 @@ namespace PokeChess.Core.Match
     {
         public static MatchState CreateWithPool(string matchId, IEnumerable<string> playerIds,
             PokemonCatalog catalog, IEnumerable<string> shopDefinitionIds, PoolRules poolRules = null,
-            MatchRules rules = null, ulong matchSeed = 0)
+            MatchRules rules = null, ulong matchSeed = 0, IReadOnlyDictionary<string, MatchRules> playerRules = null)
         {
-            var match = Create(matchId, playerIds, rules, matchSeed);
+            var match = Create(matchId, playerIds, rules, matchSeed, playerRules);
             match.InitializePool(new SharedPokemonPool(catalog, shopDefinitionIds, poolRules));
             return match;
         }
-        public static MatchState Create(string matchId, IEnumerable<string> playerIds, MatchRules rules = null, ulong matchSeed = 0)
+        public static MatchState Create(string matchId, IEnumerable<string> playerIds, MatchRules rules = null, ulong matchSeed = 0,
+            IReadOnlyDictionary<string, MatchRules> playerRules = null)
         {
             ModelGuard.Id(matchId, nameof(matchId));
             if (playerIds == null) throw new ArgumentNullException(nameof(playerIds));
             var ids = ModelGuard.Ids(playerIds, nameof(playerIds));
             if (ids.Count < 2 || ids.Count > 8)
                 throw new ArgumentException("A match requires 2 to 8 players.", nameof(playerIds));
-            return new MatchState(matchId, rules ?? new MatchRules(), ids, matchSeed);
+            return new MatchState(matchId, rules ?? new MatchRules(), ids, matchSeed, playerRules);
         }
     }
 }

@@ -51,6 +51,7 @@ namespace PokeChess.Client.UI
 
             detailPopup = UiPrefab.Instantiate("UnitPopup", canvasRect, itemFont);
             unitInfoRoot = UiPrefab.Get<RectTransform>(detailPopup, "UnitInfoIcons");
+            UiPrefab.Bind(unitInfoRoot, "Header/CloseButton", DeselectUnit);
             sellButton = UiPrefab.Bind(detailPopup, "Sell", SellSelected);
             unitDetailHeader = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Header/Title");
             unitPortrait = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "UnitPortrait");

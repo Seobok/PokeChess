@@ -58,7 +58,7 @@ namespace PokeChess.Client.UI
         }
         public bool UnitPopupVisible => detailPopup != null && detailPopup.gameObject.activeSelf;
         public bool BoardOutlineVisible => boardMarks.Any(mark => mark != null && mark.isActiveAndEnabled);
-        public void DeselectUnit(){unitInfoPinned=false;selectedUnitId=null;hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();UpdateTablePresentation();}
+        public void DeselectUnit(){hoveredSynergyPokemon=null;unitInfoPinned=false;selectedUnitId=null;hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();UpdateTablePresentation();}
         private void Place(RectTransform rect,Vector2 size,Vector2 position)
         { rect.sizeDelta=size;rect.anchoredPosition=position; }
         private void ApplyTableLayout()
@@ -102,13 +102,15 @@ namespace PokeChess.Client.UI
                 bool keep=hits.Count>0&&(hits[0].gameObject.transform.IsChildOf(detailPopup)||hits[0].gameObject.GetComponentInParent<PlacementDragToken>()!=null||hits[0].gameObject.transform.IsChildOf(combatRoot)&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()!=null);
                 if(!keep){unitInfoPinned=false;selectedUnitId=null;hoveredUnitId=null;HideUnitInfoHint();}
             }
-            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){unitInfoPinned=false;selectedUnitId=null;hoveredShopSlot=-1;}
+            if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){hoveredSynergyPokemon=null;unitInfoPinned=false;selectedUnitId=null;hoveredShopSlot=-1;}
             if(IsDragging||IsItemDragging||selectedUnitId!=hoveredUnitId){
                 unitInfoPinned=false;hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();
             }
-            bool shopInfo=RenderShopHoverInfo();
-            sellButton.gameObject.SetActive(!shopInfo);
-            detailPopup.gameObject.SetActive(shopInfo||hoveredUnitId!=null&&selectedUnitId==hoveredUnitId);
+            if (IsDragging || IsItemDragging) hoveredSynergyPokemon = null;
+            bool synergyInfo = RenderSynergyPokemonInfo();
+            bool shopInfo = !synergyInfo && RenderShopHoverInfo();
+            sellButton.gameObject.SetActive(!shopInfo && !synergyInfo);
+            detailPopup.gameObject.SetActive(synergyInfo||shopInfo||hoveredUnitId!=null&&selectedUnitId==hoveredUnitId);
             if(detailPopup.gameObject.activeSelf)detailPopup.SetAsLastSibling();
             RenderPlacementArt();
             header.gameObject.SetActive(false);status.gameObject.SetActive(false);inventoryLabel.gameObject.SetActive(false);detailLabel.gameObject.SetActive(false);

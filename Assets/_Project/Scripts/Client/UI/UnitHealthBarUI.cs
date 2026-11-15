@@ -12,6 +12,8 @@ namespace PokeChess.Client.UI
     public sealed partial class PlacementSandboxView
     {
         private const float UnitHealthHeight = 48, MeterWidth = 49, ManaOffset = -7, ItemOffset = -18;
+        private const float ItemIconSize = 15, ItemIconSpacing = 17;
+        private static Vector2 EquippedItemPosition(float barHeight) => new Vector2(-MeterWidth * .5f, barHeight + ItemOffset);
         private Sprite[] unitRankSprites;
         private Sprite unitVitalsFrame, unitAllyHP, unitEnemyHP, unitMana, unitShield, unitEquipment,
             unitBuffFrame, unitDebuffFrame, unitBuffIcon, unitPoisonIcon;
@@ -54,7 +56,7 @@ namespace PokeChess.Client.UI
                 float scale = rect.rect.height / image.sprite.rect.height;
                 head = rect.anchoredPosition.y + image.sprite.bounds.max.y * image.sprite.pixelsPerUnit * scale;
             }
-            bool equipped = unit.Find("EquippedItemIcon")?.gameObject.activeSelf == true;
+            bool equipped = unit.Find("EquippedItems")?.gameObject.activeSelf == true;
             float headEffect = unit.GetComponentInChildren<StatusSpriteView>()?.Top ?? 0;
             float clearance = equipped ? 29 : 15;
             return Mathf.Max(UnitHealthHeight, Mathf.Max(head, headEffect) + clearance);
@@ -95,29 +97,45 @@ namespace PokeChess.Client.UI
 
         private void RenderEquippedItemIcon(Transform unit, IEnumerable<string> items, bool visible = true)
         {
-            Sprite sprite = null;
+            var row = unit.Find("EquippedItems") as RectTransform;
+            int count = 0;
             if (visible && items != null)
-                foreach (var item in items)
+            {
+                foreach (string item in items)
                 {
-                    sprite = itemIcons?.Get(ItemCatalog.DefinitionId(item));
-                    if (sprite != null) break;
+                    LoadUnitOverheadSprites();
+                    row ??= Rect("EquippedItems", unit, Vector2.zero, Vector2.zero);
+                    var frame = count < row.childCount ? row.GetChild(count).GetComponent<UnityEngine.UI.Image>() :
+                        UnitHudImage("ItemSlot_" + count, row, new Vector2(ItemIconSize, ItemIconSize), Vector2.zero, unitEquipment);
+                    var icon = frame.transform.Find("Item")?.GetComponent<UnityEngine.UI.Image>();
+                    if (icon == null)
+                    {
+                        icon = UnitHudImage("Item", frame.transform, new Vector2(12, 12), Vector2.zero, null);
+                        icon.preserveAspect = true;
+                    }
+                    string definition = ItemCatalog.DefinitionId(item);
+                    icon.sprite = itemIcons?.Get(definition);
+                    icon.enabled = icon.sprite != null;
+                    var fallback = frame.transform.Find("Fallback")?.GetComponent<UnityEngine.UI.Text>();
+                    if (!icon.enabled)
+                    {
+                        fallback ??= ItemLabel("Fallback", frame.transform, "", 8, new Vector2(14, 14), Vector2.zero);
+                        fallback.text = definition == null ? "?" : ItemCatalog.Get(definition).Name.Substring(0, 1);
+                    }
+                    if (fallback != null) fallback.gameObject.SetActive(!icon.enabled);
+
+                    frame.rectTransform.anchoredPosition = new Vector2(ItemIconSize * .5f + count * ItemIconSpacing, 0);
+                    frame.gameObject.SetActive(true);
+                    count++;
                 }
-            var frame = unit.Find("EquippedItemIcon")?.GetComponent<UnityEngine.UI.Image>();
-            if (sprite == null)
-            {
-                if (frame != null) frame.gameObject.SetActive(false);
-                return;
             }
-            if (frame == null)
-            {
-                LoadUnitOverheadSprites();
-                frame = UnitHudImage("EquippedItemIcon", unit, new Vector2(16, 16), Vector2.zero, unitEquipment);
-                UnitHudImage("Item", frame.transform, new Vector2(12, 12), Vector2.zero, null).preserveAspect = true;
-            }
-            frame.transform.Find("Item").GetComponent<UnityEngine.UI.Image>().sprite = sprite;
-            frame.gameObject.SetActive(true);
-            frame.rectTransform.anchoredPosition = new Vector2(0, UnitBarHeight(unit) + ItemOffset);
-            frame.transform.SetAsLastSibling();
+
+            if (row == null) return;
+            for (int i = count; i < row.childCount; i++) row.GetChild(i).gameObject.SetActive(false);
+            row.gameObject.SetActive(count > 0);
+            if (count == 0) return;
+            row.anchoredPosition = EquippedItemPosition(UnitBarHeight(unit));
+            row.SetAsLastSibling();
         }
 
         private void RenderUnitEnergyBar(Transform fighter, double energy, double maxEnergy, bool alive)
@@ -148,8 +166,8 @@ namespace PokeChess.Client.UI
             float height = UnitBarHeight(fighter);
             track.anchoredPosition = new Vector2(0, height);
             track.gameObject.SetActive(hp > 0);
-            var item = fighter.Find("EquippedItemIcon") as RectTransform;
-            if (item != null) item.anchoredPosition = new Vector2(0, height + ItemOffset);
+            var equipment = fighter.Find("EquippedItems") as RectTransform;
+            if (equipment != null) equipment.anchoredPosition = EquippedItemPosition(height);
             var image = track.Find("Fill").GetComponent<UnityEngine.UI.Image>();
             double capacity = maxHP > 0 ? Math.Max(maxHP, Math.Max(0, hp) + Math.Max(0, shield)) : 0;
             float hpRatio = capacity > 0 ? Mathf.Clamp01((float)(hp / capacity)) : 0;

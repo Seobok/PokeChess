@@ -95,7 +95,13 @@ namespace PokeChess.Client.UI
         {
             CancelDrag("Reset.");catalog=PokeChess.Content.GameContent.CreateCatalog();
             playtestSeed = randomizedPlaytest ? BitConverter.ToUInt64(Guid.NewGuid().ToByteArray(), 0) : 123UL;
-            Match=MatchStateFactory.CreateWithPool(randomizedPlaytest ? "playtest-"+playtestSeed : "minimum-ui",new[]{"p1","p2"},catalog,PokeChess.Content.GameContent.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:playtestSeed);
+            var rules = randomizedPlaytest
+                ? new MatchRules(startingHP: 200, enableWildRounds: true)
+                : new MatchRules(enableWildRounds: true);
+            Match = MatchStateFactory.CreateWithPool(
+                randomizedPlaytest ? "playtest-" + playtestSeed : "minimum-ui", new[] { "p1", "p2" },
+                catalog, PokeChess.Content.GameContent.CreateDefinitions().Select(d => d.Id),
+                rules: rules, matchSeed: playtestSeed);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
             if (randomizedPlaytest)
             {

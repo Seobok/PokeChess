@@ -252,8 +252,8 @@ namespace PokeChess.Client.UI
             vial = VenomVisuals.Image(parent, "SampleIcon");
             badge = VenomVisuals.Image(parent, "ResearchBadge");
             flash = VenomVisuals.Image(parent, "SampleCollect");
-            VenomVisuals.Place(vial, new Vector2(-61, -252), 18);
-            VenomVisuals.Place(badge, new Vector2(69, -265), 16);
+            VenomVisuals.Place(vial, new Vector2(-52, -9), 18);
+            VenomVisuals.Place(badge, new Vector2(52, -9), 16);
             VenomVisuals.Place(flash, vial.rectTransform.anchoredPosition, 32);
             var text = new GameObject("Venom_SampleGain", typeof(RectTransform), typeof(Text));
             text.transform.SetParent(parent, false);
@@ -263,7 +263,7 @@ namespace PokeChess.Client.UI
             gain.alignment = TextAnchor.MiddleCenter;
             gain.color = new Color(1, .66f, .95f);
             gain.raycastTarget = false;
-            gain.rectTransform.anchoredPosition = new Vector2(-37, -252);
+            gain.rectTransform.anchoredPosition = new Vector2(-33, -14);
             gain.rectTransform.sizeDelta = new Vector2(44, 18);
             gain.enabled = false;
         }
