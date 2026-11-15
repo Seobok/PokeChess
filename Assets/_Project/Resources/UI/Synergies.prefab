@@ -3309,6 +3309,7 @@ GameObject:
   - component: {fileID: 6533138652369712510}
   - component: {fileID: 6928443807691504888}
   - component: {fileID: 5431657559748605650}
+  - component: {fileID: 119355109040247239}
   m_Layer: 0
   m_Name: Synergies
   m_TagString: Untagged
@@ -3398,6 +3399,53 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &119355109040247239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5698638969807120276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44bdcf8e9aa478745b5fa90c6730eb70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PokeChess.Client::PokeChess.Client.UI.SynergyPanelIcons
+  entries:
+  - trait: guardian
+    icon: {fileID: 2346632177235300755, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: bruiser
+    icon: {fileID: 7875125420721010963, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: duelist
+    icon: {fileID: -5662426742184930355, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: tracker
+    icon: {fileID: 5630189519571531164, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: sorcerer
+    icon: {fileID: 4269990029438216606, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: invoker
+    icon: {fileID: -5072173479192471089, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: disruptor
+    icon: {fileID: 5751522139228307238, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: assassin
+    icon: {fileID: -4250782901289201484, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: supporter
+    icon: {fileID: -3669166524413702187, guid: 0a0cba05597d95f43ab694f96043c274, type: 3}
+  - trait: flame
+    icon: {fileID: -1072896274, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: torrent
+    icon: {fileID: -1383261911, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: storm
+    icon: {fileID: -191923472, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: earth
+    icon: {fileID: 447636676, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: nature
+    icon: {fileID: -2121183323, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: venom
+    icon: {fileID: -648208053, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: mystic
+    icon: {fileID: -2102753851, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
+  - trait: adversity
+    icon: {fileID: 368073572, guid: 0d9c74bda2256d84d8e7982022fd638e, type: 3}
 --- !u!1 &5736220198631488856
 GameObject:
   m_ObjectHideFlags: 0

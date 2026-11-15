@@ -36,6 +36,7 @@ namespace PokeChess.Client.UI
             new List<(UnityEngine.UI.Image, UnityEngine.UI.Image[])>();
         private readonly List<UnityEngine.UI.Image> synergyTargetMarks = new List<UnityEngine.UI.Image>();
         private IReadOnlyList<PokemonDefinition> synergyRoster;
+        private SynergyPanelIcons synergyPanelIcons;
         private (string id, string species, BoardPosition cell, string[] traits, int stage, int rank, string target)[] synergyBoard;
         private (string key, string name, int count, int next, int tier, int unique)[] synergyEntries;
         private UnityEngine.UI.Button synergyPrev, synergyNext;
@@ -76,6 +77,7 @@ namespace PokeChess.Client.UI
             synergyTexture = SynergySprite("TextureMark");
 
             synergyRoot = UiPrefab.Instantiate("Synergies", canvasRect, itemFont);
+            synergyPanelIcons = synergyRoot.GetComponent<SynergyPanelIcons>();
             for (int i = 0; i < synergyRows.Length; i++)
             {
                 var image = UiPrefab.Get<UnityEngine.UI.Image>(synergyRoot, $"SynergyRow_{i}");
@@ -89,6 +91,7 @@ namespace PokeChess.Client.UI
                     Count = UiPrefab.Get<UnityEngine.UI.Text>(root, "Count"),
                     Gear = UiPrefab.Get<UnityEngine.UI.Image>(root, "Gear")
                 };
+                row.Icon.preserveAspect = true;
                 var events = image.gameObject.AddComponent<EventTrigger>();
                 AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ =>
                 {
@@ -277,7 +280,7 @@ namespace PokeChess.Client.UI
                 row.Count.text = $"{entry.count} / {entry.next}";
                 row.Gear.gameObject.SetActive(CanConfigureSynergyRow(entry.key, entry.unique) && CanChooseSynergyTarget());
                 row.Count.rectTransform.anchoredPosition = new Vector2(row.Gear.gameObject.activeSelf ? 28 : 38, 0);
-                row.Icon.sprite = entry.unique == 0 ? synergyTexture : null;
+                row.Icon.sprite = entry.unique == 0 ? synergyTexture : synergyPanelIcons?.Find(entry.key);
                 row.Icon.enabled = row.Icon.sprite != null;
                 row.Glyph.gameObject.SetActive(!row.Icon.enabled);
                 row.Glyph.text = SynergyMark(entry.key, entry.name);

@@ -168,6 +168,7 @@ namespace PokeChess.Client.UI
 
         private void UpdateItemRecipePreview(ItemDefinition result, Vector2 pointer, bool besideRecipeList = false)
         {
+            itemRecipePreview.GetComponent<UnityEngine.UI.Image>().raycastTarget = result != null && besideRecipeList;
             itemRecipePreview.gameObject.SetActive(result != null);
             if (result == null) return;
 
@@ -181,10 +182,10 @@ namespace PokeChess.Client.UI
             var bounds = canvasRect.rect;
             var half = itemRecipePreview.rect.size * .5f;
             var position = besideRecipeList
-                ? pointer + new Vector2(half.x + 3, -half.y)
+                ? pointer + new Vector2(half.x, -half.y)
                 : pointer + new Vector2(half.x + 30, half.y + 15);
             if (position.x + half.x > bounds.xMax)
-                position.x = besideRecipeList ? pointer.x - componentRecipes.rect.width - half.x - 3 : pointer.x - half.x - 30;
+                position.x = besideRecipeList ? pointer.x - componentRecipes.rect.width * componentRecipes.localScale.x - half.x : pointer.x - half.x - 30;
             itemRecipePreview.anchoredPosition = new Vector2(
                 Mathf.Clamp(position.x, bounds.xMin + half.x, bounds.xMax - half.x),
                 Mathf.Clamp(position.y, bounds.yMin + half.y, bounds.yMax - half.y));

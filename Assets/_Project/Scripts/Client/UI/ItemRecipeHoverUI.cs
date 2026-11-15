@@ -36,7 +36,7 @@ namespace PokeChess.Client.UI
             componentRecipeRows = new ComponentRecipeRow[ItemCatalog.Components.Count];
             for (int i = 0; i < componentRecipeRows.Length; i++)
             {
-                var image = HudImage("Recipe_" + i, componentRecipes, new Vector2(210, RecipeRowHeight - 2),
+                var image = HudImage("Recipe_" + i, componentRecipes, new Vector2(componentRecipes.rect.width, RecipeRowHeight - 2),
                     Vector2.zero, new Color(.12f, .2f, .31f));
                 image.raycastTarget = true;
                 var row = componentRecipeRows[i] = new ComponentRecipeRow { Rect = image.rectTransform };
@@ -48,7 +48,7 @@ namespace PokeChess.Client.UI
                 row.Name = RecipeListText("Name", row.Rect, 12, new Vector2(119, 21), new Vector2(37, 0));
                 var events = row.Rect.gameObject.AddComponent<EventTrigger>();
                 AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ => ShowHoveredRecipe(row));
-                AddSynergyRowEvent(events, EventTriggerType.PointerExit, _ => UpdateItemRecipePreview(null, Vector2.zero));
+                AddSynergyRowEvent(events, EventTriggerType.PointerExit, data => EndRecipeRowHover((PointerEventData)data));
             }
 
             itemInventoryPanel.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
@@ -56,6 +56,8 @@ namespace PokeChess.Client.UI
                 EventTriggerType.PointerExit, data => EndItemHint((PointerEventData)data));
             AddSynergyRowEvent(componentRecipes.gameObject.AddComponent<EventTrigger>(),
                 EventTriggerType.PointerExit, data => EndItemHint((PointerEventData)data));
+            AddSynergyRowEvent(itemRecipePreview.gameObject.AddComponent<EventTrigger>(),
+                EventTriggerType.PointerExit, data => EndRecipeDetailHover((PointerEventData)data));
             componentRecipes.gameObject.SetActive(false);
         }
 
@@ -105,12 +107,22 @@ namespace PokeChess.Client.UI
                 componentRecipeRows[i].Rect.anchoredPosition =
                     new Vector2(0, height * .5f - headerHeight - (i + .5f) * RecipeRowHeight);
 
-            var corner = canvasRect.InverseTransformPoint(itemInventoryPanel.TransformPoint(
-                new Vector2(itemInventoryPanel.rect.xMax, itemInventoryPanel.rect.yMax)));
             var bounds = canvasRect.rect;
-            float x = Mathf.Min(corner.x, bounds.xMax - componentRecipes.rect.width);
-            float top = Mathf.Clamp(corner.y, bounds.yMin + height, bounds.yMax);
-            componentRecipes.localPosition = new Vector3(x - componentRecipes.rect.xMin, top - componentRecipes.rect.yMax, 0);
+            var left = canvasRect.InverseTransformPoint(itemInventoryPanel.TransformPoint(
+                new Vector2(itemInventoryPanel.rect.xMin, itemInventoryPanel.rect.yMax)));
+            var right = canvasRect.InverseTransformPoint(itemInventoryPanel.TransformPoint(
+                new Vector2(itemInventoryPanel.rect.xMax, itemInventoryPanel.rect.yMax)));
+            var slotCenter = itemInventoryPanel.InverseTransformPoint(inventoryChoices[slot].transform.position);
+            float width = componentRecipes.rect.width;
+            float leftSpace = left.x - bounds.xMin - 4;
+            bool openLeft = slotCenter.x < itemInventoryPanel.rect.center.x && leftSpace >= width * .7f;
+            float scale = openLeft ? Mathf.Min(1, leftSpace / width) : 1;
+            componentRecipes.localScale = new Vector3(scale, scale, 1);
+            float x = openLeft ? left.x - width * scale : Mathf.Min(right.x, bounds.xMax - width);
+            float slotY = canvasRect.InverseTransformPoint(inventoryChoices[slot].transform.position).y;
+            float top = Mathf.Clamp(slotY + height * scale * .5f, bounds.yMin + height * scale, bounds.yMax);
+            componentRecipes.localPosition = new Vector3(x - componentRecipes.rect.xMin * scale,
+                top - componentRecipes.rect.yMax * scale, 0);
             hoveredComponentSlot = slot;
             hoveredComponentItem = instanceId;
             componentRecipes.gameObject.SetActive(true);
@@ -128,8 +140,23 @@ namespace PokeChess.Client.UI
         {
             var hit = data.pointerCurrentRaycast.gameObject;
             if (hoveredComponentItem != null && hit != null &&
-                (hit.transform.IsChildOf(itemInventoryPanel) || hit.transform.IsChildOf(componentRecipes))) return;
+                (hit.transform.IsChildOf(itemInventoryPanel) || hit.transform.IsChildOf(componentRecipes) ||
+                    hit.transform.IsChildOf(itemRecipePreview))) return;
             HideItemHint();
+        }
+
+        private void EndRecipeRowHover(PointerEventData data)
+        {
+            var hit = data.pointerCurrentRaycast.gameObject;
+            if (hit == null || !hit.transform.IsChildOf(itemRecipePreview))
+                UpdateItemRecipePreview(null, Vector2.zero);
+        }
+
+        private void EndRecipeDetailHover(PointerEventData data)
+        {
+            if (hoveredComponentItem == null) return;
+            UpdateItemRecipePreview(null, Vector2.zero);
+            EndItemHint(data);
         }
 
         private void ValidateComponentRecipeHint()
