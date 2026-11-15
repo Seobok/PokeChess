@@ -81,19 +81,19 @@ namespace PokeChess.Client.UI
             if(!view.RoundLoop.StartCombat(1))throw new Exception("Wild battle rejected.");
             for(int i=0;i<1400&&view.Match.Phase==MatchPhase.Combat;i++)view.RoundLoop.Step();
             view.RefreshFromState();
-            if(!view.ItemRewardVisible||p.PendingItemReward==null||p.HP!=60)throw new Exception("Missing wild reward UI / changed HP.");
-            Capture("item-reward.png");view.ItemChoiceButton(0).onClick.Invoke();
-            if(p.ItemInventory.Count!=1||p.PendingItemReward!=null)throw new Exception("Reward button did not claim exactly one tool.");
-            if(!view.RoundLoop.NextRound(1))throw new Exception("Next preparation rejected.");view.RefreshFromState();
-            string helmet="item:"+ItemCatalog.RockyHelmet+":99:p1";p.AddInventoryItem(helmet);
+            if(p.ItemInventory.Count!=1||!ItemCatalog.IsComponent(p.ItemInventory[0])||p.HP!=60)
+                throw new Exception("Expected one automatically granted wild component.");
+            Capture("item-reward.png");
+            string component=p.ItemInventory[0];
+            if(!view.RoundLoop.NextRound(1))throw new Exception("Next preparation rejected.");
             view.SelectUnit("items-qa-0");view.RefreshFromState();
-            var source=view.InventoryItemButton(1);var icon=source.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>();
-            if(icon.sprite==null)throw new Exception("Missing item icon asset.");
+            var source=view.InventoryItemButton(1);
+            if(!source.interactable)throw new Exception("Reward component is unavailable for drag.");
             var pointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){button=UnityEngine.EventSystems.PointerEventData.InputButton.Left,position=RectTransformUtility.WorldToScreenPoint(null,source.transform.position)};
             var drag=source.GetComponent<ItemDragToken>();drag.OnBeginDrag(pointer);pointer.position=new Vector2(10,10);drag.OnEndDrag(pointer);
-            if(!p.ItemInventory.Contains(helmet))throw new Exception("Invalid drop consumed tool.");
+            if(!p.ItemInventory.Contains(component))throw new Exception("Invalid drop consumed tool.");
             drag.OnBeginDrag(pointer);pointer.position=view.ScreenPoint(p.GetUnit("items-qa-0").Placement);drag.OnDrag(pointer);drag.OnEndDrag(pointer);
-            if(!p.GetUnit("items-qa-0").ItemInstanceIds.Contains(helmet)||p.ItemInventory.Contains(helmet))throw new Exception("Drag equip failed.");
+            if(!p.GetUnit("items-qa-0").ItemInstanceIds.Contains(component)||p.ItemInventory.Contains(component))throw new Exception("Drag equip failed.");
             Capture("item-inventory.png");
             view.enabled=true;
         }

@@ -169,7 +169,6 @@ namespace PokeChess.Core.Match
         {
             if(Match.Phase!=MatchPhase.Preparation || Match.RoundNumber!=expectedRound || !PreparationReady)return false;
             if(TryFinishMatch(expectedRound))return false;
-            foreach(var player in Survivors)new ItemSystem().AutoChoose(Match,player);
             if(IsWildRound)return StartWildCombat(expectedRound);
             var plan=PreparePairings(expectedRound);
             if(plan.NoBattleRequired)return false;
@@ -272,6 +271,12 @@ namespace PokeChess.Core.Match
                     };
                 }
                 battle.Step();
+                if (battle.IsWild && battle.Battle?.Result == BattleResult.TeamOneWin &&
+                    battle.Battle.EndReason == BattleEndReason.Elimination)
+                {
+                    var player = Match.GetPlayer(battle.Pairing.PlayerOneId);
+                    new ItemSystem().GrantWildReward(Match, player);
+                }
             }
             if(battles.All(b=>b.IsComplete))Finish();
         }
@@ -324,10 +329,10 @@ namespace PokeChess.Core.Match
             foreach(var p in recipients){
                 if(p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
-                SynergyPreparation.Settle(p,battles.First(b=>b.Pairing.Contains(p.PlayerId)),Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
+                var pair = battles.First(b => b.Pairing.Contains(p.PlayerId));
+                var outcome = LastResult.PlayerResults[p.PlayerId].Outcome;
+                SynergyPreparation.Settle(p, pair, Match.RoundNumber, outcome);
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
-                if(LastResult.PlayerResults[p.PlayerId].Outcome==RoundOutcome.Win&&WildRoundSystem.HasItemReward(Match.RoundNumber))
-                    new ItemSystem().Offer(Match,p);
             }
             elimination.SettleDamage(Match);
             TryFinishMatch(Match.RoundNumber);

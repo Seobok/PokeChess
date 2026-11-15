@@ -18,12 +18,11 @@ namespace PokeChess.Client.UI
         private string visibleBattle;
         private CombatPlayback subscribedPlayback;
         private void OnDestroy(){if(subscribedPlayback!=null)subscribedPlayback.EventPlayed-=ReplayEffect;}
-        private void BuildOnlineCombatUI(RectTransform parent)
+        private void BindOnlineCombatUI(Transform parent)
         {
-            combatLayer=Rect("CombatPlayback",parent,parent.sizeDelta,Vector2.zero);
-            combatCaption=Label("CombatCaption",combatLayer,"",new Vector2(450,20),new Vector2(0,52),11);
-            combatResults=Label("CombatResults",parent,"",new Vector2(530,185),new Vector2(0,-28),13);
-            combatLayer.gameObject.SetActive(false);combatResults.gameObject.SetActive(false);
+            combatLayer = UiPrefab.Get<RectTransform>(parent, "CombatPlayback");
+            combatCaption = UiPrefab.Get<UnityEngine.UI.Text>(combatLayer, "CombatCaption");
+            combatResults = UiPrefab.Get<UnityEngine.UI.Text>(parent, "CombatResults");
         }
         private static Vector2 ReplayPoint(int column,int row)=>new Vector2(-190+column*60+(row%2)*30,35-row*22);
         private void UpdateOnlineCombatUI(OnlineConnection service)

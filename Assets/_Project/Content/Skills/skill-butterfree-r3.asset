@@ -16,13 +16,12 @@ MonoBehaviour:
   DisplayName: "\uC218\uBA74\uAC00\uB8E8"
   VariantIds: []
   VariantMode: 0
-  Description: "\uC8FC\uBCC0 2\uCE78\uC758 \uC801\uC744 1.5/1.75/2\uCD08\uAC04 \uC218\uBA74
-    \uC0C1\uD0DC\uB85C \uB9CC\uB4E0\uB2E4."
+  Description: "\uc0ac\uac70\ub9ac \ub0b4 \ub300\uc0c1 \uc911\uc2ec \ubc18\uacbd 1\uce78\uc758 \uc801\uc744 1.5/1.75/2\ucd08\uac04 \uc218\uba74 \uc0c1\ud0dc\ub85c \ub9cc\ub4e0\ub2e4.\n[AP \uac1c\ud3b8] \uc218\uba74\uc744 \ubd80\uc5ec\ud558\uae30 \uc9c1\uc804 \ubc94\uc704 \ub0b4 \uc801\uc5d0\uac8c 55/80/105\uc758 \ud2b9\uc218 \ud53c\ud574\ub97c \uc900\ub2e4(\ud53c\ud574 \u00d7 AP/100). \uc218\uba74 \uc9c0\uc18d\uc2dc\uac04\uc740 \uace0\uc815."
   Notes: 
   CastTime: 0.4
   PostCastTime: 0.4
-  TargetRule: 1
-  TargetLostPolicy: 2
+  TargetRule: 0
+  TargetLostPolicy: 0
   Range: 3
   Interruptible: 1
   HasEnergyLock: 1
@@ -32,8 +31,20 @@ MonoBehaviour:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
   Effects:
+  - Type: 0
+    TargetSelector: 2
+    BaseValue: 105
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    RankValues:
+    - 105
+    - 105
+    - 105
   - Type: 4
-    TargetSelector: 5
+    TargetSelector: 2
     BaseValue: 0
     SpellPowerScalable: 0
     PowerScaling: 0

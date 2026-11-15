@@ -15,6 +15,7 @@ namespace PokeChess.Content
         public float BaseValue;
         public bool SpellPowerScalable;
         public SkillPowerScaling PowerScaling;
+        public float ApIncrement, ApCap;
         public DamageType DamageType=DamageType.Magic;
         public int Radius=1;
         public float ProjectileSpeed=6;
@@ -40,7 +41,7 @@ namespace PokeChess.Content
             Type==SkillEffectType.ApplyStatus?RankStatuses.Select(s=>s.Id):null,HasImpactRadius?(int?)ImpactRadius:null,
             TargetSelector==EffectTargetSelector.Spatial?Spatial?.ToCore():null,
             Type==SkillEffectType.Move?Movement?.ToCore():null,Returns,
-            (PathImpactEffects??Array.Empty<SkillEffectData>()).Select(e=>e.ToCore()),HasNumeric?Numeric.ToCore():null,ChoiceStatuses.Select(s=>s.Id),ChainDelay,ChainSequential,ProjectileGroupSize,PowerScaling);
+            (PathImpactEffects??Array.Empty<SkillEffectData>()).Select(e=>e.ToCore()),HasNumeric?Numeric.ToCore():null,ChoiceStatuses.Select(s=>s.Id),ChainDelay,ChainSequential,ProjectileGroupSize,PowerScaling,ApIncrement,ApCap);
     }
     [Serializable]
     public sealed class SkillNumericData

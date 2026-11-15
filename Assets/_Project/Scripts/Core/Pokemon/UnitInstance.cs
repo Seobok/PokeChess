@@ -84,10 +84,21 @@ namespace PokeChess.Core.Pokemon
         }
         internal void ApplyPlacementUnchecked(UnitPlacement placement) => Placement = placement;
         internal void ClearItems() => items.Clear();
+        public const int MaxItems = 3;
+
+        internal void CompleteItem(string componentId, string completedId)
+        {
+            int slot = items.IndexOf(componentId);
+            if (slot < 0 || items.Contains(completedId))
+                throw new InvalidOperationException("Invalid item combination.");
+            items[slot] = completedId;
+        }
+
         public void AddItem(string itemInstanceId)
         {
             ModelGuard.Id(itemInstanceId, nameof(itemInstanceId));
             if (items.Contains(itemInstanceId)) throw new ArgumentException("Item already equipped.");
+            if (items.Count >= MaxItems) throw new InvalidOperationException("Item slots are full.");
             items.Add(itemInstanceId);
         }
     }

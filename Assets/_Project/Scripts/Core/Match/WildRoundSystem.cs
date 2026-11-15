@@ -11,14 +11,16 @@ namespace PokeChess.Core.Match
     {
         public static bool IsWild(MatchState match)=>match.Rules.EnableWildRounds&&IsWildRound(match.RoundNumber);
         public static bool IsWildRound(int round)=>round>=1&&(round<=3||round>=9&&(round-9)%5==0);
-        public static bool HasItemReward(int round)=>IsWildRound(round)&&round>=3;
+        public static int ItemRewardCount(int round)
+            => !IsWildRound(round) ? 0 : round <= 2 ? 1 : round == 3 ? 2 : 3;
         public static int EnemyCount(int round)=>round==1?2:round<=3?3:1;
         public static string Pattern(int round)=>round<=3?"Tutorial":"Single";
         public static string Preview(int round)
         {
-            return round<=3
-                ? "약한 야생 포켓몬 "+EnemyCount(round)+"마리 · 일반 공격만 사용 · 승리 보상: "+(HasItemReward(round)?"도구 선택":"추가 2골드")
-                : "중앙 야생 포켓몬 1마리 · 임시 편성 · 승리 보상: 도구 선택";
+            string encounter = round <= 3
+                ? $"약한 야생 포켓몬 {EnemyCount(round)}마리 · 일반 공격만 사용"
+                : "중앙 야생 포켓몬 1마리 · 임시 편성";
+            return $"{encounter} · 전멸 보상: 무작위 재료 아이템 {ItemRewardCount(round)}개";
         }
         internal static BattleState CreateBattle(MatchState match,PokemonCatalog catalog,PlayerState player,
             IEnumerable<BattleUnitSetup> allies,int tickRate)

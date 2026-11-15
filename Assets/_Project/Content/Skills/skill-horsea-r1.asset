@@ -16,9 +16,7 @@ MonoBehaviour:
   DisplayName: "\uC5F0\uB9C9"
   VariantIds: []
   VariantMode: 0
-  Description: "\uB300\uC0C1 \uC911\uC2EC 2\uCE78\uC5D0 \uC5F0\uB9C9\uC744 \uD3BC\uCCD0
-    1.5/2/2.5\uCD08\uAC04 \uBC94\uC704 \uB0B4\uC758 \uC801\uC744 \uC2E4\uBA85 \uC0C1\uD0DC\uB85C
-    \uB9CC\uB4E0\uB2E4."
+  Description: "\ub300\uc0c1 \uc911\uc2ec 2\uce78\uc5d0 \uc5f0\ub9c9\uc744 \ud3bc\uccd0 1.5/2/2.5\ucd08\uac04 \ubc94\uc704 \ub0b4\uc758 \uc801\uc744 \uc2e4\uba85 \uc0c1\ud0dc\ub85c \ub9cc\ub4e0\ub2e4.\n[AP \uac1c\ud3b8] \uc5f0\ub9c9 \ud615\uc131 \uc989\uc2dc \ubc94\uc704 \ub0b4 \uc801\uc5d0\uac8c 45/65/90\uc758 \ud2b9\uc218 \ud53c\ud574\ub97c \uc900\ub2e4(\ud53c\ud574 \u00d7 AP/100). \uc2e4\uba85 \uc2dc\uac04\uc740 \uace0\uc815."
   Notes: "\uC9C0\uC18D \uC7A5\uD310. \uC7A5\uD310 \uC218\uBA85\uC774 1.5/2/2.5 \uC774\uBA70
     \uD574\uB2F9 \uC7A5\uD310 \uC9C4\uC785\uC2DC \uB2E4\uC74C \uD2F1 \uC2E4\uBA85,
     \uBC97\uC5B4 \uB0A0\uC2DC \uB2E4\uC74C \uD2F1 \uD574\uC81C"
@@ -35,6 +33,28 @@ MonoBehaviour:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
   Effects:
+  - Type: 0
+    TargetSelector: 5
+    BaseValue: 45
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    RankValues:
+    - 45
+    - 45
+    - 45
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 1
+      Extent: 2
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
   - Type: 9
     TargetSelector: 5
     BaseValue: 1.5

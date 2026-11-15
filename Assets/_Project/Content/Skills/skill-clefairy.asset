@@ -110,8 +110,7 @@ MonoBehaviour:
   - skill-dragonair
   - skill-dragonite
   VariantMode: 0
-  Description: "5\uCF54\uC2A4\uD2B8\uB97C \uC81C\uC678\uD55C \uC804\uCCB4 \uC720\uB2DB\uC758
-    \uC2A4\uD0AC\uC911 \uB79C\uB364\uD55C 1\uC885\uC758 \uC2A4\uD0AC\uC744 \uC0AC\uC6A9\uD55C\uB2E4."
+  Description: "5\ucf54\uc2a4\ud2b8\ub97c \uc81c\uc678\ud55c \uc804\uccb4 \uc720\ub2db\uc758 \uc2a4\ud0ac\uc911 \ub79c\ub364\ud55c 1\uc885\uc758 \uc2a4\ud0ac\uc744 \uc0ac\uc6a9\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \ubb34\uc791\uc704 \uc2a4\ud0ac \ubc1c\ub3d9\uacfc \ub3d9\uc2dc\uc5d0 \uc790\uc2e0\uc5d0\uac8c 4\ucd08\uac04 105/150/200\uc758 \ubcf4\ud638\ub9c9\uc744 \ubd80\uc5ec\ud55c\ub2e4(\ubcf4\ud638\ub9c9 \u00d7 AP/100). \ubcf5\uc81c\ub41c \uc2a4\ud0ac\uc758 AP \uaddc\uce59\uc740 \uadf8\ub300\ub85c \uc801\uc6a9."
   Notes: "\uC190\uAC00\uB77D\uD754\uB4E4\uAE30 \uC790\uCCB4\uB97C \uC81C\uC678\uD558\uACE0
     \uC911\uBCF5\uB418\uC9C0 \uC54A\uB294 \uAE30\uC220 \uBAA9\uB85D\uC5D0\uC11C \uADE0\uB4F1
     \uCD94\uCCA8\n\uC2DC\uB108\uC9C0\uB294 \uBCF5\uC0AC\uD558\uC9C0 \uC54A\uC73C\uBA70
@@ -129,5 +128,22 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 2
+    TargetSelector: 1
+    BaseValue: 105
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    RankValues:
+    - 105
+    - 150
+    - 200
+    HasNumeric: 1
+    Numeric:
+      Chance: 1
+      ShieldDuration: 4
+      HasShieldDuration: 1
   Steps: []

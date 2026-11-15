@@ -13,7 +13,8 @@ namespace PokeChess.Core.Tests
     {
         [Serializable] private sealed class Plan {public Row[] Rows;}
         [Serializable] private sealed class Row {
-            public string Id,Name,Skill,Effect,Notes;public int Cost,AttackRange;
+            public string Id,Name,Skill,Effect,Notes,V4RoleId,V4Effect;public int Cost,AttackRange,V4AttackRange;
+            public float[] V4HP;public float V4Armor,V4MagicResistance;
             public float[] HP,Attack;public float AttackSpeed,MaxEnergy,StartingEnergy,Armor,MagicResistance;
         }
         private static RosterData Roster=>Resources.Load<RosterData>("GameRoster");
@@ -51,22 +52,32 @@ namespace PokeChess.Core.Tests
             Assert.That(source.Rows.Length,Is.EqualTo(109));Assert.That(Roster.Pokemon.Length,Is.EqualTo(109));
             foreach(var row in source.Rows) {
                 var p=Roster.Pokemon.Single(u=>u.Id==row.Id);Assert.That(p.Cost,Is.EqualTo(row.Cost),row.Id);Assert.That(p.LocalizedName,Is.EqualTo(row.Name));
-                Assert.That(p.Skill.DisplayName,Is.EqualTo(row.Skill));Assert.That(p.Skill.Description,Is.EqualTo(row.Effect));Assert.That(p.Skill.Notes,Is.EqualTo(row.Notes));
+                Assert.That(p.Skill.DisplayName,Is.EqualTo(row.Skill));Assert.That(p.Skill.Description,Is.EqualTo(row.V4Effect));Assert.That(p.RoleId,Is.EqualTo(row.V4RoleId));Assert.That(p.Skill.Notes,Is.EqualTo(row.Notes));
                 for(int i=0;i<3;i++) {
                     var stats=RankRules.Default.Apply(p.ToCore(),(UnitRank)(i+1));
-                    Assert.That(stats.MaxHP,Is.EqualTo(row.HP[i]),row.Id);Assert.That(stats.Attack,Is.EqualTo(row.Attack[i]),row.Id);
+                    Assert.That(stats.MaxHP,Is.EqualTo(row.V4HP[i]),row.Id);Assert.That(stats.Attack,Is.EqualTo(row.Attack[i]),row.Id);
                     Assert.That(stats.SpellPower,Is.EqualTo(100));Assert.That(stats.AttackSpeed,Is.EqualTo(row.AttackSpeed));
                     Assert.That(stats.MaxEnergy,Is.EqualTo(row.MaxEnergy));Assert.That(stats.StartingEnergy,Is.EqualTo(row.StartingEnergy));
-                    Assert.That(stats.Armor,Is.EqualTo(row.Armor));Assert.That(stats.MagicResistance,Is.EqualTo(row.MagicResistance));
-                    Assert.That(stats.AttackRange,Is.EqualTo(row.AttackRange));
+                    Assert.That(stats.Armor,Is.EqualTo(row.V4Armor));Assert.That(stats.MagicResistance,Is.EqualTo(row.V4MagicResistance));
+                    Assert.That(stats.AttackRange,Is.EqualTo(row.V4AttackRange));
                 }
             }
             Assert.That(Roster.Pokemon.Any(p=>p.Id=="eevee"),Is.False);
             Assert.That(Roster.Pokemon.Single(p=>p.Id=="nidoran-f").Evolutions.Single().Target.Id,Is.EqualTo("nidorina"));
         }
+        [TestCase(77, 100, 95)]
+        [TestCase(100.1f, 100, 114.95f)]
+        [TestCase(77, 150, 109.25f)]
+        [TestCase(100.1f, 150, 129.2f)]
+        public void WeedleMixedDamageUsesSameRankBaseline(float attack,float ap,float expected)
+        {
+            var effect = Roster.Skills.Single(s => s.Id == "skill-weedle-r3").ToCore().Effects.First(e => e.IsDamage);
+            Assert.That(effect.ResolveValue(UnitRank.Three,ap,attack,77), Is.EqualTo(expected).Within(.001f));
+        }
+
         [Test] public void ExtremeThreeStarValuesAreAuthoredLiterally()
         {
-            var snorlax=Roster.Skills.Single(s=>s.Id=="skill-snorlax-r3").Effects.Single().Status.ToCore();
+            var snorlax=Roster.Skills.Single(s=>s.Id=="skill-snorlax-r3").Effects.Single(e => e.Type == SkillEffectType.ApplyStatus).Status.ToCore();
             Assert.That(snorlax.RecoveryFraction,Is.EqualTo(4));Assert.That(snorlax.RestReduction,Is.EqualTo(.99f));Assert.That(snorlax.ReflectionMultiplier,Is.EqualTo(9.99f));
             var lapras=Roster.Skills.Single(s=>s.Id=="skill-lapras-r3");Assert.That(lapras.Effects[0].RankValues[2],Is.EqualTo(4000f).Within(.0001));
             Assert.That(lapras.Effects[1].Status.Duration,Is.EqualTo(99));

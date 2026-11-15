@@ -49,46 +49,22 @@ namespace PokeChess.Client.UI
             var rect=Rect(name,parent,size,pos);var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();
             image.color=color;image.raycastTarget=false;return image;
         }
-        private void BuildMatchHud() {
-            var frame = HudSprite("RoundBadge", canvasRect, new Vector2(600, 50), new Vector2(0, 331), "HudRoundFrame");
-            var ink = new Color32(13, 23, 55, 255);
-            hudRound = Label("RoundBadgeText", frame.transform, "", 25, new Vector2(82, 35), new Vector2(-202, 3));
-            hudRound.fontStyle = FontStyle.Bold;
-            hudRound.color = ink;
-            hudTime = Label("RoundTime", frame.transform, "", 19, new Vector2(75, 32), new Vector2(217, 3));
-            hudTime.fontStyle = FontStyle.Bold;
-            hudTime.color = ink;
-            var clock = HudSprite("RoundClock", frame.transform, new Vector2(23, 23), new Vector2(166, 3), "HudClock");
-            clock.color = ink;
+        private void BuildMatchHud()
+        {
+            var root = UiPrefab.Instantiate("MatchHud", canvasRect);
+            var badge = root.Find("RoundBadge");
+            hudRound = UiPrefab.Get<UnityEngine.UI.Text>(badge, "RoundBadgeText");
+            hudTime = UiPrefab.Get<UnityEngine.UI.Text>(badge, "RoundTime");
             for (int i = 0; i < hudRoundIcons.Length; i++)
-                hudRoundIcons[i] = HudImage("RoundIcon_" + i, frame.transform, new Vector2(25, 25),
-                    new Vector2((i - 3) * 35, 3), Color.white);
-            hudRoundPointer = HudSprite("CurrentRoundPointer", frame.transform, new Vector2(16, 9), Vector2.zero, "HudPhasePointer");
+                hudRoundIcons[i] = UiPrefab.Get<UnityEngine.UI.Image>(badge, $"RoundIcon_{i}");
+            hudRoundPointer = UiPrefab.Get<UnityEngine.UI.Image>(badge, "CurrentRoundPointer");
             hudBattleIcons = LoadRoundIcons("HudPhaseBattle");
             hudWildIcons = LoadRoundIcons("HudPhaseWild");
-
-            hudTimerBorder = HudSprite("TimerTrack", canvasRect, new Vector2(443, 16), new Vector2(0, 299), "HudTimerTrack");
-            hudTimer = HudSprite("TimerFill", hudTimerBorder.transform, new Vector2(424, 10), Vector2.zero, "HudTimerFill");
-            hudTimer.type = UnityEngine.UI.Image.Type.Filled;
-            hudTimer.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
-            hudNotice = Label("HudNotice", canvasRect, "", 12, new Vector2(600, 20), new Vector2(0, 279));
-
-            Vector2 enemyCenter = (TablePoint(new BoardPosition(3, 4)) + TablePoint(new BoardPosition(3, 7))) * .5f;
-            hudCapacity = Rect("BoardCapacity", canvasRect, new Vector2(270, 80), enemyCenter);
-            hudCapacity.localScale = new Vector3(1, .78f, 1);
-            var ball = HudSprite("CapacityBall", hudCapacity, new Vector2(72, 56), new Vector2(-77, 0), "HudCapacityBall");
-            ball.color = new Color(1, 1, 1, .67f);
-            hudCapacityText = Label("CapacityCount", hudCapacity, "", 58, new Vector2(178, 80), new Vector2(35, 0));
-            hudCapacityText.fontStyle = FontStyle.BoldAndItalic;
-            hudCapacity.gameObject.SetActive(false);
-
-        }
-
-        private UnityEngine.UI.Image HudSprite(string name, Transform parent, Vector2 size, Vector2 position, string asset)
-        {
-            var image = HudImage(name, parent, size, position, Color.white);
-            image.sprite = Resources.Load<Sprite>("MainGameHud/" + asset);
-            return image;
+            hudTimerBorder = UiPrefab.Get<UnityEngine.UI.Image>(root, "TimerTrack");
+            hudTimer = UiPrefab.Get<UnityEngine.UI.Image>(hudTimerBorder.transform, "TimerFill");
+            hudNotice = UiPrefab.Get<UnityEngine.UI.Text>(root, "HudNotice");
+            hudCapacity = UiPrefab.Get<RectTransform>(root, "BoardCapacity");
+            hudCapacityText = UiPrefab.Get<UnityEngine.UI.Text>(hudCapacity, "CapacityCount");
         }
 
         private static Sprite[] LoadRoundIcons(string asset) => new[]
@@ -116,7 +92,8 @@ namespace PokeChess.Client.UI
                 hudRoundIcons[i].sprite = icons[iconRound < round ? 0 : iconRound == round ? 1 : 2];
             }
             hudRoundPointer.gameObject.SetActive(round >= 1);
-            hudRoundPointer.rectTransform.anchoredPosition = new Vector2((round - first - 3) * 35, -15);
+            var pointer = hudRoundPointer.rectTransform;
+            pointer.anchoredPosition = new Vector2(hudRoundIcons[Mathf.Clamp(round - first, 0, hudRoundIcons.Length - 1)].rectTransform.anchoredPosition.x, pointer.anchoredPosition.y);
         }
 
         private void RenderHudTimer(bool visible, bool warning)

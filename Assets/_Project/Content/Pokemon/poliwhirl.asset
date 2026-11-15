@@ -15,31 +15,31 @@ MonoBehaviour:
   Id: poliwhirl
   DisplayName: Poliwhirl
   LocalizedName: "\uC288\uB959\uCC59\uC774"
-  RoleId: melee-dps
+  RoleId: ap-tank
   Cost: 3
   IsBoss: 0
   HasProvisionalStats: 0
   Stats:
-    MaxHP: 950
+    MaxHP: 1110
     Attack: 65
     SpellPower: 100
     AttackSpeed: 0.7
-    Armor: 37
-    MagicResistance: 42
-    AttackRange: 2
+    Armor: 40
+    MagicResistance: 39
+    AttackRange: 1
     MoveSpeed: 2
     MaxEnergy: 85
     StartingEnergy: 20
     AttackHitTime: 0.2
-    AttackDelivery: 1
+    AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
   RankHP:
-  - 950
-  - 1615
-  - 2755
+  - 1110
+  - 1887
+  - 3219
   RankAttack:
   - 65
   - 85

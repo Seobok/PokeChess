@@ -6,18 +6,19 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
-        private static readonly Color32 SpectatorInk = new Color32(13, 23, 55, 255);
-        private const float SpectatorRowSpacing = 53;
+        private const float SpectatorRowGap = 2;
 
         private RectTransform sidebar, spectatorBanner;
         private UnityEngine.UI.Text hudPlayers, spectatorCaption;
         private UnityEngine.UI.Button spectatorReturn;
-        private Sprite spectatorRow, spectatorSelected, spectatorEliminated, spectatorArrow, spectatorTrack, spectatorFill;
+        private Sprite spectatorSelected, spectatorEliminated;
         private readonly Sprite[] spectatorAvatars = new Sprite[8];
 
         private sealed class ProfileRow
         {
             public RectTransform Rect;
+            public Vector2 FirstPosition;
+            public Sprite DefaultSprite;
             public UnityEngine.UI.Image Background, Avatar, Arrow, Track, HP;
             public UnityEngine.UI.Text Name, State, Damage, Status;
             public UnityEngine.UI.Button Button;
@@ -27,88 +28,48 @@ namespace PokeChess.Client.UI
 
         private static Sprite LoadSpectatorSprite(string name) => Resources.Load<Sprite>("PlayerSpectator/Spectator" + name);
 
-        private UnityEngine.UI.Image SpectatorImage(string name, Transform parent, Vector2 size, Vector2 position, Sprite sprite)
-        {
-            var image = HudImage(name, parent, size, position, Color.white);
-            image.sprite = sprite;
-            return image;
-        }
-
-        private UnityEngine.UI.Text SpectatorText(string name, Transform parent, string text, int size,
-            Vector2 dimensions, Vector2 position, TextAnchor alignment = TextAnchor.MiddleCenter)
-        {
-            var label = Label(name, parent, text, size, dimensions, position);
-            label.font = itemFont ?? font;
-            label.fontStyle = FontStyle.Bold;
-            label.color = SpectatorInk;
-            label.alignment = alignment;
-            return label;
-        }
-
         private void BuildSpectatorHud()
         {
-            spectatorRow = LoadSpectatorSprite("Row");
             spectatorSelected = LoadSpectatorSprite("RowSelected");
             spectatorEliminated = LoadSpectatorSprite("RowEliminated");
-            spectatorArrow = LoadSpectatorSprite("SelectionArrow");
-            spectatorTrack = LoadSpectatorSprite("HpTrack");
-            spectatorFill = LoadSpectatorSprite("HpFill");
             for (int i = 0; i < spectatorAvatars.Length; i++)
                 spectatorAvatars[i] = LoadSpectatorSprite($"Avatar{i + 1:00}");
 
-            sidebar = SpectatorImage("PlayerSidebar", canvasRect, new Vector2(228, 480), new Vector2(518, 112),
-                LoadSpectatorSprite("ListFrame")).rectTransform;
-            var heading = SpectatorImage("PlayerListHeader", sidebar, new Vector2(214, 41), new Vector2(0, 214),
-                LoadSpectatorSprite("ListHeader"));
-            hudPlayers = SpectatorText("PlayerCount", heading.transform, "", 18, heading.rectTransform.sizeDelta, Vector2.zero);
-            hudPlayers.color = Color.white;
-
-            spectatorBanner = Rect("SpectatorBanner", canvasRect, new Vector2(290, 34), new Vector2(-184, 245));
-            var caption = SpectatorImage("WatchBanner", spectatorBanner, new Vector2(184, 32), new Vector2(-51, 0),
-                LoadSpectatorSprite("WatchBanner"));
-            spectatorCaption = SpectatorText("WatchCaption", caption.transform, "", 13, new Vector2(159, 28), Vector2.zero);
-            spectatorCaption.resizeTextForBestFit = true;
-            spectatorCaption.resizeTextMinSize = 9;
-            spectatorCaption.resizeTextMaxSize = 13;
-            var back = SpectatorImage("ReturnToOwnBoard", spectatorBanner, new Vector2(99, 31), new Vector2(93, 0),
-                LoadSpectatorSprite("ReturnButton"));
-            back.raycastTarget = true;
-            spectatorReturn = back.gameObject.AddComponent<UnityEngine.UI.Button>();
-            spectatorReturn.targetGraphic = back;
-            spectatorReturn.onClick.AddListener(() => RequestPlayerView(IsOnlineMatch ? onlineService.LocalMatchState.playerId : "p1"));
-            var backLabel = SpectatorText("Label", back.transform, "내 보드로", 12, back.rectTransform.sizeDelta, Vector2.zero);
-            backLabel.color = Color.white;
-            spectatorBanner.gameObject.SetActive(false);
+            sidebar = UiPrefab.Instantiate("PlayerSidebar", canvasRect, itemFont);
+            hudPlayers = UiPrefab.Get<UnityEngine.UI.Text>(sidebar, "PlayerListHeader/PlayerCount");
+            spectatorBanner = UiPrefab.Instantiate("SpectatorBanner", canvasRect, itemFont);
+            spectatorCaption = UiPrefab.Get<UnityEngine.UI.Text>(spectatorBanner, "WatchBanner/WatchCaption");
+            spectatorReturn = UiPrefab.Bind(spectatorBanner, "ReturnToOwnBoard",
+                () => RequestPlayerView(IsOnlineMatch ? onlineService.LocalMatchState.playerId : "p1"));
         }
 
         private ProfileRow BuildProfileRow(string id, int hp, int avatarIndex)
         {
-            var background = SpectatorImage("Profile_" + id, sidebar, new Vector2(214, 51), Vector2.zero, spectatorRow);
-            background.raycastTarget = true;
-            var rect = background.rectTransform;
-            var button = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
-            button.targetGraphic = background;
-            button.transition = UnityEngine.UI.Selectable.Transition.None;
+            var rect = UiPrefab.Instantiate("PlayerProfileRow", sidebar, itemFont);
+            rect.name = "Profile_" + id;
+            var button = rect.GetComponent<UnityEngine.UI.Button>();
             button.onClick.AddListener(() => RequestPlayerView(id));
+            var background = rect.GetComponent<UnityEngine.UI.Image>();
+            var avatar = UiPrefab.Get<UnityEngine.UI.Image>(rect, "Avatar");
+            avatar.sprite = spectatorAvatars[avatarIndex];
 
-            var track = SpectatorImage("HPTrack", rect, new Vector2(97, 12), new Vector2(4, -10), spectatorTrack);
-            var fill = SpectatorImage("HPFill", track.transform, new Vector2(91, 7), Vector2.zero, spectatorFill);
-            fill.type = UnityEngine.UI.Image.Type.Filled;
-            fill.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
             var row = new ProfileRow
             {
-                Rect = rect, Background = background, Track = track, HP = fill, Button = button, PreviousHP = hp,
-                Avatar = SpectatorImage("Avatar", rect, new Vector2(51, 46), new Vector2(-67, 0), spectatorAvatars[avatarIndex]),
-                Arrow = SpectatorImage("WatchArrow", rect, new Vector2(11, 15), new Vector2(-97, 0), spectatorArrow),
-                Name = SpectatorText("Name", rect, "", 15, new Vector2(96, 22), new Vector2(-37, 10), TextAnchor.MiddleLeft),
-                State = SpectatorText("Status", rect, "", 14, new Vector2(67, 22), new Vector2(66, 10), TextAnchor.MiddleRight),
-                Damage = SpectatorText("Damage", rect, "", 12, new Vector2(30, 18), new Vector2(84, -10), TextAnchor.MiddleRight),
-                Status = SpectatorText("MatchStatus", rect, "", 10, new Vector2(49, 16), new Vector2(79, -10), TextAnchor.MiddleRight)
+                Rect = rect,
+                FirstPosition = rect.anchoredPosition,
+                Background = background,
+                DefaultSprite = background.sprite,
+                Button = button,
+                PreviousHP = hp,
+                Track = UiPrefab.Get<UnityEngine.UI.Image>(rect, "HPTrack"),
+                HP = UiPrefab.Get<UnityEngine.UI.Image>(rect, "HPTrack/HPFill"),
+                Avatar = avatar,
+                Arrow = UiPrefab.Get<UnityEngine.UI.Image>(rect, "WatchArrow"),
+                Name = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Name"),
+                State = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Status"),
+                Damage = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Damage"),
+                Status = UiPrefab.Get<UnityEngine.UI.Text>(rect, "MatchStatus")
             };
-            row.Name.resizeTextForBestFit = true;
-            row.Name.resizeTextMinSize = 9;
-            row.Name.resizeTextMaxSize = 15;
-            row.Damage.color = new Color32(184, 28, 39, 255);
             hudProfiles.Add(id, row);
             return row;
         }
@@ -118,8 +79,8 @@ namespace PokeChess.Client.UI
         {
             if (!hudProfiles.TryGetValue(id, out var row))
                 row = BuildProfileRow(id, hp, avatarIndex);
-            row.Rect.anchoredPosition = new Vector2(0, 164 - index * SpectatorRowSpacing);
-            row.Background.sprite = eliminated ? spectatorEliminated : selected ? spectatorSelected : spectatorRow;
+            row.Rect.anchoredPosition = row.FirstPosition - Vector2.up * (index * (row.Rect.rect.height + SpectatorRowGap));
+            row.Background.sprite = eliminated ? spectatorEliminated : selected ? spectatorSelected : row.DefaultSprite;
             row.Avatar.color = eliminated ? new Color(.7f, .7f, .7f, .75f) : Color.white;
             row.Arrow.gameObject.SetActive(selected && !eliminated);
             row.Button.interactable = selectable && !eliminated && !selected;

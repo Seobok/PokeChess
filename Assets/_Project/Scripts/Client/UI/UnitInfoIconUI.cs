@@ -43,107 +43,58 @@ namespace PokeChess.Client.UI
         private static readonly Color32 DetailInk = new Color32(14, 24, 55, 255);
         private static Sprite DetailSprite(string name) => Resources.Load<Sprite>("UnitDetail/Detail" + name);
 
-        private UnityEngine.UI.Image DetailImage(string name, Transform parent, Vector2 size, Vector2 point, Sprite sprite)
+        private void BindUnitInfoIcons()
         {
-            var image = HudImage(name, parent, size, point, Color.white);
-            image.sprite = sprite;
-            return image;
-        }
-
-        private UnityEngine.UI.Text UnitDetailLabel(string name, Transform parent, string text, int fontSize, Vector2 size,
-            Vector2 position, TextAnchor alignment = TextAnchor.MiddleCenter)
-        {
-            var label = ItemLabel(name, parent, text, fontSize, size, position);
-            label.color = DetailInk;
-            label.fontStyle = FontStyle.Bold;
-            label.alignment = alignment;
-            label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 8;
-            label.resizeTextMaxSize = fontSize;
-            return label;
-        }
-
-        private void BuildUnitInfoIcons()
-        {
-            if (unitInfoRoot != null) return;
             unitPanelLibrary = Resources.Load<UnitInfoIconLibrary>("UnitInfoIcons");
             unitPortraitLibrary = PokemonAnimationLibrary.Load();
             LoadUnitOverheadSprites();
 
-            var frame = DetailImage("UnitInfoIcons", detailPopup, new Vector2(340, 373), Vector2.zero, DetailSprite("PanelFrame"));
-            unitInfoRoot = frame.rectTransform;
-            var header = DetailImage("Header", unitInfoRoot, new Vector2(320, 39), new Vector2(0, 156), DetailSprite("Header"));
-            unitDetailHeader = UnitDetailLabel("Title", header.transform, "", 20, new Vector2(292, 37), Vector2.zero, TextAnchor.MiddleLeft);
-            unitDetailHeader.color = Color.white;
+            detailPopup = UiPrefab.Instantiate("UnitPopup", canvasRect, itemFont);
+            unitInfoRoot = UiPrefab.Get<RectTransform>(detailPopup, "UnitInfoIcons");
+            sellButton = UiPrefab.Bind(detailPopup, "Sell", SellSelected);
+            unitDetailHeader = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Header/Title");
+            unitPortrait = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "UnitPortrait");
+            unitInfoTitle = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Name");
+            unitDetailRank = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "Rank");
+            unitRoleBadgeIcon = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "RoleBadge/Icon");
+            unitRoleLabel = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "RoleBadge/Role");
+            unitInfoTraits = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "TraitsBadge/Traits");
+            unitDetailCost = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "CostBadge/Cost");
+            unitDetailHP = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "HPTrack/Fill");
+            unitDetailHPText = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "HPValue");
+            unitDetailMana = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "마나Track/Fill");
+            unitDetailManaText = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "마나Value");
 
-            unitPortrait = DetailImage("UnitPortrait", unitInfoRoot, new Vector2(72, 64), new Vector2(-118, 104), null);
-            unitPortrait.preserveAspect = true;
-            unitInfoTitle = UnitDetailLabel("Name", unitInfoRoot, "", 20, new Vector2(101, 27), new Vector2(-29, 118), TextAnchor.MiddleLeft);
-            unitDetailRank = DetailImage("Rank", unitInfoRoot, new Vector2(23, 20), new Vector2(38, 118), null);
-            var role = DetailImage("RoleBadge", unitInfoRoot, new Vector2(101, 25), new Vector2(108, 118), DetailSprite("RoleBadge"));
-            unitRoleBadgeIcon = DetailImage("Icon", role.transform, new Vector2(16, 16), new Vector2(-37, 0), null);
-            unitRoleBadgeIcon.preserveAspect = true;
-            unitRoleLabel = UnitDetailLabel("Role", role.transform, "", 12, new Vector2(75, 22), new Vector2(9, 0));
-
-            var traits = DetailImage("TraitsBadge", unitInfoRoot, new Vector2(157, 24), new Vector2(1, 87), ShopSprite("SynergyBadge"));
-            traits.color = new Color32(210, 233, 249, 255);
-            unitInfoTraits = UnitDetailLabel("Traits", traits.transform, "", 12, new Vector2(149, 21), Vector2.zero);
-            var cost = DetailImage("CostBadge", unitInfoRoot, new Vector2(68, 26), new Vector2(125, 87), ShopSprite("PriceBadge"));
-            DetailImage("Coin", cost.transform, new Vector2(16, 16), new Vector2(-20, 0), ShopSprite("Coin"));
-            unitDetailCost = UnitDetailLabel("Cost", cost.transform, "", 16, new Vector2(42, 23), new Vector2(9, 0));
-
-            unitDetailHP = BuildDetailMeter("HP", 54, unitAllyHP, out unitDetailHPText);
-            unitDetailMana = BuildDetailMeter("마나", 32, unitMana, out unitDetailManaText);
-
-            var grid = DetailImage("StatGrid", unitInfoRoot, new Vector2(318, 95), new Vector2(0, -27), DetailSprite("StatGrid"));
-            string[] assets = { "Attack", "SpellPower", "Armor", "MagicResistance", "AttackSpeed", "Range" };
-            for (int i = 0; i < statNames.Length; i++)
+            for (int i = 0; i < unitStatValues.Length; i++)
             {
-                var cell = HudImage("Stat_" + i, grid.transform, new Vector2(150, 30),
-                    new Vector2(i % 2 == 0 ? -79 : 79, 31 - i / 2 * 31), Color.clear);
-                cell.raycastTarget = true;
-                DetailImage("Icon", cell.transform, new Vector2(17, 17), new Vector2(-62, 0), DetailSprite("Stat" + assets[i])).preserveAspect = true;
-                UnitDetailLabel("Caption", cell.transform, statNames[i], 12, new Vector2(74, 24), new Vector2(-14, 0), TextAnchor.MiddleLeft);
-                unitStatValues[i] = UnitDetailLabel("Value", cell.transform, "", 14, new Vector2(47, 24), new Vector2(49, 0), TextAnchor.MiddleRight);
-                AddUnitInfoHover(cell.transform, i);
+                var cell = UiPrefab.Get<RectTransform>(unitInfoRoot, $"StatGrid/Stat_{i}");
+                unitStatValues[i] = UiPrefab.Get<UnityEngine.UI.Text>(cell, "Value");
+                AddUnitInfoHover(cell, i);
             }
 
-            var skill = DetailImage("SkillSlot", unitInfoRoot, new Vector2(320, 34), new Vector2(0, -95), DetailSprite("SkillRow"));
-            skill.raycastTarget = true;
-            unitSkillMark = Rect("SkillMark", skill.transform, new Vector2(27, 27), new Vector2(-137, 0)).gameObject.AddComponent<UnitPanelIconGraphic>();
-            unitSkillMark.color = new Color(.65f, .45f, 1);
-            unitSkillMark.raycastTarget = false;
-            unitSkillImage = DetailImage("SkillIcon", skill.transform, new Vector2(26, 26), new Vector2(-137, 0), null);
-            unitSkillImage.preserveAspect = true;
-            unitDetailSkill = UnitDetailLabel("SkillName", skill.transform, "", 16, new Vector2(254, 28), new Vector2(18, 0), TextAnchor.MiddleLeft);
-            AddUnitInfoHover(skill.transform, -1);
+            var skill = UiPrefab.Get<RectTransform>(unitInfoRoot, "SkillSlot");
+            unitSkillMark = UiPrefab.Get<UnitPanelIconGraphic>(skill, "SkillMark");
+            unitSkillImage = UiPrefab.Get<UnityEngine.UI.Image>(skill, "SkillIcon");
+            unitDetailSkill = UiPrefab.Get<UnityEngine.UI.Text>(skill, "SkillName");
+            AddUnitInfoHover(skill, -1);
 
-            var footer = DetailImage("Footer", unitInfoRoot, new Vector2(320, 35), new Vector2(0, -133), DetailSprite("Footer"));
-            unitItemIcons = Rect("EquippedItemSlot", footer.transform, new Vector2(75, 32), new Vector2(-114, 0));
-            unitOwnedBall = DetailImage("OwnedBall", footer.transform, new Vector2(24, 24), new Vector2(-44, 0), DetailSprite("OwnedBall"));
-            unitInfoItems = UnitDetailLabel("FooterText", footer.transform, "", 13, new Vector2(230, 30), new Vector2(34, 0), TextAnchor.MiddleLeft);
-
-            unitInfoTooltip = Panel("UnitInfoTooltip", new Vector2(370, 175), new Vector2(-138, 159));
-            unitInfoTooltip.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            unitInfoTooltipText = ItemLabel("Hint", unitInfoTooltip, "", 12, new Vector2(346, 157), Vector2.zero);
-            unitInfoTooltipText.alignment = TextAnchor.MiddleLeft;
-            unitInfoTooltip.gameObject.SetActive(false);
-        }
-
-        private UnityEngine.UI.Image BuildDetailMeter(string caption, float y, Sprite sprite, out UnityEngine.UI.Text value)
-        {
-            UnitDetailLabel(caption + "Label", unitInfoRoot, caption, 13, new Vector2(43, 19), new Vector2(-134, y), TextAnchor.MiddleLeft);
-            value = UnitDetailLabel(caption + "Value", unitInfoRoot, "", 13, new Vector2(95, 19), new Vector2(-66, y));
-            var track = DetailImage(caption + "Track", unitInfoRoot, new Vector2(167, 13), new Vector2(65, y), DetailSprite("MeterTrack"));
-            var fill = DetailImage("Fill", track.transform, new Vector2(159, 8), Vector2.zero, sprite);
-            ConfigureUnitMeter(fill);
-            return fill;
+            unitItemIcons = UiPrefab.Get<RectTransform>(unitInfoRoot, "Footer/EquippedItemSlot");
+            unitOwnedBall = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "Footer/OwnedBall");
+            unitInfoItems = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Footer/FooterText");
+            unitInfoTooltip = UiPrefab.Instantiate("UnitInfoTooltip", canvasRect, itemFont);
+            unitInfoTooltipText = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoTooltip, "Hint");
         }
 
         private static string DetailRole(PokemonDefinition definition, PokemonStats stats)
         {
             switch (definition.RoleId)
             {
+                case "ad-tank": return "공격력 탱커";
+                case "ap-tank": return "주문력 탱커";
+                case "ad-fighter": return "공격력 전사";
+                case "ap-fighter": return "주문력 전사";
+                case "ad-ranged": return "공격력 원거리 딜러";
+                case "ap-ranged": return "주문력 원거리 딜러";
                 case "melee-dps": return "근거리 딜러";
                 case "ranged-dps": return "원거리 딜러";
                 case "tank": return "탱커";
@@ -162,8 +113,14 @@ namespace PokeChess.Client.UI
             unitSkillImage.sprite=unitPanelLibrary?.GetSkillIcon(definition.SkillId)??Resources.Load<Sprite>("SkillIcons/"+definition.SkillId);
             unitSkillImage.enabled=unitSkillImage.sprite!=null;unitSkillMark.gameObject.SetActive(!unitSkillImage.enabled);
             unitRoleLabel.text = DetailRole(definition, stats);
-            unitRoleBadgeIcon.sprite = definition.RoleId == "tank" ? DetailSprite("StatArmor")
-                : DetailSprite(stats.AttackRange > 1 ? "RoleRangedIcon" : "RoleMeleeIcon");
+            string roleIcon = definition.RoleId switch
+            {
+                "tank" or "ad-tank" or "ap-tank" => "StatArmor",
+                "ad-fighter" or "ap-fighter" => "RoleMeleeIcon",
+                "ad-ranged" or "ap-ranged" => "RoleRangedIcon",
+                _ => stats.AttackRange > 1 ? "RoleRangedIcon" : "RoleMeleeIcon"
+            };
+            unitRoleBadgeIcon.sprite = DetailSprite(roleIcon);
             unitOwnedBall.gameObject.SetActive(shopOwned.HasValue);
             unitItemIcons.gameObject.SetActive(!shopOwned.HasValue);
             unitInfoItems.text = shopOwned.HasValue ? $"보유 {shopOwned.Value}마리" :
@@ -202,7 +159,7 @@ namespace PokeChess.Client.UI
             var exit=new EventTrigger.Entry{eventID=EventTriggerType.PointerExit};exit.callback.AddListener(_=>HideUnitInfoHint());trigger.triggers.Add(enter);trigger.triggers.Add(exit);
         }
         private void ShowUnitInfoHint(int index)
-        {hoveredUnitInfo=index;unitInfoTooltip.sizeDelta=new Vector2(370,index<0?175:90);unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,index<0?157:72);unitInfoTooltipText.text=index<0?unitSkillHint:unitStatHints[index];unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();}
+        {hoveredUnitInfo=index;unitInfoTooltip.sizeDelta=new Vector2(370,index<0?220:90);unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,index<0?202:72);unitInfoTooltipText.text=index<0?unitSkillHint:unitStatHints[index];unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();}
         private void HideUnitInfoHint(){hoveredUnitItem=null;hoveredUnitInfo=-2;if(unitInfoTooltip!=null)unitInfoTooltip.gameObject.SetActive(false);}
         private static string NatureGuardianSkillHint(int tier) => tier switch
         {
@@ -214,7 +171,7 @@ namespace PokeChess.Client.UI
 
         private void RenderUnitInfoIcons(PokemonDefinition definition,UnitRank rank,PokemonStats stats,double hp,double maxHP,double energy,double maxEnergy,double shield,string[] items,bool baseStats=false,int natureTier=0,int? shopCost=null,int? shopOwned=null)
         {
-            BuildUnitInfoIcons();bool has=definition!=null;unitInfoRoot.gameObject.SetActive(has);detailLabel.gameObject.SetActive(!has);
+            bool has=definition!=null;unitInfoRoot.gameObject.SetActive(has);detailLabel.gameObject.SetActive(!has);
             if(!has){detailLabel.font=itemFont;detailLabel.text="포켓몬을 선택하세요\n보드 또는 벤치의 포켓몬을\n클릭하면 정보를 볼 수 있습니다.";HideUnitInfoHint();return;}
             unitDetailHeader.text = shopCost.HasValue ? "상점 상품" : "배치 유닛";
             unitInfoTitle.text = natureTier > 0 ? SynergySystem.GuardianForm(natureTier) : KoreanInfo(definition.Id);
@@ -236,7 +193,8 @@ namespace PokeChess.Client.UI
                 unitStatHints[i] = statNames[i] + "\n" + hints[i] + (baseStats ? "\n성급 기준 수치" : "");
             }
             RenderUnitPanelImages(definition, stats, items, shopOwned);
-            unitSkillHint=natureTier>0?NatureGuardianSkillHint(natureTier):ContextSkill(definition,rank,stats);
+            unitSkillHint=natureTier>0?NatureGuardianSkillHint(natureTier):
+                PokeChess.Content.GameContent.FindPokemon(definition.Id)?.Skill?.Description ?? ContextSkill(definition,rank,stats);
             unitSkillHint=unitSkillHint.Replace(Readable(definition.SkillId),KoreanInfo(definition.SkillId));
             unitDetailSkill.text = natureTier > 0 ? unitSkillHint.Split('\n')[0] : KoreanInfo(definition.SkillId);
             foreach(var pair in new[]{("Lowest HP ally","체력이 가장 낮은 아군"),("Enemies r","범위 내 적 · 반경 "),("Allies r","범위 내 아군 · 반경 "),(" + splash r"," · 폭발 반경 "),("True damage","고정 피해"),("AttackSpeed","공격속도"),("Attack","공격력"),("SpellPower","주문력"),("Duration","지속 시간")})unitSkillHint=unitSkillHint.Replace(pair.Item1,pair.Item2);

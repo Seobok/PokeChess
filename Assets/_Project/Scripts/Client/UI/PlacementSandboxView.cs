@@ -96,8 +96,11 @@ namespace PokeChess.Client.UI
                 slots.Add(new Slot{Placement=UnitPlacement.OnBench(i),Rect=rect,Graphic=graphic,Color=Navy});
                 Label("Index",rect,"B"+i,11,new Vector2(70,16),new Vector2(0,-24)).color=new Color(.55f,.65f,.74f);
             }
+            var placementArt = BindPlacementArt();
             foreach(var id in new[]{"A","B","C","D"}) CreateToken(id);
             BuildMinimumUI();
+            foreach (var label in placementArt.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+                if (label.font == null) label.font = itemFont;
             ghost=Rect("DragPreview",canvasRect,new Vector2(66,48),Vector2.zero);
             ghost.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(1,.78f,.36f,.85f);
             var group=ghost.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;group.interactable=false;

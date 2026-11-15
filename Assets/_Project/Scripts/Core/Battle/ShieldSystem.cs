@@ -44,6 +44,8 @@ namespace PokeChess.Core.Battle
         {
             DamageCalculator.Validate(value,true);DamageCalculator.Validate(duration,true);
             if(!battle.Units.Contains(target)||!target.IsAlive||!target.IsOnBoard||duration<=0||string.IsNullOrWhiteSpace(source)||string.IsNullOrWhiteSpace(group))throw new ArgumentException();
+            var caster = battle.Units.FirstOrDefault(unit => unit.UnitInstanceId == source);
+            if (caster != null) value *= 1 + .25f * ItemCombatSystem.Count(caster, "crafted-light-clay");
             long end=checked(battle.CurrentTick+BattleSimulation.ToTicks(duration,battle.TickRate));
             var e=entries.FirstOrDefault(x=>x.Source==source&&x.Target==target.UnitInstanceId&&x.Group==group&&x.End>battle.CurrentTick);
             double total=(double)target.CurrentShield-(e?.Remaining??0)+value;if(total>float.MaxValue)throw new OverflowException();
@@ -79,6 +81,7 @@ namespace PokeChess.Core.Battle
             if(target==null||!battle.Units.Contains(target))throw new ArgumentException();
             if(target.CurrentHP<=0||!target.IsOnBoard)return 0;
             float before=target.CurrentHP;
+            if (source != null) amount *= 1 + .25f * ItemCombatSystem.Count(source, "crafted-big-root");
             double value=amount*target.StatusSystem.HealingMultiplier(target)*(overtime&&battle.IsOvertime?.34:1);
             target.SetVitals((float)Math.Min(target.Stats.MaxHP,before+value),target.CurrentEnergy);return target.CurrentHP-before;
         }

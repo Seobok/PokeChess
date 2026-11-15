@@ -24,6 +24,10 @@ namespace PokeChess.Client.UI
 
         private int displayedRound;
         private MatchPhase displayedPhase;
+        [SerializeField] private bool randomizedPlaytest;
+        private ulong playtestSeed;
+        private LocalSimulationBot playtestBot;
+        private int playtestBotRound;
         private double lastRoundClick=-1;
         public RoundFlowController RoundFlow { get; private set; }
         [SerializeField, Min(.01f)] private float preparationSeconds = 30;
@@ -63,6 +67,8 @@ namespace PokeChess.Client.UI
         private void AttachRoundLoop()
         {
             Simulation?.Cancel();SaveSimulation();Simulation=null;localViewedPlayerId="p1";
+            playtestBot = null;
+            playtestBotRound = 0;
             RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PokeChess.Content.GameContent.CreateSkills(),statusCatalog:PokeChess.Content.GameContent.CreateStatuses());
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
@@ -73,6 +79,15 @@ namespace PokeChess.Client.UI
             lastVisualBattle=null;
             foreach(var shot in combatShots.Values)Destroy(shot.gameObject);combatShots.Clear();
         }
+        private void PreparePlaytestOpponent()
+        {
+            if (playtestBot == null || !RoundLoop.PreparationReady || playtestBotRound == Match.RoundNumber)
+                return;
+
+            playtestBot.Prepare(Match, "p2");
+            playtestBotRound = Match.RoundNumber;
+        }
+
         public void ResetOpponent()
         {
             if(Match.Phase!=MatchPhase.Preparation) { Feedback("Opponent setup is available during preparation only.");return; }
@@ -142,6 +157,7 @@ namespace PokeChess.Client.UI
             else if(Match.Phase==MatchPhase.Finished)Feedback("Match complete. Winner: "+Match.FinalResult.WinnerPlayerId);
             else if (Match.Phase == MatchPhase.Preparation && RoundLoop.PreparationReady)
             {
+                PreparePlaytestOpponent();
                 RecordContextRankUps(RoundLoop.PreparationRankUps);
                 foreach (var merge in RoundLoop.PreparationRankUps)
                     if (Player.Units.Any(u => u.InstanceId == merge.ResultUnitId))

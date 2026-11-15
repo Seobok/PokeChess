@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: chansey
   DisplayName: Chansey
   LocalizedName: "\uB7ED\uD0A4"
-  RoleId: support
+  RoleId: ap-tank
   Cost: 3
   IsBoss: 0
   HasProvisionalStats: 0
@@ -24,14 +24,14 @@ MonoBehaviour:
     Attack: 45
     SpellPower: 100
     AttackSpeed: 0.55
-    Armor: 25
-    MagicResistance: 57
-    AttackRange: 3
+    Armor: 35
+    MagicResistance: 45
+    AttackRange: 1
     MoveSpeed: 2
     MaxEnergy: 125
     StartingEnergy: 45
     AttackHitTime: 0.2
-    AttackDelivery: 1
+    AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3

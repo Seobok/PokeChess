@@ -16,8 +16,7 @@ MonoBehaviour:
   DisplayName: "\uB178\uB798\uD558\uAE30"
   VariantIds: []
   VariantMode: 0
-  Description: "\uC8FC\uBCC0 2\uCE78\uC758 \uC801\uC744 2/2.25/2.5\uCD08\uAC04 \uC218\uBA74
-    \uC0C1\uD0DC\uB85C \uB9CC\uB4E0\uB2E4."
+  Description: "\uc8fc\ubcc0 2\uce78\uc758 \uc801\uc744 2/2.25/2.5\ucd08\uac04 \uc218\uba74 \uc0c1\ud0dc\ub85c \ub9cc\ub4e0\ub2e4.\n[AP \uac1c\ud3b8] \uc2dc\uc804 \uc2dc 4\ucd08\uac04 \uc790\uc2e0\uc5d0\uac8c 95/135/185\uc758 \ubcf4\ud638\ub9c9\uc744 \uc5bb\ub294\ub2e4(\ubcf4\ud638\ub9c9 \u00d7 AP/100). \uc218\uba74 \uc2dc\uac04\uc740 \uace0\uc815."
   Notes: 
   CastTime: 0.4
   PostCastTime: 0.4
@@ -32,6 +31,23 @@ MonoBehaviour:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
   Effects:
+  - Type: 2
+    TargetSelector: 1
+    BaseValue: 95
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    RankValues:
+    - 95
+    - 95
+    - 95
+    HasNumeric: 1
+    Numeric:
+      Chance: 1
+      ShieldDuration: 4
+      HasShieldDuration: 1
   - Type: 4
     TargetSelector: 5
     BaseValue: 0

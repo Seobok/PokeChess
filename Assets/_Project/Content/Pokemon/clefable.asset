@@ -15,31 +15,31 @@ MonoBehaviour:
   Id: clefable
   DisplayName: Clefable
   LocalizedName: "\uD53D\uC2DC"
-  RoleId: melee-dps
+  RoleId: ap-tank
   Cost: 2
   IsBoss: 0
   HasProvisionalStats: 0
   Stats:
-    MaxHP: 830
+    MaxHP: 1100
     Attack: 57
     SpellPower: 100
     AttackSpeed: 0.66
-    Armor: 30
-    MagicResistance: 40
-    AttackRange: 2
+    Armor: 39
+    MagicResistance: 37
+    AttackRange: 1
     MoveSpeed: 2
     MaxEnergy: 85
     StartingEnergy: 20
     AttackHitTime: 0.2
-    AttackDelivery: 1
+    AttackDelivery: 0
     ProjectileSpeed: 8
     CritChance: 0.25
     CritMultiplier: 1.3
     EnergyLockSeconds: 1
   RankHP:
-  - 830
-  - 1411
-  - 2407
+  - 1100
+  - 1870
+  - 3190
   RankAttack:
   - 57
   - 74

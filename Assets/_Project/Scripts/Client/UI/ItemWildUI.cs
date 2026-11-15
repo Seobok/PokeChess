@@ -8,10 +8,12 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
-        private RectTransform itemRewardPanel,itemInventoryPanel,itemDragGhost,itemTooltip;
-        private UnityEngine.UI.Text itemTooltipLabel;
-        private UnityEngine.UI.Text wildPreviewLabel,itemInventoryTitle;
-        private readonly UnityEngine.UI.Button[] itemChoices=new UnityEngine.UI.Button[3];
+        private RectTransform itemInventoryPanel,itemDragGhost,itemTooltip;
+        private RectTransform itemRecipePreview;
+        private UnityEngine.UI.Image itemRecipeIcon;
+        private UnityEngine.UI.Text itemRecipeName, itemRecipeDescription;
+        private UnityEngine.UI.Text itemTooltipLabel, itemDragName;
+        private UnityEngine.UI.Text wildPreviewLabel;
         private readonly UnityEngine.UI.Button[] inventoryChoices=new UnityEngine.UI.Button[ToolsPerPage + 1];
         private string[] visibleInventory=Array.Empty<string>();
 
@@ -25,40 +27,27 @@ namespace PokeChess.Client.UI
         private int CurrentEvolutionPoints=>IsOnlineMatch?onlineService.LocalMatchState?.evolutionPoints??0:Player.EvolutionPoints;
         private long displayedItemRevision;
         private Font itemFont;
-        public bool ItemRewardVisible=>itemRewardPanel!=null&&itemRewardPanel.gameObject.activeSelf;
-        public UnityEngine.UI.Button ItemChoiceButton(int slot)=>itemChoices[slot];
         public UnityEngine.UI.Button InventoryItemButton(int slot)=>inventoryChoices[slot];
         private UnityEngine.UI.Text ItemLabel(string name,Transform parent,string value,int size,Vector2 dimensions,Vector2 position)
         {var label=Label(name,parent,value,size,dimensions,position);label.font=itemFont;return label;}
-        private UnityEngine.UI.Button ItemButton(string name,RectTransform parent,Vector2 size,Vector2 position,Action action)
-        {
-            var rect=Rect(name,parent,size,position);var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.14f,.25f,.34f);
-            var button=rect.gameObject.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;button.onClick.AddListener(()=>action());
-            ItemLabel("Label",rect,name,13,size-new Vector2(12,8),Vector2.zero);return button;
-        }
         private void BuildItemWildUI()
         {
-            itemFont=Font.CreateDynamicFontFromOSFont(new[]{"Malgun Gothic","Arial Unicode MS","Arial"},14);
-            wildPreviewLabel=ItemLabel("WildPreview",canvasRect,"",12,new Vector2(720,22),new Vector2(0,285));
-            itemIcons=Resources.Load<ItemIconLibrary>("ItemIcons");
-            inventoryLabel.rectTransform.sizeDelta=new Vector2(195,20);
-            inventoryLabel.rectTransform.anchoredPosition=new Vector2(-510,-53);
-            BuildInventoryArt();
-            itemDragGhost=Rect("ItemDragPreview",canvasRect,new Vector2(40,40),Vector2.zero);
-            var ghostIcon=itemDragGhost.gameObject.AddComponent<UnityEngine.UI.Image>();ghostIcon.preserveAspect=true;ghostIcon.raycastTarget=false;
-            itemDragGhost.gameObject.SetActive(false);
-            BuildEvolutionDragPreview();
-            itemTooltip=Panel("ItemTooltip",new Vector2(275,80),new Vector2(-260,-45));
-            itemTooltip.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;
-            itemTooltipLabel=ItemLabel("Description",itemTooltip,"",12,new Vector2(255,70),Vector2.zero);
-            itemTooltip.gameObject.SetActive(false);
-            BuildWildRewardUI();
+            itemFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial Unicode MS", "Arial" }, 14);
+            wildPreviewLabel = ItemLabel("WildPreview", canvasRect, "", 12, new Vector2(720, 22), new Vector2(0, 285));
+            itemIcons = Resources.Load<ItemIconLibrary>("ItemIcons");
+
+            BindInventoryArt();
+            itemDragGhost = UiPrefab.Instantiate("ItemDragPreview", canvasRect, itemFont);
+            itemDragName = UiPrefab.Get<UnityEngine.UI.Text>(itemDragGhost, "ItemName");
+            BindEvolutionDragPreview();
+            itemTooltip = UiPrefab.Instantiate("ItemTooltip", canvasRect, itemFont);
+            itemTooltipLabel = UiPrefab.Get<UnityEngine.UI.Text>(itemTooltip, "Description");
+            itemRecipePreview = UiPrefab.Instantiate("ItemRecipePreview", canvasRect, itemFont);
+            itemRecipeIcon = UiPrefab.Get<UnityEngine.UI.Image>(itemRecipePreview, "ResultIcon");
+            itemRecipeName = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "ResultName");
+            itemRecipeDescription = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "Description");
         }
-        private void ChooseItemReward(int slot)
-        {
-            if(IsOnlineMatch){SendOnlineCommand(MatchCommandKind.ChooseItem,c=>{c.slot=slot;c.itemRevision=displayedItemRevision;});return;}
-            Feedback(commands.ChooseItem(slot,displayedItemRevision).Message);Render();
-        }
+
         public bool IsItemDragging=>draggedItem!=null;
         public void ShowItemHint(int slot)
         {
@@ -66,7 +55,9 @@ namespace PokeChess.Client.UI
             if(slot==0){itemTooltipLabel.text="진화 포인트 · "+CurrentEvolutionPoints+" EP\n내 유닛에 드래그 · 필드·대기열의 같은 종류도 진화\n한 단계당 1 EP · 상점의 같은 계열도 즉시 진화";itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();return;}
             int index=InventoryIndex(slot);if(index<0||index>=visibleInventory.Length)return;
             string key=ItemCatalog.DefinitionId(visibleInventory[index]);if(key==null)return;
-            var definition=ItemCatalog.Get(key);itemTooltipLabel.text=definition.Name+"\n"+definition.Description;
+            var definition = ItemCatalog.Get(key);
+            string recipeHint = definition.IsComponent ? "\n같은 포켓몬에 재료를 한 번 더 장착해 조합" : "";
+            itemTooltipLabel.text = definition.Name + "\n" + definition.Description + recipeHint;
             itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();
         }
         public void HideItemHint(){if(itemTooltip!=null)itemTooltip.gameObject.SetActive(false);}
@@ -85,7 +76,10 @@ namespace PokeChess.Client.UI
                 draggedItem=visibleInventory[index];draggedItemRevision=displayedItemRevision;
             }
             HideItemHint();
-            itemDragGhost.GetComponent<UnityEngine.UI.Image>().sprite=draggedItem==EvolutionDragId?inventoryMoonStone:itemIcons?.Get(ItemCatalog.DefinitionId(draggedItem));
+            var ghostIcon = itemDragGhost.GetComponent<UnityEngine.UI.Image>();
+            ghostIcon.sprite = draggedItem == EvolutionDragId ? inventoryMoonStone : itemIcons?.Get(ItemCatalog.DefinitionId(draggedItem));
+            ghostIcon.color = ghostIcon.sprite != null ? Color.white : new Color(.92f, .94f, .98f);
+            itemDragName.text = ghostIcon.sprite == null ? ItemCatalog.DisplayName(draggedItem) : "";
             itemDragGhost.gameObject.SetActive(true);itemDragGhost.SetAsLastSibling();
             if (draggedItem == EvolutionDragId && ItemPhase == MatchPhase.Preparation) BeginEvolutionHighlights();
             DragItem(point);
@@ -125,6 +119,62 @@ namespace PokeChess.Client.UI
             if(IsOnlineMatch)return onlineService.LocalMatchState?.units.FirstOrDefault(u=>u.placement==slot.Placement.Kind&&(u.placement==PlacementKind.Board?u.column==slot.Placement.Position.Value.Column&&u.row==slot.Placement.Position.Value.Row:u.bench==slot.Placement.BenchSlot))?.id;
             return Player.Units.FirstOrDefault(u=>u.Placement.Kind==slot.Placement.Kind&&Nullable.Equals(u.Placement.Position,slot.Placement.Position)&&u.Placement.BenchSlot==slot.Placement.BenchSlot)?.InstanceId;
         }
+        private int HoveredInventorySlot(Vector2 point)
+        {
+            if (!itemInventoryPanel.gameObject.activeInHierarchy) return -1;
+            for (int slot = 0; slot < inventoryChoices.Length; slot++)
+            {
+                if (RectTransformUtility.RectangleContainsScreenPoint(
+                    (RectTransform)inventoryChoices[slot].transform, point, null)) return slot;
+            }
+            return -1;
+        }
+
+        private ItemDefinition PreviewRecipe(int hoveredSlot, string unitId)
+        {
+            if (!ItemCatalog.IsComponent(draggedItem)) return null;
+
+            string other = null;
+            if (hoveredSlot >= 0)
+            {
+                int index = InventoryIndex(hoveredSlot);
+                if (index >= 0 && index < visibleInventory.Length) other = visibleInventory[index];
+            }
+            else if (unitId != null)
+            {
+                var equipped = IsOnlineMatch
+                    ? onlineService.LocalMatchState.units.FirstOrDefault(unit => unit.id == unitId)?.items
+                    : Player.Units.FirstOrDefault(unit => unit.InstanceId == unitId)?.ItemInstanceIds;
+                other = equipped?.FirstOrDefault(ItemCatalog.IsComponent);
+            }
+
+            return other != draggedItem && ItemCatalog.IsComponent(other)
+                ? ItemCatalog.Recipe(ItemCatalog.DefinitionId(draggedItem), ItemCatalog.DefinitionId(other))
+                : null;
+        }
+
+        private void UpdateItemRecipePreview(ItemDefinition result, Vector2 pointer)
+        {
+            itemRecipePreview.gameObject.SetActive(result != null);
+            if (result == null) return;
+
+            itemRecipeName.text = result.Name;
+            itemRecipeDescription.text = result.Description;
+            float descriptionHeight = Mathf.Ceil(itemRecipeDescription.preferredHeight);
+            itemRecipeDescription.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, descriptionHeight);
+            itemRecipePreview.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 70 + descriptionHeight);
+            itemRecipeIcon.sprite = itemIcons?.Get(result.Id);
+            itemRecipeIcon.enabled = itemRecipeIcon.sprite != null;
+            var bounds = canvasRect.rect;
+            var half = itemRecipePreview.rect.size * .5f;
+            var position = pointer + new Vector2(half.x + 30, half.y + 15);
+            if (position.x + half.x > bounds.xMax) position.x = pointer.x - half.x - 30;
+            itemRecipePreview.anchoredPosition = new Vector2(
+                Mathf.Clamp(position.x, bounds.xMin + half.x, bounds.xMax - half.x),
+                Mathf.Clamp(position.y, bounds.yMin + half.y, bounds.yMax - half.y));
+            itemRecipePreview.SetAsLastSibling();
+        }
+
         public void DragItem(Vector2 point)
         {
             if(!IsItemDragging)return;
@@ -135,16 +185,25 @@ namespace PokeChess.Client.UI
                 UpdateEvolutionHover(EvolutionSlotAt(point, destination));
                 return;
             }
+            int hoveredSlot = HoveredInventorySlot(point);
+            string target = hoveredSlot < 0 ? ItemTarget(point) : null;
+            UpdateItemRecipePreview(PreviewRecipe(hoveredSlot, target), local);
             foreach (var slot in slots) slot.Graphic.color = BaseSlotColor(slot);
-            if (destination != null)
-                destination.Graphic.color = ItemTarget(point) != null ? new Color(.08f,.36f,.29f) : new Color(.48f,.12f,.17f);
+            if (destination != null && hoveredSlot < 0)
+                destination.Graphic.color = target != null ? new Color(.08f,.36f,.29f) : new Color(.48f,.12f,.17f);
         }
         public void EndItemDrag(Vector2 point)
         {
             if(!IsItemDragging)return;
             string id = draggedItem;
+            int hoveredSlot = HoveredInventorySlot(point);
+            if (hoveredSlot >= 0 && PreviewRecipe(hoveredSlot, null) != null)
+            {
+                CancelItemDrag();
+                return;
+            }
             string target = null;
-            if (CanDragItems())
+            if (hoveredSlot < 0 && CanDragItems())
                 target = id == EvolutionDragId && ItemPhase == MatchPhase.Preparation
                     ? ItemTarget(EvolutionSlotAt(point, Hit(point))) : ItemTarget(point);
             long revision = draggedItemRevision;
@@ -162,22 +221,20 @@ namespace PokeChess.Client.UI
         private void CancelItemDrag()
         {
             draggedItem=null;if(itemDragGhost!=null)itemDragGhost.gameObject.SetActive(false);
+            if (itemRecipePreview != null) itemRecipePreview.gameObject.SetActive(false);
             ClearEvolutionHighlights();
             if(Match!=null)foreach(var slot in slots)slot.Graphic.color=BaseSlotColor(slot);
         }
         private void RenderItemWildUI()
         {
-            if(itemRewardPanel==null)return;
+            if(itemInventoryPanel==null)return;
             var owner=IsOnlineMatch?onlineService?.LocalMatchState:null;
             var pub=IsOnlineMatch?onlineService?.PublicState:null;
             if(IsOnlineMatch&&(owner==null||pub==null)){
-                RenderWildRewardUI(false, false, null);wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);CancelItemDrag();return;
+                wildPreviewLabel.gameObject.SetActive(false);itemInventoryPanel.gameObject.SetActive(false);CancelItemDrag();return;
             }
             var phase=IsOnlineMatch?pub.phase:Match.Phase;
             bool wild=IsOnlineMatch?pub.wildRound:WildRoundSystem.IsWild(Match);
-            bool alive=IsOnlineMatch?!owner.eliminated&&owner.hp>0:!Player.IsEliminated&&Player.HP>0;
-            bool ready=IsOnlineMatch?OnlineInputReady:Simulation?.Status!=SimulationStatus.Running&&!busy;
-            var candidates=IsOnlineMatch?owner.itemCandidates??Array.Empty<string>():Player.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>();
             displayedItemRevision=IsOnlineMatch?owner.itemRevision:Player.ItemRevision;
             visibleInventory=IsOnlineMatch?owner.inventory??Array.Empty<string>():Player.ItemInventory.ToArray();
             object slotOwner = IsOnlineMatch ? (object)onlineMatchId : Match;
@@ -188,8 +245,6 @@ namespace PokeChess.Client.UI
             }
             int pageCount = Mathf.Max(1, (visibleInventory.Length + ToolsPerPage - 1) / ToolsPerPage);
             inventoryPage = Mathf.Clamp(inventoryPage, 0, pageCount - 1);
-            bool selecting=alive&&candidates.Length==3&&phase==MatchPhase.Preparation;
-            RenderWildRewardUI(selecting, ready, candidates);
             wildPreviewLabel.gameObject.SetActive(wild&&phase==MatchPhase.Preparation);
             hudNotice.gameObject.SetActive(!(wild&&phase==MatchPhase.Preparation));
             wildPreviewLabel.text="야생 라운드 · "+(IsOnlineMatch?pub.wildPreview:WildRoundSystem.Preview(Match.RoundNumber));
@@ -198,11 +253,10 @@ namespace PokeChess.Client.UI
             if(IsItemDragging&&(!CanDragItems()||(draggedItem==EvolutionDragId
                 ? CurrentEvolutionPoints<=0||(IsOnlineMatch?owner.evolutionRevision:Player.EvolutionRevision)!=draggedEvolutionRevision||(IsOnlineMatch?owner.placementRevision:Player.PlacementRevision)!=draggedEvolutionPlacementRevision
                 : displayedItemRevision!=draggedItemRevision||!visibleInventory.Contains(draggedItem))))CancelItemDrag();
-            itemInventoryTitle.text = $"보유 {CurrentEvolutionPoints} EP";
             inventoryPageText.text = $"{inventoryPage + 1} / {pageCount}";
             inventoryPrev.interactable = !IsItemDragging && inventoryPage > 0;
             inventoryNext.interactable = !IsItemDragging && inventoryPage + 1 < pageCount;
-            bool canUseTools = CanDragItems() && !selecting;
+            bool canUseTools = CanDragItems();
             for (int i = 0; i < inventoryChoices.Length; i++)
             {
                 var button = inventoryChoices[i];
@@ -219,6 +273,8 @@ namespace PokeChess.Client.UI
                 string key = index < visibleInventory.Length ? ItemCatalog.DefinitionId(visibleInventory[index]) : null;
                 icon.sprite = key != null ? itemIcons?.Get(key) : null;
                 icon.enabled = icon.sprite != null;
+                button.transform.Find("ItemName").GetComponent<UnityEngine.UI.Text>().text =
+                    key != null && icon.sprite == null ? ItemCatalog.Get(key).Name : "";
                 button.GetComponent<UnityEngine.UI.Image>().sprite = key == null ? inventoryEmptySlot : inventoryToolSlot;
                 button.interactable = canUseTools && key != null;
             }

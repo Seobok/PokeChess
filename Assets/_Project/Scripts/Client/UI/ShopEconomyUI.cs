@@ -42,101 +42,61 @@ namespace PokeChess.Client.UI
 
         private static Sprite ShopSprite(string name) => Resources.Load<Sprite>("ShopEconomy/Shop" + name);
 
-        private UnityEngine.UI.Image ShopImage(string name, Transform parent, Vector2 size, Vector2 position, Sprite sprite)
+        private void BindShopUI()
         {
-            var image = HudImage(name, parent, size, position, Color.white);
-            image.sprite = sprite;
-            return image;
-        }
+            shopFrame = UiPrefab.Instantiate("ShopFrame", canvasRect);
+            shopOpenY = shopFrame.anchoredPosition.y;
+            resources = UiPrefab.Get<UnityEngine.UI.Text>(shopFrame, "Resources");
+            status = UiPrefab.Get<UnityEngine.UI.Text>(shopFrame, "Feedback");
+            evolutionPointsLabel = UiPrefab.Get<UnityEngine.UI.Text>(shopFrame, "EvolutionPoints");
+            shopToggle = UiPrefab.Bind(shopFrame, "Shop", ToggleShop);
+            rerollButton = UiPrefab.Bind(shopFrame, "Reroll", RequestReroll);
+            lockButton = UiPrefab.Bind(shopFrame, "Lock", RequestLock);
+            xpButton = UiPrefab.Bind(shopFrame, "Buy XP", RequestBuyXP);
 
-        private UnityEngine.UI.Text ShopText(string name, Transform parent, int size, Vector2 bounds, Vector2 position, Color color)
-        {
-            var label = Label(name, parent, "", size, bounds, position);
-            label.fontStyle = FontStyle.Bold;
-            label.color = color;
-            label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 8;
-            label.resizeTextMaxSize = size;
-            return label;
-        }
-
-        private void BuildShopEconomyUI()
-        {
-            resources.gameObject.SetActive(false);
             shopPurchaseEffects = Resources.Load<ShopPurchaseEffects>("ShopEconomy/ShopPurchaseEffects");
             for (int i = 0; i < shopCostFrames.Length; i++)
                 shopCostFrames[i] = ShopSprite($"CardCost{i + 1}");
-
-            var toolbar = ShopImage("ShopToolbar", shopFrame, new Vector2(994, 60), new Vector2(0, 136), ShopSprite("EconomyFrame"));
-            toolbar.transform.SetAsFirstSibling();
-            var level = ShopImage("LevelPanel", toolbar.transform, new Vector2(302, 43), new Vector2(-331, 0), ShopSprite("LevelPanel"));
-            economyLevel = ShopText("Level", level.transform, 17, new Vector2(70, 31), new Vector2(-114, 0), Color.white);
-            economyXPText = ShopText("Experience", level.transform, 13, new Vector2(93, 30), new Vector2(101, 0), Color.white);
             shopXpEmpty = ShopSprite("XpSegmentEmpty");
             shopXpFilled = ShopSprite("XpSegmentFilled");
+            shopEmptyFrame = ShopSprite("ActionButton");
+
+            var level = shopFrame.Find("ShopToolbar/LevelPanel");
+            economyLevel = UiPrefab.Get<UnityEngine.UI.Text>(level, "Level");
+            economyXPText = UiPrefab.Get<UnityEngine.UI.Text>(level, "Experience");
             for (int i = 0; i < shopXpSegments.Length; i++)
-                shopXpSegments[i] = ShopImage($"XPSegment_{i}", level.transform, new Vector2(15, 17),
-                    new Vector2(-58 + i * 17, 0), shopXpEmpty);
+                shopXpSegments[i] = UiPrefab.Get<UnityEngine.UI.Image>(level, $"XPSegment_{i}");
 
-            var gold = ShopImage("GoldPanel", toolbar.transform, new Vector2(273, 43), new Vector2(-39, 0), ShopSprite("GoldPanel"));
-            var coin = ShopSprite("Coin");
-            ShopImage("Coin", gold.transform, new Vector2(24, 24), new Vector2(-111, 0), coin);
-            var goldText = new Color32(255, 224, 71, 255);
-            economyGold = ShopText("Gold", gold.transform, 19, new Vector2(66, 28), new Vector2(-67, 0), goldText);
-            economyInterest = ShopText("Interest", gold.transform, 12, new Vector2(65, 22), new Vector2(-1, 0), new Color32(142, 233, 255, 255));
-            economyStreak = ShopText("Streak", gold.transform, 12, new Vector2(61, 22), new Vector2(62, 0), goldText);
-            economyDelta = ShopText("EconomyDelta", gold.transform, 10, new Vector2(57, 19), new Vector2(102, 11), Color.white);
+            var gold = shopFrame.Find("ShopToolbar/GoldPanel");
+            economyGold = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Gold");
+            economyInterest = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Interest");
+            economyStreak = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Streak");
+            economyDelta = UiPrefab.Get<UnityEngine.UI.Text>(gold, "EconomyDelta");
+            shopLockIcon = UiPrefab.Get<UnityEngine.UI.Image>(lockButton.transform, "LockIcon");
+            shopToggleIcon = UiPrefab.Get<UnityEngine.UI.Image>(shopToggle.transform, "CollapseIcon");
 
-            var action = shopEmptyFrame = ShopSprite("ActionButton");
-            StyleShopButton(xpButton, action, new Vector2(114, 42), new Vector2(164, 136));
-            StyleShopButton(rerollButton, action, new Vector2(114, 42), new Vector2(283, 136));
-            StyleShopButton(lockButton, action, new Vector2(67, 42), new Vector2(378, 136));
-            StyleShopButton(shopToggle, action, new Vector2(52, 42), new Vector2(441, 136));
-            ShopImage("RerollIcon", rerollButton.transform, new Vector2(14, 14), new Vector2(-42, 0), ShopSprite("RerollIcon"));
-            shopLockIcon = ShopImage("LockIcon", lockButton.transform, new Vector2(15, 17), new Vector2(-19, 0), ShopSprite("LockIcon"));
-            shopToggleIcon = ShopImage("CollapseIcon", shopToggle.transform, new Vector2(19, 15), Vector2.zero, ShopSprite("CollapseIcon"));
-            shopToggle.GetComponentInChildren<UnityEngine.UI.Text>().enabled = false;
-
-            var price = ShopSprite("PriceBadge");
-            var badge = ShopSprite("SynergyBadge");
             for (int i = 0; i < shopCards.Length; i++)
             {
-                var root = (RectTransform)shopCards[i].transform;
-                Place(root, new Vector2(190, 102), new Vector2((i - (shopCards.Length - 1) * .5f) * 198, 56));
-                var card = new ShopCardView();
-                shopViews[i] = card;
-                card.Frame = shopCards[i].GetComponent<UnityEngine.UI.Image>();
-                card.Frame.pixelsPerUnitMultiplier = 1.4f;
-                card.Portrait = Rect("OfferPortrait", root, new Vector2(67, 60), new Vector2(-53, 8));
-                shopCards[i].transition = UnityEngine.UI.Selectable.Transition.None;
-                card.Name = ShopText("PokemonName", root, 17, new Vector2(104, 24), new Vector2(34, 22), ShopInk);
-                card.PriceBadge = ShopImage("PriceBadge", root, new Vector2(57, 21), new Vector2(50, -5), price);
-                ShopImage("Coin", card.PriceBadge.transform, new Vector2(13, 13), new Vector2(-17, 0), coin);
-                card.Price = ShopText("Price", card.PriceBadge.transform, 13, new Vector2(35, 21), new Vector2(8, 0), ShopInk);
-                card.TraitBadge = ShopImage("SynergyBadge", root, new Vector2(168, 17), new Vector2(0, -32), badge);
-                card.Types = ShopText("Types", card.TraitBadge.transform, 11, new Vector2(161, 16), Vector2.zero, ShopInk);
-                card.PurchaseEffect = ShopImage("PurchaseEffect", root, root.sizeDelta + new Vector2(7, 12), Vector2.zero, null);
-                card.PurchaseEffect.raycastTarget = false;
-                card.PurchaseEffect.enabled = false;
+                int slot = i;
+                var button = shopCards[i] = UiPrefab.Bind(shopFrame, $"ShopCard_{i}", () => BuySlot(slot));
+                var root = button.transform;
+                shopViews[i] = new ShopCardView
+                {
+                    Frame = button.GetComponent<UnityEngine.UI.Image>(),
+                    Portrait = UiPrefab.Get<RectTransform>(root, "OfferPortrait"),
+                    Name = UiPrefab.Get<UnityEngine.UI.Text>(root, "PokemonName"),
+                    PriceBadge = UiPrefab.Get<UnityEngine.UI.Image>(root, "PriceBadge"),
+                    Price = UiPrefab.Get<UnityEngine.UI.Text>(root, "PriceBadge/Price"),
+                    TraitBadge = UiPrefab.Get<UnityEngine.UI.Image>(root, "SynergyBadge"),
+                    Types = UiPrefab.Get<UnityEngine.UI.Text>(root, "SynergyBadge/Types"),
+                    PurchaseEffect = UiPrefab.Get<UnityEngine.UI.Image>(root, "PurchaseEffect")
+                };
+
+                var hover = button.gameObject.AddComponent<UnitHoverTarget>();
+                hover.View = this;
+                hover.ShopSlot = slot;
             }
         }
-
-        private void StyleShopButton(UnityEngine.UI.Button button, Sprite sprite, Vector2 size, Vector2 position)
-        {
-            Place((RectTransform)button.transform, size, position);
-            var image = button.GetComponent<UnityEngine.UI.Image>();
-            image.sprite = sprite;
-            image.type = UnityEngine.UI.Image.Type.Simple;
-            image.color = Color.white;
-            var label = button.GetComponentInChildren<UnityEngine.UI.Text>();
-            label.rectTransform.sizeDelta = size - new Vector2(14, 4);
-            label.fontSize = 12;
-            label.fontStyle = FontStyle.Bold;
-            label.color = ShopInk;
-            if (button == rerollButton || button == lockButton)
-                label.rectTransform.anchoredPosition = new Vector2(8, 0);
-        }
-
         private void RenderShopToolbar(int gold, int level, int xp, int wins, int losses, bool locked, bool freeReroll,
             LevelRules levels, int rerollCost)
         {

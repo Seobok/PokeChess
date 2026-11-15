@@ -36,7 +36,17 @@
       "Armor": 20,
       "MagicResistance": 20,
       "AttackRange": 2,
-      "Role": "제어 서포터"
+      "Role": "제어 서포터",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적을 3초간 속박하고 공격속도를 25/35/45% 감소시킨다.\n[AP 개편] 공격속도 감소량을 AP 100 초과 1당 0.08%p 추가 증가(최대 65%). 속박 3초는 고정.",
+      "V4HP": [
+        700,
+        1190,
+        2030
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 28,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 11,
@@ -79,7 +89,17 @@
       "Armor": 42,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "방어 탱커"
+      "Role": "방어 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "4초간 방어력이 60/80/100% 증가하고 받는 피해가 15/20/25% 감소한다.\n[AP 개편] 방어력 증가량을 AP 100 초과 1당 0.12%p 추가 증가(최대 140%). 받는 피해 감소량은 고정.",
+      "V4HP": [
+        820,
+        1394,
+        2378
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 42,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 12,
@@ -107,7 +127,17 @@
       "Armor": 20,
       "MagicResistance": 35,
       "AttackRange": 4,
-      "Role": "광역 제어"
+      "Role": "광역 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "사거리 내 대상 중심 반경 1칸의 적을 1.5/1.75/2초간 수면 상태로 만든다.\n[AP 개편] 수면을 부여하기 직전 범위 내 적에게 55/80/105의 특수 피해를 준다(피해 × AP/100). 수면 지속시간은 고정.",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 20,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 13,
@@ -143,7 +173,17 @@
       "Armor": 20,
       "MagicResistance": 20,
       "AttackRange": 1,
-      "Role": "독 지속딜러"
+      "Role": "독 지속딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.",
+      "V4HP": [
+        540,
+        918,
+        1566
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 20,
+      "V4MagicResistance": 20
     },
     {
       "Dex": 14,
@@ -186,7 +226,17 @@
       "Armor": 42,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "방어 탱커"
+      "Role": "방어 탱커",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "4초간 방어력이 60/80/100% 증가하고 받는 피해가 15/20/25% 감소한다.\n[AP 개편] 방어력 증가량을 AP 100 초과 1당 0.12%p 추가 증가(최대 140%). 받는 피해 감소량은 고정.",
+      "V4HP": [
+        830,
+        1411,
+        2407
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 42,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 15,
@@ -222,7 +272,17 @@
       "Armor": 22,
       "MagicResistance": 25,
       "AttackRange": 1,
-      "Role": "연속 공격"
+      "Role": "연속 공격",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적을 2회 연속 찔러 타격당 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 2회 공격 각각 동일 혼합계수; 독 고유 도트 피해에는 미적용",
+      "V4HP": [
+        680,
+        1156,
+        1972
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 22,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 16,
@@ -258,7 +318,17 @@
       "Armor": 20,
       "MagicResistance": 20,
       "AttackRange": 3,
-      "Role": "원거리 딜러"
+      "Role": "원거리 딜러",
+      "V4RoleId": "ad-ranged",
+      "V4Effect": "전방 2칸의 적에게 55/80/105의 특수 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 특수 피해 유형은 유지하되 성장 계수는 AD 중심",
+      "V4HP": [
+        560,
+        952,
+        1624
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 20,
+      "V4MagicResistance": 20
     },
     {
       "Dex": 17,
@@ -294,7 +364,17 @@
       "Armor": 22,
       "MagicResistance": 23,
       "AttackRange": 3,
-      "Role": "원거리 딜러"
+      "Role": "원거리 딜러",
+      "V4RoleId": "ad-ranged",
+      "V4Effect": "전방 3칸의 적에게 75/105/140의 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 피해 유형은 물리 유지; 전방 3칸 타격 각각 적용",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 22,
+      "V4MagicResistance": 23
     },
     {
       "Dex": 18,
@@ -330,7 +410,17 @@
       "Armor": 27,
       "MagicResistance": 27,
       "AttackRange": 3,
-      "Role": "공속 강화 딜러"
+      "Role": "공속 강화 딜러",
+      "V4RoleId": "ad-ranged",
+      "V4Effect": "5초간 공격속도가 50/65/80% 증가하고 사거리가 1 증가한다. 이후 뒤로 1칸 이동한다.\n[AP 개편] 공격속도 증가량을 AP 100 초과 1당 0.08%p 추가 증가(최대 105%). 사거리 증가와 후퇴는 고정.",
+      "V4HP": [
+        730,
+        1241,
+        2117
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 27,
+      "V4MagicResistance": 27
     },
     {
       "Dex": 23,
@@ -366,7 +456,17 @@
       "Armor": 25,
       "MagicResistance": 25,
       "AttackRange": 2,
-      "Role": "제어 서포터"
+      "Role": "제어 서포터",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적을 3초간 마비시키고 공격력을 15/20/25% 감소시킨다.\n[AP 개편] 대상 공격력 감소량을 AP 100 초과 1당 0.06%p 추가 증가(최대 45%). 마비 3초는 고정.",
+      "V4HP": [
+        760,
+        1292,
+        2204
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 30,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 24,
@@ -402,7 +502,17 @@
       "Armor": 32,
       "MagicResistance": 27,
       "AttackRange": 2,
-      "Role": "방어 감소 딜러"
+      "Role": "방어 감소 딜러",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "전방 3칸에 80/115/150의 특수 피해를 주고 방어력을 3초간 25% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        900,
+        1530,
+        2610
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 34,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 27,
@@ -430,7 +540,17 @@
       "Armor": 40,
       "MagicResistance": 25,
       "AttackRange": 1,
-      "Role": "근접 방해"
+      "Role": "근접 방해",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "적을 2/3/4초간 실명 상태로 만든다.\n[AP 개편] 시전 시 3초간 자신에게 75/105/140의 보호막을 얻는다(보호막 × AP/100). 실명 시간은 고정.",
+      "V4HP": [
+        790,
+        1343,
+        2291
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 32,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 28,
@@ -466,7 +586,17 @@
       "Armor": 42,
       "MagicResistance": 28,
       "AttackRange": 1,
-      "Role": "근접 지속딜러"
+      "Role": "근접 지속딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 95/135/180의 물리 피해를 주며 4초간 출혈 상태로 만든다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 출혈 고유 피해는 별도 상태이상 규칙",
+      "V4HP": [
+        900,
+        1530,
+        2610
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 42,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 46,
@@ -494,7 +624,17 @@
       "Armor": 28,
       "MagicResistance": 30,
       "AttackRange": 2,
-      "Role": "수면 제어"
+      "Role": "수면 제어",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "적 1명을 2.5/2.75/3초간 수면 상태로 만든다.\n[AP 개편] 시전 시 4초간 자신에게 90/120/155의 보호막을 얻는다(보호막 × AP/100). 수면 시간은 고정.",
+      "V4HP": [
+        760,
+        1292,
+        2204
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 30,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 47,
@@ -530,7 +670,17 @@
       "Armor": 35,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "근접 지속딜러"
+      "Role": "근접 지속딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 95/135/180의 물리 피해를 주며 4초간 출혈 상태로 만든다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 출혈 고유 피해는 별도 상태이상 규칙",
+      "V4HP": [
+        820,
+        1394,
+        2378
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 35,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 50,
@@ -566,7 +716,17 @@
       "Armor": 20,
       "MagicResistance": 20,
       "AttackRange": 1,
-      "Role": "후방 기습"
+      "Role": "후방 기습",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "땅속으로 숨어 대상 지정 불가 상태가 된 후 적 뒤에서 나타나 85/120/160의 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 땅속 대상지정 불가와 적 후방 등장 고정; 등장 피해만 계수",
+      "V4HP": [
+        580,
+        986,
+        1682
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 20,
+      "V4MagicResistance": 20
     },
     {
       "Dex": 51,
@@ -602,7 +762,17 @@
       "Armor": 25,
       "MagicResistance": 23,
       "AttackRange": 1,
-      "Role": "근접 광역 제어"
+      "Role": "근접 광역 제어",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "주변 2칸의 적에게 95/135/180의 물리 피해를 주고 1초간 기절시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 광역 각 대상에 계수 적용; 기절 1초 고정",
+      "V4HP": [
+        720,
+        1224,
+        2088
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 25,
+      "V4MagicResistance": 23
     },
     {
       "Dex": 54,
@@ -638,7 +808,17 @@
       "Armor": 24,
       "MagicResistance": 28,
       "AttackRange": 3,
-      "Role": "혼란 제어"
+      "Role": "혼란 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 75/105/140의 특수 피해를 주고 1/1.5/2초간 혼란시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        610,
+        1037,
+        1769
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 24,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 55,
@@ -674,7 +854,17 @@
       "Armor": 30,
       "MagicResistance": 35,
       "AttackRange": 3,
-      "Role": "직선 광역딜러"
+      "Role": "직선 광역딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "직선 4칸에 120/170/225의 특수 피해를 주고 적을 1칸 밀어낸다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        770,
+        1309,
+        2233
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 30,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 56,
@@ -710,7 +900,17 @@
       "Armor": 24,
       "MagicResistance": 20,
       "AttackRange": 1,
-      "Role": "물리 근접딜러"
+      "Role": "물리 근접딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 80/115/150의 물리 피해를 주며 다음 일반 공격은 반드시 치명타가 발생한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 다음 일반 공격 치명타는 AD·치명타 시스템에서 별도 판정; 스킬 피해만 혼합",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 24,
+      "V4MagicResistance": 20
     },
     {
       "Dex": 57,
@@ -753,7 +953,17 @@
       "Armor": 30,
       "MagicResistance": 25,
       "AttackRange": 1,
-      "Role": "근접 제어 딜러"
+      "Role": "근접 제어 딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적을 붙잡아 던져 100/140/190의 물리 피해를 주고 착지 지점 주변 1칸에 40/55/75의 광역 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 잡아던지기 1차 피해 및 착지 광역 추가 피해에 각각 적용",
+      "V4HP": [
+        800,
+        1360,
+        2320
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 30,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 72,
@@ -789,7 +999,17 @@
       "Armor": 22,
       "MagicResistance": 35,
       "AttackRange": 3,
-      "Role": "원거리 독 딜러"
+      "Role": "원거리 독 딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 50/70/95의 물리 피해를 주고 4초간 독을 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        600,
+        1020,
+        1740
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 22,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 73,
@@ -825,7 +1045,17 @@
       "Armor": 38,
       "MagicResistance": 45,
       "AttackRange": 2,
-      "Role": "전방 제어 탱커"
+      "Role": "전방 제어 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "촉수로 최대 2명의 적에게 60/85/115의 물리 피해를 주고 2초간 속박한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1000,
+        1700,
+        2900
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 35,
+      "V4MagicResistance": 38
     },
     {
       "Dex": 83,
@@ -868,7 +1098,17 @@
       "Armor": 23,
       "MagicResistance": 23,
       "AttackRange": 1,
-      "Role": "공속 연계딜러"
+      "Role": "공속 연계딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "6초간 공격속도 30/45/60% 증가. 기본 공격 3회마다 주변 1칸에 100/140/190% 추가 물리피해. 적 처치 관여 시 지속시간 2초 연장, 최대 2회.\n[AP 개편] 칼춤의 공격속도 증가량에 AP 100 초과 1당 0.07%p를 추가(최대 100%). 매 3번째 기본 공격의 100/140/190% 추가 피해는 AD 기준으로 유지.",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 23,
+      "V4MagicResistance": 23
     },
     {
       "Dex": 95,
@@ -904,7 +1144,17 @@
       "Armor": 55,
       "MagicResistance": 24,
       "AttackRange": 1,
-      "Role": "물리 탱커"
+      "Role": "물리 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적을 휘감아 60/85/115의 물리 피해를 주고 2초간 속박한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 55,
+      "V4MagicResistance": 24
     },
     {
       "Dex": 100,
@@ -940,7 +1190,17 @@
       "Armor": 26,
       "MagicResistance": 26,
       "AttackRange": 2,
-      "Role": "자폭형 광역딜러"
+      "Role": "자폭형 광역딜러",
+      "V4RoleId": "ap-fighter",
+      "V4Effect": "최대 HP 20%를 소모해 주변 1칸에 110/155/210의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        560,
+        952,
+        1624
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 26,
+      "V4MagicResistance": 26
     },
     {
       "Dex": 101,
@@ -976,7 +1236,17 @@
       "Armor": 25,
       "MagicResistance": 30,
       "AttackRange": 2,
-      "Role": "고속 자폭딜러"
+      "Role": "고속 자폭딜러",
+      "V4RoleId": "ap-fighter",
+      "V4Effect": "최대 HP 30%를 소모하고 주변 2칸에 150/210/280의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        680,
+        1156,
+        1972
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 25,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 25,
@@ -1012,7 +1282,17 @@
       "Armor": 22,
       "MagicResistance": 25,
       "AttackRange": 3,
-      "Role": "원거리 제어딜러"
+      "Role": "원거리 제어딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 85/115/155의 특수 피해를 주고 2초간 마비시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 22,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 26,
@@ -1055,7 +1335,17 @@
       "Armor": 25,
       "MagicResistance": 30,
       "AttackRange": 3,
-      "Role": "연쇄 광역딜러"
+      "Role": "연쇄 광역딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상에게 140/190/260의 특수 피해를 주고 주변 적 2명에게 70/100/130의 연쇄 특수 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        760,
+        1292,
+        2204
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 25,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 35,
@@ -1083,7 +1373,17 @@
       "Armor": 27,
       "MagicResistance": 35,
       "AttackRange": 3,
-      "Role": "변칙 지원"
+      "Role": "변칙 지원",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "5코스트를 제외한 전체 유닛의 스킬중 랜덤한 1종의 스킬을 사용한다.\n[AP 개편] 무작위 스킬 발동과 동시에 자신에게 4초간 105/150/200의 보호막을 부여한다(보호막 × AP/100). 복제된 스킬의 AP 규칙은 그대로 적용.",
+      "V4HP": [
+        930,
+        1581,
+        2697
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 34,
+      "V4MagicResistance": 33
     },
     {
       "Dex": 36,
@@ -1119,7 +1419,17 @@
       "Armor": 30,
       "MagicResistance": 40,
       "AttackRange": 2,
-      "Role": "회피형 탱커"
+      "Role": "회피형 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "4초간 회피율이 40/50/60% 증가한다.\n[AP 개편] 회피율과 별개로 4초간 자신에게 95/145/205의 보호막을 부여한다(보호막 × AP/100). 회피율은 고정.",
+      "V4HP": [
+        1100,
+        1870,
+        3190
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 39,
+      "V4MagicResistance": 37
     },
     {
       "Dex": 39,
@@ -1147,7 +1457,17 @@
       "Armor": 29,
       "MagicResistance": 32,
       "AttackRange": 2,
-      "Role": "광역 수면 제어"
+      "Role": "광역 수면 제어",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "주변 2칸의 적을 2/2.25/2.5초간 수면 상태로 만든다.\n[AP 개편] 시전 시 4초간 자신에게 95/135/185의 보호막을 얻는다(보호막 × AP/100). 수면 시간은 고정.",
+      "V4HP": [
+        930,
+        1581,
+        2697
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 33,
+      "V4MagicResistance": 33
     },
     {
       "Dex": 40,
@@ -1183,7 +1503,17 @@
       "Armor": 40,
       "MagicResistance": 40,
       "AttackRange": 1,
-      "Role": "전방 제압"
+      "Role": "전방 제압",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적을 3~5회 공격해 타격당 25/40/55의 물리 피해를 주고 마지막 타격에 1칸 넉백을 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1080,
+        1836,
+        3132
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 38,
+      "V4MagicResistance": 36
     },
     {
       "Dex": 43,
@@ -1219,7 +1549,17 @@
       "Armor": 26,
       "MagicResistance": 35,
       "AttackRange": 3,
-      "Role": "자힐 원거리딜러"
+      "Role": "자힐 원거리딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 70/100/140의 특수 피해를 주고 가한 피해의 60%만큼 HP를 회복한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        750,
+        1275,
+        2175
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 26,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 44,
@@ -1255,7 +1595,17 @@
       "Armor": 35,
       "MagicResistance": 40,
       "AttackRange": 3,
-      "Role": "방어 감소 지원"
+      "Role": "방어 감소 지원",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "전방 3칸에 95/135/180의 특수 피해를 주고 방어력을 3초간 25% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        900,
+        1530,
+        2610
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 35,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 45,
@@ -1291,7 +1641,17 @@
       "Armor": 35,
       "MagicResistance": 45,
       "AttackRange": 3,
-      "Role": "근접 광역마법"
+      "Role": "근접 광역마법",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "3초간 사거리 내 대상 중심 반경 1칸에 꽃잎을 회전시켜 매초 50/65/90의 특수 피해를 준다. 사용 후 1초간 행동 불가.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 35,
+      "V4MagicResistance": 45
     },
     {
       "Dex": 52,
@@ -1327,7 +1687,17 @@
       "Armor": 25,
       "MagicResistance": 25,
       "AttackRange": 1,
-      "Role": "경제형 처치 딜러"
+      "Role": "경제형 처치 딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 80/110/145의 물리 피해를 준다. 이 기술로 적 처치에 5회 관여하면 1골드를 추가 획득한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 처치 관여 5회당 +1골드 보상은 계수 무관",
+      "V4HP": [
+        690,
+        1173,
+        2001
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 25,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 53,
@@ -1363,7 +1733,17 @@
       "Armor": 27,
       "MagicResistance": 28,
       "AttackRange": 1,
-      "Role": "고속 출혈딜러"
+      "Role": "고속 출혈딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 120/170/230의 물리 피해를 주며 4초간 출혈 상태로 만든다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 출혈 고유 피해는 별도 상태이상 규칙",
+      "V4HP": [
+        760,
+        1292,
+        2204
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 27,
+      "V4MagicResistance": 28
     },
     {
       "Dex": 77,
@@ -1399,7 +1779,17 @@
       "Armor": 30,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "돌격 제어"
+      "Role": "돌격 제어",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 90/125/170의 물리 피해를 주고 0.8초간 기절시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 기절 0.8초 고정",
+      "V4HP": [
+        790,
+        1343,
+        2291
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 30,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 78,
@@ -1435,7 +1825,17 @@
       "Armor": 33,
       "MagicResistance": 33,
       "AttackRange": 1,
-      "Role": "근접 광역딜러"
+      "Role": "근접 광역딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적 위치에 3초간 반경 1/1/2칸의 불꽃 소용돌이를 생성해 매초 40/60/80의 특수 피해를 주고 이동속도를 30%감소시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 3초간 초당 타격마다 적용; 화상/이동속도 감소 고정",
+      "V4HP": [
+        940,
+        1598,
+        2726
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 33,
+      "V4MagicResistance": 33
     },
     {
       "Dex": 81,
@@ -1463,7 +1863,17 @@
       "Armor": 35,
       "MagicResistance": 40,
       "AttackRange": 3,
-      "Role": "연쇄 마비 제어"
+      "Role": "연쇄 마비 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상과 인접한 적 1명을 3/3.25/3.5초간 마비 상태로 만든다.\n[AP 개편] 마비를 부여하기 직전 두 대상에게 각각 50/70/95의 특수 피해를 준다(피해 × AP/100). 마비 시간은 고정.",
+      "V4HP": [
+        800,
+        1360,
+        2320
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 35,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 82,
@@ -1499,7 +1909,17 @@
       "Armor": 38,
       "MagicResistance": 45,
       "AttackRange": 3,
-      "Role": "직선 마법딜러"
+      "Role": "직선 마법딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "직선 3칸에 음파를 발사해 90/125/170의 특수 피해를 주며 대상 특수방어력의 30%를 무시한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 38,
+      "V4MagicResistance": 45
     },
     {
       "Dex": 84,
@@ -1535,7 +1955,17 @@
       "Armor": 28,
       "MagicResistance": 22,
       "AttackRange": 1,
-      "Role": "돌진 근접딜러"
+      "Role": "돌진 근접딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 돌진해 120/170/230의 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.",
+      "V4HP": [
+        730,
+        1241,
+        2117
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 28,
+      "V4MagicResistance": 22
     },
     {
       "Dex": 85,
@@ -1571,7 +2001,17 @@
       "Armor": 30,
       "MagicResistance": 25,
       "AttackRange": 1,
-      "Role": "다단히트 디버퍼"
+      "Role": "다단히트 디버퍼",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "3개의 공격을 날려 타격당 45/65/85의 특수 피해를 준다. 30% 확률로 화상·빙결·마비 중 하나를 1/1.5/2초간 부여한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 트라이어택 3회 각각 적용; 30% 확률과 상태이상 지속시간 고정",
+      "V4HP": [
+        850,
+        1445,
+        2465
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 30,
+      "V4MagicResistance": 25
     },
     {
       "Dex": 90,
@@ -1614,7 +2054,17 @@
       "Armor": 45,
       "MagicResistance": 30,
       "AttackRange": 2,
-      "Role": "방어 속박"
+      "Role": "방어 속박",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적을 집어 70/100/140의 물리 피해를 주고 2초간 속박한다. 속박 중 매초 25/35/45의 추가 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        840,
+        1428,
+        2436
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 34,
+      "V4MagicResistance": 37
     },
     {
       "Dex": 91,
@@ -1650,7 +2100,17 @@
       "Armor": 55,
       "MagicResistance": 38,
       "AttackRange": 3,
-      "Role": "물리 탱커형 포격"
+      "Role": "물리 탱커형 포격",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "가시 4발을 연속 발사해 각각 40/55/70의 물리 피해를 준다. 다른 적에게 분산될 수 있다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1140,
+        1938,
+        3306
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 55,
+      "V4MagicResistance": 38
     },
     {
       "Dex": 104,
@@ -1686,7 +2146,17 @@
       "Armor": 35,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "근접 기절"
+      "Role": "근접 기절",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 95/135/180의 물리 피해를 주고 0.8초간 기절시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.",
+      "V4HP": [
+        800,
+        1360,
+        2320
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 35,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 105,
@@ -1722,7 +2192,17 @@
       "Armor": 42,
       "MagicResistance": 35,
       "AttackRange": 2,
-      "Role": "왕복 투사체 딜러"
+      "Role": "왕복 투사체 딜러",
+      "V4RoleId": "ad-ranged",
+      "V4Effect": "뼈다귀를 던져 직선 경로에 80/110/145의 물리 피해를 주고 돌아올 때 다시 같은 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 투사체 왕복의 각 타격에 각각 적용; 동일 대상 중복 피격 규칙 별도 검증",
+      "V4HP": [
+        980,
+        1666,
+        2842
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 35,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 109,
@@ -1758,7 +2238,17 @@
       "Armor": 40,
       "MagicResistance": 35,
       "AttackRange": 2,
-      "Role": "독 광역 탱커"
+      "Role": "독 광역 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "대상 중심 2칸에 연기를 퍼뜨려 55/75/100의 특수 피해를 주고 4초간 독을 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        920,
+        1564,
+        2668
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 40,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 110,
@@ -1794,7 +2284,17 @@
       "Armor": 45,
       "MagicResistance": 40,
       "AttackRange": 2,
-      "Role": "독 광역 탱커"
+      "Role": "독 광역 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적에게 115/160/215의 특수 피해를 주고 주변 1칸의 적들에게도 4초간 독을 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1120,
+        1904,
+        3248
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 45,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 114,
@@ -1830,7 +2330,17 @@
       "Armor": 39,
       "MagicResistance": 37,
       "AttackRange": 2,
-      "Role": "속박형 탱커"
+      "Role": "속박형 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "덩굴로 최대 2명의 적을 2초간 속박하고 매초 35/50/70의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        960,
+        1632,
+        2784
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 39,
+      "V4MagicResistance": 37
     },
     {
       "Dex": 116,
@@ -1858,7 +2368,17 @@
       "Armor": 22,
       "MagicResistance": 30,
       "AttackRange": 3,
-      "Role": "실명 서포터"
+      "Role": "실명 서포터",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상 중심 2칸에 연막을 펼쳐 1.5/2/2.5초간 범위 내의 적을 실명 상태로 만든다.\n[AP 개편] 연막 형성 즉시 범위 내 적에게 45/65/90의 특수 피해를 준다(피해 × AP/100). 실명 시간은 고정.",
+      "V4HP": [
+        650,
+        1105,
+        1885
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 22,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 117,
@@ -1894,7 +2414,17 @@
       "Armor": 26,
       "MagicResistance": 37,
       "AttackRange": 3,
-      "Role": "직선 광역딜러"
+      "Role": "직선 광역딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "직선 4칸에 145/200/270의 특수 피해를 주고 적을 1칸 밀어낸다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        810,
+        1377,
+        2349
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 26,
+      "V4MagicResistance": 37
     },
     {
       "Dex": 1,
@@ -1930,7 +2460,17 @@
       "Armor": 32,
       "MagicResistance": 38,
       "AttackRange": 2,
-      "Role": "근중거리 제어"
+      "Role": "근중거리 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "덩굴로 적 1명에게 90/125/170의 물리 피해를 주고 1초간 속박한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        800,
+        1360,
+        2320
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 32,
+      "V4MagicResistance": 38
     },
     {
       "Dex": 2,
@@ -1966,7 +2506,17 @@
       "Armor": 35,
       "MagicResistance": 42,
       "AttackRange": 2,
-      "Role": "관통 물리딜러"
+      "Role": "관통 물리딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "직선으로 잎을 날려 최대 3명의 적에게 110/155/210의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        930,
+        1581,
+        2697
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 35,
+      "V4MagicResistance": 42
     },
     {
       "Dex": 3,
@@ -2002,7 +2552,17 @@
       "Armor": 42,
       "MagicResistance": 48,
       "AttackRange": 3,
-      "Role": "광역 특수딜러"
+      "Role": "광역 특수딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "1초간 충전한 후 직선 4칸에 210/295/390의 특수 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 42,
+      "V4MagicResistance": 48
     },
     {
       "Dex": 4,
@@ -2038,7 +2598,17 @@
       "Armor": 28,
       "MagicResistance": 27,
       "AttackRange": 3,
-      "Role": "화상 원거리딜러"
+      "Role": "화상 원거리딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 90/125/170의 특수 피해를 주고 3초간 화상을 입힌다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        740,
+        1258,
+        2146
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 28,
+      "V4MagicResistance": 27
     },
     {
       "Dex": 5,
@@ -2074,7 +2644,17 @@
       "Armor": 32,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "출혈 근접딜러"
+      "Role": "출혈 근접딜러",
+      "V4RoleId": "ap-fighter",
+      "V4Effect": "적에게 125/175/240의 물리 피해를 주며 4초간 출혈 상태로 만든다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        870,
+        1479,
+        2523
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 32,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 6,
@@ -2110,7 +2690,17 @@
       "Armor": 34,
       "MagicResistance": 40,
       "AttackRange": 3,
-      "Role": "광역 화상딜러"
+      "Role": "광역 화상딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "전방 부채꼴 범위에 155/215/295의 특수 피해를 주고 3초간 화상을 입힌다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1060,
+        1802,
+        3074
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 34,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 7,
@@ -2146,7 +2736,17 @@
       "Armor": 43,
       "MagicResistance": 38,
       "AttackRange": 2,
-      "Role": "방어 제어"
+      "Role": "방어 제어",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적에게 100/140/190의 특수 피해를 주고 1칸 밀어낸다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 38,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 8,
@@ -2182,7 +2782,17 @@
       "Armor": 46,
       "MagicResistance": 44,
       "AttackRange": 1,
-      "Role": "돌진 탱커"
+      "Role": "돌진 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "1초간 방어력이 40% 증가한 후 돌진해 125/175/240의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1100,
+        1870,
+        3190
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 46,
+      "V4MagicResistance": 44
     },
     {
       "Dex": 9,
@@ -2218,7 +2828,17 @@
       "Armor": 55,
       "MagicResistance": 50,
       "AttackRange": 3,
-      "Role": "전방 광역탱커"
+      "Role": "전방 광역탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "직선 4칸에 180/250/335의 특수 피해를 주고 적을 1칸 밀어낸다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 44,
+      "V4MagicResistance": 43
     },
     {
       "Dex": 60,
@@ -2246,7 +2866,17 @@
       "Armor": 29,
       "MagicResistance": 38,
       "AttackRange": 2,
-      "Role": "수면 제어"
+      "Role": "수면 제어",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적 1명을 2/2.25/2.5초간 수면 상태로 만든다.\n[AP 개편] 시전 시 4초간 자신에게 115/150/200의 보호막을 얻는다(보호막 × AP/100). 수면 시간은 고정.",
+      "V4HP": [
+        960,
+        1632,
+        2784
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 34,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 61,
@@ -2282,7 +2912,17 @@
       "Armor": 37,
       "MagicResistance": 42,
       "AttackRange": 2,
-      "Role": "마법저항 탱커"
+      "Role": "마법저항 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "5초간 특수방어력이 50/65/80% 증가한다.\n[AP 개편] 특수방어력 증가량을 AP 100 초과 1당 0.10%p 추가 증가(최대 115%). 지속시간은 고정.",
+      "V4HP": [
+        1110,
+        1887,
+        3219
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 40,
+      "V4MagicResistance": 39
     },
     {
       "Dex": 62,
@@ -2318,7 +2958,17 @@
       "Armor": 50,
       "MagicResistance": 45,
       "AttackRange": 1,
-      "Role": "근접 기절 탱커"
+      "Role": "근접 기절 탱커",
+      "V4RoleId": "ap-fighter",
+      "V4Effect": "적을 붙잡고 돌진해 170/235/315의 물리 피해를 주고 1초간 기절시킨다. 자신의 최대 HP 8%를 소모한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 50,
+      "V4MagicResistance": 45
     },
     {
       "Dex": 79,
@@ -2354,7 +3004,17 @@
       "Armor": 35,
       "MagicResistance": 55,
       "AttackRange": 2,
-      "Role": "마법저항 탱커"
+      "Role": "마법저항 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "5초간 특수방어력이 50/65/80% 증가한다.\n[AP 개편] 특수방어력 증가량을 AP 100 초과 1당 0.10%p 추가 증가(최대 115%). 지속시간은 고정.",
+      "V4HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 39,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 80,
@@ -2390,7 +3050,17 @@
       "Armor": 53,
       "MagicResistance": 65,
       "AttackRange": 3,
-      "Role": "전방 특수디버퍼"
+      "Role": "전방 특수디버퍼",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적에게 155/215/285의 특수 피해를 주고 3초간 특수방어력을 25% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1350,
+        2295,
+        3915
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 53,
+      "V4MagicResistance": 65
     },
     {
       "Dex": 106,
@@ -2426,7 +3096,17 @@
       "Armor": 33,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "후방 돌진 암살"
+      "Role": "후방 돌진 암살",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "후방의 적에게 뛰어들어 180/250/335의 물리 피해를 준다. 사용 후 최대 HP 8%를 소모한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 최대 HP 8% 소모 고정; 대상 선정 및 착지 피격 판정 확인",
+      "V4HP": [
+        900,
+        1530,
+        2610
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 33,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 113,
@@ -2462,7 +3142,17 @@
       "Armor": 25,
       "MagicResistance": 57,
       "AttackRange": 3,
-      "Role": "극체력 전역 지원"
+      "Role": "극체력 전역 지원",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "모든 아군에게 4초간 특수방어력 35/45/60% 증가 효과를 부여한다.\n[AP 개편] 아군 특수방어력 증가량을 AP 100 초과 1당 0.09%p 추가 증가(최대 95%). 지속시간은 고정.",
+      "V4HP": [
+        1700,
+        2890,
+        4930
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 35,
+      "V4MagicResistance": 45
     },
     {
       "Dex": 115,
@@ -2498,7 +3188,17 @@
       "Armor": 45,
       "MagicResistance": 38,
       "AttackRange": 1,
-      "Role": "근접 혼란 딜러"
+      "Role": "근접 혼란 딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 155/215/285의 물리 피해를 주고 1/1.5/2초간 혼란시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 혼란 지속시간 고정",
+      "V4HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 45,
+      "V4MagicResistance": 38
     },
     {
       "Dex": 122,
@@ -2534,7 +3234,17 @@
       "Armor": 33,
       "MagicResistance": 55,
       "AttackRange": 3,
-      "Role": "보호막 지원"
+      "Role": "보호막 지원",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "가장 가까운 아군 2명에게 각 대상 최대 HP의 20/27/35%에 해당하는 보호막을 4초간 부여한다.\n[AP 개편] 대상 최대 HP 대비 보호막 비율을 AP 100 초과 1당 0.07%p 추가 증가(최대 55%). 지속시간은 고정.\n[전방 보완] 시전 시 자신에게도 4초간 70/95/125 × AP/100의 보호막 부여.",
+      "V4HP": [
+        1200,
+        2040,
+        3480
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 39,
+      "V4MagicResistance": 43
     },
     {
       "Dex": 124,
@@ -2570,7 +3280,17 @@
       "Armor": 23,
       "MagicResistance": 50,
       "AttackRange": 3,
-      "Role": "단일 수면지원"
+      "Role": "단일 수면지원",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적 1명을 2.5/2.75/3초간 수면 상태로 만들고 자신의 최대 HP 10/15/20%를 회복한다.\n[AP 개편] 자신의 최대 HP 회복 비율을 AP/100배로 강화(최대 45%). 수면 시간은 고정.",
+      "V4HP": [
+        820,
+        1394,
+        2378
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 23,
+      "V4MagicResistance": 50
     },
     {
       "Dex": 125,
@@ -2606,7 +3326,17 @@
       "Armor": 35,
       "MagicResistance": 33,
       "AttackRange": 1,
-      "Role": "근접 마비딜러"
+      "Role": "근접 마비딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 140/195/265의 물리 피해를 주고 1/1.5/2초간 마비시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 마비 지속시간 고정",
+      "V4HP": [
+        920,
+        1564,
+        2668
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 35,
+      "V4MagicResistance": 33
     },
     {
       "Dex": 140,
@@ -2642,7 +3372,17 @@
       "Armor": 50,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "근접 흡혈탱커"
+      "Role": "근접 흡혈탱커",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 85/120/160의 특수 피해를 주고 가한 피해의 60%만큼 HP를 회복한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 흡수 회복량은 실제 가한 피해의 60%를 기준으로 산정",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 50,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 141,
@@ -2678,7 +3418,17 @@
       "Armor": 42,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "근접 출혈딜러"
+      "Role": "근접 출혈딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 155/215/285의 물리 피해를 주며 4초간 출혈 상태로 만든다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.",
+      "V4HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 42,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 142,
@@ -2714,7 +3464,17 @@
       "Armor": 37,
       "MagicResistance": 32,
       "AttackRange": 3,
-      "Role": "고속 직선포격"
+      "Role": "고속 직선포격",
+      "V4RoleId": "ad-ranged",
+      "V4Effect": "0.8초간 충전 후 직선 3칸에 210/295/390의 특수 피해를 준다. 사용 후 1초간 공격할 수 없다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 특수 피해 유형 유지; 충전 0.8초·사용 후 공격 불가 1초 고정",
+      "V4HP": [
+        1000,
+        1700,
+        2900
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 37,
+      "V4MagicResistance": 32
     },
     {
       "Dex": 29,
@@ -2750,7 +3510,17 @@
       "Armor": 42,
       "MagicResistance": 39,
       "AttackRange": 2,
-      "Role": "독 제어"
+      "Role": "독 제어",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "80/110/150의 물리 피해를 주고 4초간 독을 부여한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 독 고유 피해는 별도 상태이상 규칙",
+      "V4HP": [
+        1030,
+        1751,
+        2987
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 37,
+      "V4MagicResistance": 34
     },
     {
       "Dex": 30,
@@ -2786,7 +3556,17 @@
       "Armor": 46,
       "MagicResistance": 42,
       "AttackRange": 1,
-      "Role": "근접 연타"
+      "Role": "근접 연타",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "적을 2회 공격하여 타격당 70/100/135의 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 2회 타격에 각각 혼합계수 적용",
+      "V4HP": [
+        1230,
+        2091,
+        3567
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 46,
+      "V4MagicResistance": 42
     },
     {
       "Dex": 31,
@@ -2830,7 +3610,17 @@
       "Armor": 58,
       "MagicResistance": 52,
       "AttackRange": 1,
-      "Role": "광역 기절탱커"
+      "Role": "광역 기절탱커",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "적이 밀집한 지역으로 뛰어들어 주변 1칸에 145/200/270의 물리 피해를 주고 1초간 기절시킨다. 이후 최대 HP의 15/20/25% 보호막을 4초간 얻는다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 직접 피해만 혼합계수; 최대 HP 비례 보호막 15/20/25%는 기존대로 유지",
+      "V4HP": [
+        1550,
+        2635,
+        4495
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 58,
+      "V4MagicResistance": 52
     },
     {
       "Dex": 32,
@@ -2866,7 +3656,17 @@
       "Armor": 36,
       "MagicResistance": 34,
       "AttackRange": 1,
-      "Role": "근접 돌진딜러"
+      "Role": "근접 돌진딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 120/170/225의 물리 피해를 주고 1칸 밀어낸다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 36,
+      "V4MagicResistance": 34
     },
     {
       "Dex": 33,
@@ -2909,7 +3709,17 @@
       "Armor": 40,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "처형 연계딜러"
+      "Role": "처형 연계딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 160/225/305의 물리 피해를 준다. HP가 25% 이하인 적에게는 280/390/530의 물리 피해를 준다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 일반 피해 및 체력 25% 이하 추가 피해 분기 각각 혼합; 발동 조건 고정",
+      "V4HP": [
+        1100,
+        1870,
+        3190
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 40,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 34,
@@ -2945,7 +3755,17 @@
       "Armor": 46,
       "MagicResistance": 40,
       "AttackRange": 1,
-      "Role": "공속 확산딜러"
+      "Role": "공속 확산딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "3초간 공격속도가 60/80/100% 증가하고 기본 공격이 주변 1칸의 적에게도 50% 물리피해를 준다.\n[AP 개편] 난동부리기 공격속도 증가량에 AP 100 초과 1당 0.08%p를 추가(최대 140%). 기본 공격 주변 확산 피해 50%는 AD 기반으로 유지.",
+      "V4HP": [
+        1280,
+        2176,
+        3712
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 46,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 58,
@@ -2981,7 +3801,17 @@
       "Armor": 35,
       "MagicResistance": 38,
       "AttackRange": 2,
-      "Role": "화상 원거리"
+      "Role": "화상 원거리",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 105/145/190의 특수 피해를 주고 3초간 화상을 입힌다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 35,
+      "V4MagicResistance": 38
     },
     {
       "Dex": 59,
@@ -3017,7 +3847,17 @@
       "Armor": 42,
       "MagicResistance": 44,
       "AttackRange": 3,
-      "Role": "십자형 광역딜러"
+      "Role": "십자형 광역딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상 중심 1/1/2칸 십자형 범위에 190/270/360의 특수 피해를 주고 4초간 화상을 입힌다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 42,
+      "V4MagicResistance": 44
     },
     {
       "Dex": 63,
@@ -3053,7 +3893,17 @@
       "Armor": 25,
       "MagicResistance": 55,
       "AttackRange": 3,
-      "Role": "회피 지원"
+      "Role": "회피 지원",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "2초 동안 집중 상태가 된다. 해당 상태에서도 이동/공격은 자유롭게 가능하다. 만약 집중상태일때 피해를 입었다면 가장 멀리 있는 안전한 칸으로 순간이동하고 마나를 30/40/50% 회복한다.\n[AP 개편] 집중 시작 시 2초간 자신에게 80/110/150의 보호막을 부여한다(보호막 × AP/100). 보호막에 적중한 공격도 순간이동 발동용 피격으로 판정.",
+      "V4HP": [
+        800,
+        1360,
+        2320
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 25,
+      "V4MagicResistance": 55
     },
     {
       "Dex": 64,
@@ -3089,7 +3939,17 @@
       "Armor": 25,
       "MagicResistance": 60,
       "AttackRange": 4,
-      "Role": "원거리 혼란딜러"
+      "Role": "원거리 혼란딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 135/190/255의 특수 피해를 주고 1/2/3초간 혼란시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        870,
+        1479,
+        2523
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 25,
+      "V4MagicResistance": 60
     },
     {
       "Dex": 65,
@@ -3125,7 +3985,17 @@
       "Armor": 28,
       "MagicResistance": 65,
       "AttackRange": 4,
-      "Role": "원거리 디버프딜러"
+      "Role": "원거리 디버프딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 200/280/375의 특수 피해를 주고 3초간 특수방어력을 25% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        990,
+        1683,
+        2871
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 28,
+      "V4MagicResistance": 65
     },
     {
       "Dex": 66,
@@ -3161,7 +4031,17 @@
       "Armor": 43,
       "MagicResistance": 30,
       "AttackRange": 1,
-      "Role": "치명타 연계딜러"
+      "Role": "치명타 연계딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 130/180/240의 물리 피해를 주며 다음 일반 공격은 반드시 치명타가 발생한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 다음 일반 공격 확정 치명타는 AD/치명타 시스템 별도 판정",
+      "V4HP": [
+        1050,
+        1785,
+        3045
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 43,
+      "V4MagicResistance": 30
     },
     {
       "Dex": 67,
@@ -3197,7 +4077,17 @@
       "Armor": 50,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "근접 제압"
+      "Role": "근접 제압",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 120/170/225의 물리 피해를 준다. 대상의 최대 HP가 자신보다 높으면 1초간 넘어뜨려 기절시킨다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 최대 HP 조건에 따른 기절 판정 및 1초 지속시간 고정",
+      "V4HP": [
+        1250,
+        2125,
+        3625
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 50,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 68,
@@ -3233,7 +4123,17 @@
       "Armor": 55,
       "MagicResistance": 43,
       "AttackRange": 1,
-      "Role": "근접 기절딜러"
+      "Role": "근접 기절딜러",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 210/290/385의 물리 피해를 주고 1초간 기절시킨다. 자신의 최대 HP 8%를 소모한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 최대 HP 8% 소모·기절 1초 고정",
+      "V4HP": [
+        1500,
+        2550,
+        4350
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 55,
+      "V4MagicResistance": 43
     },
     {
       "Dex": 74,
@@ -3269,7 +4169,17 @@
       "Armor": 57,
       "MagicResistance": 32,
       "AttackRange": 1,
-      "Role": "기절 탱커"
+      "Role": "기절 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "바위를 던져 120/170/225의 물리 피해를 주고 25% 확률로 1초간 기절시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 57,
+      "V4MagicResistance": 32
     },
     {
       "Dex": 75,
@@ -3305,7 +4215,17 @@
       "Armor": 65,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "자폭 탱커"
+      "Role": "자폭 탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "최대 HP 20%를 소모하고 주변 1칸에 175/250/335의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 65,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 76,
@@ -3341,7 +4261,17 @@
       "Armor": 70,
       "MagicResistance": 40,
       "AttackRange": 1,
-      "Role": "자폭 광역탱커"
+      "Role": "자폭 광역탱커",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "최대 HP 30%를 소모하고 주변 2칸에 240/335/450의 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1650,
+        2805,
+        4785
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 70,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 92,
@@ -3377,7 +4307,17 @@
       "Armor": 22,
       "MagicResistance": 55,
       "AttackRange": 3,
-      "Role": "혼란 디버퍼"
+      "Role": "혼란 디버퍼",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상과 주변 1칸 이내의 적 최대 2명, 총 3명에게 기묘한 빛을 발사하여 2/2.5/3초간 혼란 상태로 만든다. 혼란 상태의 적은 받는 스킬 피해가 10/15/20% 증가한다.\n[AP 개편] 혼란 대상의 받는 스킬 피해 증가량을 AP 100 초과 1당 0.05%p 추가 증가(최대 35%). 혼란 시간은 고정.",
+      "V4HP": [
+        880,
+        1496,
+        2552
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 22,
+      "V4MagicResistance": 55
     },
     {
       "Dex": 93,
@@ -3405,7 +4345,17 @@
       "Armor": 25,
       "MagicResistance": 58,
       "AttackRange": 3,
-      "Role": "원거리 수면제어"
+      "Role": "원거리 수면제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적 1명을 2/2.25/2.5초간 수면 상태로 만든다.\n[AP 개편] 수면을 부여하기 직전 대상에게 75/105/140의 특수 피해를 준다(피해 × AP/100). 수면 시간은 고정.",
+      "V4HP": [
+        960,
+        1632,
+        2784
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 25,
+      "V4MagicResistance": 58
     },
     {
       "Dex": 94,
@@ -3448,7 +4398,17 @@
       "Armor": 28,
       "MagicResistance": 60,
       "AttackRange": 3,
-      "Role": "조건부 흡혈딜러"
+      "Role": "조건부 흡혈딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 130/180/240의 특수 피해를 주고 수면 중인 대상에게는 240/335/450의 특수 피해를 준다. 가한 피해의 60%만큼 HP를 회복한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1090,
+        1853,
+        3161
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 28,
+      "V4MagicResistance": 60
     },
     {
       "Dex": 123,
@@ -3491,7 +4451,17 @@
       "Armor": 40,
       "MagicResistance": 35,
       "AttackRange": 1,
-      "Role": "고속 기본 공격 캐리"
+      "Role": "고속 기본 공격 캐리",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "6초간 공격속도 30/45/60% 증가. 기본 공격 3회마다 주변 1칸에 100/140/190% 추가 물리피해. 적 처치 관여시 지속시간 2초 연장, 최대 2회.\n[AP 개편] 칼춤의 공격속도 증가량에 AP 100 초과 1당 0.07%p를 추가(최대 100%). 매 3번째 기본 공격의 100/140/190% 추가 피해는 AD 기준으로 유지.",
+      "V4HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 40,
+      "V4MagicResistance": 35
     },
     {
       "Dex": 127,
@@ -3527,7 +4497,17 @@
       "Armor": 56,
       "MagicResistance": 40,
       "AttackRange": 1,
-      "Role": "근접 처형자"
+      "Role": "근접 처형자",
+      "V4RoleId": "ad-fighter",
+      "V4Effect": "적에게 145/200/270의 물리 피해를 준다. 대상의 HP가 25% 이하라면 즉시 처형한다.\n[AD/AP v4] 모든 고정 직접 피해(주 타격·추가 타격·광역·틱·조건부 피해)에 각각 기본 수치 × [0.70×(현재 AD/동일 성급 기준 AD)+0.30×(현재 AP/100)] 적용. 피해 유형·고유 상태이상 피해·군중제어 지속시간은 유지.\n[예외] 체력 25% 이하 처형은 조건만 고정; 피해 계수로 처형 조건을 변경하지 않음",
+      "V4HP": [
+        1430,
+        2431,
+        4147
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 56,
+      "V4MagicResistance": 40
     },
     {
       "Dex": 147,
@@ -3570,7 +4550,17 @@
       "Armor": 30,
       "MagicResistance": 45,
       "AttackRange": 2,
-      "Role": "기절 근중거리딜러"
+      "Role": "기절 근중거리딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적에게 135/190/255의 물리 피해와 0.8초 기절을 부여한다. 대상 뒤쪽 1칸에 70/95/130의 추가 물리 피해를 준다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        950,
+        1615,
+        2755
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 33,
+      "V4MagicResistance": 32
     },
     {
       "Dex": 148,
@@ -3614,7 +4604,17 @@
       "Armor": 37,
       "MagicResistance": 52,
       "AttackRange": 3,
-      "Role": "광역 넉백 제어"
+      "Role": "광역 넉백 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "전방으로 거대한 파도를 일으켜 가로 3칸, 세로 3칸 범위의 적에게 145/200/270의 특수 피해를 준다. 적을 1칸 밀어내고, 3초간 공격속도를 20/25/30% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1110,
+        1887,
+        3219
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 37,
+      "V4MagicResistance": 52
     },
     {
       "Dex": 149,
@@ -3650,7 +4650,17 @@
       "Armor": 53,
       "MagicResistance": 52,
       "AttackRange": 3,
-      "Role": "후반 직선 폭딜러"
+      "Role": "후반 직선 폭딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "0.8초간 충전 후 직선 4칸에 280/390/530의 특수 피해를 준다. 사용 후 1초간 공격할 수 없다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1480,
+        2516,
+        4292
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 53,
+      "V4MagicResistance": 52
     },
     {
       "Dex": 131,
@@ -3686,7 +4696,17 @@
       "Armor": 60,
       "MagicResistance": 65,
       "AttackRange": 3,
-      "Role": "빙결 탱커형딜러"
+      "Role": "빙결 탱커형딜러",
+      "V4RoleId": "ap-tank",
+      "V4Effect": "적에게 190/265/4000의 특수 피해를 주고 2/4/99초간 빙결시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1700,
+        2890,
+        4930
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 49,
+      "V4MagicResistance": 50
     },
     {
       "Dex": 137,
@@ -3722,7 +4742,17 @@
       "Armor": 35,
       "MagicResistance": 58,
       "AttackRange": 3,
-      "Role": "범용 시너지 서포터"
+      "Role": "범용 시너지 서포터",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상에게 에너지 공격을 3회 발사하여 타격당 70/95/1000의 특수 피해를 준다. 모든 공격이 끝난 후 화상·빙결·마비 중 하나를 2/3/99초간 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1150,
+        1955,
+        3335
+      ],
+      "V4AttackRange": 3,
+      "V4Armor": 35,
+      "V4MagicResistance": 58
     },
     {
       "Dex": 143,
@@ -3765,7 +4795,17 @@
       "Armor": 75,
       "MagicResistance": 65,
       "AttackRange": 1,
-      "Role": "초고체력 탱커"
+      "Role": "초고체력 탱커",
+      "V4RoleId": "ad-tank",
+      "V4Effect": "2초간 수면 상태가 되어 최대 HP의 40/50/400%를 회복한다. 수면 중 받는 피해가 30/30/99% 감소한다.\n[AP 개편] 잠자기 시작 시 2초간 자신에게 180/260/2000의 보호막을 얻는다(보호막 × AP/100). HP 회복률과 피해 감소율은 기존 값 유지.",
+      "V4HP": [
+        2200,
+        3740,
+        6380
+      ],
+      "V4AttackRange": 1,
+      "V4Armor": 75,
+      "V4MagicResistance": 65
     },
     {
       "Dex": 144,
@@ -3809,7 +4849,17 @@
       "Armor": 47,
       "MagicResistance": 70,
       "AttackRange": 4,
-      "Role": "전역 빙결 제어"
+      "Role": "전역 빙결 제어",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "적 전체에게 180/250/3000의 특수 피해를 주고 30/30/100% 확률로 1.5/1.5/99초간 빙결시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1450,
+        2465,
+        4205
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 47,
+      "V4MagicResistance": 70
     },
     {
       "Dex": 145,
@@ -3852,7 +4902,17 @@
       "Armor": 40,
       "MagicResistance": 55,
       "AttackRange": 4,
-      "Role": "연쇄 폭딜러"
+      "Role": "연쇄 폭딜러",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상에게 250/350/5000의 특수 피해를 주고 주변 2/3/1명의 적에게 125/175/2000의 연쇄 특수 피해를 준다. 3/3/99초간 마비시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1300,
+        2210,
+        3770
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 40,
+      "V4MagicResistance": 55
     },
     {
       "Dex": 146,
@@ -3888,7 +4948,17 @@
       "Armor": 52,
       "MagicResistance": 60,
       "AttackRange": 3,
-      "Role": "밀집 광역 암살"
+      "Role": "밀집 광역 암살",
+      "V4RoleId": "ap-fighter",
+      "V4Effect": "1.5초간 하늘로 날아올라 공격 대상에서 제외된 후 적 밀집 지역에 착지해 주변 2/3/9칸의 적에게 270/380/9000의 광역 물리 피해를 준다. 3/3/99초간 화상을 부여한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1650,
+        2805,
+        4785
+      ],
+      "V4AttackRange": 2,
+      "V4Armor": 46,
+      "V4MagicResistance": 42
     },
     {
       "Dex": 150,
@@ -3932,7 +5002,17 @@
       "Armor": 42,
       "MagicResistance": 67,
       "AttackRange": 4,
-      "Role": "광역 마법 캐리"
+      "Role": "광역 마법 캐리",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "대상과 주변 2/3/9칸의 적에게 270/380/5000의 특수 피해를 주고 4/4/99초간 특수방어력을 30/30/99% 감소시킨다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1380,
+        2346,
+        4002
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 42,
+      "V4MagicResistance": 67
     },
     {
       "Dex": 151,
@@ -3976,7 +5056,17 @@
       "Armor": 48,
       "MagicResistance": 65,
       "AttackRange": 4,
-      "Role": "무작위 광역 만능"
+      "Role": "무작위 광역 만능",
+      "V4RoleId": "ap-ranged",
+      "V4Effect": "무작위로 대상 중심 반경 2/2/9칸에 270/380/9000의 광역 특수 피해, 아군 전체 최대 HP 15/20/99% 회복 또는 1.5/1.75/99초 기절 중 하나를 발동한다.\n[AP 개편] 스킬의 고정 피해(물리·특수 및 연속/광역 타격)를 모두 × AP/100으로 계산. 독·화상·출혈 등 상태이상 고유 피해는 별도 규칙 적용.",
+      "V4HP": [
+        1500,
+        2550,
+        4350
+      ],
+      "V4AttackRange": 4,
+      "V4Armor": 48,
+      "V4MagicResistance": 65
     }
   ],
   "Families": [

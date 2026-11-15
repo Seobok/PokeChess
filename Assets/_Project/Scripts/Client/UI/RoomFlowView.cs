@@ -26,62 +26,78 @@ namespace PokeChess.Client.UI
         private GameObject recoveryPanel;
         private UnityEngine.UI.Text recoveryText;
         private UnityEngine.UI.Button recoveryRetry;
+        private GameObject roomsToggle;
         private void Awake()
         {
-            font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            var root=Rect("RoomCanvas",transform,new Vector2(1280,720),Vector2.zero);
-            var canvas=root.gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=30;
-            var scaler=root.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);
-            root.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-            var recovery=Rect("ReconnectPanel",root,new Vector2(610,200),new Vector2(0,50));recoveryPanel=recovery.gameObject;
-            recovery.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
-            recoveryText=Label("ReconnectStatus",recovery,"",new Vector2(560,105),new Vector2(0,28),18);
-            recoveryRetry=Button("Reconnect now",recovery,new Vector2(-120,-62),new Vector2(190,34),async()=>await OnlineConnection.Instance.ReconnectAsync());
-            Button("Leave match",recovery,new Vector2(120,-62),new Vector2(190,34),async()=>await OnlineConnection.Instance.LeaveAsync());recoveryPanel.SetActive(false);
-            Button("Online rooms",root,new Vector2(420,-335),new Vector2(135,30),()=>panel.SetActive(!panel.activeSelf));
-            var body=Rect("RoomPanel",root,new Vector2(960,570),Vector2.zero);panel=body.gameObject;
-            body.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.055f,.09f,.145f,.99f);
-            Label("Title",body,"POKECHESS / ONLINE ROOMS",new Vector2(640,35),new Vector2(-90,245),22);
-            Button("Local play",body,new Vector2(400,245),new Vector2(125,30),()=>{
-                panel.SetActive(false);var view=FindFirstObjectByType<PlacementSandboxView>();if(view==null)view=new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();view.SkillVisuals=SkillVisuals??view.SkillVisuals;view.ShowLocalMatch();
+            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var root = UiPrefab.Instantiate("RoomCanvas", transform);
+            recoveryPanel = root.Find("ReconnectPanel").gameObject;
+            recoveryText = UiPrefab.Get<UnityEngine.UI.Text>(recoveryPanel.transform, "ReconnectStatus");
+            recoveryRetry = UiPrefab.Bind(recoveryPanel.transform, "Reconnect now", async () => await OnlineConnection.Instance.ReconnectAsync());
+            UiPrefab.Bind(recoveryPanel.transform, "Leave match", async () => await OnlineConnection.Instance.LeaveAsync());
+            roomsToggle = UiPrefab.Bind(root, "Online rooms", () => panel.SetActive(!panel.activeSelf)).gameObject;
+
+            var body = root.Find("RoomPanel");
+            panel = body.gameObject;
+            UiPrefab.Bind(body, "Local play", StartLocalMatch);
+            BindBrowser(body.Find("Browse"));
+            var waiting = body.Find("Lobby");
+            lobby = waiting.gameObject;
+            roomTitle = UiPrefab.Get<UnityEngine.UI.Text>(waiting, "RoomTitle");
+            players = UiPrefab.Get<UnityEngine.UI.Text>(waiting, "Players");
+            lobbyStatus = UiPrefab.Get<UnityEngine.UI.Text>(waiting, "LobbyStatus");
+            readyButton = UiPrefab.Bind(waiting, "Ready", async () =>
+            {
+                var service = OnlineConnection.Instance;
+                await service.SetReadyAsync(!service.LocalReady);
             });
-            var browser=Rect("Browse",body,body.sizeDelta,Vector2.zero);browse=browser.gameObject;
-            BuildBrowser(browser);
-            var waiting=Rect("Lobby",body,body.sizeDelta,Vector2.zero);lobby=waiting.gameObject;
-            roomTitle=Label("RoomTitle",waiting,"",new Vector2(820,90),new Vector2(0,135),20);
-            players=Label("Players",waiting,"",new Vector2(820,210),new Vector2(0,-15),18);
-            lobbyStatus=Label("LobbyStatus",waiting,"",new Vector2(840,40),new Vector2(0,-150),14);
-            readyButton=Button("Ready",waiting,new Vector2(-200,-205),new Vector2(150,34),async()=>{var s=OnlineConnection.Instance;await s.SetReadyAsync(!s.LocalReady);});
-            startButton=Button("Start",waiting,new Vector2(-200,-205),new Vector2(150,34),async()=>{await OnlineConnection.Instance.StartMatchAsync();});
-            copy=Button("Copy code",waiting,new Vector2(0,-205),new Vector2(150,34),()=>{GUIUtility.systemCopyBuffer=OnlineConnection.Instance.Code??"";feedback.text="Room code copied.";});
-            leave=Button("Leave room",waiting,new Vector2(200,-205),new Vector2(150,34),Leave);
-            BuildOnlineCommandUI(body);
-            feedback=Label("Feedback",body,"",new Vector2(880,38),new Vector2(0,-248),13);
-            lobby.SetActive(false);panel.SetActive(FindFirstObjectByType<PlacementSandboxView>()==null);
+            startButton = UiPrefab.Bind(waiting, "Start", async () => await OnlineConnection.Instance.StartMatchAsync());
+            copy = UiPrefab.Bind(waiting, "Copy code", () =>
+            {
+                GUIUtility.systemCopyBuffer = OnlineConnection.Instance.Code ?? "";
+                feedback.text = "Room code copied.";
+            });
+            leave = UiPrefab.Bind(waiting, "Leave room", Leave);
+            BindOnlineCommandUI(body.Find("OnlineMatch"));
+            feedback = UiPrefab.Get<UnityEngine.UI.Text>(body, "Feedback");
+            panel.SetActive(FindFirstObjectByType<PlacementSandboxView>() == null);
         }
-        private void OnEnable(){Browser.Changed+=RenderList;}
-        private void OnDisable(){Browser.Changed-=RenderList;}
-        private void BuildBrowser(RectTransform body)
+
+        private void StartLocalMatch()
         {
-            Label("ListTitle",body,"PUBLIC ROOMS",new Vector2(440,30),new Vector2(-225,195),17);
-            refresh=Button("Refresh",body,new Vector2(-300,158),new Vector2(140,30),Refresh);
-            next=Button("Next page",body,new Vector2(-140,158),new Vector2(140,30),Next);
-            var scroll=Rect("RoomList",body,new Vector2(460,305),new Vector2(-225,-17));
-            var scrollRect=scroll.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();scrollRect.horizontal=false;
-            var viewport=Rect("Viewport",scroll,scroll.sizeDelta,Vector2.zero);viewport.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.08f,.14f,.21f);viewport.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic=true;
-            content=Rect("Content",viewport,new Vector2(460,0),Vector2.zero);content.anchorMin=new Vector2(0,1);content.anchorMax=new Vector2(1,1);content.pivot=new Vector2(.5f,1);content.sizeDelta=Vector2.zero;
-            var layout=content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();layout.spacing=6;layout.padding=new RectOffset(8,8,8,8);layout.childControlHeight=true;layout.childControlWidth=true;layout.childForceExpandHeight=false;
-            var fitter=content.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>();fitter.verticalFit=UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
-            scrollRect.viewport=viewport;scrollRect.content=content;
-            listStatus=Label("ListStatus",body,"Waiting for authentication",new Vector2(450,44),new Vector2(-225,-204),13);
-            Label("CreateTitle",body,"CREATE ROOM",new Vector2(370,30),new Vector2(255,195),17);
-            roomName=Input("RoomName",body,"Room name",new Vector2(255,150));roomName.text="PokeChess Room";roomName.characterLimit=32;
-            capacity=Button("Max players: 8",body,new Vector2(255,100),new Vector2(320,32),()=>{maxPlayers=maxPlayers==8?2:maxPlayers+1;capacityLabel.text="Max players: "+maxPlayers;});capacityLabel=capacity.GetComponentInChildren<UnityEngine.UI.Text>();
-            visibility=Button("Visibility: Public",body,new Vector2(255,55),new Vector2(320,32),()=>{isPrivate=!isPrivate;visibilityLabel.text="Visibility: "+(isPrivate?"Private":"Public");});visibilityLabel=visibility.GetComponentInChildren<UnityEngine.UI.Text>();
-            create=Button("Create room",body,new Vector2(255,10),new Vector2(320,34),Create);
-            Label("JoinTitle",body,"JOIN BY CODE",new Vector2(370,30),new Vector2(255,-65),17);
-            joinCode=Input("JoinCode",body,"Enter room code",new Vector2(255,-110));joinCode.characterLimit=32;
-            join=Button("Join room",body,new Vector2(255,-155),new Vector2(320,34),Join);
+            panel.SetActive(false);
+            var view = FindFirstObjectByType<PlacementSandboxView>();
+            if (view == null) view = new GameObject("LocalMatch").AddComponent<PlacementSandboxView>();
+            view.SkillVisuals = SkillVisuals ?? view.SkillVisuals;
+            view.ShowLocalMatch();
+        }
+
+        private void OnEnable() => Browser.Changed += RenderList;
+        private void OnDisable() => Browser.Changed -= RenderList;
+
+        private void BindBrowser(Transform body)
+        {
+            browse = body.gameObject;
+            content = UiPrefab.Get<UnityEngine.UI.ScrollRect>(body, "RoomList").content;
+            listStatus = UiPrefab.Get<UnityEngine.UI.Text>(body, "ListStatus");
+            roomName = UiPrefab.Get<UnityEngine.UI.InputField>(body, "RoomName");
+            joinCode = UiPrefab.Get<UnityEngine.UI.InputField>(body, "JoinCode");
+            refresh = UiPrefab.Bind(body, "Refresh", Refresh);
+            next = UiPrefab.Bind(body, "Next page", Next);
+            capacity = UiPrefab.Bind(body, "Max players: 8", () =>
+            {
+                maxPlayers = maxPlayers == 8 ? 2 : maxPlayers + 1;
+                capacityLabel.text = "Max players: " + maxPlayers;
+            });
+            capacityLabel = capacity.GetComponentInChildren<UnityEngine.UI.Text>();
+            visibility = UiPrefab.Bind(body, "Visibility: Public", () =>
+            {
+                isPrivate = !isPrivate;
+                visibilityLabel.text = "Visibility: " + (isPrivate ? "Private" : "Public");
+            });
+            visibilityLabel = visibility.GetComponentInChildren<UnityEngine.UI.Text>();
+            create = UiPrefab.Bind(body, "Create room", Create);
+            join = UiPrefab.Bind(body, "Join room", Join);
         }
         private void Update()
         {
@@ -89,10 +105,10 @@ namespace PokeChess.Client.UI
             bool inRoom=s.Room!=null;bool idle=ready&&!s.IsBusy&&!inRoom;
             bool inMatch=(inRoom||s.IsRecovering)&&s.StartInfo!=null;onlineMatchPanel.SetActive(false);
             recoveryPanel.SetActive(s.IsRecovering);if(s.IsRecovering){recoveryPanel.transform.SetAsLastSibling();recoveryText.text=s.RecoveryFeedback+"\n"+Math.Ceiling(s.ReconnectRemainingSeconds)+"s remaining\nThe match continues. Input resumes after state recovery.";recoveryRetry.interactable=!s.IsBusy&&s.State==ConnectionState.DisconnectedGrace;}
-            transform.Find("RoomCanvas/Online rooms").gameObject.SetActive(!inMatch);
+            roomsToggle.SetActive(!inMatch);
             if(inMatch){if(matchClient==null)matchClient=FindFirstObjectByType<PlacementSandboxView>();if(matchClient==null)matchClient=new GameObject("MatchClient").AddComponent<PlacementSandboxView>();matchClient.SkillVisuals=SkillVisuals??matchClient.SkillVisuals;matchClient.EnterOnlineMatch(s);panel.SetActive(false);}
             else if(matchClient!=null&&matchClient.IsOnlineMatch){matchClient.ExitOnlineMatch();panel.SetActive(true);}
-            var connectionTest=FindFirstObjectByType<OnlineConnectionView>();if(connectionTest!=null)connectionTest.transform.Find("OnlineCanvas").gameObject.SetActive(!inMatch);
+            var connectionTest=FindFirstObjectByType<OnlineConnectionView>();if(connectionTest!=null)connectionTest.SetVisible(!inMatch);
             feedback.gameObject.SetActive(!inMatch);
             browse.SetActive(!inRoom);lobby.SetActive(inRoom&&!inMatch);UpdateOnlineCommandUI(s);
             create.interactable=join.interactable=capacity.interactable=visibility.interactable=roomName.interactable=joinCode.interactable=idle;
@@ -142,7 +158,6 @@ namespace PokeChess.Client.UI
         private static RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 position){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.sizeDelta=size;r.anchoredPosition=position;return r;}
         private UnityEngine.UI.Text Label(string name,Transform parent,string text,Vector2 size,Vector2 position,int fontSize){var t=Rect(name,parent,size,position).gameObject.AddComponent<UnityEngine.UI.Text>();t.font=font;t.fontSize=fontSize;t.supportRichText=false;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.text=text;t.raycastTarget=false;return t;}
         private UnityEngine.UI.Button Button(string name,Transform parent,Vector2 position,Vector2 size,UnityEngine.Events.UnityAction action){var r=Rect(name,parent,size,position);var image=r.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=new Color(.2f,.34f,.48f);var b=r.gameObject.AddComponent<UnityEngine.UI.Button>();b.targetGraphic=image;b.onClick.AddListener(action);Label("Label",r,name,size,Vector2.zero,14);return b;}
-        private UnityEngine.UI.InputField Input(string name,Transform parent,string hint,Vector2 position){var r=Rect(name,parent,new Vector2(320,32),position);r.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(.14f,.22f,.3f);var f=r.gameObject.AddComponent<UnityEngine.UI.InputField>();f.textComponent=Label("Text",r,"",new Vector2(300,30),Vector2.zero,15);var p=Label("Placeholder",r,hint,new Vector2(300,30),Vector2.zero,14);p.color=new Color(.65f,.7f,.75f);f.placeholder=p;return f;}
         private async void Refresh(){await Browser.RefreshAsync();}
         private async void Next(){await Browser.RefreshAsync(true);}
         private async void Create(){await OnlineConnection.Instance.CreateRoomAsync(roomName.text,maxPlayers,isPrivate);}

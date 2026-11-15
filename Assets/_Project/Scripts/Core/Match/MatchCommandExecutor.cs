@@ -76,10 +76,6 @@ namespace PokeChess.Core.Match
         public MatchCommandResult Evolve(string id,long evolutionRevision,long placementRevision)
             => Run(()=> { var unit=evolutions.Evolve(match,playerId,id,evolutionRevision,placementRevision);
                 return new MatchCommandResult(unit.DefinitionId+" 진화 완료. 다음 상점 갱신부터 진화체가 등장합니다."); });
-        public MatchCommandResult ChooseItem(int slot,long revision)=>Run(()=>{
-            var id=new ItemSystem().Choose(match,playerId,slot,revision);
-            return new MatchCommandResult(ItemCatalog.DisplayName(id)+" 획득");
-        });
         public MatchCommandResult EquipItem(string unitId,string itemId,long revision)=>Run(()=>{
             new ItemSystem().Equip(match,playerId,unitId,itemId,revision);
             return new MatchCommandResult(ItemCatalog.DisplayName(itemId)+" 장착");

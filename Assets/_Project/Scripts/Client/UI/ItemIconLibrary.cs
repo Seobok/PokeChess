@@ -3,7 +3,7 @@ using PokeChess.Core.Match;
 
 namespace PokeChess.Client.UI
 {
-    // References the original Sprites/Items assets; Resources includes them in Players.
+    // Icon slots follow ItemCatalog.All. The Resources asset includes their sprites in player builds.
     public sealed class ItemIconLibrary : ScriptableObject
     {
         public Sprite[] icons;

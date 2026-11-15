@@ -234,6 +234,13 @@ namespace PokeChess.Core.Battle
                 unit.CurrentTargetId=forced!=null ? forced.UnitInstanceId : policy.SelectTarget(battle,unit);
                 target=Target(unit);
             }
+            if (target != null && HexCoordinates.IsInRange(unit.Position, target.Position, unit.StatusSystem.AttackRange(unit)) &&
+                CanAttack(unit) && battle.Items.TrySpendQuickClaw(unit))
+            {
+                Begin(unit, runtime, CombatActionState.Attacking, policy.GetAttackTiming(battle, unit));
+                Advance(unit, runtime);
+                return;
+            }
             if(TryStartDataSkill(unit,runtime))return;
             if(target==null){unit.CurrentTargetId=null;return;}
             if(battle.Energy.IsSkillReady(unit)&&CanUseSkill(unit)&&policy.TryGetSkillTiming(battle,unit,target,out var timing))
@@ -312,6 +319,7 @@ namespace PokeChess.Core.Battle
             if(!battle.Energy.IsSkillReady(unit)||!CanUseSkill(unit)||
                 !TrySkillDefinition(unit,out var skill))return false;
             if(FocusRecast(unit,skill))return false;
+            var originalSkill = skill;
             for(int depth=0;skill.VariantIds.Count>0;depth++) {
                 if(depth>=8)return false;
                 var ids=skill.VariantMode==SkillVariantMode.Rank?new[]{skill.VariantIds[(int)unit.Rank-1]}:skill.VariantIds.ToArray();
@@ -330,9 +338,14 @@ namespace PokeChess.Core.Battle
             var cast=new SkillCastRuntime(skill,target.UnitInstanceId,battle.CurrentTick,hit,duration,lockTicks)
                 {CastId=checked(++nextCastId),Iterations=new int[skill.Steps.Count]};
             if(!battle.Energy.TryConsumeSkill(unit))return false;
+            battle.Items.OnCastStarted(unit, cast.CastId);
             unit.ActiveSynergyCastId=cast.CastId;runtime.SkillCast=cast;runtime.IsSkillActive=true;runtime.IsAttackTargetLocked=false;
             Begin(unit,runtime,CombatActionState.Casting,new CombatActionTiming(duration,hit));
             battle.RecordSkill(new SkillEvent(unit.UnitInstanceId,cast,battle.CurrentTick,SkillEventKind.CastStarted,SkillCancelReason.None));
+            if (originalSkill != skill)
+                foreach (var effect in originalSkill.Effects.Where(e => e.Type == SkillEffectType.Shield && e.TargetSelector == EffectTargetSelector.Self))
+                    battle.Shields.Add(unit, unit.UnitInstanceId, originalSkill.Id,
+                        SkillNumericMath.SourceValue(unit,effect) * (1 + battle.Items.FirstCastBonus(unit, cast.CastId)) * (battle.IsOvertime ? .34f : 1), effect.Numeric?.ShieldDuration ?? 4);
             policy.OnSkillStarted(battle,unit,target);
             if(unit.IsAlive&&unit.IsOnBoard)Advance(unit,runtime);
             return true;
@@ -398,7 +411,11 @@ namespace PokeChess.Core.Battle
         {
             if(timing.DurationTicks<1)throw new InvalidOperationException("Invalid action timing.");
             unit.ActionState=state;
-            if(state==CombatActionState.Attacking)runtime.IsAttackTargetLocked=true;
+            if (state == CombatActionState.Attacking)
+            {
+                runtime.IsAttackTargetLocked = true;
+                battle.Items.OnBasicAttack(unit);
+            }
             runtime.StartTick=battle.CurrentTick;
             runtime.EndTick=checked(battle.CurrentTick+timing.DurationTicks);
             if(state==CombatActionState.Attacking)runtime.NextAttackTick=runtime.EndTick;
@@ -450,7 +467,11 @@ namespace PokeChess.Core.Battle
             Emit(unit,cancelled?CombatActionSignalKind.Cancelled:CombatActionSignalKind.Completed);
             if(!battle.Movement.IsTravelling(unit))Reservations.Release(unit.UnitInstanceId);
             if(runtime.IsSkillActive) {
-                if(!cancelled)battle.Synergies.OnSkillCompleted(unit);
+                if (!cancelled)
+                {
+                    battle.Synergies.OnSkillCompleted(unit);
+                    battle.Items.OnSkillCompleted(unit);
+                }
                 var cast=runtime.SkillCast;
                 if(cast!=null&&!cast.Finished) {
                     cast.Finished=true;

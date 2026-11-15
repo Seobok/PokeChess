@@ -7,7 +7,7 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
-        private const int ToolsPerPage = 5;
+        private const int ToolsPerPage = 7;
         private int inventoryPage;
         private UnityEngine.UI.Button inventoryPrev, inventoryNext;
         private UnityEngine.UI.Text inventoryPageText;
@@ -35,60 +35,29 @@ namespace PokeChess.Client.UI
             return image;
         }
 
-        private UnityEngine.UI.Text InventoryText(string name, Transform parent, string text, int size, Vector2 bounds,
-            Vector2 position, bool light = false)
-        {
-            var label = ItemLabel(name, parent, text, size, bounds, position);
-            label.color = light ? Color.white : new Color32(19, 23, 55, 255);
-            label.fontStyle = FontStyle.Bold;
-            label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 8;
-            label.resizeTextMaxSize = size;
-            return label;
-        }
-
-        private void BuildInventoryArt()
+        private void BindInventoryArt()
         {
             inventoryToolSlot = InventorySprite("InventoryToolSlot");
             inventoryEmptySlot = InventorySprite("InventoryEmptySlot");
             inventoryMoonStoneSlot = InventorySprite("InventoryMoonStoneSlot");
             inventoryMoonStone = InventorySprite("InventoryMoonStone");
-            itemInventoryPanel = InventoryImage("ItemIcons", canvasRect, new Vector2(134, 302),
-                new Vector2(-389, 114), InventorySprite("InventoryFrame")).rectTransform;
-            var header = InventoryImage("Header", itemInventoryPanel, new Vector2(120, 34), new Vector2(0, 127), InventorySprite("InventoryHeader"));
-            InventoryText("Title", header.transform, "도구 보관함", 15, new Vector2(111, 30), Vector2.zero, true);
-            var ep = InventoryImage("EPBadge", itemInventoryPanel, new Vector2(116, 24), new Vector2(0, 95), InventorySprite("InventoryEpBadge"));
-            itemInventoryTitle = InventoryText("EP", ep.transform, "", 13, new Vector2(109, 21), Vector2.zero);
 
+            itemInventoryPanel = UiPrefab.Instantiate("ItemIcons", canvasRect, itemFont);
+            inventoryPageText = UiPrefab.Get<UnityEngine.UI.Text>(itemInventoryPanel, "PageBadge/Page");
             for (int i = 0; i < inventoryChoices.Length; i++)
             {
-                var size = new Vector2(51, 45);
-                var position = new Vector2(i % 2 == 0 ? -28 : 28, 58 - (i / 2) * 50);
-                var button = ItemButton("InventoryItem_" + i, itemInventoryPanel, size, position, () => {});
-                inventoryChoices[i] = button;
-                button.GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
-                var background = button.GetComponent<UnityEngine.UI.Image>();
-                background.sprite = i == 0 ? inventoryMoonStoneSlot : inventoryToolSlot;
-                background.color = Color.white;
-                InventoryImage("Icon", button.transform, new Vector2(31, 31), new Vector2(0, i == 0 ? 4 : 0), null).preserveAspect = true;
-                if (i == 0) InventoryText("Count", button.transform, "", 9, new Vector2(44, 14), new Vector2(0, -15));
-                var drag = button.gameObject.AddComponent<ItemDragToken>();
+                var button = inventoryChoices[i] = UiPrefab.Get<UnityEngine.UI.Button>(itemInventoryPanel, $"InventoryItem_{i}");
+                var drag = button.GetComponent<ItemDragToken>();
                 drag.View = this;
                 drag.Slot = i;
             }
-
-            var page = InventoryImage("PageBadge", itemInventoryPanel, new Vector2(59, 20), new Vector2(0, -101), InventorySprite("InventoryPageBadge"));
-            inventoryPageText = InventoryText("Page", page.transform, "", 12, new Vector2(56, 19), Vector2.zero);
-            inventoryPrev = BuildInventoryPageButton("PreviousPage", -44, -1, InventorySprite("InventoryPagePrev"));
-            inventoryNext = BuildInventoryPageButton("NextPage", 44, 1, InventorySprite("InventoryPageNext"));
+            inventoryPrev = BindInventoryPageButton("PreviousPage", -1);
+            inventoryNext = BindInventoryPageButton("NextPage", 1);
         }
 
-        private UnityEngine.UI.Button BuildInventoryPageButton(string name, float x, int direction, Sprite sprite)
+        private UnityEngine.UI.Button BindInventoryPageButton(string name, int direction)
         {
-            var image = InventoryImage(name, itemInventoryPanel, new Vector2(20, 23), new Vector2(x, -101), sprite);
-            image.raycastTarget = true;
-            var button = image.gameObject.AddComponent<UnityEngine.UI.Button>();
-            button.targetGraphic = image;
+            var button = UiPrefab.Get<UnityEngine.UI.Button>(itemInventoryPanel, name);
             button.onClick.AddListener(() =>
             {
                 if (IsItemDragging || !button.interactable) return;
@@ -99,46 +68,31 @@ namespace PokeChess.Client.UI
             return button;
         }
 
-        private void BuildEvolutionDragPreview()
+        private void BindEvolutionDragPreview()
         {
             evolutionBoardTarget = InventorySprite("EvolutionBoardTarget");
             evolutionBoardHovered = InventorySprite("EvolutionBoardHovered");
             evolutionBenchTarget = InventorySprite("EvolutionBenchTarget");
             evolutionBenchHovered = InventorySprite("EvolutionBenchHovered");
-            evolutionDragPreview = Rect("MoonStonePreview", canvasRect, Vector2.zero, Vector2.zero);
-            var arrow = InventorySprite("EvolutionArrow");
-            primaryEvolutionCard = BuildEvolutionCard("CurrentEvolution", true, arrow);
-            nextEvolutionCard = BuildEvolutionCard("NextEvolution", false, arrow);
-            evolutionDragPreview.gameObject.SetActive(false);
+            evolutionDragPreview = UiPrefab.Instantiate("MoonStonePreview", canvasRect, itemFont);
+            primaryEvolutionCard = BindEvolutionCard("CurrentEvolution", true);
+            nextEvolutionCard = BindEvolutionCard("NextEvolution", false);
         }
 
-        private EvolutionCard BuildEvolutionCard(string name, bool primary, Sprite arrow)
+        private EvolutionCard BindEvolutionCard(string name, bool primary)
         {
-            var card = new EvolutionCard();
-            string asset = primary ? "EvolutionPreviewFrame" : "EvolutionNextFrame";
-            Vector2 size = primary ? new Vector2(251, 139) : new Vector2(207, 104);
-            card.Root = InventoryImage(name, evolutionDragPreview, size,
-                primary ? new Vector2(0, 0) : new Vector2(0, -126), InventorySprite(asset)).rectTransform;
-            card.Header = InventoryText("Title", card.Root, primary ? "" : "다음 진화", primary ? 14 : 10,
-                primary ? new Vector2(228, 24) : new Vector2(78, 17), new Vector2(0, primary ? 49 : 39), true);
-            float formX = primary ? 58 : 44;
-            float imageY = primary ? 2 : 5;
-            Vector2 portraitSize = primary ? new Vector2(52, 48) : new Vector2(39, 36);
-            card.From = InventoryImage("From", card.Root, portraitSize, new Vector2(-formX, imageY), null);
-            card.To = InventoryImage("To", card.Root, portraitSize, new Vector2(formX, imageY), null);
-            card.From.preserveAspect = card.To.preserveAspect = true;
-            InventoryImage("Arrow", card.Root, new Vector2(20, 15), new Vector2(0, imageY), arrow);
-            if (!primary)
-                card.Forms = InventoryText("Forms", card.Root, "", 11, new Vector2(187, 17), new Vector2(0, -21));
-            float skillY = primary ? -45 : -38;
-            card.SkillIcon = InventoryImage("SkillIcon", card.Root, new Vector2(17, 17),
-                new Vector2(primary ? -99 : -80, skillY), null);
-            card.SkillIcon.preserveAspect = true;
-            card.Skill = InventoryText("Skill", card.Root, "", primary ? 12 : 10,
-                new Vector2(primary ? 158 : 144, 23), new Vector2(primary ? -16 : 4, skillY));
-            if (primary)
-                card.Cost = InventoryText("Cost", card.Root, "", 12, new Vector2(45, 23), new Vector2(93, skillY));
-            return card;
+            var root = UiPrefab.Get<RectTransform>(evolutionDragPreview, name);
+            return new EvolutionCard
+            {
+                Root = root,
+                Header = UiPrefab.Get<UnityEngine.UI.Text>(root, "Title"),
+                From = UiPrefab.Get<UnityEngine.UI.Image>(root, "From"),
+                To = UiPrefab.Get<UnityEngine.UI.Image>(root, "To"),
+                SkillIcon = UiPrefab.Get<UnityEngine.UI.Image>(root, "SkillIcon"),
+                Skill = UiPrefab.Get<UnityEngine.UI.Text>(root, "Skill"),
+                Cost = primary ? UiPrefab.Get<UnityEngine.UI.Text>(root, "Cost") : null,
+                Forms = primary ? null : UiPrefab.Get<UnityEngine.UI.Text>(root, "Forms")
+            };
         }
 
         private void SetEvolutionCard(EvolutionCard card, PokemonDefinition from, PokemonDefinition to, int cost)

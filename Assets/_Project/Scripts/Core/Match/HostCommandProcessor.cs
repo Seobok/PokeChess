@@ -87,7 +87,7 @@ namespace PokeChess.Core.Match
                 }).ToArray(),
                 units=p.Units.Select(u=>new OwnerUnit{id=u.InstanceId,definitionId=u.DefinitionId,synergyTargetId=u.SynergyTargetId,rank=(int)u.Rank,bountyStacks=u.BountyStacks,evolutionStage=u.EvolutionStage,placement=u.Placement.Kind,column=u.Placement.Position?.Column??-1,row=u.Placement.Position?.Row??-1,bench=u.Placement.BenchSlot??-1,items=u.ItemInstanceIds.ToArray(),saleGold=new ShopTransactionSystem(catalog).SalePrice(u)}).ToArray(),
                 inventory=p.ItemInventory.ToArray(),reward=MatchStateProjection.Reward(rounds,playerId),itemRevision=p.ItemRevision,
-                itemRewardRound=p.PendingItemReward?.Round??0,itemCandidates=p.PendingItemReward?.Candidates.ToArray()??Array.Empty<string>(),
+                itemRewardRound=p.LastItemRewardRound,itemCandidates=Array.Empty<string>(),
                 equipmentFragments=p.Synergy.EquipmentFragments,emblemFragments=p.Synergy.EmblemFragments,venomSamples=p.Synergy.VenomSamples,venomMinimumRewardRound=p.Synergy.VenomMinimumRewardRound,resolve=p.Synergy.Resolve,freeRerollRound=p.Synergy.FreeRerollRound,freeRerollConsumedRound=p.Synergy.FreeRerollConsumedRound,mysticBattles=p.Synergy.MysticBattles,mysticTier=p.Synergy.MysticTier,synergyRewardChoices=p.Synergy.RewardChoices,prophecyOrigin=p.Synergy.ProphecyOrigin,rockTiles=SynergyPreparation.PreparationRocks(p,catalog).Select(tile=>new CombatCellView{column=tile.Column,row=tile.Row}).ToArray(),
                 adversitySettlement=p.Synergy.LastAdversitySettlement,adversityChoice=p.Synergy.LastAdversityChoice,
                 evolutionPoints=p.EvolutionPoints,lastEvolutionPointRound=p.LastEvolutionPointRound,nextEvolutionPointRound=EvolutionPointRules.NextGrantRound(match.RoundNumber),evolutionRevision=p.EvolutionRevision,
@@ -125,7 +125,6 @@ namespace PokeChess.Core.Match
                             case MatchCommandKind.Reroll:result=executor.Reroll(c.shopRevision);break;
                             case MatchCommandKind.Lock:changed=p.Shop.IsLocked!=c.locked;result=executor.Lock(c.locked,c.shopRevision);break;
                             case MatchCommandKind.BuyXP:result=executor.BuyXP();break;
-                            case MatchCommandKind.ChooseItem:result=executor.ChooseItem(c.slot,c.itemRevision);break;
                             case MatchCommandKind.EquipItem:result=executor.EquipItem(c.unitId,c.itemId,c.itemRevision);break;
                             case MatchCommandKind.Evolve:result=executor.Evolve(c.unitId,c.evolutionRevision,c.placementRevision);break;
                             case MatchCommandKind.Move:

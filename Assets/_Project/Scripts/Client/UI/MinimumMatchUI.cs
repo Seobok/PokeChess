@@ -15,11 +15,12 @@ namespace PokeChess.Client.UI
         private UnityEngine.UI.Button rerollButton,lockButton,xpButton,sellButton,shopToggle;
         private UnityEngine.UI.Text resources,inventoryLabel,detailLabel,debugLabel;
         private RectTransform shopFrame;
-        private const float ShopHeight=160, ShopHandleHeight=44;
+        private const float ShopHandleHeight = 44;
+        private float shopOpenY;
         public RectTransform ShopRect => shopFrame;
         private void AnimateShop()
         {
-            float target=ShopExpanded ? 10 : ShopHandleHeight-ShopHeight;
+            float target = ShopExpanded ? shopOpenY : ShopHandleHeight - shopFrame.rect.height;
             float now = Time.unscaledTime;
             foreach (var card in shopViews)
                 if (card != null && card.PurchaseEffect.enabled) AnimateShopPurchaseEffect(card, now);
@@ -52,48 +53,32 @@ namespace PokeChess.Client.UI
         private static void ButtonText(UnityEngine.UI.Button button,string text) => button.GetComponentInChildren<UnityEngine.UI.Text>(true).text=text;
         private void BuildMinimumUI()
         {
-            Panel("Inventory",new Vector2(205,90),new Vector2(-510,-88));
             inventoryLabel=Label("InventoryText",canvasRect,"",12,new Vector2(190,80),new Vector2(-510,-88));
-            Panel("UnitDetail",new Vector2(225,215),new Vector2(490,160));
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",12,new Vector2(210,175),new Vector2(490,173));
-            sellButton=ActionButton("Sell",new Vector2(200,32),new Vector2(490,72),SellSelected);
-            Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
-            ActionButton("P01-P04 demo",new Vector2(85,25),new Vector2(397,42),()=>ResetRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
-            ActionButton("P05-P08 demo",new Vector2(85,25),new Vector2(490,42),()=>ResetAdvancedRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
-            ActionButton("P09-P12 demo",new Vector2(85,25),new Vector2(583,42),()=>ResetHighCostRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
-            ActionButton("Reset match",new Vector2(110,25),new Vector2(432,-18),ResetMatchUI);
-            ActionButton("Rank demo",new Vector2(110,25),new Vector2(548,-18),ResetRankDemo);
-            ActionButton("Full bench",new Vector2(110,25),new Vector2(432,-50),ResetFullBenchDemo);
-            ActionButton("Fixed foe",new Vector2(110,25),new Vector2(548,-50),ResetOpponent);
-            ActionButton("4 players",new Vector2(72,25),new Vector2(414,-82),()=>ResetPairingDemo(4));
-            ActionButton("6 players",new Vector2(72,25),new Vector2(490,-82),()=>ResetPairingDemo(6));
-            ActionButton("8 players",new Vector2(72,25),new Vector2(566,-82),()=>ResetPairingDemo(8));
-            ActionButton("3 players",new Vector2(72,25),new Vector2(414,-112),()=>ResetPairingDemo(3));
-            ActionButton("5 players",new Vector2(72,25),new Vector2(490,-112),()=>ResetPairingDemo(5));
-            ActionButton("7 players",new Vector2(72,25),new Vector2(566,-112),()=>ResetPairingDemo(7));
-            debugLabel=Label("DebugState",canvasRect,"",8,new Vector2(225,12),new Vector2(490,-132));
-            shopFrame=Panel("ShopFrame",new Vector2(1220,200),new Vector2(0,-240));
-            status=Label("Feedback",canvasRect,"",14,new Vector2(1180,24),new Vector2(0,-152));
-            resources=Label("Resources",canvasRect,"",15,new Vector2(955,30),new Vector2(-125,-183));
-            shopToggle=ActionButton("Shop",new Vector2(170,27),new Vector2(490,-182),ToggleShop);
-            for(int i=0;i<ShopRules.SlotCount;i++)
+            if (randomizedPlaytest)
+                ActionButton("New match",new Vector2(225,25),new Vector2(490,-18),ResetMatchUI);
+            else
             {
-                int slot=i;shopCards[i]=ActionButton("ShopCard_"+i,new Vector2(170,100),new Vector2(-500+i*190,-260),()=>BuySlot(slot));
-                shopCards[i].GetComponentInChildren<UnityEngine.UI.Text>().gameObject.SetActive(false);
+                Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
+                ActionButton("P01-P04 demo",new Vector2(85,25),new Vector2(397,42),()=>ResetRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
+                ActionButton("P05-P08 demo",new Vector2(85,25),new Vector2(490,42),()=>ResetAdvancedRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
+                ActionButton("P09-P12 demo",new Vector2(85,25),new Vector2(583,42),()=>ResetHighCostRosterDemo()).GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;
+                ActionButton("Reset match",new Vector2(110,25),new Vector2(432,-18),ResetMatchUI);
+                ActionButton("Rank demo",new Vector2(110,25),new Vector2(548,-18),ResetRankDemo);
+                ActionButton("Full bench",new Vector2(110,25),new Vector2(432,-50),ResetFullBenchDemo);
+                ActionButton("Fixed foe",new Vector2(110,25),new Vector2(548,-50),ResetOpponent);
+                ActionButton("4 players",new Vector2(72,25),new Vector2(414,-82),()=>ResetPairingDemo(4));
+                ActionButton("6 players",new Vector2(72,25),new Vector2(490,-82),()=>ResetPairingDemo(6));
+                ActionButton("8 players",new Vector2(72,25),new Vector2(566,-82),()=>ResetPairingDemo(8));
+                ActionButton("3 players",new Vector2(72,25),new Vector2(414,-112),()=>ResetPairingDemo(3));
+                ActionButton("5 players",new Vector2(72,25),new Vector2(490,-112),()=>ResetPairingDemo(5));
+                ActionButton("7 players",new Vector2(72,25),new Vector2(566,-112),()=>ResetPairingDemo(7));
             }
-            rerollButton=ActionButton("Reroll",new Vector2(170,32),new Vector2(490,-224),RequestReroll);
-            lockButton=ActionButton("Lock",new Vector2(170,32),new Vector2(490,-263),RequestLock);
-            xpButton=ActionButton("Buy XP",new Vector2(170,32),new Vector2(490,-302),RequestBuyXP);
-            ConfigureShopPanel();BuildShopEconomyUI();BuildRoundUI();
+            debugLabel=Label("DebugState",canvasRect,"",8,new Vector2(225,12),new Vector2(490,-132));
+            BindShopUI();
+            BuildRoundUI();
             BuildItemWildUI();BuildSynergyUI();BuildAdversityUI();
             BuildEvolutionUI();
-        }
-        private void ConfigureShopPanel()
-        {
-            foreach(var rect in new[]{status.rectTransform,resources.rectTransform,(RectTransform)shopToggle.transform,(RectTransform)rerollButton.transform,(RectTransform)lockButton.transform,(RectTransform)xpButton.transform}.Concat(shopCards.Select(b=>(RectTransform)b.transform)))
-                rect.SetParent(shopFrame,true);
-            shopFrame.anchorMin=shopFrame.anchorMax=new Vector2(.5f,0);
-            shopFrame.pivot=new Vector2(.5f,0);shopFrame.sizeDelta=new Vector2(1220,ShopHeight);shopFrame.anchoredPosition=new Vector2(0,20);
         }
         private static PokemonDefinition[] CreateSandboxDefinitions()
         {
@@ -109,9 +94,16 @@ namespace PokeChess.Client.UI
         public void ResetMatchUI()
         {
             CancelDrag("Reset.");catalog=PokeChess.Content.GameContent.CreateCatalog();
-            Match=MatchStateFactory.CreateWithPool("minimum-ui",new[]{"p1","p2"},catalog,PokeChess.Content.GameContent.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:123);
+            playtestSeed = randomizedPlaytest ? BitConverter.ToUInt64(Guid.NewGuid().ToByteArray(), 0) : 123UL;
+            Match=MatchStateFactory.CreateWithPool(randomizedPlaytest ? "playtest-"+playtestSeed : "minimum-ui",new[]{"p1","p2"},catalog,PokeChess.Content.GameContent.CreateDefinitions().Select(d=>d.Id),rules:new MatchRules(enableWildRounds:true),matchSeed:playtestSeed);
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();LastResult=null;
-            ResetOpponent();Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
+            if (randomizedPlaytest)
+            {
+                playtestBot = new LocalSimulationBot(catalog, playtestSeed);
+                PreparePlaytestOpponent();
+            }
+            else ResetOpponent();
+            Feedback("Buy and arrange units within 30 seconds. Empty board slots fill from the bench before battle.");Render();
         }
         public void ResetRosterDemo(UnitRank rank=UnitRank.One)
             => ResetRosterGroup(rank,0);
@@ -245,6 +237,7 @@ namespace PokeChess.Client.UI
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
             bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
             header.text=(localViewedPlayerId=="p1"?"BOARD ":"WATCHING "+localViewedPlayerId+" · BOARD ")+ViewedPlayer.DeployedUnitCount+" / "+ViewedPlayer.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
+            if (playtestBot != null) header.text += "    |    SEED " + playtestSeed;
 
             inventoryLabel.text="ITEMS ("+Player.ItemInventory.Count+")\n"+(Player.ItemInventory.Count==0 ? "No items" : string.Join("\n",Player.ItemInventory.Take(4)))+(Player.ItemInventory.Count>4 ? "\n+"+(Player.ItemInventory.Count-4)+" more" : "");
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);

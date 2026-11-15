@@ -106,14 +106,14 @@ namespace PokeChess.Core.Tests
             }
             return f;
         }
-        [Test] public void EmptyWildBoardsLoseHPAndReceiveNoOffer()
+        [Test] public void EmptyWildBoardsLoseHPAndReceiveNoReward()
         {
             var f=Match();Assert.That(f.rounds.StartCombat(1),Is.True);Assert.That(f.rounds.IsSettled,Is.True);
             Assert.That(f.rounds.LastResult.PlayerResults.Count,Is.EqualTo(2));Assert.That(f.rounds.Battles.All(b=>b.IsWild&&!b.IsShadow),Is.True);
-            foreach(var p in f.match.Players){Assert.That(p.HP,Is.EqualTo(56));Assert.That(p.WinStreak+p.LoseStreak,Is.Zero);Assert.That(p.PendingItemReward,Is.Null);}
+            foreach(var p in f.match.Players){Assert.That(p.HP,Is.EqualTo(56));Assert.That(p.WinStreak+p.LoseStreak,Is.Zero);Assert.That(p.ItemInventory,Is.Empty);}
             f.rounds.SettleResult();Assert.That(f.match.GetPlayer("p1").ItemInventory,Is.Empty);
         }
-        [Test] public void ImmediateWildTransitionPreservesRewardChoiceForPreparation()
+        [Test] public void ImmediateWildTransitionPreservesGrantedComponents()
         {
             var f=RewardMatch();var flow=new RoundFlowController(f.rounds);flow.AdvanceTime(1000);
             Assert.That(flow.Fault,Is.Null);
@@ -121,38 +121,139 @@ namespace PokeChess.Core.Tests
             Assert.That(f.match.RoundNumber,Is.EqualTo(4));
             Assert.That(flow.RemainingSeconds,Is.EqualTo(30));
             Assert.That(flow.ResultElapsedSeconds,Is.Zero);
-            var p=f.match.GetPlayer("p1");string expected=p.PendingItemReward.Candidates[2];
-            string chosen=new ItemSystem().Choose(f.match,"p1",2,p.ItemRevision);
-            Assert.That(ItemCatalog.DefinitionId(chosen),Is.EqualTo(expected));
-            Assert.That(p.PendingItemReward,Is.Null);
-            Assert.That(p.LastItemRewardRound,Is.EqualTo(3));
+            var player = f.match.GetPlayer("p1");
+            Assert.That(player.ItemInventory.Count, Is.EqualTo(4));
+            Assert.That(player.ItemInventory.All(ItemCatalog.IsComponent), Is.True);
+            Assert.That(player.LastItemRewardRound, Is.EqualTo(3));
         }
-        [Test] public void RewardChoiceIsOnceOnlyAndTimeoutSelectsFirst()
+        [Test] public void ClearingOneWildEncounterGrantsLootBeforeOtherBattlesFinish()
         {
-            var f=RewardMatch();var p=f.match.GetPlayer("p1");var items=new ItemSystem();
-            string expected=f.match.GetPlayer("p2").PendingItemReward.Candidates[0];
-            items.Choose(f.match,"p1",2,p.ItemRevision);Assert.Throws<InvalidOperationException>(()=>items.Choose(f.match,"p1",0,p.ItemRevision));
-            Assert.That(f.rounds.NextRound(3),Is.True);Assert.That(p.ItemInventory.Count,Is.EqualTo(1));
-            Assert.That(f.match.GetPlayer("p2").PendingItemReward,Is.Not.Null); f.rounds.StartCombat(4);
-            Assert.That(ItemCatalog.DefinitionId(f.match.GetPlayer("p2").ItemInventory.Single()),Is.EqualTo(expected));Assert.That(p.PendingItemReward,Is.Null);
-        }
-        [Test] public void EquipSwapAndForeignOwnershipAreValidated()
-        {
-            var f=Match(units:true);var p=f.match.GetPlayer("p1");var unit=p.Units.Single();var items=new ItemSystem();
-            string helmet=Id(ItemCatalog.ChoiceScarf),berry=Id(ItemCatalog.SitrusBerry);p.AddInventoryItem(helmet);p.AddInventoryItem(berry);
-            items.Equip(f.match,"p1",unit.InstanceId,helmet,p.ItemRevision);long stale=p.ItemRevision;
-            items.Equip(f.match,"p1",unit.InstanceId,berry,p.ItemRevision);Assert.That(unit.ItemInstanceIds,Is.EqualTo(new[]{berry}));Assert.That(p.ItemInventory,Is.EqualTo(new[]{helmet}));
-            Assert.Throws<InvalidOperationException>(()=>items.Equip(f.match,"p1",unit.InstanceId,helmet,stale));
-            Assert.Throws<System.Collections.Generic.KeyNotFoundException>(()=>items.Equip(f.match,"p2",unit.InstanceId,helmet,0));
+            var f = Match(units: true);
             Assert.That(f.rounds.StartCombat(1), Is.True);
-            var fighter = f.rounds.GetBattleFor("p1").Battle.Units.Single(u => u.UnitInstanceId == unit.InstanceId);
-            float attackSpeed = fighter.Stats.AttackSpeed;
-            items.Equip(f.match,"p1",unit.InstanceId,helmet,p.ItemRevision);
-            Assert.That(unit.ItemInstanceIds, Is.EqualTo(new[]{helmet}));
-            Assert.That(p.ItemInventory, Does.Not.Contain(helmet));
-            Assert.That(fighter.ItemInstanceIds, Is.EqualTo(new[]{helmet}));
-            Assert.That(fighter.Stats.AttackSpeed, Is.EqualTo(attackSpeed * 1.25f));
+            var first = f.rounds.GetBattleFor("p1").Battle;
+            foreach (var enemy in first.Units.Where(unit => unit.TeamId == 2))
+                enemy.SetVitals(0, 0);
+            f.rounds.Step();
+            Assert.That(f.match.Phase, Is.EqualTo(MatchPhase.Combat));
+            Assert.That(f.match.GetPlayer("p1").ItemInventory.Count, Is.EqualTo(1));
+            Assert.That(f.match.GetPlayer("p2").ItemInventory, Is.Empty);
+            f.rounds.Step();
+            Assert.That(f.match.GetPlayer("p1").ItemInventory.Count, Is.EqualTo(1));
         }
+
+        [Test] public void RepeatedSettlementDoesNotGrantMoreComponents()
+        {
+            var f = RewardMatch();
+            var player = f.match.GetPlayer("p1");
+            var items = player.ItemInventory.ToArray();
+            long revision = player.ItemRevision;
+            f.rounds.SettleResult();
+            Assert.That(player.ItemInventory, Is.EqualTo(items));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision));
+            Assert.That(f.rounds.NextRound(3), Is.True);
+            Assert.That(f.rounds.StartCombat(4), Is.True);
+            Assert.That(player.ItemInventory, Is.EqualTo(items));
+        }
+        [Test] public void EquipCombinesComponentsAndKeepsExistingCompletedItems()
+        {
+            var fixture = Match(units: true);
+            var player = fixture.match.GetPlayer("p1");
+            var unit = player.Units.Single();
+            var items = new ItemSystem();
+            var crafted = new System.Collections.Generic.List<string>();
+            for (int copy = 0; copy < 3; copy++)
+            {
+                string first = $"item:x-attack:first-{copy}:p1";
+                string second = $"item:x-attack:second-{copy}:p1";
+                player.AddInventoryItem(first);
+                player.AddInventoryItem(second);
+                long stale = player.ItemRevision;
+                items.Equip(fixture.match, "p1", unit.InstanceId, first, stale);
+                Assert.Throws<InvalidOperationException>(() => items.Equip(fixture.match, "p1", unit.InstanceId, second, stale));
+                items.Equip(fixture.match, "p1", unit.InstanceId, second, player.ItemRevision);
+                var completed = unit.ItemInstanceIds[copy];
+                Assert.That(ItemCatalog.DefinitionId(completed), Is.EqualTo("crafted-kings-rock"));
+                crafted.Add(completed);
+                Assert.That(unit.ItemInstanceIds, Is.EqualTo(crafted));
+                Assert.That(player.ItemInventory, Is.Empty);
+            }
+            Assert.That(crafted.Distinct().Count(), Is.EqualTo(3));
+
+            string extra = Id(ItemCatalog.SitrusBerry);
+            player.AddInventoryItem(extra);
+            long revision = player.ItemRevision;
+            Assert.Throws<InvalidOperationException>(() => items.Equip(fixture.match, "p1", unit.InstanceId, extra, revision));
+            Assert.Throws<System.Collections.Generic.KeyNotFoundException>(() => items.Equip(fixture.match, "p2", unit.InstanceId, extra, 0));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision));
+            Assert.That(player.ItemInventory, Is.EqualTo(new[]{extra}));
+            Assert.That(unit.ItemInstanceIds, Is.EqualTo(crafted));
+        }
+
+        [Test] public void RecipesCoverAllUnorderedPairsAndCompletedStatsStack()
+        {
+            Assert.That(ItemCatalog.Components.Count, Is.EqualTo(8));
+            var results = ItemCatalog.Components.SelectMany(first => ItemCatalog.Components.Select(second =>
+            {
+                var recipe = ItemCatalog.Recipe(first.Id, second.Id);
+                Assert.That(recipe, Is.Not.Null);
+                Assert.That(recipe, Is.SameAs(ItemCatalog.Recipe(second.Id, first.Id)));
+                return recipe.Id;
+            }));
+            Assert.That(results.Distinct().Count(), Is.EqualTo(36));
+
+            var catalog = Catalog();
+            var baseStats = catalog.Get("bulbasaur").BaseStats;
+            var equipment = Enumerable.Range(1, 3).Select(i => $"item:crafted-kings-rock:{i}:p1");
+            var setup = new[]{
+                new BattleUnitSetup(catalog.CreateUnit("a","bulbasaur","p1",UnitRank.One,0,UnitPlacement.Unplaced,equipment.ToArray()),1,new BoardPosition(0,0)),
+                new BattleUnitSetup(catalog.CreateUnit("z","bulbasaur","p2",UnitRank.One,0,UnitPlacement.Unplaced),2,new BoardPosition(1,0))
+            };
+            var battle = BattleStateFactory.Create("stacked-items", 1, 123, 30, catalog, setup);
+            Assert.That(U(battle, "a").Stats.Attack, Is.EqualTo(baseStats.Attack * 2.5f));
+        }
+
+        [Test] public void ThirdSlotComponentCanCompleteWithoutReplacingOtherEquipment()
+        {
+            var fixture = Match(units: true);
+            var player = fixture.match.GetPlayer("p1");
+            var unit = player.Units.Single();
+            var items = new ItemSystem();
+            string[] inventory = { Id(ItemCatalog.RockyHelmet), Id(ItemCatalog.SitrusBerry), Id("x-defense"), Id("x-attack") };
+            foreach (string id in inventory)
+            {
+                player.AddInventoryItem(id);
+                items.Equip(fixture.match, "p1", unit.InstanceId, id, player.ItemRevision);
+            }
+            Assert.That(unit.ItemInstanceIds.Take(2), Is.EqualTo(inventory.Take(2)));
+            Assert.That(ItemCatalog.DefinitionId(unit.ItemInstanceIds[2]), Is.EqualTo("crafted-punching-glove"));
+            Assert.That(player.ItemInventory, Is.Empty);
+        }
+
+        [Test] public void CraftedSashSpendsOneChargePerLethalHitAndHealsAfterRecovery()
+        {
+            var catalog = Catalog();
+            var equipment = Enumerable.Range(1, 3).Select(i => $"item:crafted-focus-sash:{i}:p2").ToArray();
+            var setup = new[]{
+                new BattleUnitSetup(catalog.CreateUnit("a","bulbasaur","p1",UnitRank.One,0,UnitPlacement.Unplaced),1,new BoardPosition(0,0)),
+                new BattleUnitSetup(catalog.CreateUnit("z","bulbasaur","p2",UnitRank.One,0,UnitPlacement.Unplaced,equipment),2,new BoardPosition(1,0))
+            };
+            var battle = BattleStateFactory.Create("sash-charges", 1, 123, 30, catalog, setup);
+            var unit = U(battle, "z");
+            unit.SetVitals(1, 0);
+            for (int copy = 0; copy < 3; copy++)
+            {
+                float before = unit.CurrentHP;
+                Assert.That(Hit(battle, 10000).AppliedDamage, Is.Zero);
+                Assert.That(unit.CurrentHP, Is.EqualTo(before));
+                Assert.That(battle.StatusEffects.BlocksActions(unit), Is.True);
+                Assert.That(Hit(battle, 10000).AppliedDamage, Is.Zero);
+                battle.CurrentTick += battle.TickRate;
+                battle.Items.BeginTick();
+                Assert.That(unit.CurrentHP, Is.EqualTo(before + unit.Stats.MaxHP * .1f).Within(.001f));
+            }
+            Assert.That(Hit(battle, 10000).Killed, Is.True);
+        }
+
         [Test] public void SaleReturnsEquippedTool()
         {
             var f=Match(units:true);var p=f.match.GetPlayer("p1");string id=Id(ItemCatalog.RockyHelmet);p.AddInventoryItem(id);new ItemSystem().Equip(f.match,"p1",p.Units.Single().InstanceId,id,p.ItemRevision);
@@ -166,13 +267,18 @@ namespace PokeChess.Core.Tests
             var items=new ItemSystem();items.Equip(f.match,"p1","unit-p1",helmet,p.ItemRevision);items.Equip(f.match,"p1","extra1",berry,p.ItemRevision);
             new RankUpSystem(f.catalog).Resolve(f.match,"p1",p.PlacementRevision);Assert.That(p.Units.Count,Is.EqualTo(1));Assert.That(p.Units.Single().ItemInstanceIds,Is.EqualTo(new[]{helmet}));Assert.That(p.ItemInventory,Is.EqualTo(new[]{berry}));f.match.Pool.AssertConservation(f.match);
         }
-        [Test] public void HostCommandReplayCannotDuplicateRewardAndInventoryStaysPrivate()
+        [Test] public void HostSnapshotsIncludeGrantedComponentsWithoutAChoice()
         {
-            var f=RewardMatch();var host=new HostCommandProcessor(f.match,f.catalog,f.rounds);var s=host.Snapshot("p1");
-            var cmd=new MatchCommand{matchId=s.matchId,playerId="p1",commandId="reward",sequence=s.nextSequence,round=s.round,phase=s.phase,playerRevision=s.playerRevision,kind=MatchCommandKind.ChooseItem,slot=1,itemRevision=s.itemRevision};
-            Assert.That(host.Process("p1",cmd).accepted,Is.True);Assert.That(host.Process("p1",cmd).accepted,Is.True);
-            Assert.That(f.match.GetPlayer("p1").ItemInventory.Count,Is.EqualTo(1));Assert.That(host.Snapshot("p2").inventory,Is.Empty);Assert.That(host.PublicSnapshot().wildRound,Is.True);
-            var changed=cmd.Copy();changed.slot=2;Assert.That(host.Process("p1",changed).code,Is.EqualTo("DuplicateConflict"));
+            var f = RewardMatch();
+            var host = new HostCommandProcessor(f.match, f.catalog, f.rounds);
+            var first = host.Snapshot("p1");
+            var second = host.Snapshot("p2");
+            Assert.That(first.inventory.Length, Is.EqualTo(4));
+            Assert.That(second.inventory.Length, Is.EqualTo(4));
+            Assert.That(first.inventory.Intersect(second.inventory), Is.Empty);
+            Assert.That(first.itemCandidates, Is.Empty);
+            Assert.That(first.itemRewardRound, Is.EqualTo(3));
+            Assert.That(host.PublicSnapshot().wildRound, Is.True);
         }
         [Test] public void WildScheduleStartsWithThreeEncountersAndContinuesEveryFiveRounds()
         {Assert.That(Enumerable.Range(1,40).Where(WildRoundSystem.IsWildRound),Is.EqualTo(new[]{1,2,3,9,14,19,24,29,34,39}));}
@@ -182,7 +288,7 @@ namespace PokeChess.Core.Tests
             for(int i=0;i<1400&&f.match.Phase==MatchPhase.Combat;i++)f.rounds.Step();
             Assert.That(f.rounds.IsSettled,Is.True);Assert.That(f.rounds.LastResult.PlayerResults.Values.All(r=>r.Outcome==RoundOutcome.Win),Is.True);
             Assert.That(f.match.Players.All(p=>p.WinStreak==0&&p.LoseStreak==0&&p.HP==60),Is.True);
-            Assert.That(f.match.Players.All(p=>p.PendingItemReward==null),Is.True);
+            Assert.That(f.match.Players.All(p=>p.ItemInventory.Count==1 && p.ItemInventory.All(ItemCatalog.IsComponent)),Is.True);
             Assert.That(f.rounds.LastResult.Income.Values.All(i=>i.TotalIncome>=7),Is.True);
             Assert.That(f.rounds.NextRound(1),Is.True);Assert.That(f.rounds.StartCombat(2),Is.True);Assert.That(f.rounds.Battles.All(b=>b.IsWild),Is.True);
         }
@@ -196,6 +302,9 @@ namespace PokeChess.Core.Tests
             Assert.That(one.WinStreak,Is.EqualTo(5));Assert.That(two.LoseStreak,Is.EqualTo(5));
             f.rounds.StartCombat(9);for(int i=0;i<1400&&f.match.Phase==MatchPhase.Combat;i++)f.rounds.Step();
             Assert.That(one.WinStreak,Is.EqualTo(5));Assert.That(two.LoseStreak,Is.EqualTo(5));Assert.That(one.HP,Is.EqualTo(hp1));Assert.That(two.HP,Is.LessThan(hp2));
+            Assert.That(one.ItemInventory.Count, Is.EqualTo(7));
+            Assert.That(one.LastItemRewardRound, Is.EqualTo(9));
+            Assert.That(two.ItemInventory, Is.Empty);
         }
         [Test] public void WildPreparationSurrenderRepairsOnlyPvEPairings()
         {
@@ -219,26 +328,28 @@ namespace PokeChess.Core.Tests
                 foreach(var enemy in enemies){enemy.SetVitals(enemy.CurrentHP,1000);Assert.That(battle.Energy.IsSkillReady(enemy),Is.False);}
             }else Assert.That(enemies.Single().Position,Is.EqualTo(new BoardPosition(3,4)));
         }
-        [Test] public void FirstTwoWinsGrantGoldOnlyThirdWinGrantsIdenticalItemOffers()
+        [Test] public void EarlyWildWinsGrantOneOneAndTwoComponents()
         {
             var f=Match(units:true);
             for(int round=1;round<=3;round++){
                 f.rounds.StartCombat(round);for(int tick=0;tick<1400&&f.match.Phase==MatchPhase.Combat;tick++)f.rounds.Step();
                 foreach(var p in f.match.Players){
                     Assert.That(p.HP,Is.EqualTo(60));
-                    Assert.That(p.PendingItemReward==null,Is.EqualTo(round<3));
+                    Assert.That(p.LastItemRewardRound, Is.EqualTo(round));
+                    Assert.That(p.ItemInventory.Count, Is.EqualTo(round < 3 ? round : 4));
+                    Assert.That(p.ItemInventory.All(ItemCatalog.IsComponent), Is.True);
+                    Assert.That(p.ItemInventory.Distinct().Count(), Is.EqualTo(p.ItemInventory.Count));
                     int gold=p.Gold;f.rounds.SettleResult();Assert.That(p.Gold,Is.EqualTo(gold));
                 }
                 if(round<3)f.rounds.NextRound(round);
             }
-            Assert.That(f.match.Players[0].PendingItemReward.Candidates,Is.EqualTo(f.match.Players[1].PendingItemReward.Candidates));
         }
-        [Test] public void ThirdRoundLossOffersNoToolAndWildDamageCanEliminate()
+        [Test] public void ThirdRoundLossGrantsNoComponentAndWildDamageCanEliminate()
         {
             var f=Match();
             for(int round=1;round<=3;round++){
                 f.rounds.StartCombat(round);
-                foreach(var p in f.match.Players)Assert.That(p.PendingItemReward,Is.Null);
+                foreach(var p in f.match.Players)Assert.That(p.ItemInventory,Is.Empty);
                 if(round<3)f.rounds.NextRound(round);
             }
             Assert.That(f.match.Players.All(p=>p.HP==46),Is.True);

@@ -147,7 +147,7 @@ namespace PokeChess.Client.UI
                 finalTitle.color=winner?new Color(1,.85f,.4f):Color.white;finalSummary.text="Winner: "+PlayerLabel(pub.winnerPlayerId,owner.playerId)+" · End round "+pub.round;
                 var standings=pub.players.OrderBy(p=>p.placement).ToArray();finalInfo.text=finalTitle.text+"\n"+string.Join("\n",standings.Select(p=>"#"+p.placement+" "+PlayerLabel(p.id,owner.playerId)+" / HP "+p.hp));
                 for(int i=0;i<8;i++){finalRowBackgrounds[i].gameObject.SetActive(i<standings.Length);if(i>=standings.Length)continue;var p=standings[i];finalCells[i,0].text="#"+p.placement;finalCells[i,1].text=PlayerLabel(p.id,owner.playerId);finalCells[i,2].text=p.hp.ToString();finalCells[i,3].text=p.id==pub.winnerPlayerId?"WINNER":p.eliminationReason+" / R"+p.eliminationRound;finalRowBackgrounds[i].color=p.id==owner.playerId?new Color(.13f,.32f,.43f):new Color(.1f,.17f,.24f);}
-                newMatchButton.interactable=true;finalBackdrop.SetAsLastSibling();finalRoot.SetAsLastSibling();
+                newMatchButton.interactable=true;finalPresentation.SetAsLastSibling();
             }
         }
     }

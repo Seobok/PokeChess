@@ -16,12 +16,7 @@ MonoBehaviour:
   DisplayName: "\uC21C\uAC04\uC774\uB3D9"
   VariantIds: []
   VariantMode: 0
-  Description: "2\uCD08 \uB3D9\uC548 \uC9D1\uC911 \uC0C1\uD0DC\uAC00 \uB41C\uB2E4.
-    \uD574\uB2F9 \uC0C1\uD0DC\uC5D0\uC11C\uB3C4 \uC774\uB3D9/\uACF5\uACA9\uC740 \uC790\uC720\uB86D\uAC8C
-    \uAC00\uB2A5\uD558\uB2E4. \uB9CC\uC57D \uC9D1\uC911\uC0C1\uD0DC\uC77C\uB54C \uD53C\uD574\uB97C
-    \uC785\uC5C8\uB2E4\uBA74 \uAC00\uC7A5 \uBA40\uB9AC \uC788\uB294 \uC548\uC804\uD55C
-    \uCE78\uC73C\uB85C \uC21C\uAC04\uC774\uB3D9\uD558\uACE0 \uB9C8\uB098\uB97C 30/40/50%
-    \uD68C\uBCF5\uD55C\uB2E4."
+  Description: "2\ucd08 \ub3d9\uc548 \uc9d1\uc911 \uc0c1\ud0dc\uac00 \ub41c\ub2e4. \ud574\ub2f9 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc774\ub3d9/\uacf5\uaca9\uc740 \uc790\uc720\ub86d\uac8c \uac00\ub2a5\ud558\ub2e4. \ub9cc\uc57d \uc9d1\uc911\uc0c1\ud0dc\uc77c\ub54c \ud53c\ud574\ub97c \uc785\uc5c8\ub2e4\uba74 \uac00\uc7a5 \uba40\ub9ac \uc788\ub294 \uc548\uc804\ud55c \uce78\uc73c\ub85c \uc21c\uac04\uc774\ub3d9\ud558\uace0 \ub9c8\ub098\ub97c 30/40/50% \ud68c\ubcf5\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \uc9d1\uc911 \uc2dc\uc791 \uc2dc 2\ucd08\uac04 \uc790\uc2e0\uc5d0\uac8c 80/110/150\uc758 \ubcf4\ud638\ub9c9\uc744 \ubd80\uc5ec\ud55c\ub2e4(\ubcf4\ud638\ub9c9 \u00d7 AP/100). \ubcf4\ud638\ub9c9\uc5d0 \uc801\uc911\ud55c \uacf5\uaca9\ub3c4 \uc21c\uac04\uc774\ub3d9 \ubc1c\ub3d9\uc6a9 \ud53c\uaca9\uc73c\ub85c \ud310\uc815."
   Notes: 
   CastTime: 0
   PostCastTime: 0
@@ -36,6 +31,23 @@ MonoBehaviour:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
   Effects:
+  - Type: 2
+    TargetSelector: 1
+    BaseValue: 80
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    RankValues:
+    - 80
+    - 80
+    - 80
+    HasNumeric: 1
+    Numeric:
+      Chance: 1
+      ShieldDuration: 2
+      HasShieldDuration: 1
   - Type: 4
     TargetSelector: 1
     BaseValue: 0

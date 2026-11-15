@@ -15,12 +15,16 @@ namespace PokeChess.Core.Battle
         public CombatStat Stat { get; }
         public StatModifierType Type { get; }
         public float Value { get; }
-        public StatModifierDefinition(CombatStat stat,StatModifierType type,float value)
+        public float ApIncrement { get; }
+        public float ApCap { get; }
+        internal StatModifierDefinition Scale(float ap, float firstCastMultiplier) => ApIncrement == 0 ? this : new StatModifierDefinition(Stat,Type,
+            Math.Sign(Value) * Math.Min(ApCap, Math.Abs(Value) + Math.Max(0, ap - 100) * ApIncrement) * firstCastMultiplier);
+        public StatModifierDefinition(CombatStat stat,StatModifierType type,float value,float apIncrement=0,float apCap=0)
         {
             DamageCalculator.Validate(value,false);
             if(!Enum.IsDefined(typeof(CombatStat),stat)||!Enum.IsDefined(typeof(StatModifierType),type)||
                 (type==StatModifierType.Multiplicative&&value<0))throw new ArgumentOutOfRangeException();
-            Stat=stat;Type=type;Value=value;
+            Stat=stat;Type=type;Value=value; ApIncrement=apIncrement; ApCap=apCap;
         }
     }
     public sealed class StatusEffectDefinition
@@ -30,6 +34,8 @@ namespace PokeChess.Core.Battle
         public float EnergyRefundFraction { get; }
         public float EffectValue { get; }
         public bool FixedSpellDamage { get; }
+        public float EffectApIncrement { get; }
+        public float EffectApCap { get; }
         public float RestReduction { get; }
         public float ReflectionMultiplier { get; }
         public string Id { get; }
@@ -45,7 +51,7 @@ namespace PokeChess.Core.Battle
         public StatusEffectDefinition(string id,float duration,StatusTargetTeam targetTeam=StatusTargetTeam.Enemy,
             CrowdControlKind crowdControl=CrowdControlKind.None,StackPolicy stackPolicy=StackPolicy.Refresh,
             SourceStackRule sourceRule=SourceStackRule.PerSource,int maxStack=1,
-            IEnumerable<StatModifierDefinition> modifiers=null,string stackGroup=null,float slowFraction=0,StatusBehavior behavior=StatusBehavior.None,float recoveryFraction=0,float energyRefundFraction=0,float effectValue=0,float restReduction=.3f,float reflectionMultiplier=0,bool fixedSpellDamage=false)
+            IEnumerable<StatModifierDefinition> modifiers=null,string stackGroup=null,float slowFraction=0,StatusBehavior behavior=StatusBehavior.None,float recoveryFraction=0,float energyRefundFraction=0,float effectValue=0,float restReduction=.3f,float reflectionMultiplier=0,bool fixedSpellDamage=false,float effectApIncrement=0,float effectApCap=0)
         {
             if(string.IsNullOrWhiteSpace(id))throw new ArgumentException(nameof(id));
             DamageCalculator.Validate(duration,true);DamageCalculator.Validate(slowFraction,true);
@@ -55,6 +61,7 @@ namespace PokeChess.Core.Battle
             DamageCalculator.Validate(recoveryFraction,true);
             DamageCalculator.Validate(effectValue,true);DamageCalculator.Validate(restReduction,true);DamageCalculator.Validate(reflectionMultiplier,true);
             if(restReduction>1)throw new ArgumentOutOfRangeException();
+            EffectApIncrement=effectApIncrement; EffectApCap=effectApCap;
             FixedSpellDamage=fixedSpellDamage;EffectValue=effectValue;RestReduction=restReduction;ReflectionMultiplier=reflectionMultiplier;
             DamageCalculator.Validate(energyRefundFraction,true);
             if(energyRefundFraction>1||behavior!=StatusBehavior.Focus&&energyRefundFraction!=0||
@@ -75,6 +82,15 @@ namespace PokeChess.Core.Battle
             Behavior=behavior;RecoveryFraction=recoveryFraction;EnergyRefundFraction=energyRefundFraction;Id=id;StackGroup=stackGroup??id;Duration=duration;TargetTeam=targetTeam;CrowdControl=crowdControl;
             SlowFraction=slowFraction;StackPolicy=stackPolicy;SourceRule=sourceRule;MaxStack=behavior==StatusBehavior.Poison?3:maxStack;
             Modifiers=Array.AsReadOnly(copy);
+        }
+
+        internal StatusEffectDefinition Scale(float ap, float firstCastMultiplier = 1)
+        {
+            if (EffectApIncrement == 0 && !Modifiers.Any(m => m.ApIncrement != 0)) return this;
+            float value = EffectApIncrement == 0 ? EffectValue : Math.Min(EffectApCap, EffectValue + Math.Max(0, ap - 100) * EffectApIncrement) * firstCastMultiplier;
+            return new StatusEffectDefinition(Id,Duration,TargetTeam,CrowdControl,StackPolicy,SourceRule,MaxStack,
+                Modifiers.Select(m => m.Scale(ap, firstCastMultiplier)),StackGroup,SlowFraction,Behavior,RecoveryFraction,EnergyRefundFraction,
+                value,RestReduction,ReflectionMultiplier,FixedSpellDamage);
         }
     }
     public sealed class StatusCatalog

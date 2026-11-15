@@ -16,8 +16,7 @@ MonoBehaviour:
   DisplayName: "\uC545\uB9C8\uC758\uD0A4\uC2A4"
   VariantIds: []
   VariantMode: 0
-  Description: "\uC801 1\uBA85\uC744 2.5/2.75/3\uCD08\uAC04 \uC218\uBA74 \uC0C1\uD0DC\uB85C
-    \uB9CC\uB4E4\uACE0 \uC790\uC2E0\uC758 \uCD5C\uB300 HP 10/15/20%\uB97C \uD68C\uBCF5\uD55C\uB2E4."
+  Description: "\uc801 1\uba85\uc744 2.5/2.75/3\ucd08\uac04 \uc218\uba74 \uc0c1\ud0dc\ub85c \ub9cc\ub4e4\uace0 \uc790\uc2e0\uc758 \ucd5c\ub300 HP 10/15/20%\ub97c \ud68c\ubcf5\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \uc790\uc2e0\uc758 \ucd5c\ub300 HP \ud68c\ubcf5 \ube44\uc728\uc744 AP/100\ubc30\ub85c \uac15\ud654(\ucd5c\ub300 45%). \uc218\uba74 \uc2dc\uac04\uc740 \uace0\uc815."
   Notes: 
   CastTime: 0.4
   PostCastTime: 0.4
@@ -101,8 +100,10 @@ MonoBehaviour:
   - Type: 1
     TargetSelector: 1
     BaseValue: 0.15
-    SpellPowerScalable: 0
-    PowerScaling: 0
+    SpellPowerScalable: 1
+    PowerScaling: 1
+    ApIncrement: 0
+    ApCap: 0.45
     DamageType: 1
     Radius: 1
     ProjectileSpeed: 6

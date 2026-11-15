@@ -80,10 +80,12 @@ namespace PokeChess.Core.Match
         public IReadOnlyDictionary<string,int> PurchaseCounts => new System.Collections.ObjectModel.ReadOnlyDictionary<string,int>(purchaseCounts);
         public LocalSimulationBot(PokemonCatalog catalog,ulong seed)
         { trades=new ShopTransactionSystem(catalog);random=new DeterministicRandom(seed ^ 0x424F54504F4C4943UL); }
-        public void Prepare(MatchState match)
+        public void Prepare(MatchState match) => Prepare(match, null);
+
+        public void Prepare(MatchState match, string playerId)
         {
             if(match.Phase!=MatchPhase.Preparation)throw new InvalidOperationException("Bot requires preparation.");
-            foreach(var p in match.Players.Where(p=>p.HP>0 && !p.IsEliminated).OrderBy(p=>p.PlayerId,StringComparer.Ordinal))
+            foreach(var p in match.Players.Where(p=>p.HP>0 && !p.IsEliminated && (playerId==null || p.PlayerId==playerId)).OrderBy(p=>p.PlayerId,StringComparer.Ordinal))
             {
                 int reserve=random.NextInt(3);
                 BuyOffers(match,p,reserve);

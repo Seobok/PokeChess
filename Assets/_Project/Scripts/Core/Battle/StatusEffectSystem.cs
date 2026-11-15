@@ -31,7 +31,8 @@ namespace PokeChess.Core.Battle
         internal void BeginTick() {events.Clear();Cleanup(false);}
         public bool HasBehavior(UnitCombatState unit,StatusBehavior behavior)=>Live(unit).Any(e=>e.Def.Behavior==behavior);
         public bool IsSleeping(UnitCombatState unit)=>HasBehavior(unit,StatusBehavior.Sleep)||HasBehavior(unit,StatusBehavior.RestSleep);
-        public bool BlocksActions(UnitCombatState unit)=>HasBehavior(unit,StatusBehavior.ActionRecovery)||IsSleeping(unit)||HasBehavior(unit,StatusBehavior.Freeze);
+        internal bool IsItemStealthed(UnitCombatState unit) => battle.Items?.IsStealthed(unit) ?? false;
+        public bool BlocksActions(UnitCombatState unit)=>IsItemStealthed(unit)||(battle.Items?.IsRecoveringFromSash(unit) ?? false)||HasBehavior(unit,StatusBehavior.ActionRecovery)||IsSleeping(unit)||HasBehavior(unit,StatusBehavior.Freeze);
         public bool BlocksAttacks(UnitCombatState unit)=>HasBehavior(unit,StatusBehavior.AttackRecovery);
         public int AttackRange(UnitCombatState unit)=>(int)Math.Max(1,Calculate(unit,CombatStat.AttackRange,unit.Stats.AttackRange));
         internal float SkillVulnerability(UnitCombatState unit)=>Live(unit).Where(e=>e.Def.Behavior==StatusBehavior.Confusion).Select(e=>e.Def.EffectValue).DefaultIfEmpty(0).Max();
@@ -86,6 +87,9 @@ namespace PokeChess.Core.Battle
             if(source==null||target==null||(!persistent&&(!source.IsAlive||!source.IsOnBoard))||!target.IsAlive||!target.IsOnBoard||
                 (d.TargetTeam==StatusTargetTeam.Enemy?(source.TeamId==target.TeamId||!target.IsTargetable&&!target.IsSynergyStealthed):source.TeamId!=target.TeamId))
                 throw new InvalidOperationException("Invalid status participants.");
+            if (source.TeamId != target.TeamId && battle.Items.PreventEnemyStatus(source, target, d)) return null;
+            float firstCastMultiplier = 1 + battle.Items.FirstCastBonus(source, source.ActiveSynergyCastId);
+            d = d.Scale(source.EffectiveStats.SpellPower, firstCastMultiplier);
             bool control=d.CrowdControl!=CrowdControlKind.None||new[]{StatusBehavior.Sleep,StatusBehavior.Freeze,StatusBehavior.Paralysis,StatusBehavior.Confusion,StatusBehavior.Blind}.Contains(d.Behavior);
             if(control&&battle.Synergies!=null&&battle.Synergies.PreventControl(target))return null;
             bool timedControl=d.Behavior==StatusBehavior.AttackRecovery||d.Behavior==StatusBehavior.ActionRecovery||d.Behavior==StatusBehavior.RestSleep||d.Behavior==StatusBehavior.Blind||d.CrowdControl!=CrowdControlKind.None||d.Behavior==StatusBehavior.Sleep||d.Behavior==StatusBehavior.Freeze||d.Behavior==StatusBehavior.Paralysis||d.Behavior==StatusBehavior.Confusion;
@@ -200,10 +204,9 @@ namespace PokeChess.Core.Battle
             if(frozen.Length>0&&target.CurrentHP>0&&target.IsOnBoard&&result.PostMitigationDamage>0)
                 new DamageProcessor().Apply(battle,new DamageRequest(result.Request.SourceId,target.UnitInstanceId,
                     result.PostMitigationDamage*.25f,DamageType.True,origin:DamageOrigin.FreezeBreak));
-            // Only a surviving direct hit that actually removed HP can trigger focus.
-            // In particular, shields, poison/burn, reflection and HP costs do not qualify.
+            // Focus responds to direct hits that remove HP or are absorbed by a shield.
             var focus=Live(target).FirstOrDefault(e=>e.Def.Behavior==StatusBehavior.Focus);
-            if(focus!=null&&result.AppliedDamage>0&&target.CurrentHP>0&&target.IsOnBoard) {
+            if(focus!=null&&result.AppliedDamage+result.ShieldAbsorbed>0&&target.CurrentHP>0&&target.IsOnBoard) {
                 battle.Movement.TryStart(target,null,new SkillMovementDefinition(SkillMovementKind.TeleportSafe),()=>{
                     Remove(focus.Id);
                     battle.Energy.Refund(target,target.Stats.MaxEnergy*focus.Def.EnergyRefundFraction);
@@ -246,10 +249,11 @@ namespace PokeChess.Core.Battle
             var s=u.Stats;double power=battle.IsOvertime?2:1;double speed=battle.IsOvertime?3:1;double slow=Live(u).Where(e=>e.Def.CrowdControl==CrowdControlKind.Slow)
                 .Select(e=>(double)e.Def.SlowFraction).DefaultIfEmpty(0).Max();
             bool extra=battle.Synergies.ContaminationManaReduction(u)>0||Live(u).Any(e=>e.Def.Modifiers.Any(m=>(int)m.Stat>=(int)CombatStat.Accuracy));
-            return new EffectiveCombatStats(Store(Calculate(u,CombatStat.Attack,s.Attack)*power),
-                Store(Calculate(u,CombatStat.SpellPower,s.SpellPower)*power),Store(Calculate(u,CombatStat.Armor,s.Armor),-float.MaxValue),
+            float weaknessBonus = battle.Items?.WeaknessPolicyBonus(u) ?? 0;
+            return new EffectiveCombatStats(Store(Calculate(u,CombatStat.Attack,s.Attack + weaknessBonus * u.BaseAttack)*power),
+                Store(Calculate(u,CombatStat.SpellPower,s.SpellPower + weaknessBonus * 100)*power),Store(Calculate(u,CombatStat.Armor,s.Armor),-float.MaxValue),
                 Store(Calculate(u,CombatStat.MagicResistance,s.MagicResistance),-float.MaxValue),
-                Store(Calculate(u,CombatStat.AttackSpeed,s.AttackSpeed)*speed*(HasBehavior(u,StatusBehavior.Paralysis)?.5:1),.1,5),
+                Store(Calculate(u,CombatStat.AttackSpeed,s.AttackSpeed)*speed*(battle.Items?.AttackSpeedMultiplier(u) ?? 1)*(HasBehavior(u,StatusBehavior.Paralysis)?.5:1),.1,5),
                 Store(Calculate(u,CombatStat.MoveSpeed,s.MoveSpeed)*speed*(1-slow),.1),
                 extra?Store(Calculate(u,CombatStat.Accuracy,1),0,1):1,extra?Store(Calculate(u,CombatStat.Evasion,0),0,1):0,
                 extra?Store(Calculate(u,CombatStat.CritChance,s.CritChance),0,1):s.CritChance,extra?Store(Calculate(u,CombatStat.EnergyGain,1)):1,

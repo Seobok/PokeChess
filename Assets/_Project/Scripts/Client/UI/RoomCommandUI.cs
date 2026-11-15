@@ -16,32 +16,51 @@ namespace PokeChess.Client.UI
         private string selectedOnlineUnit;
         private string observedOnlinePlayer;
         private UnityEngine.UI.Text onlinePlayers,onlineObserved;
-        private void BuildOnlineCommandUI(RectTransform body)
+        private void BindOnlineCommandUI(Transform group)
         {
-            var group=Rect("OnlineMatch",body,body.sizeDelta,Vector2.zero);onlineMatchPanel=group.gameObject;
-            onlineEconomy=Label("Economy",group,"Connecting to match…",new Vector2(670,38),new Vector2(-110,195),16);
-            Button("Leave match",group,new Vector2(350,195),new Vector2(150,32),Leave);
-            onlineShop=new UnityEngine.UI.Button[5];for(int i=0;i<5;i++){int slot=i;onlineShop[i]=Button("Shop "+i,group,new Vector2(-340+i*170,135),new Vector2(155,54),()=>SendOnline(MatchCommandKind.Buy,c=>c.slot=slot));}
-            onlineReroll=Button("Reroll",group,new Vector2(-300,75),new Vector2(160,30),()=>SendOnline(MatchCommandKind.Reroll));
-            onlineLock=Button("Lock",group,new Vector2(-100,75),new Vector2(160,30),()=>SendOnline(MatchCommandKind.Lock,c=>c.locked=!OnlineConnection.Instance.LocalMatchState.locked));
-            onlineXP=Button("Buy XP",group,new Vector2(100,75),new Vector2(160,30),()=>SendOnline(MatchCommandKind.BuyXP));
-            onlineSurrender=Button("Surrender",group,new Vector2(300,75),new Vector2(160,30),()=>SendOnline(MatchCommandKind.Surrender));
-            onlineBoard=new UnityEngine.UI.Button[28];for(int r=0;r<4;r++)for(int col=0;col<7;col++){int x=col,y=r;onlineBoard[r*7+col]=Button(col+","+r,group,new Vector2(-240+col*80,20-r*36),new Vector2(74,32),()=>OnlineCell(PlacementKind.Board,x,y,-1));onlineBoard[r*7+col].GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;}
-            onlineBench=new UnityEngine.UI.Button[9];for(int i=0;i<9;i++){int slot=i;onlineBench[i]=Button("B"+i,group,new Vector2(-320+i*80,-130),new Vector2(74,42),()=>OnlineCell(PlacementKind.Bench,-1,-1,slot));onlineBench[i].GetComponentInChildren<UnityEngine.UI.Text>().fontSize=11;}
-            onlineSelection=Label("Selection",group,"Select a unit, then a destination.",new Vector2(640,36),new Vector2(-110,-185),13);
-            onlineSell=Button("Sell selected",group,new Vector2(350,-185),new Vector2(150,30),()=>SendOnline(MatchCommandKind.Sell,c=>c.unitId=selectedOnlineUnit));
-            onlineActionStatus=Label("ActionStatus",group,"",new Vector2(650,38),new Vector2(-110,-240),13);
-            onlineRetry=Button("Retry confirmation",group,new Vector2(355,-240),new Vector2(165,30),async()=>{await OnlineConnection.Instance.RetryPendingCommandAsync();});
-            onlinePlayers=Label("Players",group,"",new Vector2(165,175),new Vector2(-390,-25),11);
-            onlineObserved=Label("Observed",group,"My board",new Vector2(165,35),new Vector2(355,20),12);
-            Button("Observe next",group,new Vector2(355,-20),new Vector2(150,30),()=>{
-                var s=OnlineConnection.Instance;var players=s.PublicState?.players;if(players==null)return;
-                int index=Array.FindIndex(players,p=>p.id==(observedOnlinePlayer??s.LocalMatchState.playerId));observedOnlinePlayer=players[(index+1)%players.Length].id;selectedOnlineUnit=null;
+            onlineMatchPanel = group.gameObject;
+            onlineEconomy = UiPrefab.Get<UnityEngine.UI.Text>(group, "Economy");
+            onlineSelection = UiPrefab.Get<UnityEngine.UI.Text>(group, "Selection");
+            onlineActionStatus = UiPrefab.Get<UnityEngine.UI.Text>(group, "ActionStatus");
+            onlinePlayers = UiPrefab.Get<UnityEngine.UI.Text>(group, "Players");
+            onlineObserved = UiPrefab.Get<UnityEngine.UI.Text>(group, "Observed");
+            UiPrefab.Bind(group, "Leave match", Leave);
+            onlineShop = new UnityEngine.UI.Button[5];
+            for (int i = 0; i < onlineShop.Length; i++)
+            {
+                int slot = i;
+                onlineShop[i] = UiPrefab.Bind(group, "Shop " + i, () => SendOnline(MatchCommandKind.Buy, c => c.slot = slot));
+            }
+            onlineReroll = UiPrefab.Bind(group, "Reroll", () => SendOnline(MatchCommandKind.Reroll));
+            onlineLock = UiPrefab.Bind(group, "Lock", () => SendOnline(MatchCommandKind.Lock, c => c.locked = !OnlineConnection.Instance.LocalMatchState.locked));
+            onlineXP = UiPrefab.Bind(group, "Buy XP", () => SendOnline(MatchCommandKind.BuyXP));
+            onlineSurrender = UiPrefab.Bind(group, "Surrender", () => SendOnline(MatchCommandKind.Surrender));
+            onlineBoard = new UnityEngine.UI.Button[28];
+            for (int i = 0; i < onlineBoard.Length; i++)
+            {
+                int column = i % 7, row = i / 7;
+                onlineBoard[i] = UiPrefab.Bind(group, column + "," + row, () => OnlineCell(PlacementKind.Board, column, row, -1));
+            }
+            onlineBench = new UnityEngine.UI.Button[9];
+            for (int i = 0; i < onlineBench.Length; i++)
+            {
+                int slot = i;
+                onlineBench[i] = UiPrefab.Bind(group, "B" + i, () => OnlineCell(PlacementKind.Bench, -1, -1, slot));
+            }
+            onlineSell = UiPrefab.Bind(group, "Sell selected", () => SendOnline(MatchCommandKind.Sell, c => c.unitId = selectedOnlineUnit));
+            onlineRetry = UiPrefab.Bind(group, "Retry confirmation", async () => await OnlineConnection.Instance.RetryPendingCommandAsync());
+            UiPrefab.Bind(group, "Observe next", () =>
+            {
+                var service = OnlineConnection.Instance;
+                var players = service.PublicState?.players;
+                if (players == null) return;
+                int index = Array.FindIndex(players, p => p.id == (observedOnlinePlayer ?? service.LocalMatchState.playerId));
+                observedOnlinePlayer = players[(index + 1) % players.Length].id;
+                selectedOnlineUnit = null;
             });
-            Button("My board",group,new Vector2(355,-65),new Vector2(150,30),()=>{observedOnlinePlayer=null;selectedOnlineUnit=null;});
-            Button("Sync state",group,new Vector2(430,-110),new Vector2(90,30),async()=>{await OnlineConnection.Instance.RequestStateSyncAsync();});
-            onlineMatchPanel.SetActive(false);
-            BuildOnlineCombatUI(group);
+            UiPrefab.Bind(group, "My board", () => { observedOnlinePlayer = null; selectedOnlineUnit = null; });
+            UiPrefab.Bind(group, "Sync state", async () => await OnlineConnection.Instance.RequestStateSyncAsync());
+            BindOnlineCombatUI(group);
         }
         private async void SendOnline(MatchCommandKind kind,Action<MatchCommand> configure=null)
         {

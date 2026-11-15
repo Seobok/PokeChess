@@ -71,18 +71,25 @@ namespace PokeChess.Core.Battle
     public static class SkillNumericMath
     {
         // Shared by normal hits, conditional hits and status damage snapshots.
-        public static float Magnitude(float baseValue,SkillValueSource source,float attack,float spellPower,bool scalable,SkillPowerScaling scaling)
+        public static float Magnitude(float baseValue,SkillValueSource source,float attack,float spellPower,bool scalable,SkillPowerScaling scaling,float? referenceAttack=null)
         {
             DamageCalculator.Validate(baseValue,true);DamageCalculator.Validate(attack,true);DamageCalculator.Validate(spellPower,true);
             if(!Enum.IsDefined(typeof(SkillPowerScaling),scaling))throw new ArgumentOutOfRangeException(nameof(scaling));
             double value=baseValue*(source==SkillValueSource.Attack?(double)attack:1);
-            if(scalable)value*=scaling==SkillPowerScaling.TotalSpellPower?(double)spellPower/100:1+(double)spellPower/100;
+            if (scalable && scaling == SkillPowerScaling.MixedAttackSpellPower)
+            {
+                double baseline = referenceAttack ?? attack;
+                double normalizedAttack = baseline > 0 ? attack / baseline : 1;
+                value *= .7 * normalizedAttack + .3 * spellPower / 100;
+            }
+            else if (scalable)
+                value *= scaling == SkillPowerScaling.TotalSpellPower ? (double)spellPower / 100 : 1 + (double)spellPower / 100;
             if(value>float.MaxValue)throw new OverflowException("Skill magnitude exceeds model capacity.");
             return (float)value;
         }
         public static float SourceValue(UnitCombatState caster,SkillEffectDefinition effect)
         {
-            double value=effect.ResolveValue(caster.Rank,caster.EffectiveStats.SpellPower,caster.EffectiveStats.Attack);
+            double value=effect.ResolveValue(caster.Rank,caster.EffectiveStats.SpellPower,caster.EffectiveStats.Attack,caster.Stats.Attack);
             if(effect.ValueSource==SkillValueSource.CasterMaxHP)value*=caster.Stats.MaxHP;
             if(effect.ValueSource==SkillValueSource.CasterMaxEnergy)value*=caster.Stats.MaxEnergy;
             if(value>float.MaxValue)throw new OverflowException();return (float)value;
@@ -98,7 +105,7 @@ namespace PokeChess.Core.Battle
             SkillDamagePolicy policy=null;var n=effect.Numeric;
             {
                 double alternative=Magnitude(n?.ConditionalValues[(int)caster.Rank-1]??0,effect.ValueSource,
-                    snapshot?.Attack??caster.EffectiveStats.Attack,snapshot?.SpellPower??caster.EffectiveStats.SpellPower,effect.SpellPowerScalable,effect.PowerScaling);
+                    snapshot?.Attack??caster.EffectiveStats.Attack,snapshot?.SpellPower??caster.EffectiveStats.SpellPower,effect.SpellPowerScalable,effect.PowerScaling,caster.Stats.Attack);
                 if(effect.ValueSource==SkillValueSource.CasterMaxHP)alternative*=snapshot?.MaxHP??caster.Stats.MaxHP;
                 if(alternative>float.MaxValue)throw new OverflowException();
                 policy=new SkillDamagePolicy(n,effect.ValueSource==SkillValueSource.TargetMaxHP,(float)alternative,snapshot?.MaxHP??caster.Stats.MaxHP,snapshot?.CastId??caster.ActiveSynergyCastId);

@@ -15,15 +15,37 @@ namespace PokeChess.Core.Match
         public IReadOnlyList<string> ItemInventory => inventoryItems.AsReadOnly();
         public long ItemRevision { get; private set; }
         public int LastItemRewardRound { get; private set; }
-        public ItemRewardOffer PendingItemReward { get; private set; }
-        internal void SetItemReward(ItemRewardOffer offer)
-        { long next=checked(ItemRevision+1);PendingItemReward=offer;LastItemRewardRound=offer.Round;ItemRevision=next; }
-        internal void ClaimItemReward(string id)
-        { long next=checked(ItemRevision+1);AddInventoryItem(id);PendingItemReward=null;ItemRevision=next; }
+        internal void GrantItemReward(int round, IReadOnlyList<string> items)
+        {
+            if (LastItemRewardRound >= round) return;
+            long next = checked(ItemRevision + 1);
+            if (items.Any(id => inventoryItems.Contains(id) || units.Any(unit => unit.ItemInstanceIds.Contains(id))))
+                throw new InvalidOperationException("Reward item is already owned.");
+            inventoryItems.AddRange(items);
+            LastItemRewardRound = round;
+            ItemRevision = next;
+        }
+
         internal void EquipInventoryItem(UnitInstance unit,string id)
         {
             long next=checked(ItemRevision+1);
-            ReturnSoldItems(unit);inventoryItems.Remove(id);unit.AddItem(id);ItemRevision=next;
+            string equippedComponent = ItemCatalog.IsComponent(id)
+                ? unit.ItemInstanceIds.FirstOrDefault(ItemCatalog.IsComponent)
+                : null;
+            if (equippedComponent == null)
+            {
+                if (unit.ItemInstanceIds.Count >= UnitInstance.MaxItems)
+                    throw new InvalidOperationException("아이템은 최대 3개까지 장착할 수 있습니다.");
+                unit.AddItem(id);
+            }
+            else
+            {
+                var recipe = ItemCatalog.Recipe(ItemCatalog.DefinitionId(equippedComponent), ItemCatalog.DefinitionId(id));
+                if (recipe == null) throw new InvalidOperationException("조합할 수 없는 재료입니다.");
+                unit.CompleteItem(equippedComponent, $"item:{recipe.Id}:craft-{next}:{PlayerId}");
+            }
+            inventoryItems.Remove(id);
+            ItemRevision = next;
         }
         public void AddInventoryItem(string itemId)
         {

@@ -59,19 +59,7 @@ namespace PokeChess.Client.UI
             return image;
         }
 
-        private UnityEngine.UI.Text SynergyText(string name, Transform parent, Vector2 size, Vector2 position, int fontSize)
-        {
-            var label = Label(name, parent, "", fontSize, size, position);
-            label.font = itemFont ?? font;
-            label.color = SynergyInk;
-            label.fontStyle = FontStyle.Bold;
-            label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 8;
-            label.resizeTextMaxSize = fontSize;
-            return label;
-        }
-
-        private void BuildSynergyHud()
+        private void BindSynergyHud()
         {
             synergyRoster = PokeChess.Content.GameContent.CreateDefinitions().ToArray();
             synergyRowDefault = SynergySprite("Row");
@@ -81,29 +69,21 @@ namespace PokeChess.Client.UI
             synergyPortraitDeployed = SynergySprite("PortraitDeployed");
             synergyHex = SynergySprite("TargetHex");
             synergyTexture = SynergySprite("TextureMark");
-            var header = SynergySprite("Header");
-            var gear = SynergySprite("SettingsGear");
 
-            synergyRoot = SynergyImage("Synergies", canvasRect, new Vector2(150, 420), new Vector2(-553, 120),
-                SynergySprite("ListFrame")).rectTransform;
-            var banner = SynergyImage("Header", synergyRoot, new Vector2(139, 35), new Vector2(0, 187), header);
-            var title = SynergyText("Title", banner.transform, new Vector2(134, 33), Vector2.zero, 17);
-            title.text = "시너지";
-            title.color = Color.white;
-
+            synergyRoot = UiPrefab.Instantiate("Synergies", canvasRect, itemFont);
             for (int i = 0; i < synergyRows.Length; i++)
             {
-                var image = SynergyImage("SynergyRow_" + i, synergyRoot, new Vector2(139, 35), new Vector2(0, 149 - i * 37), synergyRowDefault);
-                image.raycastTarget = true;
-                var row = new SynergyHudRow { Image = image };
-                synergyRows[i] = row;
-                row.Icon = SynergyImage("Mark", image.transform, new Vector2(21, 21), new Vector2(-53, 0), null);
-                row.Glyph = SynergyText("Glyph", row.Icon.transform, new Vector2(21, 21), Vector2.zero, 14);
-                row.Name = SynergyText("Name", image.transform, new Vector2(56, 30), new Vector2(-13, 0), 13);
-                row.Name.alignment = TextAnchor.MiddleLeft;
-                row.Count = SynergyText("Count", image.transform, new Vector2(49, 30), new Vector2(38, 0), 13);
-                row.Count.alignment = TextAnchor.MiddleRight;
-                row.Gear = SynergyImage("Gear", image.transform, new Vector2(12, 12), new Vector2(62, 0), gear);
+                var image = UiPrefab.Get<UnityEngine.UI.Image>(synergyRoot, $"SynergyRow_{i}");
+                var root = image.transform;
+                var row = synergyRows[i] = new SynergyHudRow
+                {
+                    Image = image,
+                    Icon = UiPrefab.Get<UnityEngine.UI.Image>(root, "Mark"),
+                    Glyph = UiPrefab.Get<UnityEngine.UI.Text>(root, "Mark/Glyph"),
+                    Name = UiPrefab.Get<UnityEngine.UI.Text>(root, "Name"),
+                    Count = UiPrefab.Get<UnityEngine.UI.Text>(root, "Count"),
+                    Gear = UiPrefab.Get<UnityEngine.UI.Image>(root, "Gear")
+                };
                 var events = image.gameObject.AddComponent<EventTrigger>();
                 AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ =>
                 {
@@ -121,50 +101,26 @@ namespace PokeChess.Client.UI
                         OpenSynergyTarget(row.Key);
                 });
             }
-            synergyPager = Rect("SynergyPages", synergyRoot, new Vector2(136, 24), new Vector2(0, -145));
-            var page = SynergyImage("PageBadge", synergyPager, new Vector2(61, 20), Vector2.zero, InventorySprite("InventoryPageBadge"));
-            synergyPageLabel = SynergyText("Page", page.transform, new Vector2(55, 19), Vector2.zero, 12);
-            synergyPrev = BuildSynergyPageButton("PreviousPage", -49, -1, "InventoryPagePrev");
-            synergyNext = BuildSynergyPageButton("NextPage", 49, 1, "InventoryPageNext");
+            synergyPager = UiPrefab.Get<RectTransform>(synergyRoot, "SynergyPages");
+            synergyPageLabel = UiPrefab.Get<UnityEngine.UI.Text>(synergyPager, "PageBadge/Page");
+            synergyPrev = BindSynergyPageButton("PreviousPage", -1);
+            synergyNext = BindSynergyPageButton("NextPage", 1);
+            synergyProgress = UiPrefab.Get<UnityEngine.UI.Text>(synergyRoot, "SynergyProgress");
 
-            synergyTooltip = SynergyImage("SynergyHelp", canvasRect, new Vector2(340, 390), new Vector2(-150, 105),
-                SynergySprite("TooltipFrame")).rectTransform;
-            SynergyImage("Pointer", synergyTooltip, new Vector2(19, 21), new Vector2(-176, 115), SynergySprite("TooltipPointer"));
-            var tipHeader = SynergyImage("Header", synergyTooltip, new Vector2(320, 35), new Vector2(0, 169), header);
-            synergyTooltipTitle = SynergyText("Title", tipHeader.transform, new Vector2(294, 32), Vector2.zero, 17);
-            synergyTooltipTitle.color = Color.white;
-            synergyHelp = SynergyText("Description", synergyTooltip, new Vector2(310, 49), new Vector2(0, 123), 12);
-            synergyHelp.alignment = TextAnchor.MiddleLeft;
+            synergyTooltip = UiPrefab.Instantiate("SynergyHelp", canvasRect, itemFont);
+            synergyTooltipTitle = UiPrefab.Get<UnityEngine.UI.Text>(synergyTooltip, "Header/Title");
+            synergyHelp = UiPrefab.Get<UnityEngine.UI.Text>(synergyTooltip, "Description");
             for (int i = 0; i < synergyThresholdRows.Length; i++)
-            {
-                var tier = SynergyImage("Threshold_" + i, synergyTooltip, new Vector2(318, 49), new Vector2(0, 100 - i * 51),
-                    SynergySprite("ThresholdActive"));
-                synergyThresholdRows[i] = tier;
-                var badge = SynergyImage("Badge", tier.transform, new Vector2(27, 23), new Vector2(-142, 0), SynergySprite("ThresholdBadge"));
-                SynergyText("Count", badge.transform, new Vector2(25, 22), Vector2.zero, 12);
-                var detail = SynergyText("Effect", tier.transform, new Vector2(274, 46), new Vector2(15, 0), 12);
-                detail.alignment = TextAnchor.MiddleLeft;
-            }
-            synergyMemberLabel = SynergyText("Members", synergyTooltip, new Vector2(311, 21), new Vector2(0, -111), 13);
-            synergyMemberLabel.alignment = TextAnchor.MiddleLeft;
-            synergyMemberLabel.text = "해당 포켓몬";
-            synergyTooltip.gameObject.SetActive(false);
+                synergyThresholdRows[i] = UiPrefab.Get<UnityEngine.UI.Image>(synergyTooltip, $"Threshold_{i}");
+            synergyMemberLabel = UiPrefab.Get<UnityEngine.UI.Text>(synergyTooltip, "Members");
 
-            synergyTargetPanel = SynergyImage("SynergyTargetPanel", canvasRect, new Vector2(206, 141), new Vector2(288, 132),
-                SynergySprite("TargetPanel")).rectTransform;
-            var targetHeader = SynergyImage("Header", synergyTargetPanel, new Vector2(192, 29), new Vector2(0, 49), header);
-            synergyTargetTitle = SynergyText("Title", targetHeader.transform, new Vector2(180, 27), Vector2.zero, 14);
-            synergyTargetTitle.color = Color.white;
-            synergySourcePortrait = SynergyImage("SourcePortrait", synergyTargetPanel, new Vector2(29, 27), new Vector2(-75, 15), null);
-            synergySourcePortrait.preserveAspect = true;
-            synergyTargetSource = SynergyText("Source", synergyTargetPanel, new Vector2(146, 24), new Vector2(11, 15), 13);
-            synergyTargetSource.alignment = TextAnchor.MiddleLeft;
-            synergyCurrentPortrait = SynergyImage("TargetPortrait", synergyTargetPanel, new Vector2(27, 24), new Vector2(75, -14), null);
-            synergyCurrentPortrait.preserveAspect = true;
-            synergyTargetCurrent = SynergyText("CurrentTarget", synergyTargetPanel, new Vector2(151, 24), new Vector2(-15, -14), 13);
-            synergyTargetCurrent.alignment = TextAnchor.MiddleLeft;
-            synergyTargetEffect = SynergyText("Effect", synergyTargetPanel, new Vector2(182, 32), new Vector2(0, -43), 12);
-            synergyTargetPanel.gameObject.SetActive(false);
+            synergyTargetPanel = UiPrefab.Instantiate("SynergyTargetPanel", canvasRect, itemFont);
+            synergyTargetTitle = UiPrefab.Get<UnityEngine.UI.Text>(synergyTargetPanel, "Header/Title");
+            synergySourcePortrait = UiPrefab.Get<UnityEngine.UI.Image>(synergyTargetPanel, "SourcePortrait");
+            synergyTargetSource = UiPrefab.Get<UnityEngine.UI.Text>(synergyTargetPanel, "Source");
+            synergyCurrentPortrait = UiPrefab.Get<UnityEngine.UI.Image>(synergyTargetPanel, "TargetPortrait");
+            synergyTargetCurrent = UiPrefab.Get<UnityEngine.UI.Text>(synergyTargetPanel, "CurrentTarget");
+            synergyTargetEffect = UiPrefab.Get<UnityEngine.UI.Text>(synergyTargetPanel, "Effect");
         }
 
         private static void AddSynergyRowEvent(EventTrigger events, EventTriggerType type, Action<BaseEventData> callback)
@@ -174,14 +130,14 @@ namespace PokeChess.Client.UI
             events.triggers.Add(entry);
         }
 
-        private UnityEngine.UI.Button BuildSynergyPageButton(string name, float x, int step, string asset)
+        private UnityEngine.UI.Button BindSynergyPageButton(string name, int step)
         {
-            var image = SynergyImage(name, synergyPager, new Vector2(19, 20), new Vector2(x, 0), InventorySprite(asset));
-            image.raycastTarget = true;
-            var button = image.gameObject.AddComponent<UnityEngine.UI.Button>();
-            button.targetGraphic = image;
-            button.onClick.AddListener(() => { synergyPage += step; synergyHovered = null; RefreshSynergyRows(); });
-            return button;
+            return UiPrefab.Bind(synergyPager, name, () =>
+            {
+                synergyPage += step;
+                synergyHovered = null;
+                RefreshSynergyRows();
+            });
         }
 
         private void RenderSynergies(IReadOnlyList<SynergyCount> counts, bool visible)

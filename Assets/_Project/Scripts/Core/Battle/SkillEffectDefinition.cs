@@ -7,7 +7,7 @@ using PokeChess.Core.Pokemon;
 namespace PokeChess.Core.Battle
 {
     public enum SkillEffectType { Damage, Heal, Shield, ProjectileDamage, ApplyStatus, Move, PathProjectileDamage, HealthCost, EnergyRefund, GroundStatus, ChainDamage, RandomStatus }
-    public enum SkillPowerScaling { LegacyBonus, TotalSpellPower }
+    public enum SkillPowerScaling { LegacyBonus, TotalSpellPower, MixedAttackSpellPower }
     public enum SkillValueSource { Flat, Attack, CasterMaxHP, TargetMaxHP, CasterMaxEnergy }
     public enum EffectTargetSelector { CastTarget, Self, EnemiesAroundCastTarget, AlliesAroundCaster, EnemiesAroundCaster, Spatial, BehindCastTarget }
     public enum SkillEffectOutcome { Applied, Spawned, Skipped }
@@ -19,6 +19,8 @@ namespace PokeChess.Core.Battle
         public float BaseValue { get; }
         public bool SpellPowerScalable { get; }
         public SkillPowerScaling PowerScaling { get; }
+        public float ApIncrement { get; }
+        public float ApCap { get; }
         public DamageType DamageType { get; }
         public int Radius { get; }
         public float ProjectileSpeed { get; }
@@ -45,9 +47,10 @@ namespace PokeChess.Core.Battle
         public bool IsDamage => Type==SkillEffectType.ChainDamage||Type==SkillEffectType.Damage||Type==SkillEffectType.ProjectileDamage||Type==SkillEffectType.PathProjectileDamage;
         public SkillEffectDefinition(SkillEffectType type,EffectTargetSelector targetSelector,float baseValue,
             bool spellPowerScalable=false,DamageType damageType=DamageType.Magic,int radius=1,float projectileSpeed=6,string statusId=null,StatusTargetTeam statusTargetTeam=StatusTargetTeam.Enemy,
-            IEnumerable<float> rankValues=null,SkillValueSource valueSource=SkillValueSource.Flat,IEnumerable<string> rankStatusIds=null,int? impactRadius=null,SkillSpatialDefinition spatial=null,SkillMovementDefinition movement=null,bool returns=false,IEnumerable<SkillEffectDefinition> pathImpactEffects=null,SkillNumericDefinition numeric=null,IEnumerable<string> statusChoices=null,float chainDelay=.15f,bool chainSequential=false,int projectileGroupSize=0,SkillPowerScaling powerScaling=SkillPowerScaling.LegacyBonus)
+            IEnumerable<float> rankValues=null,SkillValueSource valueSource=SkillValueSource.Flat,IEnumerable<string> rankStatusIds=null,int? impactRadius=null,SkillSpatialDefinition spatial=null,SkillMovementDefinition movement=null,bool returns=false,IEnumerable<SkillEffectDefinition> pathImpactEffects=null,SkillNumericDefinition numeric=null,IEnumerable<string> statusChoices=null,float chainDelay=.15f,bool chainSequential=false,int projectileGroupSize=0,SkillPowerScaling powerScaling=SkillPowerScaling.LegacyBonus,float apIncrement=0,float apCap=0)
         {
             if(!Enum.IsDefined(typeof(SkillPowerScaling),powerScaling))throw new ArgumentOutOfRangeException(nameof(powerScaling));
+            ApIncrement=apIncrement; ApCap=apCap;
             PowerScaling=powerScaling;Numeric=numeric;StatusChoices=Array.AsReadOnly((statusChoices??Array.Empty<string>()).ToArray());
             DamageCalculator.Validate(chainDelay,true);if(chainDelay<=0||StatusChoices.Any(string.IsNullOrWhiteSpace)||type==SkillEffectType.RandomStatus&&StatusChoices.Count==0)throw new ArgumentException();
             ChainDelay=chainDelay;ChainSequential=chainSequential;ProjectileGroupSize=projectileGroupSize;
@@ -55,7 +58,8 @@ namespace PokeChess.Core.Battle
             if(type==SkillEffectType.GroundStatus&&(spatial==null||string.IsNullOrWhiteSpace(statusId)))throw new ArgumentException("Ground status needs an area and status.");
             if((type==SkillEffectType.HealthCost||type==SkillEffectType.EnergyRefund)&&targetSelector!=EffectTargetSelector.Self)
                 throw new ArgumentException("Resource effects must target self.");
-            if(valueSource!=SkillValueSource.Flat&&valueSource!=SkillValueSource.Attack&&spellPowerScalable)
+            if(valueSource!=SkillValueSource.Flat&&valueSource!=SkillValueSource.Attack&&spellPowerScalable &&
+                !(type==SkillEffectType.Heal && valueSource==SkillValueSource.CasterMaxHP && apCap>0))
                 throw new ArgumentException("HP/energy ratios do not scale with spell power.");
             bool damageEffect=IsDamageType(type);
             if(valueSource==SkillValueSource.TargetMaxHP&&damageEffect&&numeric?.DamageCap==null)
@@ -111,11 +115,12 @@ namespace PokeChess.Core.Battle
         public string ResolveStatusId(UnitRank rank) => RankStatusIds[RankIndex(rank)];
         private static int RankIndex(UnitRank rank)
         { if(!Enum.IsDefined(typeof(UnitRank),rank))throw new ArgumentOutOfRangeException(nameof(rank));return (int)rank-1; }
-        public float ResolveValue(UnitRank rank,float spellPower,float attack)
+        public float ResolveValue(UnitRank rank,float spellPower,float attack,float? referenceAttack=null)
         {
             DamageCalculator.Validate(spellPower,true);
             DamageCalculator.Validate(attack,true);
-            double value=SkillNumericMath.Magnitude(RankValues[RankIndex(rank)],ValueSource,attack,spellPower,SpellPowerScalable,PowerScaling);
+            double value=SkillNumericMath.Magnitude(RankValues[RankIndex(rank)],ValueSource,attack,spellPower,SpellPowerScalable,PowerScaling,referenceAttack);
+            if (ApCap > 0) value = Math.Min(ApCap, value + Math.Max(0, spellPower - 100) * ApIncrement);
             if(value>float.MaxValue)throw new OverflowException("Skill effect exceeds model capacity.");
             return (float)value;
         }
@@ -178,7 +183,7 @@ namespace PokeChess.Core.Battle
         public SkillEffectType Type => SkillEffectType.Shield;
         public SkillEffectApplication Apply(BattleState b,UnitCombatState caster,UnitCombatState target,SkillEffectDefinition e,float value)
         {
-            double total=(double)target.CurrentShield+value*(b.IsOvertime?.34:1);
+            double total=(double)target.CurrentShield+value*(1 + .25f * ItemCombatSystem.Count(caster, "crafted-light-clay"))*(b.IsOvertime?.34:1);
             if(total>float.MaxValue)throw new OverflowException();
             float before=target.CurrentShield;target.SetShield((float)total);
             return new SkillEffectApplication(target.CurrentShield-before);
@@ -361,6 +366,8 @@ namespace PokeChess.Core.Battle
                         Record(battle,skill,castId,stepIndex,iteration,caster,t,i,e,values[i],0,SkillEffectOutcome.Skipped,SkillEffectSkipReason.ChanceFailed);continue;
                     }
                     float actualValue=values[i]*(e.ValueSource==SkillValueSource.TargetMaxHP&&!e.IsDamage?t.Stats.MaxHP:1);
+                    if (e.Type == SkillEffectType.Heal || e.Type == SkillEffectType.Shield)
+                        actualValue *= 1 + battle.Items.FirstCastBonus(caster, castId > 0 ? castId : caster.ActiveSynergyCastId);
                     bool conditionMatched=e.Numeric!=null&&((e.Numeric.Condition!=SkillValueCondition.None&&SkillNumericMath.Matches(e.Numeric,caster,t))||(e.Numeric.ExecuteThreshold>0&&t.CurrentHP/t.Stats.MaxHP<=e.Numeric.ExecuteThreshold)); SkillEffectApplication applied;
                     if(e.Type==SkillEffectType.RandomStatus) {
                         var id=e.StatusChoices[battle.RngStreams.Skill.NextInt(e.StatusChoices.Count)];

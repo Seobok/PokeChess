@@ -75,18 +75,28 @@ namespace PokeChess.Core.Battle
             var source=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.SourceId);
             var target=battle.Units.SingleOrDefault(u=>u.UnitInstanceId==request.TargetId);
             if(source==null||target==null||source.TeamId==target.TeamId||
-                (request.Origin==DamageOrigin.Reflection||request.Origin==DamageOrigin.Debuff||request.Origin==DamageOrigin.FreezeBreak||request.Origin==DamageOrigin.Periodic&&target.IsSynergyStealthed||request.IsAreaDamage?target.CurrentHP<=0||!target.IsOnBoard:!target.IsTargetable))
+                (request.Origin==DamageOrigin.Reflection||request.Origin==DamageOrigin.Item||request.Origin==DamageOrigin.Debuff||request.Origin==DamageOrigin.FreezeBreak||request.Origin==DamageOrigin.Periodic&&target.IsSynergyStealthed||request.IsAreaDamage?target.CurrentHP<=0||!target.IsOnBoard:!target.IsTargetable))
                 throw new InvalidOperationException("Invalid damage participants.");
             var numeric=request.SkillPolicy?.Numeric;
             float reflection=request.Origin==DamageOrigin.Direct?battle.StatusEffects.Reflection(target):0;
+            bool? lensCritical = null;
             if(request.IsBasicAttack) {
+                if (request.Type != DamageType.True && ItemCombatSystem.Has(source, "crafted-wide-lens"))
+                {
+                    float lensChance = (request.SourceSnapshot?.CritChance ?? source.EffectiveStats.CritChance)
+                        + (numeric?.CritBonus ?? 0) + battle.Items.DynamicCritChance(source);
+                    lensCritical = (request.CanCrit && (lensChance >= 1 || lensChance > 0 &&
+                        (battle.RngStreams.Critical.NextUInt64() >> 11) * (1.0 / 9007199254740992.0) < lensChance))
+                        || battle.StatusEffects.HasBehavior(source, StatusBehavior.GuaranteedCritical)
+                        || battle.Items.HasGuaranteedBasicCritical(source);
+                }
                 // Blind attacks still consume the attack action, but cannot damage or trigger hit effects.
-                if(battle.StatusEffects.HasBehavior(source,StatusBehavior.Blind)) {
+                if(lensCritical != true && battle.StatusEffects.HasBehavior(source,StatusBehavior.Blind) && !battle.Items.ConvertBasicMiss(source)) {
                     var blocked=new DamageResult(battle.CurrentTick,request,0,0,0,0,target.CurrentHP,target.CurrentShield,false);
                     battle.RecordDamage(blocked);return blocked;
                 }
                 float chance=Math.Max(0,Math.Min(1,source.EffectiveStats.Accuracy*(1-target.EffectiveStats.Evasion)));
-                if(chance<=0||chance<1&&(battle.RngStreams.Hit.NextUInt64()>>11)*(1.0/9007199254740992.0)>=chance) {
+                if(lensCritical != true && (chance<=0||chance<1&&(battle.RngStreams.Hit.NextUInt64()>>11)*(1.0/9007199254740992.0)>=chance) && !battle.Items.ConvertBasicMiss(source)) {
                     var miss=new DamageResult(battle.CurrentTick,request,0,0,0,0,target.CurrentHP,target.CurrentShield,false,missed:true);
                     battle.RecordDamage(miss);return miss;
                 }
@@ -105,33 +115,43 @@ namespace PokeChess.Core.Battle
             if(numeric?.ExecuteThreshold>0&&target.IsBoss&&target.CurrentHP/target.Stats.MaxHP<=numeric.ExecuteThreshold)rawValue+=numeric.BossBonus;
             if(numeric?.DamageCap!=null)rawValue=Math.Min(rawValue,numeric.DamageCap.Value);
             float synergyBonus = request.IsBasicAttack ? battle.Synergies.AttackBonus(source) : 0;
-            bool guaranteed=request.IsBasicAttack&&battle.StatusEffects.HasBehavior(source,StatusBehavior.GuaranteedCritical);
-            bool canCrit=(request.CanCrit||guaranteed||battle.Synergies.SkillCanCrit(source,request))&&request.Type!=DamageType.True&&
+            bool statusGuaranteed = request.IsBasicAttack && battle.StatusEffects.HasBehavior(source, StatusBehavior.GuaranteedCritical);
+            bool guaranteed = statusGuaranteed || request.IsBasicAttack && battle.Items.GuaranteeBasicCritical(source);
+            int loadedDice = ItemCombatSystem.IsSkillDamage(request) ? ItemCombatSystem.Count(source, "crafted-loaded-dice") : 0;
+            float criticalMultiplier = source.Stats.CritMultiplier + battle.Synergies.CriticalBonus(source) + .1f * loadedDice;
+            bool canCrit=(request.CanCrit||guaranteed||loadedDice>0||battle.Synergies.SkillCanCrit(source,request))&&request.Type!=DamageType.True&&
                 ((double)rawValue+request.BonusDamage+source.EffectiveDamageModifiers.BonusAttackDamage)>0;
             float bonus=request.BonusDamage+(request.CanCrit?source.EffectiveDamageModifiers.BonusAttackDamage:0)+synergyBonus;
             float raw=rawValue*battle.Synergies.OutgoingMultiplier(source,target)*(request.SourceSnapshot?.OutgoingMultiplier??battle.Items.Outgoing(source,request));
-            if(request.Type==DamageType.True&&request.SkillPolicy!=null)raw=rawValue*battle.Synergies.OutgoingMultiplier(source,target);
+            if (request.Type == DamageType.True && request.SkillPolicy != null)
+                raw = rawValue * battle.Synergies.OutgoingMultiplier(source, target) *
+                    battle.Items.SkillDamageMultiplier(source, request.SkillPolicy.CastId);
             if(request.Type==DamageType.True)raw*=battle.Synergies.IncomingMultiplier(target,request);
+            if (request.Origin == DamageOrigin.Direct || request.Origin == DamageOrigin.Periodic)
+                raw *= battle.Items.ExposureMultiplier(target);
             float amplification=request.SourceSnapshot?.Amplification??source.EffectiveDamageModifiers.Amplification;
             float penetration=Math.Min(1,(request.SourceSnapshot?.ArmorPenetration??source.EffectiveStats.ArmorPenetration)+(numeric?.ArmorPenetration??0));
             float armor=target.EffectiveStats.Armor;if(armor>0)armor*=1-penetration;
-            float critChance=Math.Min(1,(request.SourceSnapshot?.CritChance??source.EffectiveStats.CritChance)+(numeric?.CritBonus??0));
+            float rawCrit = (request.SourceSnapshot?.CritChance ?? source.EffectiveStats.CritChance)
+                + (numeric?.CritBonus ?? 0) + battle.Items.DynamicCritChance(source);
+            float critChance = Math.Min(1, rawCrit);
+            criticalMultiplier += .5f * Math.Max(0, rawCrit - 1);
             float mr=target.EffectiveStats.MagicResistance;if(mr>0)mr*=1-(numeric?.MagicPenetration??0);
             if(!request.IsBasicAttack&&(request.Origin==DamageOrigin.Direct||request.Origin==DamageOrigin.Periodic)&&request.Type!=DamageType.True)raw*=1+battle.StatusEffects.SkillVulnerability(target);
             float reduction=1-(1-battle.Items.IncomingReduction(target,request,target.EffectiveDamageModifiers.Reduction))*battle.Synergies.IncomingMultiplier(target,request);
             // Validate arithmetic before consuming RNG or changing state.
             DamageCalculator.CalculateDetailed(raw,bonus,request.Type,armor,
-                mr,canCrit,source.Stats.CritMultiplier+battle.Synergies.CriticalBonus(source),
+                mr,canCrit,criticalMultiplier,
                 amplification,reduction);
-            if(guaranteed)battle.StatusEffects.ConsumeCritical(source);
-            bool critical=battle.Synergies.CachedCritical(request)??(canCrit&&(guaranteed||critChance>=1 ||
+            if(statusGuaranteed)battle.StatusEffects.ConsumeCritical(source);
+            bool critical=battle.Synergies.CachedCritical(request)??(canCrit&&(lensCritical??(guaranteed||critChance>=1 ||
                 (critChance>0 &&
-                 (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<critChance)));
+                 (battle.RngStreams.Critical.NextUInt64()>>11)*(1.0/9007199254740992.0)<critChance))));
             critical=battle.Synergies.ResolveCritical(request,critical);
             var calculation=DamageCalculator.CalculateDetailed(raw,bonus,request.Type,armor,
-                mr,critical,source.Stats.CritMultiplier+battle.Synergies.CriticalBonus(source),
+                mr,critical,criticalMultiplier,
                 amplification,reduction);
-            float post=calculation.FinalDamage;
+            float post=battle.Items.IsRecoveringFromSash(target) ? 0 : calculation.FinalDamage;
             battle.Synergies.BeforeEarthDamage(source,target,request,post);
             float shield=Math.Min(target.CurrentShield,post);
             float hpDamage=Math.Min(target.CurrentHP,Math.Max(0,post-shield));
@@ -144,6 +164,7 @@ namespace PokeChess.Core.Battle
             var result=new DamageResult(battle.CurrentTick,request,calculation.AfterAmplification,post,shield,hpDamage,
                 target.CurrentHP,target.CurrentShield,killed,calculation);
             battle.RecordDamage(result);
+            if (request.Origin == DamageOrigin.Item) return result;
             battle.Energy.OnDamage(result);
             battle.Synergies.OnDamageResolved(result);
             battle.StatusEffects.OnDamage(result);

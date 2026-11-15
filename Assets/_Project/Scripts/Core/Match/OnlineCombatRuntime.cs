@@ -102,8 +102,14 @@ namespace PokeChess.Core.Match
         }
         public void Step()
         {
-            var phase=Match.Phase;rounds.Step();foreach(var pair in rounds.Battles)Capture(pair,false);
-            if(phase!=Match.Phase)commands.NotifyHostStateChanged();
+            var phase = Match.Phase;
+            int round = Match.RoundNumber;
+            bool wild = rounds.IsWildRound;
+            int rewardedBefore = wild ? Match.Players.Count(player => player.LastItemRewardRound == round) : 0;
+            rounds.Step();
+            foreach (var pair in rounds.Battles) Capture(pair, false);
+            if (phase != Match.Phase || wild && Match.Players.Count(player => player.LastItemRewardRound == round) != rewardedBefore)
+                commands.NotifyHostStateChanged();
         }
         public void SettleResult(){rounds.SettleResult();commands.NotifyHostStateChanged();}
         public bool NextRound(int round){if(!rounds.NextRound(round))return false;commands.NotifyHostStateChanged();return true;}

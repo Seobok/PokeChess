@@ -411,15 +411,15 @@ namespace PokeChess.Core.Tests
             Assert.That(b.StatusEffects.HasBehavior(U(b,"z"),StatusBehavior.Focus),Is.True);
             Assert.That(b.Energy.EventsThisTick.Any(e=>e.Reason==EnergyChangeReason.SkillRefund),Is.False);
         }
-        [Test] public void FocusIgnoresPoisonAndBurnPulsesAndFullyShieldedHit()
+        [Test] public void FocusIgnoresPeriodicDamageButTriggersOnFullyShieldedDirectHit()
         {
             var b=Battle();var target=U(b,"z");var start=target.Position;
             b.StatusEffects.Apply(Focus(),"z","z");b.StatusEffects.Apply(State(StatusBehavior.Poison),"a","z");
             b.StatusEffects.Apply(State(StatusBehavior.Burn),"a","z");var sim=Sim(b);Through(b,sim,8);
             Assert.That(target.CurrentHP,Is.EqualTo(950));Assert.That(target.Position,Is.EqualTo(start));
             target.SetShield(100);Hit(b,100,true);Assert.That(target.CurrentShield,Is.Zero);
-            Assert.That(target.Position,Is.EqualTo(start));Assert.That(b.StatusEffects.HasBehavior(target,StatusBehavior.Focus),Is.True);
-            target.SetShield(50);Hit(b,100,true);Assert.That(target.Position,Is.Not.EqualTo(start));
+            Assert.That(target.CurrentHP,Is.EqualTo(950));
+            Assert.That(target.Position,Is.Not.EqualTo(start));
             Assert.That(b.StatusEffects.HasBehavior(target,StatusBehavior.Focus),Is.False);
         }
         [Test] public void FocusRetriesAfterMovementBlockAndDoesNotRefundFailure()

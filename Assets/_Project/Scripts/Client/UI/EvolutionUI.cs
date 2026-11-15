@@ -17,12 +17,6 @@ namespace PokeChess.Client.UI
 
         private void BuildEvolutionUI()
         {
-            evolutionPointsLabel = ItemLabel("EvolutionPoints", shopFrame, "", 12,
-                new Vector2(140,38), new Vector2(330,65));
-            // Share the existing action row with selling, keeping round/debug controls separate.
-            var saleRect = sellButton.GetComponent<RectTransform>();
-            saleRect.sizeDelta = new Vector2(98,32); saleRect.anchoredPosition = new Vector2(436,72);
-            sellButton.GetComponentInChildren<UnityEngine.UI.Text>().rectTransform.sizeDelta = new Vector2(94,28);
             evolveButton = ActionButton("Evolve", new Vector2(106,32), new Vector2(544,72), EvolveSelected);
             evolveButton.GetComponentInChildren<UnityEngine.UI.Text>().font = itemFont;
             evolutionHintPanel = Panel("EvolutionPreview", new Vector2(320,115), new Vector2(205,207));

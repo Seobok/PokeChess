@@ -6,7 +6,7 @@ namespace PokeChess.Client.UI
     public sealed partial class PlacementSandboxView
     {
         private RectTransform finalRoot;
-        private RectTransform finalBackdrop;
+        private RectTransform finalBackdrop, finalPresentation;
         private UnityEngine.UI.Text finalInfo;
         private UnityEngine.UI.Button newMatchButton;
         private UnityEngine.UI.Text finalTitle,finalSummary;
@@ -17,28 +17,22 @@ namespace PokeChess.Client.UI
         public UnityEngine.UI.Button NewMatchButton => newMatchButton;
         private void BuildFinalResultUI()
         {
-            finalBackdrop=Panel("FinalBackdrop",new Vector2(1280,720),Vector2.zero);
-            finalBackdrop.anchorMin=Vector2.zero;finalBackdrop.anchorMax=Vector2.one;finalBackdrop.sizeDelta=Vector2.zero;
-            finalBackdrop.GetComponent<UnityEngine.UI.Image>().color=new Color(.02f,.035f,.06f,.94f);
-            finalBackdrop.gameObject.SetActive(false);
-            finalRoot=Panel("MatchFinalResult",new Vector2(700,450),new Vector2(0,35));
-            finalInfo=Label("FinalStandings",finalRoot,"",17,new Vector2(670,370),new Vector2(0,20));
-            finalInfo.gameObject.SetActive(false);
-            finalTitle=Label("FinalTitle",finalRoot,"",27,new Vector2(660,35),new Vector2(0,187));
-            finalSummary=Label("FinalSummary",finalRoot,"",14,new Vector2(660,45),new Vector2(0,143));
-            float[] xs={-280,-175,-60,145};float[] widths={65,140,70,320};
-            string[] headers={"RANK","PLAYER","HP","STATUS / ELIMINATION"};
-            for(int c=0;c<4;c++)Label("StandingsHeader_"+c,finalRoot,headers[c],13,new Vector2(widths[c],24),new Vector2(xs[c],105));
-            for(int i=0;i<8;i++) {
-                var image=HudImage("FinalRow_"+i,finalRoot,new Vector2(650,30),new Vector2(0,70-i*34),new Color(.1f,.17f,.24f));
-                finalRowBackgrounds[i]=image;
-                finalRows[i]=Label("Standing",image.transform,"",15,new Vector2(635,28),Vector2.zero);
-                finalRows[i].gameObject.SetActive(false);
-                for(int c=0;c<4;c++)finalCells[i,c]=Label("StandingCell_"+c,image.transform,"",14,new Vector2(widths[c],28),new Vector2(xs[c],0));
+            finalPresentation = UiPrefab.Instantiate("FinalResult", canvasRect);
+            finalBackdrop = UiPrefab.Get<RectTransform>(finalPresentation, "FinalBackdrop");
+            finalRoot = UiPrefab.Get<RectTransform>(finalPresentation, "MatchFinalResult");
+            finalInfo = UiPrefab.Get<UnityEngine.UI.Text>(finalRoot, "FinalStandings");
+            finalTitle = UiPrefab.Get<UnityEngine.UI.Text>(finalRoot, "FinalTitle");
+            finalSummary = UiPrefab.Get<UnityEngine.UI.Text>(finalRoot, "FinalSummary");
+            for (int i = 0; i < finalRows.Length; i++)
+            {
+                var image = finalRowBackgrounds[i] = UiPrefab.Get<UnityEngine.UI.Image>(finalRoot, $"FinalRow_{i}");
+                finalRows[i] = UiPrefab.Get<UnityEngine.UI.Text>(image.transform, "Standing");
+                for (int column = 0; column < finalCells.GetLength(1); column++)
+                    finalCells[i, column] = UiPrefab.Get<UnityEngine.UI.Text>(image.transform, $"StandingCell_{column}");
             }
-            newMatchButton=ActionButton("New match",new Vector2(220,28),new Vector2(0,-203),ResetMatchUI);
-            newMatchButton.transform.SetParent(finalRoot,false);finalRoot.gameObject.SetActive(false);
+            newMatchButton = UiPrefab.Bind(finalRoot, "New match", ResetMatchUI);
         }
+
         private void RenderFinalResultUI()
         {
             bool finished=Match.Phase==MatchPhase.Finished && Match.FinalResult!=null;
@@ -66,7 +60,7 @@ namespace PokeChess.Client.UI
                 finalCells[i,3].text=(p.IsWinner?"WINNER · ":"")+(p.WasAlive?"Alive":(p.EliminationReason==EliminationReason.Surrender?"Surrender":"HP depleted")+" / R"+p.EliminationRound);
                 for(int c=0;c<4;c++)finalCells[i,c].color=finalRows[i].color;
             }
-            newMatchButton.interactable=true;finalBackdrop.SetAsLastSibling();finalRoot.SetAsLastSibling();
+            newMatchButton.interactable=true;finalPresentation.SetAsLastSibling();
         }
     }
 }

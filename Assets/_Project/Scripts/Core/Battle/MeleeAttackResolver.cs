@@ -5,7 +5,7 @@ using PokeChess.Core.Board;
 namespace PokeChess.Core.Battle
 {
     public enum DamageType { Physical, Magic, True }
-    public enum DamageOrigin { Direct, Periodic, Reflection, Debuff, FreezeBreak, Execution, Synergy }
+    public enum DamageOrigin { Direct, Periodic, Reflection, Debuff, FreezeBreak, Execution, Synergy, Item }
     public readonly struct DamageSourceSnapshot
     {
         public long CastId { get; }

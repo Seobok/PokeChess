@@ -11,7 +11,10 @@ namespace PokeChess.Client.UI
         private static readonly Vector2 BoardCellSize = new Vector2(72, 58);
         private readonly UnityEngine.UI.Image[] boardMarks = new UnityEngine.UI.Image[BoardColumns * BoardRows];
         private readonly UnityEngine.UI.Image[] benchSlots = new UnityEngine.UI.Image[9];
-        private Sprite deployOutline, validTarget, blockedTarget, benchSlot, benchSlotActive, sellIdle, sellActive;
+        private readonly RectTransform[] boardTiles = new RectTransform[BoardColumns * BoardRows];
+        private readonly Sprite[] deployOutlines = new Sprite[BoardColumns * BoardRows];
+        private readonly Sprite[] benchIdleSprites = new Sprite[9];
+        private Sprite validTarget, blockedTarget, benchSlotActive, sellIdle, sellActive;
         private UnityEngine.UI.Image sellDrop;
         private UnityEngine.UI.Text sellDropPrice;
         private PokemonSpriteView draggedSprite;
@@ -22,72 +25,66 @@ namespace PokeChess.Client.UI
 
         private static Sprite LoadPlacementArt(string name) => Resources.Load<Sprite>("BoardBenchSell/" + name);
 
-        private UnityEngine.UI.Image PlacementArt(string name, Transform parent, Vector2 size, Vector2 position, Sprite sprite)
+        private RectTransform BindPlacementArt()
         {
-            var image = HudImage(name, parent, size, position, Color.white);
-            image.sprite = sprite;
-            return image;
-        }
-
-        private void BuildPlacementArt()
-        {
-            deployOutline = LoadPlacementArt("BoardDeployableOutline");
             validTarget = LoadPlacementArt("BoardValidTarget");
             blockedTarget = LoadPlacementArt("BoardBlockedTarget");
-            benchSlot = LoadPlacementArt("BenchSlot");
             benchSlotActive = LoadPlacementArt("BenchSlotActive");
-            sellIdle = LoadPlacementArt("SellDropIdle");
             sellActive = LoadPlacementArt("SellDropActive");
 
-            var root = Rect("PlacementArt", canvasRect, Vector2.zero, Vector2.zero);
-            root.SetSiblingIndex(2);
-            var tile = LoadPlacementArt("BoardTile");
+            var root = UiPrefab.Instantiate("PlacementArt", canvasRect);
+            root.SetSiblingIndex(1);
             for (int row = 0; row < BoardRows; row++)
-            for (int col = 0; col < BoardColumns; col++)
+            for (int column = 0; column < BoardColumns; column++)
             {
-                Vector2 center = TablePoint(new BoardPosition(col, row));
-                PlacementArt($"BoardTile_{col}_{row}", root, BoardCellSize, center, tile);
-            }
-            for (int row = 0; row < BoardRows; row++)
-            for (int col = 0; col < BoardColumns; col++)
-            {
-                int index = row * BoardColumns + col;
-                boardMarks[index] = PlacementArt($"PlacementMark_{col}_{row}", root, BoardCellSize,
-                    TablePoint(new BoardPosition(col, row)), deployOutline);
-                boardMarks[index].enabled = false;
+                int index = row * BoardColumns + column;
+                var tile = boardTiles[index] = UiPrefab.Get<RectTransform>(root, $"BoardTile_{column}_{row}");
+                var mark = boardMarks[index] = UiPrefab.Get<UnityEngine.UI.Image>(root, $"PlacementMark_{column}_{row}");
+                var markRect = mark.rectTransform;
+                markRect.anchorMin = tile.anchorMin;
+                markRect.anchorMax = tile.anchorMax;
+                markRect.pivot = tile.pivot;
+                markRect.anchoredPosition = tile.anchoredPosition;
+                markRect.sizeDelta = tile.sizeDelta;
+                deployOutlines[index] = mark.sprite;
             }
 
-            PlacementArt("BenchFrame", root, new Vector2(553, 60), new Vector2(-12, -142), LoadPlacementArt("BenchFrame"));
-            var plate = PlacementArt("BenchLabelPlate", root, new Vector2(83, 42), new Vector2(-326, -142),
-                LoadPlacementArt("BenchLabelPlate"));
-            var benchTitle = ItemLabel("BenchLabel", plate.transform, "벤치", 15, new Vector2(65, 34), Vector2.zero);
-            benchTitle.color = new Color32(13, 23, 55, 255);
-            benchTitle.fontStyle = FontStyle.Bold;
+            for (int i = 0; i < benchSlots.Length; i++)
+            {
+                benchSlots[i] = UiPrefab.Get<UnityEngine.UI.Image>(root, $"BenchSlotArt_{i}");
+                benchIdleSprites[i] = benchSlots[i].sprite;
+            }
+
             foreach (var slot in slots)
             {
-                if (slot.Placement.Kind == PlacementKind.Board)
-                {
-                    Place(slot.Rect, BoardCellSize, TablePoint(slot.Placement.Position.Value));
-                }
+                RectTransform art;
+                if (slot.Placement.Position is BoardPosition position)
+                    art = boardTiles[position.Row * BoardColumns + position.Column];
                 else
-                {
-                    int index = slot.Placement.BenchSlot.Value;
-                    var center = new Vector2(-252 + index * 60, -142);
-                    Place(slot.Rect, new Vector2(57, 47), center);
-                    benchSlots[index] = PlacementArt("BenchSlotArt_" + index, root, slot.Rect.sizeDelta, center, benchSlot);
-                }
+                    art = benchSlots[slot.Placement.BenchSlot.Value].rectTransform;
+
+                Place(slot.Rect, PlacementSize(art), PlacementCenter(art));
                 slot.Graphic.enabled = false;
                 foreach (Transform child in slot.Rect) child.gameObject.SetActive(false);
             }
 
-            sellDrop = PlacementArt("SellDropZone", root, new Vector2(126, 63), new Vector2(333, -142), sellIdle);
-            PlacementArt("Coin", sellDrop.transform, new Vector2(27, 27), new Vector2(-35, 0), LoadPlacementArt("SellCoin"));
-            var title = ItemLabel("Label", sellDrop.transform, "판매", 15, new Vector2(71, 21), new Vector2(13, 9));
-            title.fontStyle = FontStyle.Bold;
-            sellDropPrice = ItemLabel("Price", sellDrop.transform, "", 15, new Vector2(70, 20), new Vector2(13, -10));
-            sellDropPrice.color = new Color32(255, 226, 120, 255);
-            sellDropPrice.fontStyle = FontStyle.Bold;
-            sellDrop.gameObject.SetActive(false);
+            sellDrop = UiPrefab.Get<UnityEngine.UI.Image>(root, "SellDropZone");
+            sellDropPrice = UiPrefab.Get<UnityEngine.UI.Text>(sellDrop.transform, "Price");
+            sellIdle = sellDrop.sprite;
+            return root;
+        }
+
+        private Vector2 PlacementCenter(RectTransform rect) =>
+            canvasRect.InverseTransformPoint(rect.TransformPoint(rect.rect.center));
+
+        private Vector2 PlacementSize(RectTransform rect) =>
+            canvasRect.InverseTransformVector(rect.TransformVector(rect.rect.size));
+
+        private Vector2 TablePoint(BoardPosition position)
+        {
+            if (position.Column >= 0 && position.Column < BoardColumns && position.Row >= 0 && position.Row < BoardRows)
+                return PlacementCenter(boardTiles[position.Row * BoardColumns + position.Column]);
+            return new Vector2(-252 + position.Column * 72 + (position.Row % 2) * 36, -70 + position.Row * 43);
         }
 
         private void ShowDraggedPokemon(string species, UnitPlacement origin)
@@ -169,13 +166,13 @@ namespace PokeChess.Client.UI
                 mark.enabled = hovered || deploying && i < BoardColumns * DeployRows;
                 if (mark.enabled) mark.sprite = hovered
                     ? i == targetIndex && dragTargetValid ? validTarget : blockedTarget
-                    : deployOutline;
+                    : deployOutlines[i];
             }
             int targetBench = placementDragging ? dragTarget?.Placement.BenchSlot ?? -1 : -1;
             for (int i = 0; i < benchSlots.Length; i++)
             {
                 bool highlighted = placementDragging && (i == dragBenchOrigin || i == targetBench);
-                benchSlots[i].sprite = highlighted ? benchSlotActive : benchSlot;
+                benchSlots[i].sprite = highlighted ? benchSlotActive : benchIdleSprites[i];
                 benchSlots[i].color = i == targetBench && !dragTargetValid ? new Color(1f, .4f, .4f) : Color.white;
             }
             foreach (var slot in slots) slot.Graphic.enabled = IsItemDragging && draggedItem != EvolutionDragId;

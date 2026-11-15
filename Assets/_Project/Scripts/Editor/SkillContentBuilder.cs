@@ -193,9 +193,11 @@ namespace PokeChess.Editor
             if(s.TargetRule==SkillTargetRule.Self)s.TargetLostPolicy=TargetLostPolicy.ContinueWithoutTarget;
             EditorUtility.SetDirty(s);
         }
-        [MenuItem("PokeChess/Content/Apply Skill Plan")]
+        [MenuItem("PokeChess/Content/Restore Legacy Skill Plan (v0.7)")]
         public static void Apply()
         {
+            if (!EditorUtility.DisplayDialog("Restore legacy skill plan?",
+                "This regenerates the v0.7 skills and stats over the currently authored roster.", "Restore v0.7", "Cancel")) return;
             skills.Clear();statuses.Clear();defaults.Clear();fallbacks.Clear();
             var plan=JsonUtility.FromJson<Plan>(File.ReadAllText(Content+"SkillPlan.json"));
             if(plan.Rows.Length!=109||plan.Rows.Select(r=>r.Id).Distinct().Count()!=109)throw new InvalidOperationException("Invalid source plan");

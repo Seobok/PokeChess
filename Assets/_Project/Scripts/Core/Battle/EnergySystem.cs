@@ -34,13 +34,22 @@ namespace PokeChess.Core.Battle
         public bool IsSkillReady(UnitCombatState unit)
         { Validate(unit); return unit.IsAlive&&unit.IsOnBoard&&unit.ActionState!=CombatActionState.Casting&&
             unit.Stats.MaxEnergy>0&&unit.CurrentEnergy>=unit.Stats.MaxEnergy; }
-        public bool Gain(UnitCombatState unit,float amount,EnergyChangeReason reason)
+        public bool Gain(UnitCombatState unit,float amount,EnergyChangeReason reason, bool capAtMax = false)
         {
             Validate(unit);DamageCalculator.Validate(amount,true);
             if(reason!=EnergyChangeReason.BasicAttackHit&&reason!=EnergyChangeReason.DamageReceived&&reason!=EnergyChangeReason.Item)
                 throw new ArgumentOutOfRangeException(nameof(reason));
             if(amount==0)return false;
             amount=(float)Math.Min(float.MaxValue,(double)amount*unit.EffectiveStats.EnergyGain);
+            if (reason == EnergyChangeReason.BasicAttackHit || reason == EnergyChangeReason.DamageReceived)
+            {
+                int luckyEgg = ItemCombatSystem.Count(unit, "crafted-lucky-egg");
+                if (luckyEgg > 0)
+                {
+                    amount = (float)Math.Round(amount * (1 + .25f * luckyEgg), MidpointRounding.AwayFromZero);
+                    capAtMax = true;
+                }
+            }
             if(reason==EnergyChangeReason.DamageReceived)amount=Math.Min(50,amount);
             var block=!unit.IsAlive||!unit.IsOnBoard?EnergyBlockReason.Unavailable:
                 unit.ActionState==CombatActionState.Casting?EnergyBlockReason.Casting:
@@ -48,7 +57,9 @@ namespace PokeChess.Core.Battle
             float before=unit.CurrentEnergy;
             if(block==EnergyBlockReason.None)
             {
-                unit.SetEnergy((float)Math.Min(float.MaxValue,(double)before+amount));
+                float limit = capAtMax ? Math.Max(before, unit.Stats.MaxEnergy) : float.MaxValue;
+                amount = (float)Math.Min(amount, (double)limit - before);
+                unit.SetEnergy(before + amount);
                 battle.Synergies.RecordVenomManaErosion(unit, before, amount);
             }
             events.Add(new EnergyEvent(unit,battle.CurrentTick,reason,block,before,amount));

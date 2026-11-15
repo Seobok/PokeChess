@@ -39,23 +39,22 @@ namespace PokeChess.Client.UI
             combatRoot.anchoredPosition = new Vector2(0,-28);
             combatInfo.rectTransform.anchoredPosition = new Vector2(235,365);
             combatInfo.rectTransform.sizeDelta = new Vector2(280,24); combatInfo.fontSize = 12;
-            BuildSynergyHud();
-            synergyProgress=Label("SynergyProgress",synergyRoot,"",10,new Vector2(145,34),new Vector2(0,-176));
+            BindSynergyHud();
             venomHud = new VenomHud(canvasRect, synergyRoot, synergyProgress.font);
-            synergySettingsButton=ActionButton("시너지 설정",new Vector2(145,25),new Vector2(-553,-111),()=>synergySettings.gameObject.SetActive(!synergySettings.gameObject.activeSelf));
-            synergySettings=Panel("SynergySettings",new Vector2(440,310),new Vector2(-210,-30));
-            Label("Help",synergySettings,"준비 단계 설정 · 대지 / 신비 / 역경",12,new Vector2(420,45),new Vector2(0,125));
-            AddSynergySetting("바위 1 위치 변경",new Vector2(-105,37),()=>ConfigureSynergyChoice(1,0));
-            AddSynergySetting("바위 2 위치 변경",new Vector2(105,37),()=>ConfigureSynergyChoice(1,1));
-            AddSynergySetting("신비 예언 계열 변경",new Vector2(0,-4),()=>ConfigureSynergyChoice(2));
+            var toggle = UiPrefab.Instantiate("SynergySettingsButton", canvasRect);
+            synergySettingsButton = toggle.GetComponent<UnityEngine.UI.Button>();
+            synergySettings = UiPrefab.Instantiate("SynergySettings", canvasRect);
+            synergySettingsButton.onClick.AddListener(() => synergySettings.gameObject.SetActive(!synergySettings.gameObject.activeSelf));
+            UiPrefab.Bind(synergySettings, "바위 1 위치 변경", () => ConfigureSynergyChoice(1, 0));
+            UiPrefab.Bind(synergySettings, "바위 2 위치 변경", () => ConfigureSynergyChoice(1, 1));
+            UiPrefab.Bind(synergySettings, "신비 예언 계열 변경", () => ConfigureSynergyChoice(2));
             adversityChoices = new[]
             {
-                AddSynergySetting("골드", new Vector2(-130, -48), () => ConfigureSynergyChoice(3, 0), 125),
-                AddSynergySetting("장비 조각", new Vector2(0, -48), () => ConfigureSynergyChoice(3, 1), 125),
-                AddSynergySetting("상징 조각", new Vector2(130, -48), () => ConfigureSynergyChoice(3, 2), 125)
+                UiPrefab.Bind(synergySettings, "골드", () => ConfigureSynergyChoice(3, 0)),
+                UiPrefab.Bind(synergySettings, "장비 조각", () => ConfigureSynergyChoice(3, 1)),
+                UiPrefab.Bind(synergySettings, "상징 조각", () => ConfigureSynergyChoice(3, 2))
             };
-            AddSynergySetting("닫기",new Vector2(0,-108),()=>synergySettings.gameObject.SetActive(false));
-            synergySettings.gameObject.SetActive(false);
+            UiPrefab.Bind(synergySettings, "닫기", () => synergySettings.gameObject.SetActive(false));
             mysticVisuals = new MysticShopVisuals(synergyRoot, synergySettings,
                 (RectTransform)rerollButton.transform, (RectTransform)shopCards[0].transform);
         }
@@ -66,11 +65,6 @@ namespace PokeChess.Client.UI
                 itemIcons?.Get(ItemCatalog.SitrusBerry));
         }
 
-        private UnityEngine.UI.Button AddSynergySetting(string label,Vector2 position,Action action,float width=200)
-        {
-            var button=ActionButton(label,new Vector2(width,30),Vector2.zero,action);button.transform.SetParent(synergySettings,false);((RectTransform)button.transform).anchoredPosition=position;
-            return button;
-        }
         private void ConfigureSynergyChoice(int mode,int slot=0)
         {
             if((IsOnlineMatch?onlineService.LocalMatchState?.phase:Match.Phase)!=MatchPhase.Preparation){Feedback("준비 단계에서 설정하세요.");return;}

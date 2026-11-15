@@ -17,7 +17,6 @@ namespace PokeChess.Editor
         {
             var plan=JsonUtility.FromJson<SkillContentBuilder.Plan>(File.ReadAllText("Assets/_Project/Content/SkillPlan.json"));
             Register(plan.Rows.Select(r=>r.Id).Concat(new[]{"exeggcute","exeggutor"}));
-            SkillContentBuilder.Apply();
         }
         public static void RegisterNatureGuardians()=>Register(new[]{"exeggcute","exeggutor"});
         private static void Register(IEnumerable<string> ids)

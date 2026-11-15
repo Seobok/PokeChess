@@ -59,7 +59,6 @@ namespace PokeChess.Client.UI
         public bool UnitPopupVisible => detailPopup != null && detailPopup.gameObject.activeSelf;
         public bool BoardOutlineVisible => boardMarks.Any(mark => mark != null && mark.isActiveAndEnabled);
         public void DeselectUnit(){unitInfoPinned=false;selectedUnitId=null;hoveredUnitId=null;hoveredShopSlot=-1;HideUnitInfoHint();UpdateTablePresentation();}
-        private static Vector2 TablePoint(BoardPosition p) => new Vector2(-252+p.Column*72+(p.Row%2)*36,-70+p.Row*43);
         private void Place(RectTransform rect,Vector2 size,Vector2 position)
         { rect.sizeDelta=size;rect.anchoredPosition=position; }
         private void ApplyTableLayout()
@@ -67,12 +66,8 @@ namespace PokeChess.Client.UI
             var background=canvasRect.Find("Background").gameObject.AddComponent<UnityEngine.UI.Button>();
             background.targetGraphic=background.GetComponent<UnityEngine.UI.Image>();background.transition=UnityEngine.UI.Selectable.Transition.None;
             background.onClick.AddListener(DeselectUnit);
-            var arena=HudImage("ArenaBackground",canvasRect,new Vector2(610,410),new Vector2(-18,96),new Color(.075f,.135f,.145f));
-            arena.transform.SetSiblingIndex(1);
-            BuildPlacementArt();
             canvasRect.Find("BenchTitle").gameObject.SetActive(false);
             canvasRect.Find("Title").gameObject.SetActive(false);
-            canvasRect.Find("Inventory").gameObject.SetActive(false);
             inventoryLabel.gameObject.SetActive(false);
             header.gameObject.SetActive(false);
             BuildSpectatorHud();
@@ -81,27 +76,11 @@ namespace PokeChess.Client.UI
             foreach(Transform child in combatRoot)if(child.name.StartsWith("CombatCell_"))child.gameObject.SetActive(false);
             Place(combatInfo.rectTransform,new Vector2(420,20),new Vector2(0,267));
 
-            detailPopup=Rect("UnitPopup",canvasRect,new Vector2(340,373),new Vector2(226,88));
-            var old=canvasRect.Find("UnitDetail");old.gameObject.SetActive(false);
             detailLabel.gameObject.SetActive(false);
-            BuildUnitInfoIcons();
-            sellButton.transform.SetParent(detailPopup,false);Place((RectTransform)sellButton.transform,new Vector2(144,25),new Vector2(0,-166));
-            detailPopup.gameObject.SetActive(false);
+            BindUnitInfoIcons();
 
-            shopFrame.sizeDelta = new Vector2(1240, ShopHeight);
-            shopFrame.anchoredPosition = new Vector2(0, 10);
-            shopFrame.GetComponent<UnityEngine.UI.Image>().enabled = false;
-            evolutionPointsLabel.gameObject.SetActive(false);
-            status.gameObject.SetActive(false);
             foreach (var label in shopFrame.GetComponentsInChildren<UnityEngine.UI.Text>(true))
-                label.font = itemFont;
-            for (int i = 0; i < shopCards.Length; i++)
-            {
-                var shopHover = shopCards[i].gameObject.AddComponent<UnitHoverTarget>();
-                shopHover.View = this;
-                shopHover.ShopSlot = i;
-            }
-            foreach(Transform child in shopFrame){var rect=child as RectTransform;if(rect!=null)rect.anchorMin=rect.anchorMax=new Vector2(.5f,0);}
+                if (label.font == null) label.font = itemFont;
             developerPanel=Panel("DeveloperTools",new Vector2(240,475),new Vector2(510,70));
             string[] names={"DebugTitle","DebugState","P01-P04 demo","P05-P08 demo","P09-P12 demo","Reset match","Rank demo","Full bench","Fixed foe","4 players","6 players","8 players","3 players","5 players","7 players","DEV: Start battle","Surrender","Synergy demo","Auto play 20","Fast simulation","Save report"};
             int index=0;

@@ -25,6 +25,8 @@ namespace PokeChess.Core.Battle
         public int EvolutionStage { get; private set; }
         public PokemonStats Stats { get; private set; }
         private PokemonStats baseStats;
+        internal float BaseAttack => baseStats.Attack;
+        private bool canEvolve;
         private float maxHpMultiplier = 1;
         internal long ActiveSynergyCastId { get; set; }
         internal void ScaleMaxHP(float bonus)
@@ -35,7 +37,7 @@ namespace PokeChess.Core.Battle
 
         internal void RefreshEquipment()
         {
-            var stats = ItemCombatSystem.ApplyStats(PersistentUnit, baseStats);
+            var stats = ItemCombatSystem.ApplyStats(PersistentUnit, baseStats, canEvolve);
             float maxHp = stats.MaxHP * maxHpMultiplier;
             if (maxHp != Stats.MaxHP)
                 CurrentHP = Math.Min(maxHp, CurrentHP / Stats.MaxHP * maxHp);
@@ -52,6 +54,7 @@ namespace PokeChess.Core.Battle
             SkillId = definition.SkillId;
             EvolutionStage = PersistentUnit.EvolutionStage;
             IsBoss = definition.IsBoss;
+            canEvolve = definition.Evolutions.Count > 0;
             baseStats = RankRules.Default.Apply(definition, Rank);
             RefreshEquipment();
         }
@@ -89,9 +92,10 @@ namespace PokeChess.Core.Battle
         }
         public bool IsOnBoard { get; private set; } = true;
         private bool untargetable;
-        public bool IsSynergyStealthed => StatusSystem?.Active.Any(e=>e.TargetId==UnitInstanceId&&e.Definition.Id=="synergy-stealth")??false;
+        public bool IsSynergyStealthed => (StatusSystem?.Active.Any(e=>e.TargetId==UnitInstanceId&&e.Definition.Id=="synergy-stealth")??false)
+            || (StatusSystem?.IsItemStealthed(this) ?? false);
         public bool IsAreaTargetable => CurrentHP>0&&IsOnBoard&&(!IsUntargetable||IsSynergyStealthed);
-        public bool IsUntargetable => untargetable||(StatusSystem?.HasBehavior(this,StatusBehavior.Untargetable)??false);
+        public bool IsUntargetable => untargetable || (StatusSystem?.IsItemStealthed(this) ?? false) || (StatusSystem?.HasBehavior(this,StatusBehavior.Untargetable)??false);
         public string TauntSourceId { get; private set; }
         public bool IsTargetable => IsAlive && IsOnBoard && !IsUntargetable;
         // Status application/duration/stack rules are supplied by WBS 1.15.
@@ -105,7 +109,7 @@ namespace PokeChess.Core.Battle
         public CombatActionState ActionState { get; internal set; }
         public IReadOnlyList<string> ItemInstanceIds { get; private set; }
 
-        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId, IReadOnlyList<string> traits)
+        internal UnitCombatState(UnitInstance source, PokemonStats stats, int teamId, BoardPosition position, string skillId, IReadOnlyList<string> traits, bool canEvolve = false)
         {
             PersistentUnit=source;UnitInstanceId = source.InstanceId;
             DefinitionId = source.DefinitionId;
@@ -115,11 +119,12 @@ namespace PokeChess.Core.Battle
             Rank = source.Rank;
             EvolutionStage = source.EvolutionStage;
             TeamId = teamId;
+            this.canEvolve = canEvolve;
             baseStats = stats;
-            Stats = ItemCombatSystem.ApplyStats(source, stats);
+            Stats = ItemCombatSystem.ApplyStats(source, stats, canEvolve);
             Position = position;
-            CurrentHP = stats.MaxHP;
-            CurrentEnergy = stats.StartingEnergy;
+            CurrentHP = Stats.MaxHP;
+            CurrentEnergy = Stats.StartingEnergy;
             ItemInstanceIds = Array.AsReadOnly(source.ItemInstanceIds.ToArray());
         }
         // No damage formula or command validation here; this only stores validated state.
@@ -297,7 +302,7 @@ namespace PokeChess.Core.Battle
                 var definition = catalog.Get(e.Unit.DefinitionId);
                 var stats = resolveStats == null ? RankRules.Default.Apply(definition,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, ResolveTraits(e.Unit,entries.Select(entry => entry.Unit),catalog)){IsBoss=definition.IsBoss,IsOriginalCombatUnit=true};
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, ResolveTraits(e.Unit,entries.Select(entry => entry.Unit),catalog), definition.Evolutions.Count > 0){IsBoss=definition.IsBoss,IsOriginalCombatUnit=true};
             }).ToArray();
             var expanded=states.ToList();
             if(synergyRules==null||synergyRules.Enabled)foreach(int team in new[]{1,2}) {
