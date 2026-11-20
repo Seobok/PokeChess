@@ -1,7 +1,7 @@
 """Extract a skill workbook into typed authoring data (requires openpyxl).
 
 Usage: python Tools/import_skill_plan.py <workbook.xlsx>
-This reads source cells only; game mechanics remain in the C# authoring recipes.
+This produces a review extract only. Runtime skills are authored in Content/Skills assets.
 """
 import argparse
 import json
@@ -62,8 +62,10 @@ def extract(path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("workbook", type=Path)
+    parser.add_argument("--output", type=Path, default=ROOT / "TestResults/SkillPlanImport.json")
     args = parser.parse_args()
     plan = extract(args.workbook)
-    output = CONTENT / "SkillPlan.json"
+    output = args.output
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Extracted {len(plan['Rows'])} Pokemon and {sum(len(r['Damage']) for r in plan['Rows'])} damage triplets")

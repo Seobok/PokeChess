@@ -54,6 +54,18 @@ namespace PokeChess.Client.UI
             Reset();
         }
         public UnitCombatState Unit(string id)=>Battle.Units.FirstOrDefault(u=>u.UnitInstanceId==id);
+        public void SelectSkill(string id)
+        {
+            var data=Roster.FindSkill(id)??throw new ArgumentException("Unknown skill",nameof(id));
+            SkillId=id;
+            if(data.Ranked)for(int rank=1;rank<=3;rank++)
+                if(data.RankId(rank)==id)Layout.Single(p=>p.Id==CasterId).Rank=(UnitRank)rank;
+            Reset();
+        }
+        public void ReloadContent()
+        {
+            Roster.Validate();GameContent.Reset();Reset();
+        }
         public void Reset()
         {
             var catalog=Roster.CreateCatalog();
@@ -102,7 +114,13 @@ namespace PokeChess.Client.UI
             if(!Layout.Any(p=>p.Team==placement.Team&&p.Id!=id))throw new InvalidOperationException("팀마다 최소 한 유닛을 유지하세요.");
             Layout.Remove(placement);Reset();
         }
-        public void SetRank(string id,UnitRank rank){Layout.Single(p=>p.Id==id).Rank=rank;Reset();}
+        public void SetRank(string id,UnitRank rank)
+        {
+            Layout.Single(p=>p.Id==id).Rank=rank;
+            var selected=Roster.FindSkill(SkillId);
+            if(id==CasterId&&selected!=null&&selected.Ranked)SkillId=selected.Id;
+            Reset();
+        }
         public void ApplyStatus(string status,string targetId)
         {
             var definition=Roster.Statuses.Single(s=>s.Id==status).ToCore();var target=Unit(targetId);

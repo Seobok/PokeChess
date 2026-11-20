@@ -159,23 +159,7 @@ namespace PokeChess.Client.UI
             RenderLocalUnitStatuses(root, battle, unit);
             if(sprite.Visible)
             {
-                label.rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+UnitStatusStackHeight(label.transform.parent)+32);label.rectTransform.sizeDelta=new Vector2(64,18);
-                label.fontSize=9;label.transform.SetAsLastSibling();
-                string state=label.text.Split('\n').Last();
-                int charges = pair.Battle.Synergies.DuelistStacks(unit);
-                if (charges > 0) state = "AS+ " + charges;
-                if(pair.Battle.Synergies.TrackerStacks(unit)>0)state="TRACK "+pair.Battle.Synergies.TrackerStacks(unit);
-                if(pair.Battle.Synergies.IsGuarded(unit))state="GUARD";
-                if(pair.Battle.Synergies.IsContaminated(unit))state+=" 오염";
-                string synergyFlash = LocalSynergyFlash(unit);
-                if (synergyFlash.Length > 0) state = synergyFlash;
-                if(unit.ActionState!=CombatActionState.Casting)
-                {
-                    if(unit.HasCrowdControl(CrowdControlKind.Stun))state="STUN";
-                    else if(unit.HasCrowdControl(CrowdControlKind.Taunt))state="TAUNT";
-                    else if(unit.HasCrowdControl(CrowdControlKind.Slow))state="SLOW";
-                }
-                label.text=state;
+                label.text = string.Empty;
                 var background=label.transform.parent.GetComponent<UnityEngine.UI.Image>();
                 var c=background.color;c.a=.2f;background.color=c;
                 if(!unit.IsAlive)label.text="";

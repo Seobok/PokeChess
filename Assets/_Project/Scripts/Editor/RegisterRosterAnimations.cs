@@ -15,8 +15,7 @@ namespace PokeChess.Editor
         private static string Key(string value)=>new string(value.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
         public static void ApplyAndBuild()
         {
-            var plan=JsonUtility.FromJson<SkillContentBuilder.Plan>(File.ReadAllText("Assets/_Project/Content/SkillPlan.json"));
-            Register(plan.Rows.Select(r=>r.Id).Concat(new[]{"exeggcute","exeggutor"}));
+            Register(PokeChess.Content.GameContent.Roster.Pokemon.Select(r=>r.Id).Concat(new[]{"exeggcute","exeggutor"}));
         }
         public static void RegisterNatureGuardians()=>Register(new[]{"exeggcute","exeggutor"});
         private static void Register(IEnumerable<string> ids)

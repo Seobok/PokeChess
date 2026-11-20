@@ -59,7 +59,7 @@ namespace PokeChess.Client.UI
             bool show=frame!=null&&frame.round==pub.round&&(pub.phase==MatchPhase.Combat||playback.IsPlaying);
             combatRoot.gameObject.SetActive(show);if(!show)return;
             if(onlineBattleId!=frame.battleId){ClearOnlineFighters();onlineBattleId=frame.battleId;}
-            combatInfo.text="VS "+PlayerLabel(frame.one==onlineService.WatchingPlayerId?frame.two:frame.one,owner.playerId)+(frame.shadow?" / SHADOW":"");
+            combatInfo.text=string.Empty;
             double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
             var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
             visuals.SetVenomHud(venomHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
@@ -92,10 +92,6 @@ namespace PokeChess.Client.UI
                 onlineEffects[unit.id].rectTransform.anchoredPosition=new Vector2(0,UnitBarHeight(label.transform.parent)+UnitStatusStackHeight(label.transform.parent)+52);
                 label.text="";
                 label.color=unit.owner==onlineService.WatchingPlayerId?new Color(.6f,.9f,1):new Color(1,.65f,.6f);label.transform.SetAsLastSibling();
-                if(unit.duelistStacks>0)label.text+=" AS+"+unit.duelistStacks;
-                if(unit.trackerStacks>0)label.text+=" TRACK "+unit.trackerStacks;
-                if(unit.guarded)label.text+=" GUARD";
-                if(unit.contaminated)label.text+=" 오염";
                 onlineEffects[unit.id].gameObject.SetActive(onlineEffectUntil.TryGetValue(unit.id,out var end)&&end>Time.unscaledTime);
             }
             visuals.SortCombatDepth(combatTokens.Values.Select(label=>(RectTransform)label.transform.parent));
@@ -122,8 +118,7 @@ namespace PokeChess.Client.UI
             PlayOnlineCombatSound(effect);
             if(effect.target==null||!onlineEffects.TryGetValue(effect.target,out var label))return;
             if(effect.kind=="Item") { label.font=itemFont;label.text=ItemCatalog.Get(effect.detail).Name;label.color=new Color(.5f,1,.7f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
-            if(effect.kind=="Synergy"&&effect.detail!="guardian:FIRST_HIT"&&effect.detail!="guardian:GUARD_START") { label.text=effect.detail.Split(':').Last();label.color=new Color(1,.8f,.35f);onlineEffectUntil[effect.target]=Time.unscaledTime+.65f; }
-            else if(effect.kind=="Damage"||effect.kind=="EffectHeal"||effect.kind.StartsWith("Status")){
+            if(effect.kind=="Damage"||effect.kind=="EffectHeal"){
                 label.text=effect.kind=="Damage"?"-"+Math.Ceiling(effect.value):effect.kind=="EffectHeal"?"+"+Math.Ceiling(effect.value):effect.detail;
                 label.color=effect.kind=="Damage"?Color.red:Color.green;onlineEffectUntil[effect.target]=Time.unscaledTime+.45f;
             }

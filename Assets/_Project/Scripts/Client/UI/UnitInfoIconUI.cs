@@ -284,7 +284,8 @@ namespace PokeChess.Client.UI
                 equippedRecipeSource.GetComponent<UnitPanelItemId>().Id != hoveredComponentItem))
                 HideItemHint();
             unitSkillHint=natureTier>0?NatureGuardianSkillHint(natureTier):
-                PokeChess.Content.GameContent.FindPokemon(definition.Id)?.Skill?.Description ?? ContextSkill(definition,rank,stats);
+                (PokeChess.Content.GameContent.FindPokemon(definition.Id)?.Skill is PokeChess.Content.SkillData skillData
+                    ? PokeChess.Content.SkillDescription.Format(skillData,rank,stats,contextStatuses) : ContextSkill(definition,rank,stats));
             unitSkillHint=unitSkillHint.Replace(Readable(definition.SkillId),KoreanInfo(definition.SkillId));
             unitDetailSkill.text = natureTier > 0 ? unitSkillHint.Split('\n')[0] : KoreanInfo(definition.SkillId);
             foreach(var pair in new[]{("Lowest HP ally","체력이 가장 낮은 아군"),("Enemies r","범위 내 적 · 반경 "),("Allies r","범위 내 아군 · 반경 "),(" + splash r"," · 폭발 반경 "),("True damage","고정 피해"),("AttackSpeed","공격속도"),("Attack","공격력"),("SpellPower","주문력"),("Duration","지속 시간")})unitSkillHint=unitSkillHint.Replace(pair.Item1,pair.Item2);

@@ -14,16 +14,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-gastly
   DisplayName: "\uC774\uC0C1\uD55C\uBE5B"
-  VariantIds:
-  - skill-gastly-r1
-  - skill-gastly-r2
-  - skill-gastly-r3
-  VariantMode: 1
-  Description: "\ub300\uc0c1\uacfc \uc8fc\ubcc0 1\uce78 \uc774\ub0b4\uc758 \uc801 \ucd5c\ub300 2\uba85, \ucd1d 3\uba85\uc5d0\uac8c \uae30\ubb18\ud55c \ube5b\uc744 \ubc1c\uc0ac\ud558\uc5ec 2/2.5/3\ucd08\uac04 \ud63c\ub780 \uc0c1\ud0dc\ub85c \ub9cc\ub4e0\ub2e4. \ud63c\ub780 \uc0c1\ud0dc\uc758 \uc801\uc740 \ubc1b\ub294 \uc2a4\ud0ac \ud53c\ud574\uac00 10/15/20% \uc99d\uac00\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \ud63c\ub780 \ub300\uc0c1\uc758 \ubc1b\ub294 \uc2a4\ud0ac \ud53c\ud574 \uc99d\uac00\ub7c9\uc744 AP 100 \ucd08\uacfc 1\ub2f9 0.05%p \ucd94\uac00 \uc99d\uac00(\ucd5c\ub300 35%). \ud63c\ub780 \uc2dc\uac04\uc740 \uace0\uc815."
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uB300\uC0C1\uACFC \uC8FC\uBCC0 1\uCE78 \uC774\uB0B4\uC758 \uC801
+    \uCD5C\uB300 2\uBA85, \uCD1D 3\uBA85\uC5D0\uAC8C \uAE30\uBB18\uD55C \uBE5B\uC744
+    \uBC1C\uC0AC\uD558\uC5EC 2/2.5/3\uCD08\uAC04 \uD63C\uB780 \uC0C1\uD0DC\uB85C
+    \uB9CC\uB4E0\uB2E4. \uD63C\uB780 \uC0C1\uD0DC\uC758 \uC801\uC740 \uBC1B\uB294
+    \uC2A4\uD0AC \uD53C\uD574\uAC00 10/15/20% \uC99D\uAC00\uD55C\uB2E4.\n[AP \uAC1C\uD3B8]
+    \uD63C\uB780 \uB300\uC0C1\uC758 \uBC1B\uB294 \uC2A4\uD0AC \uD53C\uD574 \uC99D\uAC00\uB7C9\uC744
+    AP 100 \uCD08\uACFC 1\uB2F9 0.05%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 35%).
+    \uD63C\uB780 \uC2DC\uAC04\uC740 \uACE0\uC815."
   Notes: "\uC8FC \uB300\uC0C1 \uD3EC\uD568 \uCD1D 3\uBA85, \uC774\uBC88 \uAE30\uC220\uB85C
     \uBD80\uC5EC\uD55C \uD63C\uB780\uC774 \uC720\uC9C0\uB418\uB294 \uB3D9\uC548 \uC801\uC6A9.
     \uC9C1\uC811\xB7\uBC18\uBCF5 \uC2A4\uD0AC \uD53C\uD574\uC5D0 \uC801\uC6A9\uD558\uACE0
     \uAE30\uBCF8 \uACF5\uACA9\xB7\uB3C5\xB7\uD654\uC0C1\xB7\uBC18\uC0AC\uB294 \uC81C\uC678"
+  DescriptionTemplate: "\uB300\uC0C1\uACFC \uC8FC\uBCC0 1\uCE78 \uC774\uB0B4\uC758
+    \uC801 \uCD5C\uB300 2\uBA85, \uCD1D 3\uBA85\uC5D0\uAC8C \uAE30\uBB18\uD55C \uBE5B\uC744
+    \uBC1C\uC0AC\uD558\uC5EC {duration:0}\uCD08\uAC04 \uD63C\uB780 \uC0C1\uD0DC\uB85C
+    \uB9CC\uB4E0\uB2E4. \uD63C\uB780 \uC0C1\uD0DC\uC758 \uC801\uC740 \uBC1B\uB294
+    \uC2A4\uD0AC \uD53C\uD574\uAC00 10/15/20% \uC99D\uAC00\uD55C\uB2E4.\n[AP \uAC1C\uD3B8]
+    \uD63C\uB780 \uB300\uC0C1\uC758 \uBC1B\uB294 \uC2A4\uD0AC \uD53C\uD574 \uC99D\uAC00\uB7C9\uC744
+    AP 100 \uCD08\uACFC 1\uB2F9 0.05%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 35%).
+    \uD63C\uB780 \uC2DC\uAC04\uC740 \uACE0\uC815."
   CastTime: 0.4
   PostCastTime: 0.4
   TargetRule: 0
@@ -36,5 +50,73 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 4
+    TargetSelector: 5
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 52fba409d802330458e9ccf6cfd8e566, type: 2}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 52fba409d802330458e9ccf6cfd8e566, type: 2}
+    - {fileID: 11400000, guid: 12006cd31acec864092392f12c7ce85d, type: 2}
+    - {fileID: 11400000, guid: a560d495c88718946979350ea0e7a6a0, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 1
+      Extent: 1
+      MaxTargets: 3
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []

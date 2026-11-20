@@ -14,17 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-poliwhirl
   DisplayName: "\uB9DD\uAC01\uC220"
-  VariantIds:
-  - skill-poliwhirl-r1
-  - skill-poliwhirl-r2
-  - skill-poliwhirl-r3
-  VariantMode: 1
-  Description: "5\ucd08\uac04 \ud2b9\uc218\ubc29\uc5b4\ub825\uc774 50/65/80% \uc99d\uac00\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \ud2b9\uc218\ubc29\uc5b4\ub825 \uc99d\uac00\ub7c9\uc744 AP 100 \ucd08\uacfc 1\ub2f9 0.10%p \ucd94\uac00 \uc99d\uac00(\ucd5c\ub300 115%). \uc9c0\uc18d\uc2dc\uac04\uc740 \uace0\uc815."
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "5\uCD08\uAC04 \uD2B9\uC218\uBC29\uC5B4\uB825\uC774 50/65/80% \uC99D\uAC00\uD55C\uB2E4.\n[AP
+    \uAC1C\uD3B8] \uD2B9\uC218\uBC29\uC5B4\uB825 \uC99D\uAC00\uB7C9\uC744 AP 100
+    \uCD08\uACFC 1\uB2F9 0.10%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 115%). \uC9C0\uC18D\uC2DC\uAC04\uC740
+    \uACE0\uC815."
   Notes: 
+  DescriptionTemplate: "{duration:0}\uCD08\uAC04 \uD2B9\uC218\uBC29\uC5B4\uB825\uC774
+    50/65/80% \uC99D\uAC00\uD55C\uB2E4.\n[AP \uAC1C\uD3B8] \uD2B9\uC218\uBC29\uC5B4\uB825
+    \uC99D\uAC00\uB7C9\uC744 AP 100 \uCD08\uACFC 1\uB2F9 0.10%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300
+    115%). \uC9C0\uC18D\uC2DC\uAC04\uC740 \uACE0\uC815."
   CastTime: 0.4
   PostCastTime: 0.4
-  TargetRule: 0
-  TargetLostPolicy: 0
+  TargetRule: 1
+  TargetLostPolicy: 2
   Range: 3
   Interruptible: 1
   HasEnergyLock: 1
@@ -33,5 +39,73 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 4
+    TargetSelector: 1
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 4be187f75e6aac34c8abb128b4e2f6a3, type: 2}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 4be187f75e6aac34c8abb128b4e2f6a3, type: 2}
+    - {fileID: 11400000, guid: 43010f7f2e142ae44bc404cd28b8b270, type: 2}
+    - {fileID: 11400000, guid: 7a9d4d3f4de0a514a952a5d2a7d47e97, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []

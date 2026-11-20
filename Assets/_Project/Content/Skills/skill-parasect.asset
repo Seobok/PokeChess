@@ -14,13 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-parasect
   DisplayName: "\uBCA0\uC5B4\uAC00\uB974\uAE30"
-  VariantIds:
-  - skill-parasect-r1
-  - skill-parasect-r2
-  - skill-parasect-r3
-  VariantMode: 1
-  Description: "\uc801\uc5d0\uac8c 95/135/180\uc758 \ubb3c\ub9ac \ud53c\ud574\ub97c \uc8fc\uba70 4\ucd08\uac04 \ucd9c\ud608 \uc0c1\ud0dc\ub85c \ub9cc\ub4e0\ub2e4.\n[AD/AP v4] \ubaa8\ub4e0 \uace0\uc815 \uc9c1\uc811 \ud53c\ud574(\uc8fc \ud0c0\uaca9\u00b7\ucd94\uac00 \ud0c0\uaca9\u00b7\uad11\uc5ed\u00b7\ud2f1\u00b7\uc870\uac74\ubd80 \ud53c\ud574)\uc5d0 \uac01\uac01 \uae30\ubcf8 \uc218\uce58 \u00d7 [0.70\u00d7(\ud604\uc7ac AD/\ub3d9\uc77c \uc131\uae09 \uae30\uc900 AD)+0.30\u00d7(\ud604\uc7ac AP/100)] \uc801\uc6a9. \ud53c\ud574 \uc720\ud615\u00b7\uace0\uc720 \uc0c1\ud0dc\uc774\uc0c1 \ud53c\ud574\u00b7\uad70\uc911\uc81c\uc5b4 \uc9c0\uc18d\uc2dc\uac04\uc740 \uc720\uc9c0.\n[\uc608\uc678] \ucd9c\ud608 \uace0\uc720 \ud53c\ud574\ub294 \ubcc4\ub3c4 \uc0c1\ud0dc\uc774\uc0c1 \uaddc\uce59"
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uC801\uC5D0\uAC8C 95/135/180\uC758 \uBB3C\uB9AC \uD53C\uD574\uB97C
+    \uC8FC\uBA70 4\uCD08\uAC04 \uCD9C\uD608 \uC0C1\uD0DC\uB85C \uB9CC\uB4E0\uB2E4.\n[AD/AP
+    v4] \uBAA8\uB4E0 \uACE0\uC815 \uC9C1\uC811 \uD53C\uD574(\uC8FC \uD0C0\uACA9\xB7\uCD94\uAC00
+    \uD0C0\uACA9\xB7\uAD11\uC5ED\xB7\uD2F1\xB7\uC870\uAC74\uBD80 \uD53C\uD574)\uC5D0
+    \uAC01\uAC01 \uAE30\uBCF8 \uC218\uCE58 \xD7 [0.70\xD7(\uD604\uC7AC AD/\uB3D9\uC77C
+    \uC131\uAE09 \uAE30\uC900 AD)+0.30\xD7(\uD604\uC7AC AP/100)] \uC801\uC6A9. \uD53C\uD574
+    \uC720\uD615\xB7\uACE0\uC720 \uC0C1\uD0DC\uC774\uC0C1 \uD53C\uD574\xB7\uAD70\uC911\uC81C\uC5B4
+    \uC9C0\uC18D\uC2DC\uAC04\uC740 \uC720\uC9C0.\n[\uC608\uC678] \uCD9C\uD608 \uACE0\uC720
+    \uD53C\uD574\uB294 \uBCC4\uB3C4 \uC0C1\uD0DC\uC774\uC0C1 \uADDC\uCE59"
   Notes: 
+  DescriptionTemplate: "\uC801\uC5D0\uAC8C {value:0}\uC758 \uBB3C\uB9AC \uD53C\uD574\uB97C
+    \uC8FC\uBA70 {duration:1}\uCD08\uAC04 \uCD9C\uD608 \uC0C1\uD0DC\uB85C \uB9CC\uB4E0\uB2E4.\n[AD/AP
+    v4] \uBAA8\uB4E0 \uACE0\uC815 \uC9C1\uC811 \uD53C\uD574(\uC8FC \uD0C0\uACA9\xB7\uCD94\uAC00
+    \uD0C0\uACA9\xB7\uAD11\uC5ED\xB7\uD2F1\xB7\uC870\uAC74\uBD80 \uD53C\uD574)\uC5D0
+    \uAC01\uAC01 \uAE30\uBCF8 \uC218\uCE58 \xD7 [0.70\xD7(\uD604\uC7AC AD/\uB3D9\uC77C
+    \uC131\uAE09 \uAE30\uC900 AD)+0.30\xD7(\uD604\uC7AC AP/100)] \uC801\uC6A9. \uD53C\uD574
+    \uC720\uD615\xB7\uACE0\uC720 \uC0C1\uD0DC\uC774\uC0C1 \uD53C\uD574\xB7\uAD70\uC911\uC81C\uC5B4
+    \uC9C0\uC18D\uC2DC\uAC04\uC740 \uC720\uC9C0.\n[\uC608\uC678] \uCD9C\uD608 \uACE0\uC720
+    \uD53C\uD574\uB294 \uBCC4\uB3C4 \uC0C1\uD0DC\uC774\uC0C1 \uADDC\uCE59"
   CastTime: 0.4
   PostCastTime: 0.4
   TargetRule: 0
@@ -33,5 +49,138 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 0
+    TargetSelector: 0
+    BaseValue: 95
+    SpellPowerScalable: 1
+    PowerScaling: 2
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 0
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 95
+    - 135
+    - 180
+    RankStatuses: []
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  - Type: 4
+    TargetSelector: 0
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: d262ab8886c23c34caa0fc97a8fe74c7, type: 2}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: d262ab8886c23c34caa0fc97a8fe74c7, type: 2}
+    - {fileID: 11400000, guid: 2a354e87161085649842d7fb131b6e00, type: 2}
+    - {fileID: 11400000, guid: 51cdb61e7ee46d3419127262382f479d, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []

@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-ekans
   DisplayName: "\uBC40\uB208\uCD08\uB9AC"
-  VariantIds:
-  - skill-ekans-r1
-  - skill-ekans-r2
-  - skill-ekans-r3
-  VariantMode: 1
-  Description: "\uc801\uc744 3\ucd08\uac04 \ub9c8\ube44\uc2dc\ud0a4\uace0 \uacf5\uaca9\ub825\uc744 15/20/25% \uac10\uc18c\uc2dc\ud0a8\ub2e4.\n[AP \uac1c\ud3b8] \ub300\uc0c1 \uacf5\uaca9\ub825 \uac10\uc18c\ub7c9\uc744 AP 100 \ucd08\uacfc 1\ub2f9 0.06%p \ucd94\uac00 \uc99d\uac00(\ucd5c\ub300 45%). \ub9c8\ube44 3\ucd08\ub294 \uace0\uc815."
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uC801\uC744 3\uCD08\uAC04 \uB9C8\uBE44\uC2DC\uD0A4\uACE0 \uACF5\uACA9\uB825\uC744
+    15/20/25% \uAC10\uC18C\uC2DC\uD0A8\uB2E4.\n[AP \uAC1C\uD3B8] \uB300\uC0C1 \uACF5\uACA9\uB825
+    \uAC10\uC18C\uB7C9\uC744 AP 100 \uCD08\uACFC 1\uB2F9 0.06%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300
+    45%). \uB9C8\uBE44 3\uCD08\uB294 \uACE0\uC815."
   Notes: 
   CastTime: 0.4
   PostCastTime: 0.4
@@ -33,5 +35,141 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 4
+    TargetSelector: 0
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 0caadf4ceb37246438b4dfb98a494bc7, type: 2}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 0caadf4ceb37246438b4dfb98a494bc7, type: 2}
+    - {fileID: 11400000, guid: 1e1a6be351eec514dba31cbdbe6cc7ff, type: 2}
+    - {fileID: 11400000, guid: d234db4c21dcfcf43a6438e6a9a09396, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
+  - Type: 4
+    TargetSelector: 0
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: faf760d650adb6a408783eb6680e0e2b, type: 2}
+    StatusTargetTeam: 1
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: faf760d650adb6a408783eb6680e0e2b, type: 2}
+    - {fileID: 11400000, guid: a967ab91b5346d4448cef026b60ee549, type: 2}
+    - {fileID: 11400000, guid: 3c0b711325c106441a8fc5e6da74985b, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []

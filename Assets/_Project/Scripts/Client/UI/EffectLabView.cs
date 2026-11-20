@@ -98,7 +98,7 @@ namespace PokeChess.Client.UI
             if(FindFirstObjectByType<EventSystem>()==null)new GameObject("EffectLabEvents",typeof(EventSystem),typeof(InputSystemUIInputModule));
             Text("Title",canvas,"EFFECT LAB",24,16,420,42,28,Accent);
             Text("Subtitle",canvas,"스킬과 상태를 직접 적용하고, 실제 수치와 연출을 확인하세요.",26,62,1000,24,15);
-            Button("ReloadContent",canvas,"목록 새로고침",1350,28,160,34,()=>{running=false;Session.Reset();RefreshList();});
+            Button("ReloadContent",canvas,"데이터 다시 읽기",1350,28,160,34,()=>{running=false;Session.ReloadContent();ClearFighters();RefreshList();});
             BuildCatalog();BuildBoard();BuildInspector();BuildControls();
         }
         private void BuildCatalog()
@@ -223,7 +223,8 @@ namespace PokeChess.Client.UI
             if(tab==1)
             {
                 var skills=allDefinitions?Roster.Skills:Roster.Pokemon.Select(p=>p.Skill).Distinct();
-                options.AddRange(skills.Select(s=>new KeyValuePair<string,string>(s.Id,s.DisplayName+"  · "+s.Id)));
+                options.AddRange(skills.SelectMany(s=>(allDefinitions?s.ToDefinitions().Select(d=>d.Id):new[]{s.Id})
+                    .Select(id=>new KeyValuePair<string,string>(id,s.DisplayName+"  · "+id))));
             }
             if(tab==2)
             {
@@ -241,12 +242,12 @@ namespace PokeChess.Client.UI
         {
             if(index>=rowIds.Count)return;string id=rowIds[index];
             if(tab==0)chosenPokemon=id;
-            if(tab==1){Session.SkillId=id;Session.Note("시험 기술 선택: "+Roster.Skills.Single(s=>s.Id==id).DisplayName);}
+            if(tab==1){running=false;Session.SelectSkill(id);Session.Note("시험 기술 선택: "+Roster.FindSkill(id).DisplayName);}
             if(tab==2)chosenStatus=id;UpdateSelection();
         }
         private void UpdateSelection()
         {
-            selection.text="배치 포켓몬: "+PokemonName(chosenPokemon)+"\n기술: "+Roster.Skills.FirstOrDefault(s=>s.Id==Session.SkillId)?.DisplayName+"\n상태: "+(chosenStatus??"없음");
+            selection.text="배치 포켓몬: "+PokemonName(chosenPokemon)+"\n기술: "+Roster.FindSkill(Session.SkillId)?.DisplayName+"\n상태: "+(chosenStatus??"없음");
         }
         private void Render()
         {
@@ -295,11 +296,11 @@ namespace PokeChess.Client.UI
                 Caption(button,StatusKind(status.Definition.Behavior,status.Definition.CrowdControl)+" ×"+status.StackCount+" · "+((status.ExpireTick-battle.CurrentTick)/(double)battle.TickRate).ToString("0.00")+"s");
                 button.onClick.RemoveAllListeners();long id=status.InstanceId;button.onClick.AddListener(()=>Act(()=>Session.RemoveStatus(id)));
             }
-            var skill=Roster.Skills.FirstOrDefault(s=>s.Id==Session.SkillId);
+            var skill=Roster.FindSkill(Session.SkillId);
             var statusData=Roster.Statuses.FirstOrDefault(s=>s.Id==chosenStatus);
             description.text=tab==2&&statusData!=null?StatusName(statusData)+"\n"+
                 string.Join(" / ",statusData.Modifiers.Select(m=>m.Stat+" "+m.Type+" "+m.Value.ToString("0.##"))):
-                (skill?.Description??"")+"\n충전 "+(skill?.CastTime??0).ToString("0.##")+"s / 후딜 "+(skill?.PostCastTime??0).ToString("0.##")+"s";
+                (skill==null?"":PokeChess.Content.SkillDescription.Format(skill,Session.Unit(Session.CasterId).Rank,Session.Unit(Session.CasterId).EffectiveStats.SpellPower,Session.Unit(Session.CasterId).EffectiveStats.Attack,Roster.CreateStatuses()))+"\n충전 "+(skill?.ToCore(Session.Unit(Session.CasterId).Rank).CastTime??0).ToString("0.##")+"s / 후딜 "+(skill?.ToCore(Session.Unit(Session.CasterId).Rank).PostCastTime??0).ToString("0.##")+"s";
             bool hasVisual=Visuals!=null&&Visuals.Entries.Any(e=>e.SkillIds.Any(id=>id==Session.SkillId||id.StartsWith(Session.SkillId+"-r",StringComparison.Ordinal)));
             summary.text=(battle.CurrentTick/30d).ToString("0.00")+"s · Tick "+battle.CurrentTick+" · "+battle.Result+(Session.Requested?" · 시전 대기":"")+"\n"+(skill?.DisplayName??Session.SkillId)+"  /  "+(hasVisual?"전용 연출 등록됨":"전용 연출 미등록 · 효과 수치/상태는 적용됨");
             Caption(pause,running?"일시정지":"재생");Caption(speed,"속도 ×"+multiplier);Caption(auto,"자동 기술 "+(Session.AutoCast?"ON":"OFF"));Caption(basic,"기본 공격 "+(Session.BasicAttacks?"ON":"OFF"));Caption(movement,"이동 "+(Session.Movement?"ON":"OFF"));Caption(healthLock,"HP 고정 "+(Session.PreserveHealth?"ON":"OFF"));

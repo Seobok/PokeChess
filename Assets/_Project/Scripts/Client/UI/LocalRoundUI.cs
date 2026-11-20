@@ -212,7 +212,7 @@ namespace PokeChess.Client.UI
             if(combat)
             {
                 foreach(var token in combatTokens.Values)token.transform.parent.gameObject.SetActive(false);
-                var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
+                var battle=ownPair.Battle;combatInfo.text=string.Empty;
                 var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
                 visuals.SetVenomHud(venomHud, ownPair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2);
                 visuals.SetStormHud(stormBattleHud, ownPair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2);
@@ -258,8 +258,7 @@ namespace PokeChess.Client.UI
                     selection.enabled=unit.UnitInstanceId==selectedUnitId;
                     tokenImage.color=healing?new Color(.15f,.65f,.3f):unit.ActionState==CombatActionState.Casting?new Color(.55f,.3f,.75f):
                         buffed?new Color(.2f,.55f,.7f):unit.TeamId==(ownPair.Pairing.PlayerOneId==localViewedPlayerId ? 1 : 2)?new Color(.12f,.43f,.55f):new Color(.6f,.2f,.23f);
-                    label.text=unit.DefinitionId.Substring(0,Math.Min(3,unit.DefinitionId.Length)).ToUpperInvariant()+" R"+(int)unit.Rank+"\n"+
-                        (healing?"HEAL":unit.ActionState==CombatActionState.Casting?"CAST":buffed?"BUFF":"");
+                    label.text = string.Empty;
                     label.transform.parent.gameObject.SetActive(unit.IsOnBoard&&RenderFighterSprite(ownPair,unit,label));
                 }
                 visuals.SortCombatDepth(combatTokens.Values.Select(label=>(RectTransform)label.transform.parent));

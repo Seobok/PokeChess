@@ -24,7 +24,7 @@ namespace PokeChess.Content
                     if(loaded==null)throw new InvalidOperationException("Missing Resources/GameRoster.asset");
                     loaded.Validate();
                     pokemonById=loaded.Pokemon.ToDictionary(p=>p.Id,StringComparer.Ordinal);
-                    skillById=loaded.Skills.ToDictionary(s=>s.Id,StringComparer.Ordinal);
+                    skillById=loaded.Skills.SelectMany(s=>s.ToDefinitions().Select(d=>new {d.Id,Data=s})).ToDictionary(s=>s.Id,s=>s.Data,StringComparer.Ordinal);
                     catalog=loaded.CreateCatalog();roster=loaded;
                 }
                 return roster;

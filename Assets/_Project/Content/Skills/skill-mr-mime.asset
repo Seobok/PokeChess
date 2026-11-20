@@ -14,17 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-mr-mime
   DisplayName: "\uBC30\uB9AC\uC5B4"
-  VariantIds:
-  - skill-mr-mime-r1
-  - skill-mr-mime-r2
-  - skill-mr-mime-r3
-  VariantMode: 1
-  Description: "\uac00\uc7a5 \uac00\uae4c\uc6b4 \uc544\uad70 2\uba85\uc5d0\uac8c \uac01 \ub300\uc0c1 \ucd5c\ub300 HP\uc758 20/27/35%\uc5d0 \ud574\ub2f9\ud558\ub294 \ubcf4\ud638\ub9c9\uc744 4\ucd08\uac04 \ubd80\uc5ec\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \ub300\uc0c1 \ucd5c\ub300 HP \ub300\ube44 \ubcf4\ud638\ub9c9 \ube44\uc728\uc744 AP 100 \ucd08\uacfc 1\ub2f9 0.07%p \ucd94\uac00 \uc99d\uac00(\ucd5c\ub300 55%). \uc9c0\uc18d\uc2dc\uac04\uc740 \uace0\uc815.\n[\uc804\ubc29 \ubcf4\uc644] \uc2dc\uc804 \uc2dc \uc790\uc2e0\uc5d0\uac8c\ub3c4 4\ucd08\uac04 70/95/125 \u00d7 AP/100\uc758 \ubcf4\ud638\ub9c9 \ubd80\uc5ec."
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "\uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC544\uAD70 2\uBA85\uC5D0\uAC8C
+    \uAC01 \uB300\uC0C1 \uCD5C\uB300 HP\uC758 20/27/35%\uC5D0 \uD574\uB2F9\uD558\uB294
+    \uBCF4\uD638\uB9C9\uC744 4\uCD08\uAC04 \uBD80\uC5EC\uD55C\uB2E4.\n[AP \uAC1C\uD3B8]
+    \uB300\uC0C1 \uCD5C\uB300 HP \uB300\uBE44 \uBCF4\uD638\uB9C9 \uBE44\uC728\uC744
+    AP 100 \uCD08\uACFC 1\uB2F9 0.07%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 55%).
+    \uC9C0\uC18D\uC2DC\uAC04\uC740 \uACE0\uC815.\n[\uC804\uBC29 \uBCF4\uC644] \uC2DC\uC804
+    \uC2DC \uC790\uC2E0\uC5D0\uAC8C\uB3C4 4\uCD08\uAC04 70/95/125 \xD7 AP/100\uC758
+    \uBCF4\uD638\uB9C9 \uBD80\uC5EC."
   Notes: 
+  DescriptionTemplate: "\uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC544\uAD70 2\uBA85\uC5D0\uAC8C
+    \uAC01 \uB300\uC0C1 \uCD5C\uB300 HP\uC758 {ratio:0}%\uC5D0 \uD574\uB2F9\uD558\uB294
+    \uBCF4\uD638\uB9C9\uC744 4\uCD08\uAC04 \uBD80\uC5EC\uD55C\uB2E4.\n[AP \uAC1C\uD3B8]
+    \uB300\uC0C1 \uCD5C\uB300 HP \uB300\uBE44 \uBCF4\uD638\uB9C9 \uBE44\uC728\uC744
+    AP 100 \uCD08\uACFC 1\uB2F9 0.07%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 55%).
+    \uC9C0\uC18D\uC2DC\uAC04\uC740 \uACE0\uC815.\n[\uC804\uBC29 \uBCF4\uC644] \uC2DC\uC804
+    \uC2DC \uC790\uC2E0\uC5D0\uAC8C\uB3C4 4\uCD08\uAC04 70/95/125 \xD7 AP/100\uC758
+    \uBCF4\uD638\uB9C9 \uBD80\uC5EC."
   CastTime: 0.4
   PostCastTime: 0.4
-  TargetRule: 0
-  TargetLostPolicy: 0
+  TargetRule: 1
+  TargetLostPolicy: 2
   Range: 3
   Interruptible: 1
   HasEnergyLock: 1
@@ -33,5 +47,70 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 2
+    TargetSelector: 5
+    BaseValue: 0.2
+    SpellPowerScalable: 0
+    PowerScaling: 1
+    ApIncrement: 0.0007
+    ApCap: 0.55
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 0}
+    StatusTargetTeam: 0
+    ValueSource: 3
+    RankValues:
+    - 0.2
+    - 0.27
+    - 0.35
+    RankStatuses: []
+    Spatial:
+      Mode: 1
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 2
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 1
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 1
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []

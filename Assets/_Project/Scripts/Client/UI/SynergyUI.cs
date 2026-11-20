@@ -27,7 +27,7 @@ namespace PokeChess.Client.UI
         private VenomHud venomHud;
         private MysticShopVisuals mysticVisuals;
         private AdversityHud adversityHud;
-        private UnityEngine.UI.Button synergySettingsButton;
+
         private UnityEngine.UI.Button[] adversityChoices;
         private int localMysticTier;
         private RectTransform synergySettings;
@@ -45,10 +45,7 @@ namespace PokeChess.Client.UI
             BindSynergyHud();
             BuildSynergyStackPanel();
             venomHud = new VenomHud(canvasRect, venomStack, itemFont);
-            var toggle = UiPrefab.Instantiate("SynergySettingsButton", canvasRect);
-            synergySettingsButton = toggle.GetComponent<UnityEngine.UI.Button>();
             synergySettings = UiPrefab.Instantiate("SynergySettings", canvasRect);
-            synergySettingsButton.onClick.AddListener(() => synergySettings.gameObject.SetActive(!synergySettings.gameObject.activeSelf));
             UiPrefab.Bind(synergySettings, "바위 1 위치 변경", () => ConfigureSynergyChoice(1, 0));
             UiPrefab.Bind(synergySettings, "바위 2 위치 변경", () => ConfigureSynergyChoice(1, 1));
             adversityChoices = new[]
@@ -133,7 +130,7 @@ namespace PokeChess.Client.UI
         private void BuildAdversityUI()
         {
             adversityHud = new AdversityHud(canvasRect, adversityStack, itemFont, resultTitle.rectTransform,
-                economyGold.rectTransform, itemInventoryPanel, synergySettingsButton, adversityChoices,
+                economyGold.rectTransform, itemInventoryPanel, adversityStack, adversityChoices,
                 itemIcons?.Get(ItemCatalog.SitrusBerry));
         }
 

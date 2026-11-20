@@ -33,9 +33,11 @@ namespace PokeChess.Content
             }
             foreach(var p in ShopPokemon)
                 if(!pokemon.Contains(p))throw new InvalidOperationException("Unregistered shop Pokemon: "+p.Id);
-            foreach(var s in Skills) {
-                foreach(var id in s.VariantIds??Array.Empty<string>())if(!Skills.Any(v=>v.Id==id))throw new InvalidOperationException(s.Id+": unknown variant "+id);
-                ValidateVariants(s,new HashSet<string>(),0);
+            foreach(var s in Skills)
+            {
+                if(s.RankOverrides==null||s.RankOverrides.Any(r=>r==null)||s.RankOverrides.Select(r=>r.Rank).Distinct().Count()!=s.RankOverrides.Length||
+                    s.RankOverrides.Any(r=>(int)r.Rank<1||(int)r.Rank>3)||!s.Ranked&&s.RankOverrides.Length>0)
+                    throw new InvalidOperationException(s.Id+": invalid rank overrides");
             }
             foreach(var s in Skills)foreach(var e in s.AllEffects)
             {
@@ -46,13 +48,24 @@ namespace PokeChess.Content
                     e.RankStatuses==null||e.RankStatuses.Length!=3||e.RankStatuses.Any(r=>!statuses.Contains(r))))
                     throw new InvalidOperationException(s.Id+": missing status reference");
             }
-            var catalog=CreateCatalog(); CreateSkills(); CreateStatuses();
+            var runtime=Skills.SelectMany(s=>s.ToDefinitions()).ToArray();
+            var runtimeById=runtime.ToDictionary(s=>s.Id,StringComparer.Ordinal);
+            foreach(var s in runtime)ValidateVariants(s,runtimeById,new HashSet<string>(),0);
+            var catalog=CreateCatalog(); CreateSkills(); var statusCatalog=CreateStatuses();
+            foreach(var skill in Skills)for(int rank=1;rank<=3;rank++)
+                SkillDescription.Format(skill,(UnitRank)rank,100,100,statusCatalog);
             foreach(var p in Pokemon)catalog.EvolutionRoot(p.Id,out _);
         }
-        private void ValidateVariants(SkillData skill,HashSet<string> path,int depth) {
+        private static void ValidateVariants(SkillDefinition skill,Dictionary<string,SkillDefinition> skills,HashSet<string> path,int depth)
+        {
             if(depth>=8||!path.Add(skill.Id))throw new InvalidOperationException("Cyclic/deep skill variants: "+skill.Id);
-            foreach(var id in skill.VariantIds??Array.Empty<string>())ValidateVariants(Skills.Single(s=>s.Id==id),new HashSet<string>(path),depth+1);
+            foreach(var id in skill.VariantIds)
+            {
+                if(!skills.TryGetValue(id,out var next))throw new InvalidOperationException(skill.Id+": unknown variant "+id);
+                ValidateVariants(next,skills,new HashSet<string>(path),depth+1);
+            }
         }
+        public SkillData FindSkill(string id)=>Skills.FirstOrDefault(s=>s.Id==id||s.Ranked&&Enumerable.Range(1,3).Any(r=>s.RankId(r)==id));
         private static void Unique<T>(T[] items,Func<T,string> id,string label) where T:UnityEngine.Object
         {
             if(items==null||items.Any(i=>i==null))throw new InvalidOperationException(label+": null entry");
@@ -67,7 +80,7 @@ namespace PokeChess.Content
             SynergySystem.NatureGuardianDefinition(4)
         }));
         public PokemonDefinition[] CreateDefinitions()=>ShopPokemon.Select(p=>p.ToCore()).ToArray();
-        public SkillCatalog CreateSkills()=>new SkillCatalog(Skills.Select(s=>s.ToCore()));
+        public SkillCatalog CreateSkills()=>new SkillCatalog(Skills.SelectMany(s=>s.ToDefinitions()));
         public StatusCatalog CreateStatuses()=>new StatusCatalog(Statuses.Select(s=>s.ToCore()));
     }
 }

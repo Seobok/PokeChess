@@ -36,7 +36,7 @@ namespace PokeChess.Client.UI
         private const double TravelTime = .34;
         private readonly AdversityVisuals art;
         private readonly RectTransform canvas, goldTarget, inventoryTarget, resultTitle;
-        private readonly Button settings;
+        private readonly RectTransform choiceTarget;
         private readonly Button[] buttons;
         private readonly Image[] counterIcons = new Image[3], choiceIcons = new Image[3];
         private readonly Text[] counters = new Text[3];
@@ -50,13 +50,13 @@ namespace PokeChess.Client.UI
         private double resolveArrival;
 
         public AdversityHud(RectTransform canvas, RectTransform hud, Font font, RectTransform resultTitle,
-            RectTransform goldTarget, RectTransform inventoryTarget, Button settings, Button[] buttons, Sprite berry)
+            RectTransform goldTarget, RectTransform inventoryTarget, RectTransform choiceTarget, Button[] buttons, Sprite berry)
         {
             this.canvas = canvas;
             this.resultTitle = resultTitle;
             this.goldTarget = goldTarget;
             this.inventoryTarget = inventoryTarget;
-            this.settings = settings;
+            this.choiceTarget = choiceTarget;
             this.buttons = buttons;
             this.berry = berry;
             art = Resources.Load<AdversityVisuals>("AdversityVisuals");
@@ -120,7 +120,6 @@ namespace PokeChess.Client.UI
                 buttons[i].gameObject.SetActive(visible && choices > 0 && phase == MatchPhase.Preparation);
                 buttons[i].interactable = canChoose;
             }
-            settings.GetComponentInChildren<Text>().text = visible && choices > 0 ? $"시너지 설정 · 역경 {choices}" : "시너지 설정";
             Tick(now);
         }
 
@@ -144,7 +143,7 @@ namespace PokeChess.Client.UI
             Flash("Cashout", art.cashout, counter, 92, now);
             double rewardAt = now + .5;
             if (settlement.choice)
-                Flash("ChoiceReady", art.choiceReady, Point((RectTransform)settings.transform), 128, rewardAt);
+                Flash("ChoiceReady", art.choiceReady, Point(choiceTarget), 128, rewardAt);
             else
             {
                 if (settlement.gold > 0)

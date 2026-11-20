@@ -14,17 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: PokeChess.Content::PokeChess.Content.SkillData
   Id: skill-kakuna
   DisplayName: "\uB2E8\uB2E8\uD574\uC9C0\uAE30"
-  VariantIds:
-  - skill-kakuna-r1
-  - skill-kakuna-r2
-  - skill-kakuna-r3
-  VariantMode: 1
-  Description: "4\ucd08\uac04 \ubc29\uc5b4\ub825\uc774 60/80/100% \uc99d\uac00\ud558\uace0 \ubc1b\ub294 \ud53c\ud574\uac00 15/20/25% \uac10\uc18c\ud55c\ub2e4.\n[AP \uac1c\ud3b8] \ubc29\uc5b4\ub825 \uc99d\uac00\ub7c9\uc744 AP 100 \ucd08\uacfc 1\ub2f9 0.12%p \ucd94\uac00 \uc99d\uac00(\ucd5c\ub300 140%). \ubc1b\ub294 \ud53c\ud574 \uac10\uc18c\ub7c9\uc740 \uace0\uc815."
+  Ranked: 1
+  RankOverrides: []
+  VariantIds: []
+  VariantMode: 0
+  Description: "4\uCD08\uAC04 \uBC29\uC5B4\uB825\uC774 60/80/100% \uC99D\uAC00\uD558\uACE0
+    \uBC1B\uB294 \uD53C\uD574\uAC00 15/20/25% \uAC10\uC18C\uD55C\uB2E4.\n[AP \uAC1C\uD3B8]
+    \uBC29\uC5B4\uB825 \uC99D\uAC00\uB7C9\uC744 AP 100 \uCD08\uACFC 1\uB2F9 0.12%p
+    \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 140%). \uBC1B\uB294 \uD53C\uD574 \uAC10\uC18C\uB7C9\uC740
+    \uACE0\uC815."
   Notes: 
+  DescriptionTemplate: "{duration:0}\uCD08\uAC04 \uBC29\uC5B4\uB825\uC774 60/80/100%
+    \uC99D\uAC00\uD558\uACE0 \uBC1B\uB294 \uD53C\uD574\uAC00 15/20/25% \uAC10\uC18C\uD55C\uB2E4.\n[AP
+    \uAC1C\uD3B8] \uBC29\uC5B4\uB825 \uC99D\uAC00\uB7C9\uC744 AP 100 \uCD08\uACFC
+    1\uB2F9 0.12%p \uCD94\uAC00 \uC99D\uAC00(\uCD5C\uB300 140%). \uBC1B\uB294 \uD53C\uD574
+    \uAC10\uC18C\uB7C9\uC740 \uACE0\uC815."
   CastTime: 0.4
   PostCastTime: 0.4
-  TargetRule: 0
-  TargetLostPolicy: 0
+  TargetRule: 1
+  TargetLostPolicy: 2
   Range: 3
   Interruptible: 1
   HasEnergyLock: 1
@@ -33,5 +41,73 @@ MonoBehaviour:
   Activation:
     MinimumAdjacentEnemies: 2
     RequireSafeDestination: 1
-  Effects: []
+  Effects:
+  - Type: 4
+    TargetSelector: 1
+    BaseValue: 0
+    SpellPowerScalable: 0
+    PowerScaling: 0
+    ApIncrement: 0
+    ApCap: 0
+    DamageType: 1
+    Radius: 1
+    ProjectileSpeed: 6
+    HasImpactRadius: 0
+    ImpactRadius: 0
+    Status: {fileID: 11400000, guid: 122f321f6c8d6654b8fbf3147e60d8a7, type: 2}
+    StatusTargetTeam: 0
+    ValueSource: 0
+    RankValues:
+    - 0
+    - 0
+    - 0
+    RankStatuses:
+    - {fileID: 11400000, guid: 122f321f6c8d6654b8fbf3147e60d8a7, type: 2}
+    - {fileID: 11400000, guid: 2a16decbfc35a7246aa3962a7bb4edc9, type: 2}
+    - {fileID: 11400000, guid: 7788d5f3deb2fd141b6bee5c350d5dc0, type: 2}
+    Spatial:
+      Mode: 0
+      Shape: 0
+      Center: 0
+      Extent: 1
+      MaxTargets: 0
+      SearchRange: 56
+      ChainRange: 1
+      IncludeSelf: 0
+      IncludePrimary: 1
+    Movement:
+      Kind: 0
+      Distance: 1
+      ClusterRadius: 1
+      Speed: 6
+      HasTravelTime: 0
+      TravelTime: 0
+      ImpactEffects: []
+    Returns: 0
+    HasNumeric: 0
+    Numeric:
+      Condition: 0
+      Threshold: 0.25
+      Lifesteal: 0
+      ArmorPenetration: 0
+      CritBonus: 0
+      Chance: 1
+      ExecuteThreshold: 0
+      BossBonus: 0
+      ConditionalValues:
+      - 0
+      - 0
+      - 0
+      HasDamageCap: 0
+      CanCrit: 0
+      HasShieldDuration: 0
+      DamageCap: 0
+      ShieldDuration: 4
+      MagicPenetration: 0
+      Bounty: 0
+    PathImpactEffects: []
+    ChoiceStatuses: []
+    ChainDelay: 0.15
+    ChainSequential: 0
+    ProjectileGroupSize: 0
   Steps: []
