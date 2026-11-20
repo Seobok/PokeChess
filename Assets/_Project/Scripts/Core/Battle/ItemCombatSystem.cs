@@ -162,9 +162,18 @@ namespace PokeChess.Core.Battle
             foreach(var u in battle.Units.Where(u=>u.CurrentHP>0&&u.IsOnBoard&&Has(u,ItemCatalog.Leftovers)))
                 Heal(u,u.Stats.MaxHP*.04f,ItemCatalog.Leftovers);
         }
+        internal bool HasChoiceBandBuff(UnitCombatState unit)
+            => choiceBandUntil.TryGetValue(unit.UnitInstanceId, out var until) && until > battle.CurrentTick;
+
+        internal bool HasStatusDamageReduction(UnitCombatState unit)
+            => Equipment(unit, "crafted-protective-pads").Any(id => Trigger(id).Until > battle.CurrentTick);
+
+        internal bool HasStatusBlockCharge(UnitCombatState unit)
+            => Equipment(unit, "crafted-covert-cloak").Any(id => Trigger(id).Ready <= battle.CurrentTick);
+
         internal float Outgoing(UnitCombatState u,DamageRequest request)
         {
-            if (request.IsBasicAttack && choiceBandUntil.TryGetValue(u.UnitInstanceId, out var until) && until > battle.CurrentTick)
+            if (request.IsBasicAttack && HasChoiceBandBuff(u))
                 return 1 + .25f * Count(u, "crafted-choice-band");
             if (!IsSkillDamage(request)) return 1;
             float legacy = request.Origin != DamageOrigin.Direct ? 1

@@ -1,19 +1,28 @@
 fileFormatVersion: 2
-guid: 4e7aa1e8eb338de49b94eec156940b6c
+guid: 87e435f763b476f4abaf7ec042748bbc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2764855556499865245
-    second: Energe_0
+      213: 6161044719551112502
+    second: DireHit_origin_0
   - first:
-      213: -2475423680522773680
-    second: Energe_1
+      213: 7995830915994443569
+    second: DireHit_origin_1
   - first:
-      213: 1477201817249476056
-    second: Energe_2
+      213: 1055406085609283681
+    second: DireHit_origin_2
   - first:
-      213: 2724386684115773955
-    second: Energe_3
+      213: -8887475526158628689
+    second: DireHit_origin_3
+  - first:
+      213: -3599815148816622072
+    second: DireHit_origin_4
+  - first:
+      213: 1039311029486487018
+    second: DireHit_origin_5
+  - first:
+      213: -9006345787901373583
+    second: DireHit_origin_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -122,13 +131,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Energe_0
+      name: DireHit_origin_0
       rect:
         serializedVersion: 2
-        x: 129
-        y: 151
-        width: 1038
-        height: 888
+        x: 26
+        y: 21
+        width: 1215
+        height: 1179
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,19 +146,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d9e7074da7dbe5620800000000000000
-      internalID: 2764855556499865245
+      spriteID: 635e322a78d608550800000000000000
+      internalID: 6161044719551112502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Energe_1
+      name: DireHit_origin_1
       rect:
         serializedVersion: 2
-        x: 916
-        y: 712
-        width: 15
+        x: 1133
+        y: 790
+        width: 12
         height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -159,20 +168,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 05b99d5274785add0800000000000000
-      internalID: -2475423680522773680
+      spriteID: 13f5fe7bad5e6fe60800000000000000
+      internalID: 7995830915994443569
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Energe_2
+      name: DireHit_origin_2
       rect:
         serializedVersion: 2
-        x: 928
-        y: 712
-        width: 8
-        height: 7
+        x: 1149
+        y: 610
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,20 +190,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8dd67bae933108410800000000000000
-      internalID: 1477201817249476056
+      spriteID: 160e68a3e3e85ae00800000000000000
+      internalID: 1055406085609283681
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Energe_3
+      name: DireHit_origin_3
       rect:
         serializedVersion: 2
-        x: 980
-        y: 456
-        width: 30
-        height: 53
+        x: 1099
+        y: 577
+        width: 17
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,8 +212,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 30a66893147fec520800000000000000
-      internalID: 2724386684115773955
+      spriteID: fa84659c81859a480800000000000000
+      internalID: -8887475526158628689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DireHit_origin_4
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 457
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80e17bdd133ea0ec0800000000000000
+      internalID: -3599815148816622072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DireHit_origin_5
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 111
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae500b3ffdf5c6e00800000000000000
+      internalID: 1039311029486487018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DireHit_origin_6
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 107
+        width: 40
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1739dcb3938030380800000000000000
+      internalID: -9006345787901373583
       vertices: []
       indices: 
       edges: []
@@ -223,10 +298,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Energe_0: 2764855556499865245
-      Energe_1: -2475423680522773680
-      Energe_2: 1477201817249476056
-      Energe_3: 2724386684115773955
+      DireHit_origin_0: 6161044719551112502
+      DireHit_origin_1: 7995830915994443569
+      DireHit_origin_2: 1055406085609283681
+      DireHit_origin_3: -8887475526158628689
+      DireHit_origin_4: -3599815148816622072
+      DireHit_origin_5: 1039311029486487018
+      DireHit_origin_6: -9006345787901373583
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

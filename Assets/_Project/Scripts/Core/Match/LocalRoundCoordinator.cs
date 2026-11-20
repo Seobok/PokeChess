@@ -33,6 +33,8 @@ namespace PokeChess.Core.Match
         public BattleState Battle { get; }
         public UnitActionRuntime GetActionRuntime(string unitId) => simulation.GetRuntime(unitId);
         public event Action<BattleState> Stepped;
+        internal readonly List<(string monster, BoardPosition position, string itemId, int index)> WildDropsThisStep =
+            new List<(string, BoardPosition, string, int)>();
         private BattleResult? surrenderResult;
         public BattleResult Result => surrenderResult ?? Battle?.Result ?? emptyResult;
         public BattleEndReason Reason => surrenderResult.HasValue ? BattleEndReason.Surrender : Battle?.EndReason ?? BattleEndReason.Elimination;
@@ -44,7 +46,7 @@ namespace PokeChess.Core.Match
         internal LocalPairBattle(RoundPairing pair,BattleState battle,BattleResult result,ShadowBoardSnapshot shadowSnapshot=null,int oneCount=0,int twoCount=0,
             SkillCatalog skills=null,StatusCatalog statuses=null)
         { Pairing=pair;Battle=battle;emptyResult=result;ShadowSnapshot=shadowSnapshot;oneSurvivors=oneCount;twoSurvivors=twoCount;if(battle!=null){battle.IsPvP=!pair.IsWild;simulation=new BattleSimulation(battle,skillCatalog:skills,statusCatalog:statuses);}FreezeSurvivors(); }
-        internal void Step() { if(!IsComplete){simulation.Step();Stepped?.Invoke(Battle);}FreezeSurvivors(); }
+        internal void Step() { WildDropsThisStep.Clear();if(!IsComplete){simulation.Step();Stepped?.Invoke(Battle);}FreezeSurvivors(); }
         internal void Surrender(string playerId)
         {
             int team=Pairing.PlayerOneId==playerId ? 1 : 2;
@@ -131,6 +133,7 @@ namespace PokeChess.Core.Match
         private readonly HashSet<string> rewardBound=new HashSet<string>();
         private readonly List<UnitRankedUp> preparationRankUps=new List<UnitRankedUp>();
         public IReadOnlyList<UnitRankedUp> PreparationRankUps => preparationRankUps.AsReadOnly();
+        public event Action<string, BoardPosition, string, int> WildItemDropped;
         public MatchState Match { get; }
         public bool IsWildRound => WildRoundSystem.IsWild(Match);
         public IReadOnlyList<LocalPairBattle> Battles => battles;
@@ -228,7 +231,28 @@ namespace PokeChess.Core.Match
                 var setup=one.Select(u=>new BattleUnitSetup(u,1,DeploymentPosition(u,deployments[p.PlayerId])));
                 var battle=one.Length==0?null:WildRoundSystem.CreateBattle(Match,catalog,p,setup,TickRate);
                 if(battle!=null){battle.IsPvP=false;battle.VenomSamples[1]=p.Synergy.VenomSamples;battle.PreparedRocks[1]=SynergyPreparation.PreparationRocks(p,catalog);}
-                next.Add(new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses));
+                var encounter = new LocalPairBattle(pair,battle,BattleResult.TeamTwoWin,oneCount:one.Length,twoCount:WildRoundSystem.EnemyCount(round),skills:skills,statuses:statuses);
+                if (battle != null)
+                {
+                    var drops = ItemSystem.PlanWildDrops(Match, p, battle);
+                    encounter.Stepped += state =>
+                    {
+                        foreach (var death in state.LifecycleEventsThisTick)
+                        {
+                            if (death.Kind != BattleLifecycleEventKind.UnitDied || death.DeathReason == DeathReason.Surrender ||
+                                !drops.TryGetValue(death.UnitId, out var items)) continue;
+                            p.GrantItemReward(round, items);
+                            drops.Remove(death.UnitId);
+                            var position = state.Units.First(unit => unit.UnitInstanceId == death.UnitId).Position;
+                            for (int i = 0; i < items.Count; i++)
+                            {
+                                encounter.WildDropsThisStep.Add((death.UnitId, position, items[i], i));
+                                WildItemDropped?.Invoke(p.PlayerId, position, items[i], i);
+                            }
+                        }
+                    };
+                }
+                next.Add(encounter);
             }
             foreach(var p in players)if(deployments[p.PlayerId].Count>0)p.ApplyPlacements(deployments[p.PlayerId]);
             Match.TransitionTo(MatchPhase.Combat);Match.CombatPairs=battles=next.AsReadOnly();LastResult=null;
@@ -271,12 +295,6 @@ namespace PokeChess.Core.Match
                     };
                 }
                 battle.Step();
-                if (battle.IsWild && battle.Battle?.Result == BattleResult.TeamOneWin &&
-                    battle.Battle.EndReason == BattleEndReason.Elimination)
-                {
-                    var player = Match.GetPlayer(battle.Pairing.PlayerOneId);
-                    new ItemSystem().GrantWildReward(Match, player);
-                }
             }
             if(battles.All(b=>b.IsComplete))Finish();
         }

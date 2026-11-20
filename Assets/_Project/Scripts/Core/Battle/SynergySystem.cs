@@ -211,6 +211,10 @@ namespace PokeChess.Core.Battle
         internal float AttackBonus(UnitCombatState u)=>u.EffectiveStats.Attack*((R(u).ChaseAttackEnd>battle.CurrentTick?.25f:0)+(R(u).AssassinAttack?.20f:0));
         internal bool SkillCanCrit(UnitCombatState u,DamageRequest req)=>Tier(u,SynergyTraits.Assassin)>0&&!req.IsBasicAttack&&req.Origin==DamageOrigin.Direct&&req.SkillPolicy!=null;
         internal float CriticalBonus(UnitCombatState u)=>Tier(u,SynergyTraits.Assassin)==3?.25f:Tier(u,SynergyTraits.Assassin)>0?.15f:0;
+        internal bool HasStatusDamageReduction(UnitCombatState unit)
+            => IsGuarded(unit) || R(unit).BruiserSurvivalUntil > battle.CurrentTick ||
+                (TeamTier(unit.TeamId, SynergyTraits.Earth) > 0 && InEarthRange(unit));
+
         internal float IncomingMultiplier(UnitCombatState u,DamageRequest req)
         {
             var r=R(u);float multiplier=1;

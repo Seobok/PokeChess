@@ -261,7 +261,7 @@ namespace PokeChess.Client.UI
                 SetShopPurchaseEffect(shopViews[i], owned, availability?.Preview?.ProjectedRank ?? UnitRank.One);
             }
             bool economy=commands.CanBuy && !busy && !RoundLoop.NextPreparationPending;
-            rerollButton.interactable=economy && (Player.Synergy.FreeRerollRound==Match.RoundNumber || Player.Gold>=commands.ShopRules.RerollGoldCost);
+            rerollButton.interactable=economy && (SynergyProgress.IsFreeRerollAvailable(Player.Synergy.FreeRerollRound, Match.RoundNumber) || Player.Gold>=commands.ShopRules.RerollGoldCost);
             lockButton.interactable=economy;
             xpButton.interactable=economy && Player.Level<commands.LevelRules.MaxLevel && Player.Gold>=commands.LevelRules.PurchaseGoldCost;
             RenderUnitContext();

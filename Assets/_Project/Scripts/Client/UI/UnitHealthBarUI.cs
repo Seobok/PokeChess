@@ -16,8 +16,8 @@ namespace PokeChess.Client.UI
         private static Vector2 EquippedItemPosition(float barHeight) => new Vector2(-MeterWidth * .5f, barHeight + ItemOffset);
         private Sprite[] unitRankSprites;
         private Sprite unitVitalsFrame, unitAllyHP, unitEnemyHP, unitMana, unitShield, unitEquipment,
-            unitBuffFrame, unitDebuffFrame, unitBuffIcon, unitPoisonIcon;
-        private StatusVisualLibrary unitStatusVisuals;
+            unitBuffFrame, unitDebuffFrame, unitBuffIcon;
+        private Dictionary<string, Sprite> unitCombatStatusSprites;
         private static readonly Color32 UnitOutline = new Color32(12, 20, 40, 255);
 
         private void LoadUnitOverheadSprites()
@@ -34,8 +34,11 @@ namespace PokeChess.Client.UI
             unitBuffFrame = Load("BuffFrame");
             unitDebuffFrame = Load("DebuffFrame");
             unitBuffIcon = Load("BuffArrowExample");
-            unitPoisonIcon = Load("DebuffPoisonExample");
-            unitStatusVisuals = Resources.Load<StatusVisualLibrary>("StatusVisuals");
+            unitCombatStatusSprites = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+            var visuals = Resources.Load<StatusVisualLibrary>("StatusVisuals");
+            if (visuals == null) return;
+            foreach (var icon in visuals.OverheadIcons)
+                if (icon.Sprite != null) unitCombatStatusSprites[icon.Key] = icon.Sprite;
         }
 
         private UnityEngine.UI.Image UnitHudImage(string name, Transform parent, Vector2 size, Vector2 position, Sprite sprite)
@@ -190,13 +193,9 @@ namespace PokeChess.Client.UI
 
         private void RenderLocalUnitStatuses(Transform unit, BattleState battle, UnitCombatState fighter)
         {
-            var statuses = fighter.IsAlive && fighter.IsOnBoard
-                ? battle.StatusEffects.Active.Where(s => s.TargetId == fighter.UnitInstanceId &&
-                    s.StartTick <= battle.CurrentTick && s.ExpireTick > battle.CurrentTick)
-                    .Select(s => (s.Definition.Id, s.Definition.TargetTeam == StatusTargetTeam.Ally,
-                        s.Definition.Behavior, s.Definition.CrowdControl))
-                : null;
-            RenderUnitStatusIcons(unit, statuses);
+            RenderUnitStatusIcons(unit, fighter.IsAlive && fighter.IsOnBoard
+                ? CombatStatusIcons.ForUnit(battle, fighter)
+                : null);
         }
 
         private void RenderOnlineUnitStatuses(Transform unit, CombatUnitView fighter, double tick)
@@ -206,19 +205,22 @@ namespace PokeChess.Client.UI
                 RenderUnitStatusIcons(unit, null);
                 return;
             }
+
             var definitions = PokeChess.Content.GameContent.Roster.Statuses;
             var statuses = fighter.statusDetails != null
-                ? fighter.statusDetails.Where(s => s.startTick <= tick && s.endTick > tick).Select(s =>
-                    (s.definition, s.polarity != 0 ? s.polarity > 0 :
-                        definitions.FirstOrDefault(d => d.Id == s.definition)?.TargetTeam == StatusTargetTeam.Ally,
-                        (StatusBehavior)s.behavior, (CrowdControlKind)s.crowdControl))
-                : (fighter.statuses ?? Array.Empty<string>()).Select(id =>
-                {
-                    var definition = definitions.FirstOrDefault(d => d.Id == id);
-                    return (id, definition?.TargetTeam == StatusTargetTeam.Ally,
-                        definition?.Behavior ?? StatusBehavior.None, definition?.CrowdControl ?? CrowdControlKind.None);
-                });
-            RenderUnitStatusIcons(unit, statuses);
+                ? fighter.statusDetails.Where(s => s.startTick <= tick && s.endTick > tick)
+                    .SelectMany(s => s.iconKeys ?? LegacyStatusIcons(s.definition, s.polarity > 0))
+                : (fighter.statuses ?? Array.Empty<string>()).SelectMany(id => LegacyStatusIcons(id, false));
+
+            RenderUnitStatusIcons(unit, statuses.Concat(fighter.otherStatusIcons ?? Array.Empty<string>()));
+
+            IEnumerable<string> LegacyStatusIcons(string id, bool buff)
+            {
+                var definition = definitions.FirstOrDefault(d => d.Id == id);
+                return definition != null
+                    ? CombatStatusIcons.ForStatus(definition.ToCore())
+                    : new[] { buff ? "buff" : "debuff" };
+            }
         }
 
         private float UnitStatusStackHeight(Transform unit)
@@ -228,7 +230,7 @@ namespace PokeChess.Client.UI
         }
 
         private void RenderUnitStatusIcons(Transform unit,
-            IEnumerable<(string id, bool buff, StatusBehavior behavior, CrowdControlKind control)> statuses)
+            IEnumerable<string> statuses)
         {
             var row = unit.Find("StatusIcons") as RectTransform;
             var visible = statuses?.Distinct().ToArray();
@@ -249,6 +251,7 @@ namespace PokeChess.Client.UI
             for (int i = 0; i < count; i++)
             {
                 var status = visible[i];
+                bool buff = CombatStatusIcons.UsesBuffFrame(status);
                 var tile = i < row.childCount ? row.GetChild(i).GetComponent<UnityEngine.UI.Image>() :
                     UnitHudImage("StatusSlot_" + i, row, new Vector2(15, 15), Vector2.zero, null);
                 var icon = tile.transform.Find("Icon")?.GetComponent<UnityEngine.UI.Image>();
@@ -258,14 +261,11 @@ namespace PokeChess.Client.UI
                     icon.preserveAspect = true;
                     Label("Fallback", tile.transform, "!", 10, new Vector2(13, 13), Vector2.zero);
                 }
-                var art = unitStatusVisuals?.Effects.FirstOrDefault(effect => effect.Frames.Length > 0 &&
-                    (status.control != CrowdControlKind.None ? effect.CrowdControl == status.control :
-                        status.behavior != StatusBehavior.None && effect.Behavior == status.behavior));
-                icon.sprite = status.behavior == StatusBehavior.Poison ? unitPoisonIcon :
-                    art?.Frames[0] ?? (status.buff ? unitBuffIcon : null);
+                icon.sprite = unitCombatStatusSprites.TryGetValue(status, out var sprite)
+                    ? sprite : buff ? unitBuffIcon : null;
                 icon.enabled = icon.sprite != null;
                 tile.transform.Find("Fallback").gameObject.SetActive(!icon.enabled);
-                tile.sprite = status.buff ? unitBuffFrame : unitDebuffFrame;
+                tile.sprite = buff ? unitBuffFrame : unitDebuffFrame;
                 int column = i % columns;
                 int rowIndex = i / columns;
                 int rowCount = Math.Min(columns, count - rowIndex * columns);

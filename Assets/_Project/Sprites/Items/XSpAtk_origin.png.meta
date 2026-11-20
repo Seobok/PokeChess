@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 3edc1bc962585be4ab1d58efc83a9080
+guid: 4b3798a0618495b49919b8cbba6b3b87
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8967800792318746968
-    second: Range_0
+      213: -2353231215546740788
+    second: XSpAtk_origin_0
+  - first:
+      213: -441766384493517896
+    second: XSpAtk_origin_1
+  - first:
+      213: -876222536775069811
+    second: XSpAtk_origin_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Range_0
+      name: XSpAtk_origin_0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 50
-        width: 1193
-        height: 1170
+        x: 0
+        y: 39
+        width: 1217
+        height: 1215
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +134,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8aedf5d51b8fb8380800000000000000
-      internalID: -8967800792318746968
+      spriteID: ccfc9fa6da4a75fd0800000000000000
+      internalID: -2353231215546740788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: XSpAtk_origin_1
+      rect:
+        serializedVersion: 2
+        x: 1125
+        y: 1062
+        width: 78
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b32e8a50d78ed9f0800000000000000
+      internalID: -441766384493517896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: XSpAtk_origin_2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 304
+        width: 10
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8f8457ce3807d3f0800000000000000
+      internalID: -876222536775069811
       vertices: []
       indices: 
       edges: []
@@ -148,7 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Range_0: -8967800792318746968
+      XSpAtk_origin_0: -2353231215546740788
+      XSpAtk_origin_1: -441766384493517896
+      XSpAtk_origin_2: -876222536775069811
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

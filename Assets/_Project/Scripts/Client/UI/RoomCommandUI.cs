@@ -87,7 +87,7 @@ namespace PokeChess.Client.UI
             onlineObserved.text=myBoard?"My board":"Board: "+(observed?.id.Substring(Math.Max(0,observed.id.Length-6))??"Waiting");
             onlinePlayers.text=pub==null?"Synchronizing…":string.Join("\n",pub.players.Select(p=>(p.id==state.playerId?"You":p.id.Substring(Math.Max(0,p.id.Length-6)))+" / HP "+p.hp+" / Lv "+p.level+(p.eliminated?" / Out":"")+(p.placement>0?" / #"+p.placement:"")));
             onlineEconomy.text=state==null?"Connecting to match…":"Round "+state.round+" / "+state.phase+" / "+state.gold+"G / Lv "+state.level+" / XP "+state.xp+" / HP "+state.hp;
-            for(int i=0;i<5;i++){var slot=state?.shop[i];onlineShop[i].interactable=active&&slot?.canPurchase==true;onlineShop[i].GetComponentInChildren<UnityEngine.UI.Text>().text=slot?.definitionId==null?"Empty":slot.definitionId+"\n"+PlacementSandboxView.ShopPurchasePrice(slot.purchasePrice,slot.purchaseQuantity);}
+            for(int i=0;i<5;i++){var slot=state?.shop[i];onlineShop[i].interactable=active&&slot?.canPurchase==true;onlineShop[i].GetComponentInChildren<UnityEngine.UI.Text>().text=slot?.definitionId==null?"Empty":(PokeChess.Content.GameContent.DisplayName(slot.definitionId) ?? slot.definitionId)+"\n"+PlacementSandboxView.ShopPurchasePrice(slot.purchasePrice,slot.purchaseQuantity);}
             bool preparation=active&&state.phase==MatchPhase.Preparation;
             bool economy=preparation||(active&&state.phase==MatchPhase.Combat);onlineReroll.interactable=onlineXP.interactable=onlineLock.interactable=economy;onlineSurrender.interactable=active;
             onlineLock.GetComponentInChildren<UnityEngine.UI.Text>().text=state?.locked==true?"Unlock":"Lock";

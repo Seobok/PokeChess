@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PokeChess.Core.Battle;
 using PokeChess.Core.Pokemon;
 using PokeChess.Core.Random;
 
@@ -131,25 +132,37 @@ namespace PokeChess.Core.Match
     }
     public sealed class ItemSystem
     {
-        internal void GrantWildReward(MatchState match, PlayerState player)
+        internal static Dictionary<string, List<string>> PlanWildDrops(MatchState match, PlayerState player, BattleState battle)
         {
             int round = match.RoundNumber;
             int count = WildRoundSystem.ItemRewardCount(round);
-            if (count == 0 || player.LastItemRewardRound >= round) return;
-
             int playerIndex = match.Players.ToList().IndexOf(player);
             ulong seed = unchecked(match.MatchSeed ^ 0x4954454D52455744UL
                 ^ (ulong)round * 0x9E3779B97F4A7C15UL
                 ^ (ulong)(playerIndex + 1) * 0xD1B54A32D192ED03UL);
             var random = new DeterministicRandom(seed);
+            var monsters = battle.Units.Where(unit => unit.TeamId == 2 && !unit.IsSynergySummon)
+                .Select(unit => unit.UnitInstanceId).ToArray();
+            var drops = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+            if (monsters.Length == 0) return drops;
+
+            int first = 0;
             var components = ItemCatalog.Components;
-            var items = new string[count];
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < count; i++)
             {
+                // Give each monster at most one drop before allocating any additional items.
+                int pick = first + random.NextInt(monsters.Length - first);
+                string monster = monsters[pick];
+                monsters[pick] = monsters[first];
+                monsters[first] = monster;
+                first = (first + 1) % monsters.Length;
+
+                if (!drops.TryGetValue(monster, out var items))
+                    drops.Add(monster, items = new List<string>());
                 string definition = components[random.NextInt(components.Count)].Id;
-                items[i] = $"item:{definition}:{round}-{i}:{player.PlayerId}";
+                items.Add($"item:{definition}:{round}-{i}:{player.PlayerId}");
             }
-            player.GrantItemReward(round, items);
+            return drops;
         }
 
         private static PlayerState Validate(MatchState match,string playerId,long revision)
@@ -160,6 +173,19 @@ namespace PokeChess.Core.Match
             if(p.ItemRevision!=revision)throw new InvalidOperationException("Stale item revision.");
             return p;
         }
+        public ItemDefinition Combine(MatchState match, string playerId, string sourceId, string targetId, long revision)
+        {
+            var player = Validate(match, playerId, revision);
+            if (sourceId == targetId || !player.ItemInventory.Contains(sourceId) || !player.ItemInventory.Contains(targetId))
+                throw new InvalidOperationException("Both items must be available in the inventory.");
+
+            var recipe = ItemCatalog.Recipe(ItemCatalog.DefinitionId(sourceId), ItemCatalog.DefinitionId(targetId));
+            if (recipe == null) throw new InvalidOperationException("조합할 수 없는 재료입니다.");
+
+            player.CombineInventoryItems(sourceId, targetId, recipe);
+            return recipe;
+        }
+
         public void Equip(MatchState match,string playerId,string unitId,string itemId,long revision)
         {
             var p=Validate(match,playerId,revision);var unit=p.GetUnit(unitId);

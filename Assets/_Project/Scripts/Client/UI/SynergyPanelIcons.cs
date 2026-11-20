@@ -15,6 +15,11 @@ namespace PokeChess.Client.UI
 
         [SerializeField] private Entry[] entries = Array.Empty<Entry>();
 
+        [SerializeField] private Sprite[] portraitCostFrames = Array.Empty<Sprite>();
+
+        public Sprite FindPortraitCostFrame(int cost) =>
+            cost > 0 && cost <= portraitCostFrames.Length ? portraitCostFrames[cost - 1] : null;
+
         public Sprite Find(string trait)
         {
             foreach (var entry in entries)

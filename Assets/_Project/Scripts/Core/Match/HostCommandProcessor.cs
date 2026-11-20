@@ -5,13 +5,13 @@ using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Core.Match
 {
-    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, Evolve = 11, ConfigureSynergy }
+    public enum MatchCommandKind { Sync, Buy, Move, Sell, Reroll, Lock, BuyXP, Surrender, ChooseItem, EquipItem, Evolve = 11, ConfigureSynergy, CombineItems }
     [Serializable] public sealed class MatchCommand
     {
         public int protocol=1,round,slot,column,row,bench;
         public long sequence,playerRevision,shopRevision,placementRevision;
         public string matchId,commandId,playerId,unitId;
-        public string itemId;
+        public string itemId, targetItemId;
         public long itemRevision;
         public long evolutionRevision;
         public MatchPhase phase;
@@ -19,7 +19,7 @@ namespace PokeChess.Core.Match
         public PlacementKind destination;
         public bool locked;
         public MatchCommand Copy()=>(MatchCommand)MemberwiseClone();
-        public bool SamePayload(MatchCommand b)=>b!=null&&evolutionRevision==b.evolutionRevision&&itemId==b.itemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
+        public bool SamePayload(MatchCommand b)=>b!=null&&evolutionRevision==b.evolutionRevision&&itemId==b.itemId&&targetItemId==b.targetItemId&&itemRevision==b.itemRevision&&protocol==b.protocol&&round==b.round&&slot==b.slot&&column==b.column&&row==b.row&&bench==b.bench&&sequence==b.sequence&&playerRevision==b.playerRevision&&shopRevision==b.shopRevision&&placementRevision==b.placementRevision&&matchId==b.matchId&&commandId==b.commandId&&playerId==b.playerId&&unitId==b.unitId&&phase==b.phase&&kind==b.kind&&destination==b.destination&&locked==b.locked;
     }
     [Serializable] public sealed class OwnerShopSlot { public int index,cost;public int projectedRank,purchasePrice,purchaseQuantity;public bool canPurchase;public string definitionId,prophecyOrigin; }
     [Serializable] public sealed class OwnerUnit { public string id,definitionId,synergyTargetId;public int rank,column,row,bench,saleGold,evolutionStage,bountyStacks;public PlacementKind placement;public string[] items; }
@@ -126,6 +126,7 @@ namespace PokeChess.Core.Match
                             case MatchCommandKind.Lock:changed=p.Shop.IsLocked!=c.locked;result=executor.Lock(c.locked,c.shopRevision);break;
                             case MatchCommandKind.BuyXP:result=executor.BuyXP();break;
                             case MatchCommandKind.EquipItem:result=executor.EquipItem(c.unitId,c.itemId,c.itemRevision);break;
+                            case MatchCommandKind.CombineItems:result=executor.CombineItems(c.itemId,c.targetItemId,c.itemRevision);break;
                             case MatchCommandKind.Evolve:result=executor.Evolve(c.unitId,c.evolutionRevision,c.placementRevision);break;
                             case MatchCommandKind.Move:
                                 if(c.destination!=PlacementKind.Board&&c.destination!=PlacementKind.Bench){code="InvalidDestination";break;}

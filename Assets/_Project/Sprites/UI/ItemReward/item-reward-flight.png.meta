@@ -1,16 +1,25 @@
 fileFormatVersion: 2
-guid: 5ab4a40e71ebef34abb85847ced17fec
+guid: 7744e06caba4e734a82a17dc607c2d73
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -902086654454736923
-    second: HP_0
+      213: 2576246921940826294
+    second: item-reward-flight_0
   - first:
-      213: 134086666222474253
-    second: HP_1
+      213: -4422861912610882168
+    second: item-reward-flight_1
   - first:
-      213: -9089433526600752901
-    second: HP_2
+      213: -49919983491663121
+    second: item-reward-flight_2
+  - first:
+      213: -1045939903492563656
+    second: item-reward-flight_3
+  - first:
+      213: -7255251925508413593
+    second: item-reward-flight_4
+  - first:
+      213: 536509357946320151
+    second: item-reward-flight_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -57,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -119,67 +128,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HP_0
+      name: item-reward-flight_0
       rect:
         serializedVersion: 2
-        x: 225
-        y: 328
-        width: 920
-        height: 906
+        x: 0
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5e7da9c97f42b73f0800000000000000
-      internalID: -902086654454736923
+      spriteID: 6b8f9fb0deaa0c320800000000000000
+      internalID: 2576246921940826294
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: HP_1
+      name: item-reward-flight_1
       rect:
         serializedVersion: 2
-        x: 528
-        y: 906
-        width: 8
-        height: 8
+        x: 64
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d049e4dcc1f5cd100800000000000000
-      internalID: 134086666222474253
+      spriteID: 88d39381686de92c0800000000000000
+      internalID: -4422861912610882168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: HP_2
+      name: item-reward-flight_2
       rect:
         serializedVersion: 2
-        x: 747
-        y: 288
-        width: 28
-        height: 46
+        x: 128
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bf0af6d8d58dbd180800000000000000
-      internalID: -9089433526600752901
+      spriteID: fea39cc1a06ae4ff0800000000000000
+      internalID: -49919983491663121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: item-reward-flight_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83d5beb03331c71f0800000000000000
+      internalID: -1045939903492563656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: item-reward-flight_4
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7672a1050da205b90800000000000000
+      internalID: -7255251925508413593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: item-reward-flight_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71530132b60127700800000000000000
+      internalID: 536509357946320151
       vertices: []
       indices: 
       edges: []
@@ -188,7 +263,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5d9acef25edee234c9a15c9a86683cc6
     internalID: 0
     vertices: []
     indices: 
@@ -196,11 +271,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      HP_0: -902086654454736923
-      HP_1: 134086666222474253
-      HP_2: -9089433526600752901
+      item-reward-flight_0: 2576246921940826294
+      item-reward-flight_1: -4422861912610882168
+      item-reward-flight_2: -49919983491663121
+      item-reward-flight_3: -1045939903492563656
+      item-reward-flight_4: -7255251925508413593
+      item-reward-flight_5: 536509357946320151
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

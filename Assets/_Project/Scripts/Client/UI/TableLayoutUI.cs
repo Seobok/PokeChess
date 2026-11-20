@@ -111,7 +111,8 @@ namespace PokeChess.Client.UI
             bool shopInfo = !synergyInfo && RenderShopHoverInfo();
             sellButton.gameObject.SetActive(!shopInfo && !synergyInfo);
             detailPopup.gameObject.SetActive(synergyInfo||shopInfo||hoveredUnitId!=null&&selectedUnitId==hoveredUnitId);
-            if(detailPopup.gameObject.activeSelf)detailPopup.SetAsLastSibling();
+            if(detailPopup.gameObject.activeSelf && equippedRecipeSource == null)detailPopup.SetAsLastSibling();
+            if (equippedRecipeSource != null && !equippedRecipeSource.gameObject.activeInHierarchy) HideItemHint();
             RenderPlacementArt();
             header.gameObject.SetActive(false);status.gameObject.SetActive(false);inventoryLabel.gameObject.SetActive(false);detailLabel.gameObject.SetActive(false);
             hudNotice.gameObject.SetActive(true);wildPreviewLabel.gameObject.SetActive(false);

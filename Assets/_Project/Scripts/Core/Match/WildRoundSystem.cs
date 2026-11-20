@@ -20,7 +20,7 @@ namespace PokeChess.Core.Match
             string encounter = round <= 3
                 ? $"약한 야생 포켓몬 {EnemyCount(round)}마리 · 일반 공격만 사용"
                 : "중앙 야생 포켓몬 1마리 · 임시 편성";
-            return $"{encounter} · 전멸 보상: 무작위 재료 아이템 {ItemRewardCount(round)}개";
+            return $"{encounter} · 처치 시 무작위 재료 드롭 · 총 {ItemRewardCount(round)}개";
         }
         internal static BattleState CreateBattle(MatchState match,PokemonCatalog catalog,PlayerState player,
             IEnumerable<BattleUnitSetup> allies,int tickRate)

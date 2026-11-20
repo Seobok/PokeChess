@@ -28,8 +28,11 @@ namespace PokeChess.Core.Match
         public int Resolve { get; internal set; }
         public AdversitySettlement LastAdversitySettlement { get; internal set; }
         public AdversityChoice LastAdversityChoice { get; internal set; }
+        // Earliest usable round. Zero means no stored reroll.
         public int FreeRerollRound { get; internal set; }
         public int FreeRerollConsumedRound { get; internal set; }
+        public static bool IsFreeRerollAvailable(int availableFromRound, int round) =>
+            availableFromRound > 0 && availableFromRound <= round;
         public int SettledRound { get; internal set; }
         public int EquipmentFragments { get; internal set; }
         public int EmblemFragments { get; internal set; }
@@ -171,8 +174,17 @@ namespace PokeChess.Core.Match
                 if (reward > 0 && (!battle.VenomEarned.TryGetValue(team, out int earned) || earned == 0))
                     p.VenomMinimumRewardRound = round;
             }
-            p.MysticTier=mystic;
-            if(mystic>0){p.MysticBattles++;if(mystic>=4||p.MysticBattles%2==0)p.FreeRerollRound=round+1;}
+            // Keep the earned tier and pause charging while a reroll is stored.
+            if (p.FreeRerollRound == 0)
+            {
+                p.MysticTier = mystic;
+                if (mystic > 0)
+                {
+                    p.MysticBattles++;
+                    if (mystic >= 4 || p.MysticBattles >= 2)
+                        p.FreeRerollRound = round + 1;
+                }
+            }
             if (adversity > 0 && outcome == RoundOutcome.Loss)
             {
                 int earned = adversity == 6 ? 3 : adversity == 4 ? 2 : 1;

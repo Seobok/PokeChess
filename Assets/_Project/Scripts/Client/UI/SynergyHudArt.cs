@@ -32,8 +32,8 @@ namespace PokeChess.Client.UI
         }
 
         private readonly SynergyHudRow[] synergyRows = new SynergyHudRow[SynergiesPerPage];
-        private readonly List<(UnityEngine.UI.Image Slot, UnityEngine.UI.Image[] Border)> synergyPortraits =
-            new List<(UnityEngine.UI.Image, UnityEngine.UI.Image[])>();
+        private readonly List<(UnityEngine.UI.Image Slot, UnityEngine.UI.Image OwnedBackground, UnityEngine.UI.Image Frame)> synergyPortraits =
+            new List<(UnityEngine.UI.Image, UnityEngine.UI.Image, UnityEngine.UI.Image)>();
         private readonly List<UnityEngine.UI.Image> synergyTargetMarks = new List<UnityEngine.UI.Image>();
         private IReadOnlyList<PokemonDefinition> synergyRoster;
         private SynergyPanelIcons synergyPanelIcons;
@@ -166,10 +166,16 @@ namespace PokeChess.Client.UI
                 corner.y - synergyTooltip.rect.yMax, synergyTooltip.localPosition.z);
         }
 
+        private PokemonDefinition FindSynergyPokemon(string id)
+        {
+            if (catalog != null && catalog.TryGet(id, out var definition)) return definition;
+            return PokeChess.Content.GameContent.CreateCatalog().TryGet(id, out definition) ? definition : null;
+        }
+
         private void ShowSynergyPokemonPreview(int index)
         {
             if (!synergyTooltip.gameObject.activeInHierarchy || index >= synergyMembers.Length) return;
-            hoveredSynergyPokemon = synergyRoster.FirstOrDefault(pokemon => pokemon.Id == synergyMembers[index]);
+            hoveredSynergyPokemon = FindSynergyPokemon(synergyMembers[index]);
             HideUnitInfoHint();
             UpdateTablePresentation();
         }
@@ -246,9 +252,9 @@ namespace PokeChess.Client.UI
                 : localViewedPlayerId == "p1";
             bool earnedMysticChoice = viewingOwnBoard && (IsOnlineMatch
                 ? ownerState.phase == MatchPhase.Preparation && ownerState.mysticTier >= 6 &&
-                    ownerState.freeRerollRound == ownerState.round
+                    SynergyProgress.IsFreeRerollAvailable(ownerState.freeRerollRound, ownerState.round)
                 : Match.Phase == MatchPhase.Preparation && Player.Synergy.MysticTier >= 6 &&
-                    Player.Synergy.FreeRerollRound == Match.RoundNumber);
+                    SynergyProgress.IsFreeRerollAvailable(Player.Synergy.FreeRerollRound, Match.RoundNumber));
             mysticChoiceAvailable = viewingOwnBoard &&
                 (earnedMysticChoice || counts.Any(c => c.TraitId == SynergyTraits.Mystic && c.Tier >= 6));
             var normal = counts.Where(c => c.Count > 0 || earnedMysticChoice && c.TraitId == SynergyTraits.Mystic)
@@ -314,6 +320,14 @@ namespace PokeChess.Client.UI
         private void RenderSynergyTooltip((string key, string name, int count, int next, int tier, int unique) entry)
         {
             string signature = entry.key + ":" + entry.count + ":" + string.Join(",", synergyBoard.Select(unit => unit.species + "/" + string.Join("/", unit.traits)));
+            var ownedSpecies = IsOnlineMatch
+                ? (onlineService.LocalMatchState?.units ?? Array.Empty<OwnerUnit>())
+                    .Where(unit => unit.placement == PlacementKind.Board || unit.placement == PlacementKind.Bench)
+                    .Select(unit => unit.definitionId)
+                : Player.Units.Where(unit => unit.Placement.Kind == PlacementKind.Board || unit.Placement.Kind == PlacementKind.Bench)
+                    .Select(unit => unit.DefinitionId);
+            var ownedFamilies = new HashSet<string>(ownedSpecies.Select(SynergyTraits.Family));
+            signature += ":" + string.Join(",", ownedFamilies.OrderBy(family => family, StringComparer.Ordinal));
             if (signature == synergyTooltipSignature) return;
             synergyTooltipSignature = signature;
             HideSynergyPokemonPreview();
@@ -352,11 +366,11 @@ namespace PokeChess.Client.UI
             }
             else synergyHelp.rectTransform.anchoredPosition = new Vector2(0, 123);
             synergyMemberLabel.rectTransform.anchoredPosition = new Vector2(0, membersY);
-            RenderSynergyPortraits(membership, deployed, membersY - 26);
+            RenderSynergyPortraits(membership, deployed, ownedFamilies, membersY - 26);
             synergyTooltip.SetAsLastSibling();
         }
 
-        private void RenderSynergyPortraits(string[] members, string[] deployed, float firstY)
+        private void RenderSynergyPortraits(string[] members, string[] deployed, HashSet<string> ownedFamilies, float firstY)
         {
             synergyMembers = members;
             const int columns = 9;
@@ -365,66 +379,30 @@ namespace PokeChess.Client.UI
                 if (i == synergyPortraits.Count)
                 {
                     var slot = SynergyImage("Portrait_" + i, synergyTooltip, new Vector2(32, 32), Vector2.zero, synergyPortraitSlot);
+                    var ownedBackground = HudImage("OwnedBackground", slot.transform, new Vector2(26, 26),
+                        Vector2.zero, new Color32(255, 235, 108, 255));
                     SynergyImage("Pokemon", slot.transform, new Vector2(26, 26), Vector2.zero, null).preserveAspect = true;
-                    synergyPortraits.Add((slot, CreateSynergyPortraitBorder(slot.rectTransform)));
+                    var costFrame = SynergyImage("CostFrame", slot.transform, slot.rectTransform.sizeDelta, Vector2.zero, null);
+                    costFrame.preserveAspect = true;
+                    synergyPortraits.Add((slot, ownedBackground, costFrame));
                     slot.raycastTarget = true;
                     int index = i;
                     var events = slot.gameObject.AddComponent<EventTrigger>();
                     AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ => ShowSynergyPokemonPreview(index));
                     AddSynergyRowEvent(events, EventTriggerType.PointerExit, _ => HideSynergyPokemonPreview());
                 }
-                var (portrait, border) = synergyPortraits[i];
+                var (portrait, background, frame) = synergyPortraits[i];
                 portrait.gameObject.SetActive(true);
+                background.gameObject.SetActive(ownedFamilies.Contains(SynergyTraits.Family(members[i])));
                 portrait.sprite = deployed.Contains(members[i]) ? synergyPortraitDeployed : synergyPortraitSlot;
-                var definition = synergyRoster.FirstOrDefault(pokemon => pokemon.Id == members[i]);
-                var costColor = SynergyCostBorder(definition?.Cost ?? 0);
-                foreach (var edge in border) edge.color = costColor;
+                var definition = FindSynergyPokemon(members[i]);
+                frame.sprite = synergyPanelIcons?.FindPortraitCostFrame(definition?.Cost ?? 0);
+                frame.enabled = frame.sprite != null;
                 portrait.rectTransform.anchoredPosition = new Vector2(-140 + i % columns * 35, firstY - i / columns * 34);
                 SetEvolutionPortrait(portrait.transform.Find("Pokemon").GetComponent<UnityEngine.UI.Image>(), members[i]);
             }
             for (int i = members.Length; i < synergyPortraits.Count; i++) synergyPortraits[i].Slot.gameObject.SetActive(false);
         }
-
-        private UnityEngine.UI.Image[] CreateSynergyPortraitBorder(RectTransform slot)
-        {
-            const float inset = 2;
-            const float thickness = 2.5f;
-            var edges = new[]
-            {
-                HudImage("CostBorderTop", slot, Vector2.zero, Vector2.zero, Color.white),
-                HudImage("CostBorderBottom", slot, Vector2.zero, Vector2.zero, Color.white),
-                HudImage("CostBorderLeft", slot, Vector2.zero, Vector2.zero, Color.white),
-                HudImage("CostBorderRight", slot, Vector2.zero, Vector2.zero, Color.white)
-            };
-            SetEdge(edges[0].rectTransform, Vector2.up, Vector2.one,
-                new Vector2(inset, -inset - thickness), new Vector2(-inset, -inset));
-            SetEdge(edges[1].rectTransform, Vector2.zero, Vector2.right,
-                new Vector2(inset, inset), new Vector2(-inset, inset + thickness));
-            SetEdge(edges[2].rectTransform, Vector2.zero, Vector2.up,
-                new Vector2(inset, inset + thickness), new Vector2(inset + thickness, -inset - thickness));
-            SetEdge(edges[3].rectTransform, Vector2.right, Vector2.one,
-                new Vector2(-inset - thickness, inset + thickness), new Vector2(-inset, -inset - thickness));
-            return edges;
-
-            static void SetEdge(RectTransform rect, Vector2 minAnchor, Vector2 maxAnchor, Vector2 minOffset, Vector2 maxOffset)
-            {
-                rect.anchorMin = minAnchor;
-                rect.anchorMax = maxAnchor;
-                rect.offsetMin = minOffset;
-                rect.offsetMax = maxOffset;
-            }
-        }
-
-        // Match the cost colors used by the shop card art.
-        private static Color32 SynergyCostBorder(int cost) => cost switch
-        {
-            1 => new Color32(225, 36, 61, 255),
-            2 => new Color32(34, 112, 220, 255),
-            3 => new Color32(228, 169, 26, 255),
-            4 => new Color32(158, 54, 196, 255),
-            5 => new Color32(0, 187, 177, 255),
-            _ => new Color32(0, 0, 0, 0)
-        };
 
         private bool CanChooseSynergyTarget() => IsOnlineMatch
             ? OnlineInputReady && onlineService.LocalMatchState?.phase == MatchPhase.Preparation &&

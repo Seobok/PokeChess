@@ -161,7 +161,7 @@ namespace PokeChess.Client.UI
             status.text=onlineService.IsRecovering?onlineService.RecoveryFeedback:onlineService.PendingCommand!=null?"Command pending — retry checks the same command":!onlineService.StateSynchronized?"Synchronizing state…":onlineService.CommandFeedback??LastFeedback??"State synchronized.";
             onlineRetry.gameObject.SetActive(onlineService.PendingCommand!=null);onlineRetry.interactable=!onlineService.IsRecovering;onlineSync.interactable=!onlineService.IsRecovering&&onlineService.PendingCommand==null;
             bool economy=OnlineInputReady&&(pub.phase==MatchPhase.Preparation||pub.phase==MatchPhase.Combat);
-            rerollButton.interactable = economy && (owner.gold >= onlineShopRules.RerollGoldCost || owner.freeRerollRound == owner.round);
+            rerollButton.interactable = economy && (owner.gold >= onlineShopRules.RerollGoldCost || SynergyProgress.IsFreeRerollAvailable(owner.freeRerollRound, owner.round));
             xpButton.interactable = economy && owner.gold >= onlineLevelRules.PurchaseGoldCost && owner.level < onlineLevelRules.MaxLevel;
             lockButton.interactable = economy;
             surrenderButton.interactable=OnlineInputReady;
@@ -179,11 +179,11 @@ namespace PokeChess.Client.UI
         private void RenderOnlineShop(OwnerMatchState owner)
         {
             RenderShopToolbar(owner.gold, owner.level, owner.xp, owner.winStreak, owner.loseStreak,
-                owner.locked, owner.freeRerollRound == owner.round, onlineLevelRules, onlineShopRules);
+                owner.locked, SynergyProgress.IsFreeRerollAvailable(owner.freeRerollRound, owner.round), onlineLevelRules, onlineShopRules);
             for(int i=0;i<shopCards.Length;i++){
                 var offer=owner.shop[i];var card=shopViews[i];bool available=!string.IsNullOrEmpty(offer.definitionId);shopCards[i].gameObject.SetActive(ShopExpanded);shopCards[i].interactable=OnlineInputReady&&available&&offer.canPurchase;
                 if(!available){card.Name.text="빈 슬롯";card.Price.text=card.Types.text="";}
-                else {var d=catalog.Get(offer.definitionId);card.Name.text=d.DisplayName;card.Price.text=ShopPurchasePrice(offer.purchasePrice, offer.purchaseQuantity);RenderShopCardTraits(card, d);}
+                else {var d=catalog.Get(offer.definitionId);card.Name.text=PokeChess.Content.GameContent.DisplayName(d.Id) ?? d.DisplayName;card.Price.text=ShopPurchasePrice(offer.purchasePrice, offer.purchaseQuantity);RenderShopCardTraits(card, d);}
                 bool owned = available && owner.units.Any(unit => unit.definitionId == offer.definitionId);
                 SetShopPurchaseEffect(card, owned, available ? (UnitRank)offer.projectedRank : UnitRank.One);
                 RenderShopPortrait(i, offer.definitionId);

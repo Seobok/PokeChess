@@ -17,7 +17,7 @@ namespace PokeChess.Core.Match
         public int LastItemRewardRound { get; private set; }
         internal void GrantItemReward(int round, IReadOnlyList<string> items)
         {
-            if (LastItemRewardRound >= round) return;
+            if (LastItemRewardRound > round) return;
             long next = checked(ItemRevision + 1);
             if (items.Any(id => inventoryItems.Contains(id) || units.Any(unit => unit.ItemInstanceIds.Contains(id))))
                 throw new InvalidOperationException("Reward item is already owned.");
@@ -47,6 +47,14 @@ namespace PokeChess.Core.Match
             inventoryItems.Remove(id);
             ItemRevision = next;
         }
+        internal void CombineInventoryItems(string sourceId, string targetId, ItemDefinition recipe)
+        {
+            long next = checked(ItemRevision + 1);
+            inventoryItems[inventoryItems.IndexOf(targetId)] = $"item:{recipe.Id}:craft-{next}:{PlayerId}";
+            inventoryItems.Remove(sourceId);
+            ItemRevision = next;
+        }
+
         public void AddInventoryItem(string itemId)
         {
             ModelGuard.Id(itemId, nameof(itemId));

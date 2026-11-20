@@ -56,6 +56,8 @@ namespace PokeChess.Client.UI
         private VenomHud venomHud;
         private int venomHudTeam;
 
+        internal void SetStormHud(RectTransform parent, int team) => storm.SetHud(parent, team);
+
         internal void SetVenomHud(VenomHud hud, int team)
         {
             venomHud = hud;

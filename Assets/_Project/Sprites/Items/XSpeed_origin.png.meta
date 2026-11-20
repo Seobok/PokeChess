@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 8e18b715580a1c143be4e3f47bc71a19
+guid: 2cfe7cc48e9af3742b8a32464d7e5490
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2757887451555568444
-    second: Armor_0
+      213: 7219667030157829250
+    second: XSpeed_origin_0
+  - first:
+      213: 1712051478631286225
+    second: XSpeed_origin_1
+  - first:
+      213: -1866806798362506197
+    second: XSpeed_origin_2
+  - first:
+      213: 8499176295805066773
+    second: XSpeed_origin_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +122,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Armor_0
+      name: XSpeed_origin_0
       rect:
         serializedVersion: 2
-        x: 185
-        y: 87
-        width: 1048
-        height: 1121
+        x: 329
+        y: 721
+        width: 55
+        height: 33
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +137,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4c4e58789f30ab9d0800000000000000
-      internalID: -2757887451555568444
+      spriteID: 284282999e8613460800000000000000
+      internalID: 7219667030157829250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: XSpeed_origin_1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 70
+        width: 715
+        height: 650
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d5000dbfbd62c710800000000000000
+      internalID: 1712051478631286225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: XSpeed_origin_2
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 296
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2c815f8b15c716e0800000000000000
+      internalID: -1866806798362506197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: XSpeed_origin_3
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 254
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51e91ea7fc323f570800000000000000
+      internalID: 8499176295805066773
       vertices: []
       indices: 
       edges: []
@@ -148,7 +223,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Armor_0: -2757887451555568444
+      XSpeed_origin_0: 7219667030157829250
+      XSpeed_origin_1: 1712051478631286225
+      XSpeed_origin_2: -1866806798362506197
+      XSpeed_origin_3: 8499176295805066773
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

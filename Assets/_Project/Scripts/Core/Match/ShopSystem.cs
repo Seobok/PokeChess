@@ -100,7 +100,7 @@ namespace PokeChess.Core.Match
             var player = ShopPlayer(match, playerId, allowCombat: true);
             if (!player.Shop.IsInitialized || player.Shop.LastRefreshRound != match.RoundNumber)
                 throw new InvalidOperationException("Automatic shop refresh must complete before shop commands.");
-            bool free=player.Synergy.FreeRerollRound==match.RoundNumber;
+            bool free=SynergyProgress.IsFreeRerollAvailable(player.Synergy.FreeRerollRound, match.RoundNumber);
             if (!free && player.Gold < Rules.RerollGoldCost) throw new InvalidOperationException("Insufficient gold.");
             var revision = checked(player.Shop.Revision + 1);
             var slots = Generate(match, player, out var state, out var count, free);
@@ -108,6 +108,7 @@ namespace PokeChess.Core.Match
             if (free)
             {
                 player.Synergy.FreeRerollRound = 0;
+                player.Synergy.MysticBattles = 0;
                 player.Synergy.FreeRerollConsumedRound = match.RoundNumber;
             }
             player.Shop.Apply(slots, state, count, null, revision);

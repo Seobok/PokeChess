@@ -23,13 +23,13 @@ namespace PokeChess.Client.UI
     internal sealed class MysticShopVisuals
     {
         private readonly Image[] slots;
-        private readonly Image tick, token, reroll, expiry, glyph, selection, reveal, badge, badgeGlyph;
+        private readonly Image tick, token, reroll, glyph, selection, reveal, badge, badgeGlyph;
         private MysticVisuals art;
         private object match;
         private string player, selected;
         private int battles, consumed;
         private bool ready;
-        private double tickAt, rerollAt, expireAt, selectionAt, revealAt;
+        private double tickAt, rerollAt, selectionAt, revealAt;
         private Sprite[] rerollClip;
 
         public MysticShopVisuals(Transform hud, Transform originVisuals, RectTransform button, RectTransform card)
@@ -40,7 +40,6 @@ namespace PokeChess.Client.UI
                 Image(hud, "Progress2", new Vector2(13, -8), new Vector2(21, 21))
             };
             tick = Image(hud, "ProgressTick", new Vector2(-13, -8), new Vector2(36, 36));
-            expiry = Image(hud, "Expire", new Vector2(42, -8), new Vector2(34, 34));
             token = Image(button, "FreeToken", new Vector2(-73, 0), new Vector2(18, 18));
             reroll = Image(button, "Reroll", Vector2.zero, new Vector2(170, 91));
             glyph = Image(originVisuals, "SelectedOrigin", Vector2.zero, new Vector2(24, 24));
@@ -56,7 +55,8 @@ namespace PokeChess.Client.UI
         {
             art ??= Resources.Load<MysticVisuals>("MysticVisuals");
             if (art == null) return;
-            bool hasFree = phase == MatchPhase.Preparation && freeRound == round;
+            bool hasFree = SynergyProgress.IsFreeRerollAvailable(freeRound, round);
+            bool canReroll = phase == MatchPhase.Preparation || phase == MatchPhase.Combat;
             bool newScope = !Equals(match, matchKey) || player != playerId;
             double now = Time.unscaledTimeAsDouble;
             if (newScope)
@@ -84,11 +84,6 @@ namespace PokeChess.Client.UI
                     rerollClip = art.ready;
                     rerollAt = now;
                 }
-                else if (!hasFree && ready)
-                {
-                    expireAt = now;
-                    rerollClip = null;
-                }
                 if (prophecy != null && selected != prophecy && (tier >= 6 || lastTier >= 6))
                     selectionAt = now;
             }
@@ -104,13 +99,12 @@ namespace PokeChess.Client.UI
             int filled = awardReady ? total : shownTier == 2 ? completedBattles % 2 : 0;
             for (int i = 0; i < slots.Length; i++)
                 Static(slots[i], i < total ? art.progressSlot[i < filled ? 1 : 0] : null);
-            Static(token, hasFree ? art.freeToken[0] : null);
+            Static(token, hasFree && canReroll ? art.freeToken[0] : null);
             Static(glyph, phase == MatchPhase.Preparation && (tier >= 6 || lastTier >= 6) ? Glyph(prophecy) : null);
             Static(badge, favoredOrigin != null ? art.cardBadge[0] : null);
             Static(badgeGlyph, Glyph(favoredOrigin));
             Draw(tick, total > 0 ? art.progressTick : null, now - tickAt);
-            Draw(reroll, phase == MatchPhase.Preparation ? rerollClip : null, now - rerollAt);
-            Draw(expiry, art.expire, now - expireAt);
+            Draw(reroll, canReroll ? rerollClip : null, now - rerollAt);
             Draw(selection, glyph.enabled ? art.select : null, now - selectionAt);
             Draw(reveal, badge.enabled ? art.cardReveal : null, now - revealAt);
         }
@@ -124,7 +118,7 @@ namespace PokeChess.Client.UI
 
         private void ResetTimes()
         {
-            tickAt = rerollAt = expireAt = selectionAt = revealAt = double.NegativeInfinity;
+            tickAt = rerollAt = selectionAt = revealAt = double.NegativeInfinity;
             rerollClip = null;
         }
 

@@ -14,6 +14,7 @@ namespace PokeChess.Client.UI
         private ComponentRecipeRow[] componentRecipeRows;
         private int hoveredComponentSlot;
         private string hoveredComponentItem;
+        private RectTransform equippedRecipeSource;
 
         private sealed class ComponentRecipeRow
         {
@@ -68,7 +69,7 @@ namespace PokeChess.Client.UI
             return label;
         }
 
-        private void ShowComponentRecipeHint(ItemDefinition component, int slot, string instanceId)
+        private void ShowComponentRecipeHint(ItemDefinition component, int slot, string instanceId, RectTransform equippedIcon = null)
         {
             const float headerHeight = 53;
             componentRecipeTitle.text = component.Name + "\n" + component.Description;
@@ -108,21 +109,24 @@ namespace PokeChess.Client.UI
                     new Vector2(0, height * .5f - headerHeight - (i + .5f) * RecipeRowHeight);
 
             var bounds = canvasRect.rect;
-            var left = canvasRect.InverseTransformPoint(itemInventoryPanel.TransformPoint(
-                new Vector2(itemInventoryPanel.rect.xMin, itemInventoryPanel.rect.yMax)));
-            var right = canvasRect.InverseTransformPoint(itemInventoryPanel.TransformPoint(
-                new Vector2(itemInventoryPanel.rect.xMax, itemInventoryPanel.rect.yMax)));
-            var slotCenter = itemInventoryPanel.InverseTransformPoint(inventoryChoices[slot].transform.position);
+            var sourcePanel = equippedIcon != null ? unitInfoRoot : itemInventoryPanel;
+            var sourceIcon = equippedIcon != null ? equippedIcon : (RectTransform)inventoryChoices[slot].transform;
+            var left = canvasRect.InverseTransformPoint(sourcePanel.TransformPoint(
+                new Vector2(sourcePanel.rect.xMin, sourcePanel.rect.yMax)));
+            var right = canvasRect.InverseTransformPoint(sourcePanel.TransformPoint(
+                new Vector2(sourcePanel.rect.xMax, sourcePanel.rect.yMax)));
+            var slotCenter = sourcePanel.InverseTransformPoint(sourceIcon.position);
             float width = componentRecipes.rect.width;
             float leftSpace = left.x - bounds.xMin - 4;
-            bool openLeft = slotCenter.x < itemInventoryPanel.rect.center.x && leftSpace >= width * .7f;
+            bool openLeft = (equippedIcon != null || slotCenter.x < sourcePanel.rect.center.x) && leftSpace >= width * .7f;
             float scale = openLeft ? Mathf.Min(1, leftSpace / width) : 1;
             componentRecipes.localScale = new Vector3(scale, scale, 1);
             float x = openLeft ? left.x - width * scale : Mathf.Min(right.x, bounds.xMax - width);
-            float slotY = canvasRect.InverseTransformPoint(inventoryChoices[slot].transform.position).y;
+            float slotY = canvasRect.InverseTransformPoint(sourceIcon.position).y;
             float top = Mathf.Clamp(slotY + height * scale * .5f, bounds.yMin + height * scale, bounds.yMax);
             componentRecipes.localPosition = new Vector3(x - componentRecipes.rect.xMin * scale,
                 top - componentRecipes.rect.yMax * scale, 0);
+            equippedRecipeSource = equippedIcon;
             hoveredComponentSlot = slot;
             hoveredComponentItem = instanceId;
             componentRecipes.gameObject.SetActive(true);
@@ -140,7 +144,7 @@ namespace PokeChess.Client.UI
         {
             var hit = data.pointerCurrentRaycast.gameObject;
             if (hoveredComponentItem != null && hit != null &&
-                (hit.transform.IsChildOf(itemInventoryPanel) || hit.transform.IsChildOf(componentRecipes) ||
+                (hit.transform.IsChildOf(equippedRecipeSource != null ? unitInfoRoot : itemInventoryPanel) || hit.transform.IsChildOf(componentRecipes) ||
                     hit.transform.IsChildOf(itemRecipePreview))) return;
             HideItemHint();
         }
@@ -161,7 +165,7 @@ namespace PokeChess.Client.UI
 
         private void ValidateComponentRecipeHint()
         {
-            if (hoveredComponentItem == null) return;
+            if (hoveredComponentItem == null || equippedRecipeSource != null) return;
             int index = InventoryIndex(hoveredComponentSlot);
             if (!itemInventoryPanel.gameObject.activeInHierarchy || index >= visibleInventory.Length ||
                 !string.Equals(visibleInventory[index], hoveredComponentItem, StringComparison.Ordinal))

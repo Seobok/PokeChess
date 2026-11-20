@@ -48,6 +48,9 @@ namespace PokeChess.Client.UI
         private readonly Dictionary<int,TeamHud> teams=new Dictionary<int,TeamHud>();
         private readonly Dictionary<string,long> bursts=new Dictionary<string,long>();
         private StormVisuals art;
+        private RectTransform hudParent;
+        private int hudTeam;
+        public void SetHud(RectTransform parent, int team) { hudParent = parent; hudTeam = team; }
         public void Signal(Transform root,string clip,string from,string to,int count,long tick)
         {
             if(from==null||to==null)return;
@@ -78,11 +81,11 @@ namespace PokeChess.Client.UI
         {
             if(teams.TryGetValue(team,out var hud))return hud;
             var background=StormVisuals.Create(root,"Team"+team+"Hud");background.enabled=true;background.color=new Color(.035f,.08f,.13f,.9f);
-            var rect=background.rectTransform;rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.one;
-            rect.sizeDelta=new Vector2(145,58);rect.anchoredPosition=new Vector2(-8-(team-1)*153,-4);
+            var rect=background.rectTransform;rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
+            rect.sizeDelta=new Vector2(134,58);rect.anchoredPosition=Vector2.zero;
             var label=new GameObject("Label",typeof(RectTransform),typeof(UnityEngine.UI.Text)).GetComponent<UnityEngine.UI.Text>();
             label.transform.SetParent(rect,false);label.raycastTarget=false;
-            label.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");label.fontSize=12;label.alignment=TextAnchor.MiddleCenter;label.color=new Color(.65f,.9f,1);
+            label.font=hudParent.parent.GetComponentInChildren<UnityEngine.UI.Text>(true).font;label.fontSize=12;label.alignment=TextAnchor.MiddleCenter;label.color=new Color(.65f,.9f,1);
             label.rectTransform.anchorMin=label.rectTransform.anchorMax=Vector2.one;
             label.rectTransform.sizeDelta=new Vector2(143,20);label.rectTransform.anchoredPosition=new Vector2(-72.5f,-44);
             hud=new TeamHud{Root=rect,Label=label,Gauge=StormVisuals.Create(rect,"Gauge"),Flash=StormVisuals.Create(rect,"Burst")};
@@ -141,15 +144,15 @@ namespace PokeChess.Client.UI
                 mark.Image.transform.SetAsLastSibling();
             }
             foreach(var hud in teams.Values)hud.Root.gameObject.SetActive(false);
-            foreach(var group in units.Where(u=>u.StormTier>=4).GroupBy(u=>u.Team)) {
-                var member=group.First();var hud=Hud(root,group.Key);hud.Root.gameObject.SetActive(true);
+            foreach(var group in units.Where(u=>u.StormTier>=6 && hudParent!=null && u.Team==hudTeam).GroupBy(u=>u.Team)) {
+                var member=group.First();var hud=Hud(hudParent,group.Key);hud.Root.SetParent(hudParent,false);hud.Root.gameObject.SetActive(true);
                 foreach(var burst in bursts)if(units.Any(u=>u.Id==burst.Key&&u.Team==group.Key)&&burst.Value>hud.Burst)hud.Burst=burst.Value;
                 double elapsed=hud.Burst==long.MinValue?double.PositiveInfinity:(tick-hud.Burst)/rate;
                 bool ready=member.StormTier>=6&&elapsed>=0&&elapsed<readySeconds;
                 int count=ready?4:member.StormEnergy;
                 hud.Gauge.enabled=member.StormTier>=6&&art.charge!=null&&art.charge.Length>0;
                 if(hud.Gauge.enabled)hud.Gauge.sprite=art.charge[Mathf.Clamp(count,0,Math.Min(4,art.charge.Length-1))];
-                hud.Label.text="T"+group.Key+(member.StormTier>=6?" CHARGE "+count+"/4":" ENERGY "+count);
+                hud.Label.text="폭풍 · "+(member.StormTier>=6?"충전 "+count+"/4":"팀 에너지 "+count);
                 var frames=ready?art.ready:art.spent;
                 int frame=(int)Math.Floor((elapsed-(ready?0:readySeconds))*12);
                 Frame(hud.Flash,member.StormTier>=6?frames:null,frame);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using PokeChess.Core.Match;
@@ -71,6 +72,7 @@ namespace PokeChess.Client.UI
             if (itemTooltip != null) itemTooltip.gameObject.SetActive(false);
             if (hoveredComponentItem == null) return;
             hoveredComponentItem = null;
+            equippedRecipeSource = null;
             componentRecipes.gameObject.SetActive(false);
             itemRecipePreview.gameObject.SetActive(false);
         }
@@ -143,6 +145,12 @@ namespace PokeChess.Client.UI
             return -1;
         }
 
+        private string InventoryItemAt(int slot)
+        {
+            int index = InventoryIndex(slot);
+            return index >= 0 && index < visibleInventory.Length ? visibleInventory[index] : null;
+        }
+
         private ItemDefinition PreviewRecipe(int hoveredSlot, string unitId)
         {
             if (!ItemCatalog.IsComponent(draggedItem)) return null;
@@ -150,8 +158,7 @@ namespace PokeChess.Client.UI
             string other = null;
             if (hoveredSlot >= 0)
             {
-                int index = InventoryIndex(hoveredSlot);
-                if (index >= 0 && index < visibleInventory.Length) other = visibleInventory[index];
+                other = InventoryItemAt(hoveredSlot);
             }
             else if (unitId != null)
             {
@@ -213,17 +220,32 @@ namespace PokeChess.Client.UI
         {
             if(!IsItemDragging)return;
             string id = draggedItem;
+            long revision = draggedItemRevision;
             int hoveredSlot = HoveredInventorySlot(point);
-            if (hoveredSlot >= 0 && PreviewRecipe(hoveredSlot, null) != null)
+            if (hoveredSlot >= 0 && CanDragItems() && PreviewRecipe(hoveredSlot, null) != null)
             {
+                string targetItemId = InventoryItemAt(hoveredSlot);
                 CancelItemDrag();
+                if (IsOnlineMatch)
+                {
+                    SendOnlineCommand(MatchCommandKind.CombineItems, command =>
+                    {
+                        command.itemId = id;
+                        command.targetItemId = targetItemId;
+                        command.itemRevision = revision;
+                    });
+                }
+                else
+                {
+                    Feedback(commands.CombineItems(id, targetItemId, revision).Message);
+                    Render();
+                }
                 return;
             }
             string target = null;
             if (hoveredSlot < 0 && CanDragItems())
                 target = id == EvolutionDragId && ItemPhase == MatchPhase.Preparation
                     ? ItemTarget(EvolutionSlotAt(point, Hit(point))) : ItemTarget(point);
-            long revision = draggedItemRevision;
             CancelItemDrag();
             if(target==null){Feedback((id==EvolutionDragId?"진화":"장착")+" 취소: 내 유닛 위에 놓으세요.");Render();return;}
             selectedUnitId=target;
@@ -242,6 +264,67 @@ namespace PokeChess.Client.UI
             ClearEvolutionHighlights();
             if(Match!=null)foreach(var slot in slots)slot.Graphic.color=BaseSlotColor(slot);
         }
+        private void PlayItemReward(BoardPosition monsterCell, string rewardKey, int index)
+        {
+            if (!isActiveAndEnabled || combatRoot == null || itemIcons?.rewardFlight is not { Length: > 0 } ||
+                itemIcons.rewardArrival is not { Length: > 0 })
+                return;
+            Vector2 start = canvasRect.InverseTransformPoint(combatRoot.TransformPoint(CombatPoint(monsterCell)));
+            StartCoroutine(AnimateItemReward(start, rewardKey, index, IsOnlineMatch ? (object)onlineMatchId : Match));
+        }
+
+        private IEnumerator AnimateItemReward(Vector2 start, string rewardKey, int index, object matchKey)
+        {
+            const float flightSeconds = .5f, arrivalSeconds = .22f;
+            float elapsed = -.07f * index;
+            UnityEngine.UI.Image image = null;
+            try
+            {
+                while (elapsed < flightSeconds + arrivalSeconds && isActiveAndEnabled &&
+                    Equals(matchKey, IsOnlineMatch ? (object)onlineMatchId : Match) &&
+                    (IsOnlineMatch ? onlineService.WatchingPlayerId == onlineService.LocalMatchState?.playerId : localViewedPlayerId == Player.PlayerId))
+                {
+                    if (elapsed >= 0 && itemInventoryPanel.gameObject.activeInHierarchy)
+                    {
+                        if (image == null)
+                        {
+                            image = InventoryImage("ItemRewardEffect", canvasRect, new Vector2(64, 64), start, null);
+                            image.raycastTarget = false;
+                            image.preserveAspect = true;
+                        }
+
+                        image.enabled = true;
+                        int inventoryIndex = Array.FindIndex(visibleInventory, item =>
+                            ItemCatalog.IsComponent(item) && item.Split(':')[2] == rewardKey);
+                        int slot = 1 + inventoryIndex - inventoryPage * ToolsPerPage;
+                        RectTransform destination = inventoryIndex >= 0 && slot > 0 && slot < inventoryChoices.Length
+                            ? (RectTransform)inventoryChoices[slot].transform : inventoryPageText.rectTransform;
+                        Vector2 end = canvasRect.InverseTransformPoint(destination.position);
+                        bool flying = elapsed < flightSeconds;
+                        float progress = flying ? elapsed / flightSeconds : (elapsed - flightSeconds) / arrivalSeconds;
+                        var frames = flying ? itemIcons.rewardFlight : itemIcons.rewardArrival;
+                        image.sprite = frames[Mathf.Min(frames.Length - 1, (int)(progress * frames.Length))];
+
+                        float arc = Mathf.Min(90, Vector2.Distance(start, end) * .22f);
+                        Vector2 heading = end - start + Vector2.up * (Mathf.PI * arc * Mathf.Cos(Mathf.PI * progress));
+                        image.rectTransform.anchoredPosition = flying
+                            ? Vector2.Lerp(start, end, progress) + Vector2.up * (arc * Mathf.Sin(Mathf.PI * progress)) : end;
+                        image.rectTransform.localRotation = flying
+                            ? Quaternion.Euler(0, 0, Mathf.Atan2(heading.y, heading.x) * Mathf.Rad2Deg) : Quaternion.identity;
+                        image.transform.SetAsLastSibling();
+                    }
+                    else if (image != null) image.enabled = false;
+
+                    yield return null;
+                    elapsed += Time.unscaledDeltaTime;
+                }
+            }
+            finally
+            {
+                if (image != null) Destroy(image.gameObject);
+            }
+        }
+
         private void RenderItemWildUI()
         {
             if(itemInventoryPanel==null)return;

@@ -63,6 +63,7 @@ namespace PokeChess.Client.UI
             double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
             var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
             visuals.SetVenomHud(venomHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
+            visuals.SetStormHud(stormBattleHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
             visuals.RenderPlayback(frame,tick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
             foreach(var unit in frame.units){
                 if(!combatTokens.TryGetValue(unit.id,out var label)){
@@ -106,6 +107,14 @@ namespace PokeChess.Client.UI
         }
         private void ShowOnlineEffect(CombatEventView effect)
         {
+            if (effect.kind == "WildItemDrop")
+            {
+                var owner = onlineService.LocalMatchState;
+                if (owner != null && effect.target == owner.playerId && effect.target == onlineService.WatchingPlayerId &&
+                    effect.itemRewardCell != null)
+                    PlayItemReward(new BoardPosition(effect.itemRewardCell.column, effect.itemRewardCell.row), effect.detail, effect.iteration);
+                return;
+            }
             var visualFrame=onlineService.Combat.Current;
             if(visualFrame!=null)SkillVisualBattleView.Get(combatRoot,SkillVisuals).PlaybackEvent(effect,visualFrame,
                 (column,row)=>CombatPoint(new BoardPosition(column,row)));

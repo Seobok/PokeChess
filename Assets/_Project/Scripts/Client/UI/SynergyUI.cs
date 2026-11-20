@@ -20,7 +20,9 @@ namespace PokeChess.Client.UI
         private long synergyVisualTick = -1;
         private readonly Dictionary<string, (string text, float until)> synergyFlashes = new Dictionary<string, (string, float)>();
         private int synergyRockChoice;
-        private RectTransform synergyStacks, venomStack, adversityStack, mysticStack;
+        private RectTransform synergyStacks, venomStack, adversityStack, mysticStack, stormStack, stormBattleHud;
+        private UnityEngine.UI.Text stormPreparationLabel;
+        private UnityEngine.UI.Image stormPreparationGauge;
         private UnityEngine.UI.Text venomStackTitle, venomStackResearch, adversityStackTitle, mysticStackTitle;
         private VenomHud venomHud;
         private MysticShopVisuals mysticVisuals;
@@ -67,6 +69,17 @@ namespace PokeChess.Client.UI
             venomStackResearch = ItemLabel("Research", venomStack, "", 11, new Vector2(83, 17), new Vector2(0, -9));
             adversityStack = BuildSynergyStackRow("Adversity", out adversityStackTitle);
             mysticStack = BuildSynergyStackRow("Mystic", out mysticStackTitle);
+            stormStack = BuildSynergyStackRow("Storm", out var stormTitle);
+            stormTitle.gameObject.SetActive(false);
+            stormStack.sizeDelta = new Vector2(134, 58);
+            stormBattleHud = Rect("BattleHud", stormStack, Vector2.zero, Vector2.zero);
+            stormPreparationLabel = ItemLabel("Preparation", stormStack, "폭풍 · 충전 0/4", 12,
+                new Vector2(130, 20), new Vector2(0, -15));
+            stormPreparationGauge = HudImage("PreparationGauge", stormStack, new Vector2(110, 64),
+                new Vector2(0, 13), Color.white);
+            var stormArt = Resources.Load<StormVisuals>("StormVisuals");
+            stormPreparationGauge.sprite = stormArt?.charge?.FirstOrDefault();
+            stormPreparationGauge.enabled = stormPreparationGauge.sprite != null;
             synergyStacks.gameObject.SetActive(false);
         }
 
@@ -80,14 +93,18 @@ namespace PokeChess.Client.UI
         }
 
         private void RenderSynergyStacks(bool venom, int samples, int research, bool adversity,
-            int resolve, int equipment, int emblem, int mysticTier, int mysticBattles, bool freeReroll)
+            int resolve, int equipment, int emblem, int mysticTier, int mysticBattles, bool freeReroll, bool storm = false, bool stormCombat = false)
         {
-            bool mystic = mysticTier > 0;
-            synergyStacks.gameObject.SetActive(venom || adversity || mystic);
+            bool mystic = mysticTier > 0 || freeReroll;
+            synergyStacks.gameObject.SetActive(venom || adversity || mystic || storm);
             float offset = 0;
             SetStackRow(venomStack, venom, ref offset);
             SetStackRow(adversityStack, adversity, ref offset);
             SetStackRow(mysticStack, mystic, ref offset);
+            SetStackRow(stormStack, storm, ref offset);
+            stormBattleHud.gameObject.SetActive(stormCombat);
+            stormPreparationLabel.gameObject.SetActive(!stormCombat);
+            stormPreparationGauge.gameObject.SetActive(!stormCombat);
 
             if (venom)
             {
@@ -173,7 +190,8 @@ namespace PokeChess.Client.UI
             RenderSynergyStacks(showStacks && venomTier > 0, samples, research,
                 showStacks && ownView && counts.Any(c => c.TraitId == SynergyTraits.Adversity && c.Tier > 0),
                 progress.Resolve, progress.EquipmentFragments, progress.EmblemFragments, showStacks ? localMysticTier : 0,
-                progress.MysticBattles, progress.FreeRerollRound == Match.RoundNumber);
+                progress.MysticBattles, showStacks && ownView && SynergyProgress.IsFreeRerollAvailable(progress.FreeRerollRound, Match.RoundNumber),
+                showStacks && counts.Any(c => c.TraitId == SynergyTraits.Storm && c.Tier >= 6), battle != null);
             RenderLocalMystic();
             RenderSynergies(counts, Match.Phase != MatchPhase.Finished);
         }
@@ -229,7 +247,8 @@ namespace PokeChess.Client.UI
                 showStacks && counts.Any(c => c.TraitId == SynergyTraits.Adversity && c.Tier > 0),
                 progress?.resolve ?? 0, progress?.equipmentFragments ?? 0, progress?.emblemFragments ?? 0,
                 showStacks ? counts.First(c => c.TraitId == SynergyTraits.Mystic).Tier : 0,
-                progress?.mysticBattles ?? 0, progress?.freeRerollRound == pub.round);
+                progress?.mysticBattles ?? 0, pub.phase != MatchPhase.Finished && ownView && SynergyProgress.IsFreeRerollAvailable(progress?.freeRerollRound ?? 0, pub.round),
+                pub.phase != MatchPhase.Finished && counts.Any(c => c.TraitId == SynergyTraits.Storm && c.Tier >= 6), combat);
             RenderSynergies(counts, pub.phase != MatchPhase.Finished);
         }
         private void RenderLocalMystic()

@@ -16,7 +16,41 @@ namespace PokeChess.Core.Tests
         [Test] public void MysticUsesStartingSnapshotAndSettlesEachRoundOnlyOnce(){var m=Match(out _);var p=m.GetPlayer("p1");var pair=Pair(SynergyTraits.Mystic,2);SynergyPreparation.Settle(p,pair,1,RoundOutcome.Loss);Assert.That(p.Synergy.FreeRerollRound,Is.Zero);SynergyPreparation.Settle(p,pair,1,RoundOutcome.Loss);Assert.That(p.Synergy.MysticBattles,Is.EqualTo(1));SynergyPreparation.Settle(p,pair,2,RoundOutcome.Loss);Assert.That(p.Synergy.FreeRerollRound,Is.EqualTo(3));}
         [Test] public void MysticFourGrantsNextPreparationFreeRollAfterEmptyOpponentBattle(){var m=Match(out _);var p=m.GetPlayer("p1");SynergyPreparation.Settle(p,Pair(SynergyTraits.Mystic,4),1,RoundOutcome.Win);Assert.That(p.Synergy.FreeRerollRound,Is.EqualTo(2));}
         [Test] public void FreeRerollWorksAtZeroGoldAndCannotBeReused(){var m=Match(out _);var p=m.GetPlayer("p1");p.SetProgress(0,0,1);var shop=new ShopSystem();shop.RefreshForRound(m,"p1");p.Synergy.FreeRerollRound=1;Assert.DoesNotThrow(()=>shop.Reroll(m,"p1"));Assert.That(p.Gold,Is.Zero);Assert.That(p.Synergy.FreeRerollRound,Is.Zero);Assert.Throws<InvalidOperationException>(()=>shop.Reroll(m,"p1"));}
-        [Test] public void ExpiredFreeRerollDoesNotMakePaidRollFree(){var m=Match(out _);var p=m.GetPlayer("p1");p.SetProgress(0,0,1);new ShopSystem().RefreshForRound(m,"p1");p.Synergy.FreeRerollRound=2;Assert.Throws<InvalidOperationException>(()=>new ShopSystem().Reroll(m,"p1"));}
+        [Test] public void PendingFreeRerollCannotBeUsedBeforeItsAwardRound(){var m=Match(out _);var p=m.GetPlayer("p1");p.SetProgress(0,0,1);new ShopSystem().RefreshForRound(m,"p1");p.Synergy.FreeRerollRound=2;Assert.Throws<InvalidOperationException>(()=>new ShopSystem().Reroll(m,"p1"));}
+
+        [Test]
+        public void MysticRerollCarriesOverAndChargingRestartsOnlyAfterUse()
+        {
+            var match = Match(out _);
+            var player = match.GetPlayer("p1");
+            var shop = new ShopSystem();
+            player.SetProgress(0, 0, 1);
+            shop.RefreshForRound(match, "p1");
+            var two = Pair(SynergyTraits.Mystic, 2);
+            SynergyPreparation.Settle(player, Pair(SynergyTraits.Mystic, 6), 1, RoundOutcome.Win);
+            for (int round = 2; round <= 4; round++)
+            {
+                match.TransitionTo(MatchPhase.Combat);
+                match.TransitionTo(MatchPhase.Result);
+                match.TransitionTo(MatchPhase.Preparation);
+                shop.RefreshForRound(match, "p1");
+                if (round < 4)
+                    SynergyPreparation.Settle(player, round == 2 ? two : Pair(SynergyTraits.Mystic, 0), round, RoundOutcome.Win);
+            }
+
+            Assert.That(player.Synergy.FreeRerollRound, Is.EqualTo(2));
+            Assert.That(player.Synergy.MysticBattles, Is.EqualTo(1));
+            Assert.That(player.Synergy.MysticTier, Is.EqualTo(6));
+            player.Synergy.ProphecyOrigin = SynergyTraits.Torrent;
+            Assert.That(shop.Reroll(match, "p1")[0].ProphecyOrigin, Is.EqualTo(SynergyTraits.Torrent));
+            Assert.That(player.Synergy.MysticBattles, Is.Zero);
+            Assert.Throws<InvalidOperationException>(() => shop.Reroll(match, "p1"));
+
+            SynergyPreparation.Settle(player, two, 4, RoundOutcome.Win);
+            Assert.That(player.Synergy.FreeRerollRound, Is.Zero);
+            SynergyPreparation.Settle(player, two, 5, RoundOutcome.Win);
+            Assert.That(player.Synergy.FreeRerollRound, Is.EqualTo(6));
+        }
         [Test] public void ProphecyKeepsSelectedCostAndSharedPoolStock()
         {
             var m = Match(out var catalog);

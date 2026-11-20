@@ -23,7 +23,7 @@ namespace PokeChess.Client.UI
         private readonly ShopCardView[] shopViews=new ShopCardView[ShopRules.SlotCount];
         private UnityEngine.UI.Text economyGold,economyLevel,economyStreak,economyDelta;
         private UnityEngine.UI.Text shopOddsLabel;
-        private RectTransform streakTooltip;
+        private RectTransform streakTooltip, interestTooltip;
         private ShopRules displayedOddsRules;
         private int displayedOddsLevel;
         private MatchState economyMatch;
@@ -76,7 +76,7 @@ namespace PokeChess.Client.UI
             economyInterest = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Interest");
             economyStreak = UiPrefab.Get<UnityEngine.UI.Text>(gold, "Streak");
             economyDelta = UiPrefab.Get<UnityEngine.UI.Text>(gold, "EconomyDelta");
-            BindShopOddsAndStreakTooltip(level, gold);
+            BindShopOddsAndEconomyTooltips(level, gold);
             shopLockIcon = UiPrefab.Get<UnityEngine.UI.Image>(lockButton.transform, "LockIcon");
             shopToggleIcon = UiPrefab.Get<UnityEngine.UI.Image>(shopToggle.transform, "CollapseIcon");
 
@@ -102,42 +102,55 @@ namespace PokeChess.Client.UI
                 hover.ShopSlot = slot;
             }
         }
-        private void BindShopOddsAndStreakTooltip(Transform level, Transform gold)
+        private void BindShopOddsAndEconomyTooltips(Transform level, Transform gold)
         {
             var badge = HudImage("CostOdds", level, new Vector2(294, 17), new Vector2(0, 31),
                 new Color(.06f, .11f, .22f, .95f));
             shopOddsLabel = Label("Percentages", badge.transform, "", 11, new Vector2(288, 17), Vector2.zero);
 
-            var backdrop = HudImage("StreakTooltip", gold, new Vector2(214, 103), new Vector2(62, 76),
-                new Color(.06f, .11f, .22f, .98f));
-            streakTooltip = backdrop.rectTransform;
             var rules = shopEconomyRules;
-            string text = "연승·연패 추가 골드\n"
+            string streakText = "연승·연패 추가 골드\n"
                 + $"0–{rules.FirstStreakThreshold - 1}회  +0G\n"
                 + $"{rules.FirstStreakThreshold}–{rules.SecondStreakThreshold - 1}회  +{rules.FirstStreakBonus}G\n"
                 + $"{rules.SecondStreakThreshold}–{rules.ThirdStreakThreshold - 1}회  +{rules.SecondStreakBonus}G\n"
                 + $"{rules.ThirdStreakThreshold}회 이상  +{rules.ThirdStreakBonus}G";
-            var label = Label("Bonuses", streakTooltip, text, 13, new Vector2(198, 95), Vector2.zero);
-            label.font = null;
-            streakTooltip.gameObject.SetActive(false);
+            streakTooltip = BindShopEconomyTooltip(gold, economyStreak, "StreakTooltip", streakText);
 
-            economyStreak.raycastTarget = true;
-            var events = economyStreak.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerEnter, _ =>
-            {
-                streakTooltip.gameObject.SetActive(ShopExpanded);
-            });
-            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerExit, _ =>
-            {
-                streakTooltip.gameObject.SetActive(false);
-            });
+            string interestText = $"이자\n보유 골드 {rules.GoldPerInterest}G당 +1G\n최대 +{rules.MaxInterest}G";
+            interestTooltip = BindShopEconomyTooltip(gold, economyInterest, "InterestTooltip", interestText);
+        }
+
+        private RectTransform BindShopEconomyTooltip(Transform parent, UnityEngine.UI.Text source, string name, string text)
+        {
+            var position = new Vector2(source.rectTransform.anchoredPosition.x, 76);
+            var backdrop = HudImage(name, parent, new Vector2(214, 103), position,
+                new Color(.06f, .11f, .22f, .98f));
+            var tooltip = backdrop.rectTransform;
+            var tooltipCanvas = tooltip.gameObject.AddComponent<Canvas>();
+            tooltipCanvas.overrideSorting = true;
+            tooltipCanvas.sortingOrder = canvasRect.GetComponent<Canvas>().sortingOrder + 1;
+            var label = Label("Bonuses", tooltip, text, 13, new Vector2(198, 95), Vector2.zero);
+            label.font = null;
+            tooltip.gameObject.SetActive(false);
+
+            source.raycastTarget = true;
+            var events = source.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerEnter,
+                _ => tooltip.gameObject.SetActive(ShopExpanded));
+            AddSynergyRowEvent(events, UnityEngine.EventSystems.EventTriggerType.PointerExit,
+                _ => tooltip.gameObject.SetActive(false));
+            return tooltip;
         }
 
         private void RenderShopOdds(int level, ShopRules rules)
         {
             bool expanded = ShopExpanded;
             shopOddsLabel.transform.parent.gameObject.SetActive(expanded);
-            if (!expanded) streakTooltip.gameObject.SetActive(false);
+            if (!expanded)
+            {
+                streakTooltip.gameObject.SetActive(false);
+                interestTooltip.gameObject.SetActive(false);
+            }
             if (level == displayedOddsLevel && ReferenceEquals(rules, displayedOddsRules)) return;
 
             var odds = rules.ForLevel(Mathf.Clamp(level, 1, rules.MaxLevel));
@@ -257,7 +270,7 @@ namespace PokeChess.Client.UI
             }
             economyPreviousGold=Player.Gold;
             RenderShopToolbar(Player.Gold, Player.Level, Player.XP, Player.WinStreak, Player.LoseStreak,
-                Player.Shop.IsLocked, Player.Synergy.FreeRerollRound == Match.RoundNumber, commands.LevelRules, commands.ShopRules);
+                Player.Shop.IsLocked, SynergyProgress.IsFreeRerollAvailable(Player.Synergy.FreeRerollRound, Match.RoundNumber), commands.LevelRules, commands.ShopRules);
             for(int i=0;i<shopCards.Length;i++) {
                 var c=shopViews[i];var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) {
@@ -265,7 +278,7 @@ namespace PokeChess.Client.UI
                     ApplyShopCardArt(i, 0);continue;
                 }
                 c.PurchasedSlot=null;var d=catalog.Get(offer.DefinitionId);
-                c.Name.text=d.DisplayName;c.Price.text=ShopPurchasePrice(c.PurchasePrice, c.PurchaseQuantity);RenderShopCardTraits(c, d);
+                c.Name.text=PokeChess.Content.GameContent.DisplayName(d.Id) ?? d.DisplayName;c.Price.text=ShopPurchasePrice(c.PurchasePrice, c.PurchaseQuantity);RenderShopCardTraits(c, d);
                 ApplyShopCardArt(i, offer.Cost);
             }
         }

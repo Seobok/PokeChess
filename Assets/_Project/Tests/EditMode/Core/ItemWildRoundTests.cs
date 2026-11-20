@@ -141,6 +141,61 @@ namespace PokeChess.Core.Tests
             Assert.That(f.match.GetPlayer("p1").ItemInventory.Count, Is.EqualTo(1));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ThirdWildRoundGrantsEachDropOnDeathEvenIfThePlayerLaterLoses(bool lose)
+        {
+            var f = Match(units: true);
+            for (int round = 1; round <= 2; round++)
+            {
+                Assert.That(f.rounds.StartCombat(round), Is.True);
+                for (int tick = 0; tick < 1400 && f.match.Phase == MatchPhase.Combat; tick++) f.rounds.Step();
+                Assert.That(f.rounds.NextRound(round), Is.True);
+            }
+
+            Assert.That(f.rounds.StartCombat(3), Is.True);
+            var player = f.match.GetPlayer("p1");
+            var pair = f.rounds.GetBattleFor("p1");
+            var drops = ItemSystem.PlanWildDrops(f.match, player, pair.Battle);
+            var enemies = pair.Battle.Units.Where(unit => unit.TeamId == 2).ToArray();
+            Assert.That(drops.Count, Is.EqualTo(2));
+            Assert.That(drops.Values.All(items => items.Count == 1 && items.All(ItemCatalog.IsComponent)), Is.True);
+
+            enemies.Single(enemy => !drops.ContainsKey(enemy.UnitInstanceId)).SetVitals(0, 0);
+            long before = player.ItemRevision;
+            f.rounds.Step();
+            Assert.That(player.ItemInventory.Count, Is.EqualTo(2));
+            Assert.That(player.ItemRevision, Is.EqualTo(before));
+
+            var playedDrops = new System.Collections.Generic.List<(BoardPosition cell, string item, int index)>();
+            f.rounds.WildItemDropped += (owner, cell, item, index) =>
+            {
+                if (owner == player.PlayerId) playedDrops.Add((cell, item, index));
+            };
+            var carriers = enemies.Where(enemy => drops.ContainsKey(enemy.UnitInstanceId)).ToArray();
+            var firstDrop = (carriers[0].Position, drops[carriers[0].UnitInstanceId][0], 0);
+            carriers[0].SetVitals(0, 0);
+            f.rounds.Step();
+            Assert.That(pair.IsComplete, Is.False);
+            Assert.That(player.ItemInventory.Count, Is.EqualTo(3));
+            Assert.That(player.ItemInventory, Does.Contain(drops[carriers[0].UnitInstanceId][0]));
+            Assert.That(player.ItemRevision, Is.EqualTo(before + 1));
+            Assert.That(playedDrops, Is.EqualTo(new[]{ firstDrop }));
+
+            if (lose)
+            {
+                foreach (var unit in pair.Battle.Units.Where(unit => unit.TeamId == 1)) unit.SetVitals(0, 0);
+            }
+            else carriers[1].SetVitals(0, 0);
+            f.rounds.Step();
+            Assert.That(pair.OutcomeOf(player.PlayerId), Is.EqualTo(lose ? RoundOutcome.Loss : RoundOutcome.Win));
+            Assert.That(player.ItemInventory.Count, Is.EqualTo(lose ? 3 : 4));
+            Assert.That(player.ItemRevision, Is.EqualTo(before + (lose ? 1 : 2)));
+            Assert.That(playedDrops.Count, Is.EqualTo(lose ? 1 : 2));
+            for (int tick = 0; tick < 1400 && f.match.Phase == MatchPhase.Combat; tick++) f.rounds.Step();
+            Assert.That(player.ItemInventory.Count, Is.EqualTo(lose ? 3 : 4));
+        }
+
         [Test] public void RepeatedSettlementDoesNotGrantMoreComponents()
         {
             var f = RewardMatch();
@@ -364,6 +419,54 @@ namespace PokeChess.Core.Tests
             Assert.That(lethal.match.GetPlayer("p1").HP,Is.EqualTo(hp));
             Assert.That(hp,Is.Zero);Assert.That(lethal.match.GetPlayer("p1").IsEliminated,Is.True);
         }
+        [Test] public void InventoryCombineRequiresTwoDistinctOwnedComponentsAtCurrentRevision()
+        {
+            var f = Match();
+            var player = f.match.GetPlayer("p1");
+            string source = Id("x-attack"), target = Id("x-attack", round: 2), completed = Id(ItemCatalog.RockyHelmet);
+            foreach (var id in new[] { source, completed, target }) player.AddInventoryItem(id);
+            var executor = new MatchCommandExecutor(f.match, f.catalog, "p1");
+            long revision = player.ItemRevision;
+
+            Assert.That(executor.CombineItems(source, source, revision).Accepted, Is.False);
+            Assert.That(executor.CombineItems(source, completed, revision).Accepted, Is.False);
+            Assert.That(executor.CombineItems(source, Id("x-defense", "p2"), revision).Accepted, Is.False);
+            Assert.That(executor.CombineItems(source, target, revision + 1).Failure, Is.EqualTo(MatchCommandFailure.Changed));
+            Assert.That(player.ItemInventory, Is.EqualTo(new[] { source, completed, target }));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision));
+
+            Assert.That(executor.CombineItems(source, target, revision).Accepted, Is.True);
+            Assert.That(player.ItemInventory, Is.EqualTo(new[] { completed, $"item:crafted-kings-rock:craft-{revision + 1}:p1" }));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision + 1));
+        }
+
+        [Test] public void HostInventoryCombineReplayConsumesMaterialsOnlyOnce()
+        {
+            var f = Match();
+            var player = f.match.GetPlayer("p1");
+            string source = Id("x-defense"), target = Id("x-attack");
+            player.AddInventoryItem(source);
+            player.AddInventoryItem(target);
+            var host = new HostCommandProcessor(f.match, f.catalog, f.rounds);
+            var state = host.Snapshot("p1");
+            var command = new MatchCommand
+            {
+                matchId = state.matchId, playerId = state.playerId, commandId = "combine",
+                sequence = state.nextSequence, round = state.round, phase = state.phase,
+                playerRevision = state.playerRevision, kind = MatchCommandKind.CombineItems,
+                itemId = source, targetItemId = target, itemRevision = state.itemRevision
+            };
+
+            Assert.That(host.Process("p1", command).accepted, Is.True);
+            Assert.That(host.Process("p1", command).accepted, Is.True);
+            var conflict = command.Copy();
+            conflict.targetItemId = source;
+            Assert.That(host.Process("p1", conflict).code, Is.EqualTo("DuplicateConflict"));
+            var updated = host.Snapshot("p1");
+            Assert.That(updated.inventory.Select(ItemCatalog.DefinitionId), Is.EqualTo(new[] { "crafted-punching-glove" }));
+            Assert.That(updated.itemRevision, Is.EqualTo(state.itemRevision + 1));
+        }
+
         [Test] public void HostEquipReplayAndRecoverySnapshotRetainExactlyOneTool()
         {
             var f=Match(units:true);var p=f.match.GetPlayer("p1");string helmet=Id(ItemCatalog.RockyHelmet);p.AddInventoryItem(helmet);

@@ -25,11 +25,13 @@ namespace PokeChess.Core.Match
         public long castId;
         public bool untargetable,isBoss;
         public float accuracy,evasion,critChance,attackSpeed;public int attackRange,bountyStacks;
+        public string[] otherStatusIcons;
         public CombatStatusView[] statusDetails;public CombatShieldView[] shields;
         public long startTick,effectTick,endTick;public string[] statuses;
     }
     [Serializable] public sealed class CombatStatusView
-    {public long id,startTick,endTick,nextTick;public string definition,source;public int behavior,crowdControl,stacks,pulses,polarity;}
+    {
+        public string[] iconKeys;public long id,startTick,endTick,nextTick;public string definition,source;public int behavior,crowdControl,stacks,pulses,polarity;}
     [Serializable] public sealed class CombatShieldView
     {public long id,endTick;public string source,group;public float remaining;}
     [Serializable] public sealed class CombatProjectileView
@@ -42,7 +44,7 @@ namespace PokeChess.Core.Match
         public DamageOrigin origin;
         public long sequence,tick;public string kind,source,target,detail;public float value,hpAfter,shieldAfter;
         public long castId,effectId;public int stepIndex,iteration,effectIndex;
-        public CombatCellView synergyCell,synergyDestination;
+        public CombatCellView synergyCell,synergyDestination,itemRewardCell;
         public CombatAreaView area;public CombatMovementView movement;
         public CombatProjectileView projectile;public bool conditionMatched,isBasicAttack;
     }
@@ -103,12 +105,11 @@ namespace PokeChess.Core.Match
         public void Step()
         {
             var phase = Match.Phase;
-            int round = Match.RoundNumber;
             bool wild = rounds.IsWildRound;
-            int rewardedBefore = wild ? Match.Players.Count(player => player.LastItemRewardRound == round) : 0;
+            long itemRevisionBefore = wild ? Match.Players.Sum(player => player.ItemRevision) : 0;
             rounds.Step();
             foreach (var pair in rounds.Battles) Capture(pair, false);
-            if (phase != Match.Phase || wild && Match.Players.Count(player => player.LastItemRewardRound == round) != rewardedBefore)
+            if (phase != Match.Phase || wild && Match.Players.Sum(player => player.ItemRevision) != itemRevisionBefore)
                 commands.NotifyHostStateChanged();
         }
         public void SettleResult(){rounds.SettleResult();commands.NotifyHostStateChanged();}
@@ -172,6 +173,14 @@ namespace PokeChess.Core.Match
                     events[events.Count-1].projectile=Projectile(e.Projectile);}
                 foreach(var e in battle.LifecycleEventsThisTick)if(e.Kind!=BattleLifecycleEventKind.BattleEnded)add(e.Kind.ToString(),e.UnitId,e.UnitId,e.DeathReason.ToString(),0,0,0);
             }
+            if (!baseline)
+                foreach (var drop in pair.WildDropsThisStep)
+                {
+                    add("WildItemDrop", drop.monster, pair.Pairing.PlayerOneId, drop.itemId.Split(':')[2], 0, 0, 0);
+                    var reward = events[events.Count - 1];
+                    reward.itemRewardCell = Cell(drop.position);
+                    reward.iteration = drop.index;
+                }
             sequences.TryGetValue(pair,out var frameSequence);sequences[pair]=++frameSequence;lastTicks[pair]=tick;
             var frame=new CombatFrame{matchId=Match.MatchId,battleId=battle?.BattleId??Match.MatchId+"-empty-"+Match.RoundNumber+"-"+pair.Pairing.PlayerOneId,
                 round=Match.RoundNumber,sequence=frameSequence,tick=tick,tickRate=TickRate,baseline=baseline,one=pair.Pairing.PlayerOneId,two=pair.Pairing.PlayerTwoId,shadow=pair.IsShadow,wild=pair.IsWild,
@@ -200,8 +209,9 @@ namespace PokeChess.Core.Match
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
                         untargetable=u.IsUntargetable,isBoss=u.IsBoss,accuracy=effective.Accuracy,evasion=effective.Evasion,
                         critChance=effective.CritChance,attackSpeed=effective.AttackSpeed,attackRange=battle.StatusEffects.AttackRange(u),bountyStacks=u.BountyStacks,
+                        otherStatusIcons=CombatStatusIcons.ForOtherEffects(battle,u).ToArray(),
                         statusDetails=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatStatusView{id=s.InstanceId,
-                            definition=s.Definition.Id,source=s.SourceId,behavior=(int)s.Definition.Behavior,crowdControl=(int)s.Definition.CrowdControl,stacks=s.StackCount, polarity=s.Definition.TargetTeam==StatusTargetTeam.Ally?1:-1,
+                            definition=s.Definition.Id,iconKeys=CombatStatusIcons.ForStatus(s.Definition).ToArray(),source=s.SourceId,behavior=(int)s.Definition.Behavior,crowdControl=(int)s.Definition.CrowdControl,stacks=s.StackCount, polarity=s.Definition.TargetTeam==StatusTargetTeam.Ally?1:-1,
                             startTick=s.StartTick,endTick=s.ExpireTick,nextTick=s.NextTick,pulses=s.Pulses}).ToArray(),
                         shields=battle.Shields.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatShieldView{id=s.Id,source=s.SourceId,
                             group=s.Group,remaining=s.Remaining,endTick=s.ExpireTick}).ToArray(),

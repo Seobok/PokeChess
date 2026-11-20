@@ -80,6 +80,12 @@ namespace PokeChess.Core.Match
             new ItemSystem().Equip(match,playerId,unitId,itemId,revision);
             return new MatchCommandResult(ItemCatalog.DisplayName(itemId)+" 장착");
         });
+        public MatchCommandResult CombineItems(string sourceId, string targetId, long revision) => Run(() =>
+        {
+            var recipe = new ItemSystem().Combine(match, playerId, sourceId, targetId, revision);
+            return new MatchCommandResult(recipe.Name + " 조합 완료");
+        });
+
         public MatchCommandResult Sell(string id,long revision) => Run(()=>
         {
             if(!CanSell(id)) throw new InvalidOperationException(Player.HP==0 || Player.IsEliminated ? "Player is eliminated." : "Requires Preparation.");

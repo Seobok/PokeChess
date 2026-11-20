@@ -21,6 +21,8 @@ namespace PokeChess.Client.Match
         public int SalePrice(string id)=>executor.SalePrice(id);
         public MatchCommandResult Sell(string id,long revision)=>executor.Sell(id,revision);
         public MatchCommandResult EquipItem(string unitId,string itemId,long revision)=>executor.EquipItem(unitId,itemId,revision);
+        public MatchCommandResult CombineItems(string sourceId, string targetId, long revision)
+            => executor.CombineItems(sourceId, targetId, revision);
         public MatchCommandResult PreviewEvolution(string id,long evolutionRevision,long placementRevision)=>executor.PreviewEvolution(id,evolutionRevision,placementRevision);
         public MatchCommandResult Evolve(string id,long evolutionRevision,long placementRevision)=>executor.Evolve(id,evolutionRevision,placementRevision);
     }

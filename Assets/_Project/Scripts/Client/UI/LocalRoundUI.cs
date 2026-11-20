@@ -70,6 +70,11 @@ namespace PokeChess.Client.UI
             playtestBot = null;
             playtestBotRound = 0;
             RoundLoop=new LocalRoundCoordinator(Match,catalog,skillCatalog:PokeChess.Content.GameContent.CreateSkills(),statusCatalog:PokeChess.Content.GameContent.CreateStatuses());
+            RoundLoop.WildItemDropped += (player, position, itemId, index) =>
+            {
+                if (!IsOnlineMatch && player == Player.PlayerId && player == localViewedPlayerId)
+                    PlayItemReward(position, itemId.Split(':')[2], index);
+            };
             RoundFlow=new RoundFlowController(RoundLoop,new RoundFlowRules(preparationSeconds));
             automaticRoundFlow=true;lastRoundClick=-1;
             foreach(var token in combatTokens.Values){token.transform.parent.gameObject.SetActive(false);Destroy(token.transform.parent.gameObject);}
@@ -210,6 +215,7 @@ namespace PokeChess.Client.UI
                 var battle=ownPair.Battle;combatInfo.text="VS "+OpponentLabel(ownPair,localViewedPlayerId);
                 var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
                 visuals.SetVenomHud(venomHud, ownPair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2);
+                visuals.SetStormHud(stormBattleHud, ownPair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2);
                 visuals.RenderLocal(ownPair,battle.CurrentTick,(column,row)=>CombatPoint(new BoardPosition(column,row)));
                 if(lastVisualBattle!=battle)
                 {
