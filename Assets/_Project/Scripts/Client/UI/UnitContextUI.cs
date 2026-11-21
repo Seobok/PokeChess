@@ -77,7 +77,7 @@ namespace PokeChess.Client.UI
                 (Player.ItemInventory.Count>3?"\n+"+(Player.ItemInventory.Count-3)+" more":"");
             if (RenderNatureGuardianInfo()) return;
             var selected=Match.Players.SelectMany(p=>p.Units).FirstOrDefault(u=>u.InstanceId==selectedUnitId);
-            var battle = Match.Phase == MatchPhase.Combat ? RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle : null;
+            var battle = Match.Phase.IsBattlePhase() ? RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle : null;
             var fighter = battle?.Units.FirstOrDefault(unit => unit.UnitInstanceId == selectedUnitId);
             if (selected == null && fighter != null)
             {
@@ -103,7 +103,7 @@ namespace PokeChess.Client.UI
                 "\nItems ("+selected.ItemInstanceIds.Count+"): "+(selected.ItemInstanceIds.Count==0?"None":string.Join(", ",selected.ItemInstanceIds.Select(ItemCatalog.DisplayName)))+
                 "\n"+(RankFeedbackText.Length>0?RankFeedbackText:selected.ItemInstanceIds.Count>0?"Sale returns equipped items":"");
             bool allowed=localViewedPlayerId=="p1"&&commands.CanSell(selectedUnitId)&&!busy&&!RoundLoop.NextPreparationPending&&selected.Placement.Kind!=PlacementKind.Unplaced;
-            RenderUnitInfoIcons(definition,rank,stats,fighter?.CurrentHP??stats.MaxHP,stats.MaxHP,fighter?.CurrentEnergy??stats.StartingEnergy,stats.MaxEnergy,fighter?.CurrentShield??0,selected.ItemInstanceIds.ToArray());
+            RenderUnitInfoIcons(definition,rank,stats,fighter?.CurrentHP??stats.MaxHP,stats.MaxHP,fighter?.CurrentEnergy??stats.StartingEnergy,stats.MaxEnergy,fighter?.CurrentShield??0,selected.ItemInstanceIds.ToArray(), saleGold: new ShopTransactionSystem(catalog).SalePrice(selected));
             sellButton.interactable=allowed;ButtonText(sellButton,allowed?"판매 / +"+commands.SalePrice(selectedUnitId)+"G":"판매 불가");
         }
     }

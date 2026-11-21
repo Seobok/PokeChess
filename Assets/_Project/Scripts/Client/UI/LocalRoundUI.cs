@@ -192,7 +192,7 @@ namespace PokeChess.Client.UI
             else if(roundFault!=null) clock="PAUSED / RETRY REQUIRED";
             else if(RoundFlow.AwaitingMatchEnd) clock="WAITING FOR MATCH END";
             else if(RoundLoop.NextPreparationPending) clock="WAITING FOR SHOP REFRESH";
-            else if(Match.Phase==MatchPhase.Result && !RoundLoop.IsSettled) clock="WAITING FOR SETTLEMENT";
+            else if(Match.Phase==MatchPhase.Result && !RoundLoop.ResultReady) clock="WAITING FOR SETTLEMENT";
             else if(Match.Phase==MatchPhase.Preparation && !RoundLoop.PreparationReady) clock="WAITING FOR PREPARATION";
             else if(RoundFlow.IsTimerRunning) clock=Math.Ceiling(RoundFlow.RemainingSeconds).ToString("0")+"s";
             else clock=Match.Phase==MatchPhase.Combat && RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle!=null ? RoundLoop.GetBattleFor(localViewedPlayerId).Battle.ElapsedSeconds.ToString("0.0")+"s" : Match.Phase==MatchPhase.Combat ? "WAITING" : "";
@@ -202,11 +202,11 @@ namespace PokeChess.Client.UI
                 (Match.Phase==MatchPhase.Preparation && (RoundLoop.PreparationReady || RoundLoop.NextPreparationPending) || Match.Phase==MatchPhase.Result);
             ButtonText(roundButton,Match.Phase==MatchPhase.Finished ? "Match complete" : Match.Phase==MatchPhase.Preparation ? (RoundLoop.NextPreparationPending ? "Retry shop refresh" : (roundFault==null ? "DEV: Start battle" : "Retry battle start")) : Match.Phase==MatchPhase.Result ? (RoundLoop.IsSettled ? "DEV: Next round" : "Retry settlement") : "Battle running");
             var ownPair=RoundLoop.GetBattleFor(localViewedPlayerId);
-            bool combat=Match.Phase==MatchPhase.Combat && ownPair?.Battle!=null;
-            header.gameObject.SetActive(Match.Phase!=MatchPhase.Combat&&Match.Phase!=MatchPhase.Finished);
+            bool combat=Match.Phase.IsBattlePhase() && ownPair?.Battle!=null;
+            header.gameObject.SetActive(!Match.Phase.IsBattlePhase()&&Match.Phase!=MatchPhase.Finished);
             if(Match.Phase==MatchPhase.Combat && ownPair!=null)
                 roundTimer.text+=" / VS "+OpponentLabel(ownPair,localViewedPlayerId)+(ownPair.IsComplete ? " / "+ownPair.OutcomeOf(localViewedPlayerId)+" / WAITING FOR OTHER PAIRS" : "");
-            combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(!WildRoundSystem.IsWild(Match) && Match.Phase==MatchPhase.Result && RoundLoop.LastResult!=null);
+            combatRoot.gameObject.SetActive(combat);resultRoot.gameObject.SetActive(false);
             foreach(var slot in slots)if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat);
             foreach(var unit in ViewedPlayer.Units)if(unit.Placement.Kind==PlacementKind.Board && tokens.TryGetValue(unit.InstanceId,out var boardToken))boardToken.gameObject.SetActive(!combat);
             if(combat)

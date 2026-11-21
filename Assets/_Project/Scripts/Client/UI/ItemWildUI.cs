@@ -47,6 +47,7 @@ namespace PokeChess.Client.UI
             itemRecipeIcon = UiPrefab.Get<UnityEngine.UI.Image>(itemRecipePreview, "ResultIcon");
             itemRecipeName = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "ResultName");
             itemRecipeDescription = UiPrefab.Get<UnityEngine.UI.Text>(itemRecipePreview, "Description");
+            BuildItemDetailSections();
             BuildComponentRecipeHint();
         }
 
@@ -64,13 +65,18 @@ namespace PokeChess.Client.UI
                 ShowComponentRecipeHint(definition, slot, visibleInventory[index]);
                 return;
             }
-            itemTooltipLabel.text = definition.Name + "\n" + definition.Description;
-            itemTooltip.gameObject.SetActive(true);itemTooltip.SetAsLastSibling();
+            var point = (Vector2)canvasRect.InverseTransformPoint(inventoryChoices[slot].transform.position);
+            UpdateItemRecipePreview(definition, point);
+            hoveredComponentItem = visibleInventory[index];
+            hoveredComponentSlot = slot;
+            itemRecipePreview.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
         }
         public void HideItemHint()
         {
             if (itemTooltip != null) itemTooltip.gameObject.SetActive(false);
+            if (itemRecipePreview != null) itemRecipePreview.gameObject.SetActive(false);
             if (hoveredComponentItem == null) return;
+            if (hoveredUnitItem == hoveredComponentItem) hoveredUnitItem = null;
             hoveredComponentItem = null;
             equippedRecipeSource = null;
             componentRecipes.gameObject.SetActive(false);
@@ -180,10 +186,7 @@ namespace PokeChess.Client.UI
             if (result == null) return;
 
             itemRecipeName.text = result.Name;
-            itemRecipeDescription.text = result.Description;
-            float descriptionHeight = Mathf.Ceil(itemRecipeDescription.preferredHeight);
-            itemRecipeDescription.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, descriptionHeight);
-            itemRecipePreview.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 70 + descriptionHeight);
+            LayoutItemDetailSections(result);
             itemRecipeIcon.sprite = itemIcons?.Get(result.Id);
             itemRecipeIcon.enabled = itemRecipeIcon.sprite != null;
             var bounds = canvasRect.rect;
@@ -346,7 +349,7 @@ namespace PokeChess.Client.UI
             int pageCount = Mathf.Max(1, (visibleInventory.Length + ToolsPerPage - 1) / ToolsPerPage);
             inventoryPage = Mathf.Clamp(inventoryPage, 0, pageCount - 1);
             wildPreviewLabel.gameObject.SetActive(wild&&phase==MatchPhase.Preparation);
-            hudNotice.gameObject.SetActive(!(wild&&phase==MatchPhase.Preparation));
+            hudNotice.gameObject.SetActive(false);
             wildPreviewLabel.text="야생 라운드 · "+(IsOnlineMatch?pub.wildPreview:WildRoundSystem.Preview(Match.RoundNumber));
             itemInventoryPanel.gameObject.SetActive(phase!=MatchPhase.Finished);
             ValidateComponentRecipeHint();

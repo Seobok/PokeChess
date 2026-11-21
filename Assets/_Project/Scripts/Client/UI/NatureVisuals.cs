@@ -50,7 +50,7 @@ namespace PokeChess.Client.UI
             switch (detail)
             {
                 case "SUMMON":
-                    BurstAt(root, tier >= 10 ? "WorldtreeSummon" : "Summon", unit, cell, tick, tier);
+                    // Summon effects belong to preparation roster changes.
                     break;
                 case "GUARDIAN_CAST":
                     BurstAt(root, "TauntWave", unit, cell, tick, tier);
@@ -106,11 +106,6 @@ namespace PokeChess.Client.UI
             float width = Vector2.Distance(point(0, 0), point(1, 0));
             rate = Math.Max(1, rate);
             var roster = units.ToDictionary(unit => unit.Id, StringComparer.Ordinal);
-            // The startup frame may precede the first streamed event.
-            if (tick <= 1)
-                foreach (var unit in units.Where(unit => unit.Alive && unit.NatureTier > 0))
-                    Signal(root, "SUMMON", unit.Id, new BoardPosition(unit.Column, unit.Row), 0, unit.NatureTier);
-
             foreach (var entry in bursts)
                 RenderBurst(entry.Key.Clip, entry.Key.Unit, entry.Value, roster, point, tick, rate, width);
 

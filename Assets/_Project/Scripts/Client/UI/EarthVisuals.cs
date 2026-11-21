@@ -35,7 +35,7 @@ namespace PokeChess.Client.UI
     {
         private sealed class Tile {
             public UnityEngine.UI.Image Rock,Pulse;
-            public long Spawn=long.MinValue,PulseTick=long.MinValue,Ended=long.MinValue;public double EndWall;
+            public long PulseTick=long.MinValue,Ended=long.MinValue;
         }
         private sealed class ShieldFx
         {
@@ -76,9 +76,8 @@ namespace PokeChess.Client.UI
             return tile;
         }
         public void TileSignal(Transform root,string clip,int team,int column,int row,long tick) {
-            if (clip != "rock-spawn" && clip != "protective-pulse") return;
+            if (clip != "protective-pulse") return;
             var tile=Rock(root,(team,column,row));
-            if(clip=="rock-spawn")tile.Spawn=Math.Max(tile.Spawn,tick);
             if(clip=="protective-pulse")tile.PulseTick=Math.Max(tile.PulseTick,tick);
         }
         public void GuardSignal(Transform root, string source, string target, long tick, bool fortress)
@@ -171,18 +170,12 @@ namespace PokeChess.Client.UI
             if(point==null)return;if(art==null)art=Resources.Load<EarthVisuals>("EarthVisuals");if(art==null)return;
             rate=Math.Max(1,rate);float width=Vector2.Distance(point(0,0),point(1,0));
             var active=new HashSet<(int team,int column,int row)>(complete?Array.Empty<(int,int,int)>():rocks);
-            foreach(var key in active) {
-                var tile=Rock(root,key);
-                // A new recovery baseline shows the current rock, not a replayed spawn.
-                if(tile.Spawn==long.MinValue&&tick<=1)tile.Spawn=0;
-            }
+            foreach(var key in active) Rock(root,key);
             foreach(var entry in tiles) {
                 var key=entry.Key;var tile=entry.Value;
-                if(!active.Contains(key)&&tile.Ended==long.MinValue){tile.Ended=(long)tick;tile.EndWall=Time.unscaledTimeAsDouble;}
+                if(!active.Contains(key)&&tile.Ended==long.MinValue){tile.Ended=(long)tick;}
                 Vector2 position=point(key.column,key.row);
-                double age=tile.Spawn==long.MinValue?double.PositiveInfinity:(tick-tile.Spawn)/rate;
-                if(tile.Ended!=long.MinValue)EarthVisuals.Draw(tile.Rock,art.end,Math.Max((tick-tile.Ended)/rate,Time.unscaledTimeAsDouble-tile.EndWall));
-                else if(age<(art.spawn?.Length??0)/12d)EarthVisuals.Draw(tile.Rock,art.spawn,age);
+                if(tile.Ended!=long.MinValue)tile.Rock.enabled=false;
                 else EarthVisuals.Draw(tile.Rock,art.idle,0,true);
                 tile.Rock.rectTransform.anchoredPosition=position;tile.Rock.rectTransform.sizeDelta=Vector2.one*width;
                 EarthVisuals.Draw(tile.Pulse,art.pulse,tile.PulseTick==long.MinValue?-1:(tick-tile.PulseTick)/rate);
@@ -230,21 +223,6 @@ namespace PokeChess.Client.UI
                     fx.Guard.rectTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
                 }
                 fx.Guard.transform.SetAsLastSibling();
-            }
-        }
-        public void Finish(Transform root) {
-            if(!Application.isPlaying||art==null||art.end==null||art.end.Length==0)return;
-            var canvas=root.GetComponentInParent<Canvas>();if(canvas==null||!canvas.isActiveAndEnabled)return;
-            foreach(var tile in tiles.Values) {
-                if(!tile.Rock.enabled)continue;
-                double age=tile.Ended==long.MinValue?0:Time.unscaledTimeAsDouble-tile.EndWall;
-                if(age>=art.end.Length/12d)continue;
-                var image=EarthVisuals.Create(canvas.transform,"RockEnd");
-                image.rectTransform.pivot = EarthVisuals.RockPivot;
-                image.rectTransform.position=tile.Rock.rectTransform.position;
-                image.rectTransform.sizeDelta=tile.Rock.rectTransform.rect.size;
-                image.rectTransform.localScale=new Vector3(tile.Rock.transform.lossyScale.x/canvas.transform.lossyScale.x,tile.Rock.transform.lossyScale.y/canvas.transform.lossyScale.y,1);
-                image.gameObject.AddComponent<EarthRockEndView>().Initialize(image,art.end,age);
             }
         }
         public void Clear() {

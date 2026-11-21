@@ -36,6 +36,9 @@ namespace PokeChess.Core.Match
         public int evolutionPoints,lastEvolutionPointRound,nextEvolutionPointRound;
         public long evolutionRevision;
         public OwnerShopEvolution[] shopEvolutions;
+        public int BoardCapacity => level + ItemCatalog.DeploymentBonus(
+            (inventory ?? Array.Empty<string>()).Concat(
+                (units ?? Array.Empty<OwnerUnit>()).SelectMany(unit => unit.items ?? Array.Empty<string>())));
     }
     [Serializable] public sealed class CommandAck
     {

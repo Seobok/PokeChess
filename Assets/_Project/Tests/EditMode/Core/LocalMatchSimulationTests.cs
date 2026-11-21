@@ -22,7 +22,7 @@ namespace PokeChess.Core.Tests
             Assert.That(r.Rounds.Count,Is.EqualTo(r.Match.RoundNumber));
             r.Match.Pool.AssertConservation(r.Match);
             Assert.That(r.Flow.MatchElapsedSeconds,Is.EqualTo(r.Rounds.Sum(x=>x.PreparationSeconds+x.CombatSeconds+x.ResultSeconds)).Within(1e-7));
-            Assert.That(r.Rounds.Last().ResultSeconds,Is.Zero);
+            Assert.That(r.Rounds.Last().ResultSeconds,Is.EqualTo(.1).Within(1e-7));
         }
         [Test] public void SameSeedAndDifferentFrameBudgetsHaveIdenticalGameTrace()
         {
@@ -82,9 +82,9 @@ namespace PokeChess.Core.Tests
         {
             var r=new LocalMatchSimulation();r.Flow.AdvanceTime(1000);
             Assert.That(r.Flow.PreparationElapsedSeconds,Is.EqualTo(30));
-            // Empty boards finish instantly, so no combat time or final result hold is added.
+            // Empty boards have no combat time, but retain the normal intermission.
             Assert.That(r.Flow.CombatTicks,Is.Zero);Assert.That(r.Flow.MatchElapsedSeconds,Is.EqualTo(30));
-            r.Flow.AdvanceTime(1000);Assert.That(r.Flow.ResultElapsedSeconds,Is.Zero);
+            r.Flow.AdvanceTime(1000);Assert.That(r.Flow.ResultElapsedSeconds,Is.EqualTo(5));
         }
         [Test] public void LargeCombatInputCountsProcessedTicksAndKeepsBacklogOutOfDuration()
         {

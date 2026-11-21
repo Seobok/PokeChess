@@ -39,7 +39,7 @@ namespace PokeChess.Core.Match
         private double Duration => Match.Phase == MatchPhase.Preparation ? Rules.PreparationSeconds
             : Match.Phase == MatchPhase.Result ? Rules.ResultSeconds : 0;
         private bool TimedPhaseReady => Match.Phase == MatchPhase.Preparation ? runtime.PreparationReady && !AwaitingMatchEnd
-            : Match.Phase == MatchPhase.Result && runtime.IsSettled;
+            : Match.Phase == MatchPhase.Result && runtime.ResultReady;
 
         // Also handles explicit sandbox actions performed outside this controller.
         public void RefreshState() => Synchronize();
@@ -146,7 +146,7 @@ namespace PokeChess.Core.Match
 
         private bool AdvanceImmediateResult()
         {
-            if (Fault != null || Rules.ResultSeconds != 0 || Match.Phase != MatchPhase.Result || !runtime.IsSettled)
+            if (Fault != null || Rules.ResultSeconds != 0 || Match.Phase != MatchPhase.Result || !runtime.ResultReady)
                 return false;
             Execute(() =>
             {

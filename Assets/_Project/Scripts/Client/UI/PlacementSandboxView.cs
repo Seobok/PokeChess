@@ -51,7 +51,7 @@ namespace PokeChess.Client.UI
             if(IsDragging)
             {
                 var source=Player.Units.FirstOrDefault(u=>u.InstanceId==dragged);
-                if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (Match.Phase!=MatchPhase.Combat || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
+                if(source==null || Player.PlacementRevision!=dragRevision || (Match.Phase!=MatchPhase.Preparation && (!Match.Phase.IsBattlePhase() || source.Placement.Kind!=PlacementKind.Bench)) || Player.HP==0 || Player.IsEliminated) CancelDrag("Placement changed or locked.");
             }
             UpdateTokenFeedback();AnimateShop();UpdateRoundLoop();RenderShopEconomyUI();RenderLocalMystic();AnimateRosterSprites();UpdateTablePresentation();
         }
@@ -247,7 +247,7 @@ namespace PokeChess.Client.UI
             if(HitSellDrop(point))
             {
                 string id=dragged;long revision=dragRevision;LastResult=null;
-                if(CanSellDraggedUnit()) Perform(()=>commands.Sell(id,revision));
+                if(CanSellDraggedUnit()) Perform(()=>commands.Sell(id,revision), playSaleSound: true);
                 else CancelDrag("Sale unavailable for this unit.");
                 return;
             }

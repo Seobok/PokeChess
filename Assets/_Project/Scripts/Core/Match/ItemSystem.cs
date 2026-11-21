@@ -16,6 +16,51 @@ namespace PokeChess.Core.Match
         public bool IsComponent { get; }
         public string FirstComponent { get; }
         public string SecondComponent { get; }
+        public string BasicEffect
+        {
+            get
+            {
+                var values = new List<string>();
+                if (Stats.attack != 0) values.Add("공격력 +" + Stats.attack + "%");
+                if (Stats.armor != 0) values.Add("방어력 +" + Stats.armor);
+                if (Stats.power != 0) values.Add("주문력 +" + Stats.power);
+                if (Stats.resistance != 0) values.Add("마법 저항력 +" + Stats.resistance);
+                if (Stats.speed != 0) values.Add("공격속도 +" + Stats.speed + "%");
+                if (Stats.crit != 0) values.Add("치명타 확률 +" + Stats.crit + "%p");
+                if (Stats.hp != 0) values.Add("최대 HP +" + Stats.hp);
+                if (Stats.energy != 0) values.Add("시작 에너지 +" + Stats.energy);
+                return values.Count == 0 ? "없음" : string.Join(" · ", values);
+            }
+        }
+
+        // Keep proc conditions with their effect; a duration alone is not a cooldown.
+        public string CooldownAbility => Id switch
+        {
+            LeftoversId => Description,
+            "exp-share" => Description,
+            "crafted-punching-glove" => "기본 공격 3회 적중 시 최대 HP의 12% 보호막을 4초간 얻는다. 각 아이템의 재발동 대기시간은 6초.",
+            "crafted-muscle-band" => "특수 피해를 받으면 4초간 각 아이템의 추가 피해가 공격력의 24%가 된다(아이템별 재발동 8초).",
+            "crafted-expert-belt" => "치명타 적중 시 대상에게 3초간 약점 노출(받는 피해 +8%)을 부여한다(동일 대상·아이템별 재발동 3초).",
+            "crafted-focus-band" => "피격 4회마다 최대 HP 12% 보호막(4초)을 획득하고, 다음 기본 공격 1회를 확정 치명타로 만든다(아이템별 재발동 8초).",
+            "crafted-covert-cloak" => "각 아이템은 전투 시작 시 디버프 차단 1회 충전. 적의 디버프 1개를 무효화하면 6초 후 다시 충전한다.",
+            "crafted-adrenaline-orb" => "특수 피해를 받으면 공격속도 +5%(5초, 아이템당 최대 5중첩). 동일 아이템 재발동 간격 0.5초.",
+            "crafted-clear-amulet" => "스킬 사용 후 6초 내 다음 기본 공격 1회가 확정 치명타가 된다(아이템당 재발동 6초).",
+            "crafted-big-root" => "스킬 시전 시 최대 HP 4% 회복(아이템당 재발동 5초).",
+            _ => "없음"
+        };
+        private const string LeftoversId = "leftovers";
+
+        public string AdditionalEffect
+        {
+            get
+            {
+                if (IsComponent) return Id == ItemCatalog.Everstone ? Description : "없음";
+                string effect = System.Text.RegularExpressions.Regex.Replace(Description,
+                    @"^(?:(?:AD|AP|방어|마저|공속|치확|HP|시작 E)\s*\+\d+(?:%p|%)?\s*)+", "").Trim();
+                if (CooldownAbility != "없음") effect = effect.Replace(CooldownAbility, "").Trim();
+                return effect.Length == 0 ? "없음" : effect;
+            }
+        }
         internal (int attack, int armor, int power, int resistance, int speed, int crit, int hp, int energy) Stats { get; }
 
         internal ItemDefinition(string id, string name, string description, string role,
@@ -37,6 +82,7 @@ namespace PokeChess.Core.Match
     // can resolve tools without consulting another player's private inventory.
     public static class ItemCatalog
     {
+        public const string Everstone = "everstone", Moonstone = "moonstone";
         public const string Leftovers="leftovers",SitrusBerry="sitrus-berry",AssaultVest="assault-vest",
             FocusSash="focus-sash",WiseGlasses="wise-glasses",RockyHelmet="rocky-helmet",
             ChoiceScarf="choice-scarf",ExpShare="exp-share";
@@ -48,9 +94,10 @@ namespace PokeChess.Core.Match
             new ItemDefinition(WiseGlasses,"박식안경","직접 기술 피해 20% 증가","기술 딜러"),
             new ItemDefinition(RockyHelmet,"울퉁불퉁멧","실제로 받은 직접 피해의 20%를 반사 (지속/반사 제외)","앞줄 / 반격"),
             new ItemDefinition(ChoiceScarf,"구애스카프","공격 속도 25% 증가, 직접 기술 피해 15% 감소","기본 공격 딜러"),
-            new ItemDefinition(ExpShare,"학습장치","인접 아군의 기술 발동 시 에너지 10 획득 (2초 쿨다운)","배치 / 기술 지원")} .Concat(PokeChess.Core.Battle.SynergyTraits.Origins.Select(o=>new ItemDefinition("emblem-"+o,PokeChess.Core.Battle.SynergyTraits.Name(o)+" 상징","해당 계열 부여. 같은 진화 계열은 1회 카운트.","계열"))).ToArray());
+            new ItemDefinition(ExpShare,"학습장치","인접 아군의 기술 발동 시 에너지 10 획득 (2초 쿨다운)","배치 / 기술 지원")} .Concat(SynergyTraits.Origins.Select(CreateStoneEmblem)).ToArray());
         public static IReadOnlyList<ItemDefinition> Components { get; } = Array.AsReadOnly(new[]
         {
+            new ItemDefinition(Everstone, "변함없는돌", "단독 효과 없음. 다른 재료 아이템과 조합하여 계열 상징을 만듭니다.", "상징 조합 재료", isComponent: true),
             new ItemDefinition("x-attack", "플러스파워", "공격력 +10%", "조합 재료", (10, 0, 0, 0, 0, 0, 0, 0), isComponent: true),
             new ItemDefinition("x-defense", "디펜드업", "방어력 +20", "조합 재료", (0, 20, 0, 0, 0, 0, 0, 0), isComponent: true),
             new ItemDefinition("x-special", "스페셜업", "주문력 +10", "조합 재료", (0, 0, 10, 0, 0, 0, 0, 0), isComponent: true),
@@ -63,6 +110,7 @@ namespace PokeChess.Core.Match
 
         public static IReadOnlyList<ItemDefinition> Completed { get; } = Array.AsReadOnly(new[]
         {
+            new ItemDefinition(Moonstone, "달의돌", "보유한 달의돌 1개당 필드 배치 한도 +1. 보관함이나 장착 상태 모두 적용됩니다.", "배치 한도", firstComponent: Everstone, secondComponent: Everstone),
             new ItemDefinition("crafted-kings-rock", "왕의징표석", "AD +50%", "AD 전사·AD 원거리", (50, 0, 0, 0, 0, 0, 0, 0), "x-attack", "x-attack"),
             new ItemDefinition("crafted-punching-glove", "펀치글러브", "AD +15%  방어 +15 기본 공격 3회 적중 시 최대 HP의 12% 보호막을 4초간 얻는다. 각 아이템의 재발동 대기시간은 6초.", "AD 전사·AD 탱커", (15, 15, 0, 0, 0, 0, 0, 0), "x-attack", "x-defense"),
             new ItemDefinition("crafted-weakness-policy", "약점보험", "AD +12%  AP +12 전투당 1회, HP가 처음 60% 이하가 되면 잠시 은신·대상 해제된다. 은신 종료 후 전투 종료까지 공격력 +20%, 주문력 +20.", "AD 전사·AP 전사", (12, 0, 12, 0, 0, 0, 0, 0), "x-attack", "x-special"),
@@ -99,14 +147,37 @@ namespace PokeChess.Core.Match
             new ItemDefinition("crafted-leftovers", "먹다남은음식", "HP +450 전투 중 매초 최대 HP의 1.2% 회복.", "AD 탱커·AP 탱커", (0, 0, 0, 0, 0, 0, 450, 0), "guard-spec", "guard-spec"),
             new ItemDefinition("crafted-big-root", "큰뿌리", "HP +250  시작 E +10 자신이 발생시키는 회복·흡혈량 +25%. 스킬 시전 시 최대 HP 4% 회복(아이템당 재발동 5초).", "AP 탱커·AP 전사", (0, 0, 0, 0, 0, 0, 250, 10), "guard-spec", "pp-ether"),
             new ItemDefinition("crafted-pp-max", "PP맥스", "AP +10  시작 E +25 전투 중 매초 에너지 2 회복.", "AP 원거리·AP 탱커", (0, 0, 10, 0, 0, 0, 0, 25), "pp-ether", "pp-ether"),
-        });
+        }.Concat(Legacy.Where(item => item.Id.StartsWith("emblem-", StringComparison.Ordinal))).ToArray());
 
+        private static ItemDefinition CreateStoneEmblem(string origin)
+        {
+            var stone = origin switch
+            {
+                SynergyTraits.Flame => ("불꽃의돌", "x-attack"),
+                SynergyTraits.Torrent => ("물의돌", "x-defense"),
+                SynergyTraits.Storm => ("천둥의돌", "x-special"),
+                SynergyTraits.Nature => ("리프의돌", "guard-spec"),
+                SynergyTraits.Earth => ("대지의돌", "x-sp-def"),
+                SynergyTraits.Venom => ("맹독의돌", "pp-ether"),
+                SynergyTraits.Mystic => ("신비의돌", "x-speed"),
+                SynergyTraits.Adversity => ("격투의돌", "dire-hit"),
+                _ => throw new ArgumentOutOfRangeException(nameof(origin))
+            };
+            return new ItemDefinition("emblem-" + origin, stone.Item1,
+                SynergyTraits.Name(origin) + " 시너지 상징. 장착한 포켓몬에게 해당 계열을 부여합니다. 같은 진화 계열은 1회 카운트.",
+                "계열 상징", firstComponent: Everstone, secondComponent: stone.Item2);
+        }
         // Keep legacy definitions first for existing instance IDs and serialized icon indices.
         public static IReadOnlyList<ItemDefinition> All { get; } =
-            Array.AsReadOnly(Legacy.Concat(Components).Concat(Completed).ToArray());
+            Array.AsReadOnly(Legacy.Concat(Components.Where(item => item.Id != Everstone))
+                .Concat(Completed.Where(item => !item.Id.StartsWith("emblem-", StringComparison.Ordinal) && item.Id != Moonstone))
+                .Concat(Components.Where(item => item.Id == Everstone)).Concat(Completed.Where(item => item.Id == Moonstone)).ToArray());
 
         private static readonly Dictionary<string, ItemDefinition> ById =
             All.ToDictionary(definition => definition.Id, StringComparer.Ordinal);
+
+        public static int DeploymentBonus(IEnumerable<string> items) =>
+            items.Count(id => DefinitionId(id) == Moonstone);
 
         public static bool IsComponent(string instanceId)
         {

@@ -162,7 +162,7 @@ namespace PokeChess.Core.Tests
             Assert.That(p.Shop.Slots.All(s=>s.Cost<=2),Is.True);
         }
         [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)] [TestCase(MatchPhase.Combat)]
-        [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
+        [TestCase(MatchPhase.Finished)]
         public void CombatAllowsManualShopCommandsWhileAutomaticRefreshRequiresPreparation(MatchPhase phase)
         {
             var m=Prepared();var p=m.GetPlayer("p1");var system=new ShopSystem(Source());system.RefreshForRound(m,"p1");

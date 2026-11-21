@@ -51,6 +51,7 @@ namespace PokeChess.Client.UI
         private readonly List<Visual> visuals=new List<Visual>();
         private int rate=30;
         private float pixelScale=1.5f;
+        private const float SkillEffectSizeMultiplier = 1.5f;
         private double lastTick=-1;
         private readonly VenomBattleVisuals venom = new VenomBattleVisuals();
         private VenomHud venomHud;
@@ -502,7 +503,7 @@ namespace PokeChess.Client.UI
                 var start=bolt.Entry.OverheadLightning?end+Vector2.up*cellWidth*3:source.Position+bolt.Entry.Offset;
                 if(bolt.Entry.OverheadLightning)fade*=elapsed<.07||elapsed>=.12&&elapsed<.19?1:.2f;
                 bolt.Graphic.Sample(start,end,elapsed,
-                    Vector2.Distance(point(0,0),point(1,0)),bolt.Entry.LightningWidth,bolt.Entry.Opacity*fade,bolt.Seed,
+                    Vector2.Distance(point(0,0),point(1,0)),bolt.Entry.LightningWidth * SkillEffectSizeMultiplier,bolt.Entry.Opacity*fade,bolt.Seed,
                     bolt.Entry.LightningGlow,bolt.Entry.LightningCore,bolt.Entry.StraightBeam,bolt.Entry.OverheadLightning);
             }
             foreach(var visual in continuous.Values)visual.Used=false;
@@ -720,7 +721,7 @@ namespace PokeChess.Client.UI
             var node=new GameObject("SkillVisual_"+entry.Name,typeof(RectTransform),typeof(UnityEngine.UI.Image));node.transform.SetParent(transform,false);
             var image=node.GetComponent<UnityEngine.UI.Image>();image.raycastTarget=false;image.enabled=false;
             float size=entry.SizeMode==SkillVisualSize.Pixels?entry.Size*pixelScale:entry.Size*Vector2.Distance(point(0,0),point(1,0));
-            image.rectTransform.sizeDelta=Vector2.one*size;
+            image.rectTransform.sizeDelta=Vector2.one*size*SkillEffectSizeMultiplier;
             var visual=new Visual{Entry=entry,Image=image,Start=start,End=entry.DurationSeconds>0?start+entry.DurationSeconds*rate:double.PositiveInfinity};visuals.Add(visual);return visual;
         }
         private void Remove(Visual visual)
@@ -744,6 +745,6 @@ namespace PokeChess.Client.UI
         }
         private void Unsubscribe(){if(localPair!=null)localPair.Stepped-=CaptureLocal;localPair=null;localRuntime=null;}
         private void Reset(){Unsubscribe();ResetVisuals();context=null;units=Array.Empty<SkillVisualUnit>();}
-        private void OnDisable(){if(earthComplete)earth.Finish(transform);Reset();}
+        private void OnDisable(){Reset();}
     }
 }

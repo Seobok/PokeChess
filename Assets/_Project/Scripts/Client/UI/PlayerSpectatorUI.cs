@@ -41,6 +41,7 @@ namespace PokeChess.Client.UI
             spectatorCaption = UiPrefab.Get<UnityEngine.UI.Text>(spectatorBanner, "WatchBanner/WatchCaption");
             spectatorReturn = UiPrefab.Bind(spectatorBanner, "ReturnToOwnBoard",
                 () => RequestPlayerView(IsOnlineMatch ? onlineService.LocalMatchState.playerId : "p1"));
+            BuildCombatDamageSidebar();
         }
 
         private ProfileRow BuildProfileRow(string id, int hp, int avatarIndex)
@@ -79,7 +80,8 @@ namespace PokeChess.Client.UI
         {
             if (!hudProfiles.TryGetValue(id, out var row))
                 row = BuildProfileRow(id, hp, avatarIndex);
-            row.Rect.anchoredPosition = row.FirstPosition - Vector2.up * (index * (row.Rect.rect.height + SpectatorRowGap));
+            row.Rect.anchorMin = row.Rect.anchorMax = new Vector2(.5f, 1);
+            row.Rect.anchoredPosition = Vector2.down * (40 + row.Rect.rect.height * .5f + index * (row.Rect.rect.height + SpectatorRowGap));
             row.Background.sprite = eliminated ? spectatorEliminated : selected ? spectatorSelected : row.DefaultSprite;
             row.Avatar.color = eliminated ? new Color(.7f, .7f, .7f, .75f) : Color.white;
             row.Arrow.gameObject.SetActive(selected && !eliminated);
@@ -126,7 +128,9 @@ namespace PokeChess.Client.UI
             }
             var roster = Match.Players.ToArray();
             var ordered = roster.OrderBy(p => p.PlayerId == "p1" ? 0 : p.IsEliminated ? 2 : 1).ToArray();
-            hudPlayers.text = $"플레이어 {roster.Count(p => !p.IsEliminated)} / {roster.Length}";
+            hudPlayers.text = "";
+            float rowHeight = 51;
+            sidebar.sizeDelta = new Vector2(sidebar.sizeDelta.x, 48 + roster.Length * rowHeight + Mathf.Max(0, roster.Length - 1) * SpectatorRowGap);
             bool combat = Match.Phase == MatchPhase.Combat && battle != null;
             string opponent = combat && localViewedPlayerId == "p1" && !battle.IsWild
                 ? battle.Pairing.OpponentOf("p1") : null;
@@ -138,6 +142,7 @@ namespace PokeChess.Client.UI
                     i, System.Array.IndexOf(roster, player), player.HP, player.Rules.StartingHP, player.FinalPlacement ?? 0,
                     player.IsEliminated, player.PlayerId == localViewedPlayerId, Match.Phase != MatchPhase.Finished, status);
             }
+            RefreshCombatDamageSidebar();
             RenderSpectatorBanner(localViewedPlayerId == "p1" ? null : localViewedPlayerId.ToUpperInvariant(),
                 !Player.IsEliminated, combat && battle.IsShadow);
         }
@@ -147,7 +152,9 @@ namespace PokeChess.Client.UI
             var roster = match.players;
             string watched = onlineService.WatchingPlayerId;
             var ordered = roster.OrderBy(p => p.id == owner.playerId ? 0 : p.eliminated ? 2 : 1).ToArray();
-            hudPlayers.text = $"플레이어 {roster.Count(p => !p.eliminated)} / {roster.Length}";
+            hudPlayers.text = "";
+            float rowHeight = 51;
+            sidebar.sizeDelta = new Vector2(sidebar.sizeDelta.x, 48 + roster.Length * rowHeight + Mathf.Max(0, roster.Length - 1) * SpectatorRowGap);
             bool combat = match.phase == MatchPhase.Combat && frame != null && frame.round == match.round;
             string opponent = combat && !frame.wild && watched == owner.playerId
                 ? (frame.one == watched ? frame.two : frame.one) : null;
@@ -159,6 +166,7 @@ namespace PokeChess.Client.UI
                     i, System.Array.IndexOf(roster, player), player.hp, player.maxHP, player.placement, player.eliminated,
                     player.id == watched, synchronized && match.phase != MatchPhase.Finished, status);
             }
+            RefreshCombatDamageSidebar();
             RenderSpectatorBanner(watched == owner.playerId ? null : PlayerLabel(watched, owner.playerId),
                 synchronized && !owner.eliminated, combat && frame.shadow);
         }

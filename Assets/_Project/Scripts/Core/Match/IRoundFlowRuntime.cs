@@ -8,6 +8,7 @@ namespace PokeChess.Core.Match
         bool PreparationReady { get; }
         bool NextPreparationPending { get; }
         bool IsSettled { get; }
+        bool ResultReady { get; }
         int TickRate { get; }
         bool StartCombat(int expectedRound);
         void Step();

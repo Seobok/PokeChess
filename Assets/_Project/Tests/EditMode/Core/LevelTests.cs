@@ -68,7 +68,7 @@ namespace PokeChess.Core.Tests
             Assert.That(State(p), Is.EqualTo(before));
         }
         [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)]
-        [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
+        [TestCase(MatchPhase.Finished)]
         public void PurchaseRejectsAllOtherPhases(MatchPhase phase)
         {
             var m=Match();

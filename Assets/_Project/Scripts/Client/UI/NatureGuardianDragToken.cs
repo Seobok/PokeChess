@@ -7,6 +7,66 @@ namespace PokeChess.Client.UI
 {
     public sealed partial class PlacementSandboxView
     {
+        // Presence survives combat; phase changes only hide the preparation previews.
+        private string summonEffectsPlayer;
+        private BoardPosition[] previousPreparationRocks = System.Array.Empty<BoardPosition>();
+        private BoardPosition? previousPreparationGuardian;
+        private int previousPreparationGuardianTier;
+
+        private void RenderPreparationSummonEffects(bool preparation, string playerId,
+            System.Collections.Generic.IEnumerable<BoardPosition> rocks, BoardPosition? guardian, int tier)
+        {
+            if (!preparation) return;
+            var current = System.Linq.Enumerable.ToArray(rocks);
+            if (summonEffectsPlayer != playerId)
+            {
+                summonEffectsPlayer = playerId;
+                previousPreparationRocks = current;
+                previousPreparationGuardian = guardian;
+                previousPreparationGuardianTier = tier;
+                return; // Switching boards does not replay existing summons.
+            }
+            var earthArt = Resources.Load<EarthVisuals>("EarthVisuals");
+            if (earthArt != null)
+            {
+                var added = System.Linq.Enumerable.Take(System.Linq.Enumerable.Except(current, previousPreparationRocks),
+                    System.Math.Max(0, current.Length - previousPreparationRocks.Length));
+                var removed = System.Linq.Enumerable.Take(System.Linq.Enumerable.Except(previousPreparationRocks, current),
+                    System.Math.Max(0, previousPreparationRocks.Length - current.Length));
+                foreach (var tile in added) PlayPreparationSummonEffect(tile, earthArt.spawn, 1, true);
+                foreach (var tile in removed) PlayPreparationSummonEffect(tile, earthArt.end, 1, true);
+            }
+            if (guardian.HasValue != previousPreparationGuardian.HasValue)
+            {
+                bool spawning = guardian.HasValue;
+                int effectTier = spawning ? tier : previousPreparationGuardianTier;
+                var art = Resources.Load<NatureVisuals>("NatureVisuals");
+                if (art != null)
+                {
+                    var frames = effectTier >= 10 ? art.worldtreeSummon : art.summon;
+                    // No dedicated dismissal asset exists: reverse the summon clip.
+                    if (!spawning && frames != null) frames = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Reverse(frames));
+                    PlayPreparationSummonEffect(spawning ? guardian.Value : previousPreparationGuardian.Value,
+                        frames, effectTier >= 10 ? 3 : 1.85f, false);
+                }
+            }
+            previousPreparationRocks = current;
+            previousPreparationGuardian = guardian;
+            previousPreparationGuardianTier = tier;
+        }
+
+        private void PlayPreparationSummonEffect(BoardPosition tile, Sprite[] frames, float scale, bool rock)
+        {
+            if (!Application.isPlaying || frames == null || frames.Length == 0) return;
+            var a = FindSlot(UnitPlacement.OnBoard(new BoardPosition(0, 0))).Rect.anchoredPosition;
+            var b = FindSlot(UnitPlacement.OnBoard(new BoardPosition(1, 0))).Rect.anchoredPosition;
+            var image = EarthVisuals.Create(canvasRect, rock ? "PreparationRockEffect" : "PreparationGuardianEffect");
+            if (rock) image.rectTransform.pivot = EarthVisuals.RockPivot;
+            image.rectTransform.anchoredPosition = FindSlot(UnitPlacement.OnBoard(tile)).Rect.anchoredPosition;
+            image.rectTransform.sizeDelta = Vector2.one * Vector2.Distance(a, b) * scale;
+            image.gameObject.AddComponent<EarthRockEndView>().Initialize(image, frames, 0);
+        }
+
         private const string NatureGuardianPreviewId = "nature-guardian-preview";
         private RectTransform natureGuardianPreview;
         private CanvasGroup natureGuardianGroup;

@@ -63,6 +63,7 @@ namespace PokeChess.Client.UI
             hudTimerBorder = UiPrefab.Get<UnityEngine.UI.Image>(root, "TimerTrack");
             hudTimer = UiPrefab.Get<UnityEngine.UI.Image>(hudTimerBorder.transform, "TimerFill");
             hudNotice = UiPrefab.Get<UnityEngine.UI.Text>(root, "HudNotice");
+            hudNotice.gameObject.SetActive(false);
             hudCapacity = UiPrefab.Get<RectTransform>(root, "BoardCapacity");
             hudCapacityText = UiPrefab.Get<UnityEngine.UI.Text>(hudCapacity, "CapacityCount");
         }
@@ -71,12 +72,31 @@ namespace PokeChess.Client.UI
         {
             Resources.Load<Sprite>("MainGameHud/" + asset),
             Resources.Load<Sprite>("MainGameHud/" + asset + "Active"),
-            Resources.Load<Sprite>("MainGameHud/" + asset + "Upcoming")
+            Resources.Load<Sprite>("MainGameHud/" + asset + "Upcoming"),
+            Resources.Load<Sprite>("MainGameHud/" + asset + "Defeat")
         };
+
+        private readonly HashSet<(int Round, string Player)> lostHudRounds = new HashSet<(int, string)>();
+        private object roundHistoryScope;
+
+        private void RecordRoundLosses(object scope, int round, IEnumerable<string> losers)
+        {
+            if (!Equals(roundHistoryScope, scope))
+            {
+                lostHudRounds.Clear();
+                roundHistoryScope = scope;
+            }
+            foreach (var player in losers) lostHudRounds.Add((round, player));
+        }
 
         private void RenderRoundStrip(int round, bool wildRoundsEnabled, double? remaining)
         {
-            hudRound.text = round.ToString("00");
+            int first = wildRoundsEnabled && round <= 3 ? 1 :
+                wildRoundsEnabled ? 4 + (round - 4) / 6 * 6 : 1 + (round - 1) / 6 * 6;
+            int count = wildRoundsEnabled && round <= 3 ? 3 : 6;
+            int stage = wildRoundsEnabled && round <= 3 ? 1 :
+                wildRoundsEnabled ? 2 + (round - 4) / 6 : 1 + (round - 1) / 6;
+            hudRound.text = $"{stage}-{round - first + 1}";
             if (remaining.HasValue)
             {
                 int seconds = (int)Math.Ceiling(Math.Max(0, remaining.Value));
@@ -84,12 +104,18 @@ namespace PokeChess.Client.UI
             }
             else hudTime.text = "–";
 
-            int first = Math.Max(1, round - 3);
+            string player = IsOnlineMatch ? onlineService.WatchingPlayerId : localViewedPlayerId;
             for (int i = 0; i < hudRoundIcons.Length; i++)
             {
+                hudRoundIcons[i].gameObject.SetActive(i < count);
+                if (i >= count) continue;
+                var rect = hudRoundIcons[i].rectTransform;
+                rect.anchoredPosition = new Vector2((i - (count - 1) * .5f) * 35, rect.anchoredPosition.y);
                 int iconRound = first + i;
                 var icons = wildRoundsEnabled && WildRoundSystem.IsWildRound(iconRound) ? hudWildIcons : hudBattleIcons;
-                hudRoundIcons[i].sprite = icons[iconRound < round ? 0 : iconRound == round ? 1 : 2];
+                bool lost = lostHudRounds.Contains((iconRound, player));
+                hudRoundIcons[i].sprite = icons[lost ? 3 : iconRound < round ? 0 : iconRound == round ? 1 : 2];
+                hudRoundIcons[i].color = Color.white;
             }
             hudRoundPointer.gameObject.SetActive(round >= 1);
             var pointer = hudRoundPointer.rectTransform;
@@ -126,7 +152,7 @@ namespace PokeChess.Client.UI
             else if(RoundFlow.AwaitingMatchEnd)notice="Waiting for match end";
             else if(RoundLoop.NextPreparationPending)notice="Updating shops…";
             else if(Match.Phase==MatchPhase.Preparation&&!RoundLoop.PreparationReady)notice="Preparing round…";
-            else if(Match.Phase==MatchPhase.Result&&!RoundLoop.IsSettled)notice="Settling results…";
+            else if(Match.Phase==MatchPhase.Result&&!RoundLoop.ResultReady)notice="Settling results…";
             else if(Match.Phase==MatchPhase.Preparation) {
                 kind="Preparation";remaining=RoundFlow.RemainingSeconds;progress=remaining.Value/RoundFlow.Rules.PreparationSeconds;
             } else if(Match.Phase==MatchPhase.Result) {
@@ -145,6 +171,14 @@ namespace PokeChess.Client.UI
             }
             if(kind=="Idle"&&Match.Phase!=MatchPhase.Finished&&ReferenceEquals(hudMatch,Match))progress=HudTimerProgress;
             HudTimerKind=kind;HudTimerProgress=Mathf.Clamp01((float)progress);
+            RecordRoundLosses(Match, Match.RoundNumber, RoundLoop.Battles.Where(pair => pair.IsComplete && Match.Phase != MatchPhase.Preparation)
+                .SelectMany(pair => Match.Players.Where(p => pair.Pairing.Contains(p.PlayerId) &&
+                    pair.OutcomeOf(p.PlayerId) == RoundOutcome.Loss).Select(p => p.PlayerId)));
+            // A zero-duration result phase can advance to preparation before the HUD renders.
+            // Battles are cleared there, but LastResult retains the completed round number.
+            if (RoundLoop.LastResult != null)
+                RecordRoundLosses(Match, RoundLoop.LastResult.Round, RoundLoop.LastResult.PlayerResults.Values
+                    .Where(result => result.Outcome == RoundOutcome.Loss).Select(result => result.PlayerId));
             RenderRoundStrip(Match.RoundNumber, Match.Rules.EnableWildRounds, remaining);
             RenderHudTimer(Match.Phase!=MatchPhase.Finished&&!(Match.Phase==MatchPhase.Combat&&(own==null||own.IsComplete)),
                 kind=="Overtime"||kind=="Preparation"&&remaining<=5);

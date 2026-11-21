@@ -54,6 +54,42 @@ namespace PokeChess.Core.Tests
             Assert.That(d.Killed,Is.False);
             Assert.That(b.DamageResultsThisTick.Count,Is.EqualTo(1));
         }
+        [Test]
+        public void BattleDamageBreakdownTracksResolvedTypesForBothSides()
+        {
+            var battle = Create();
+            U(battle, "z").SetShield(30);
+            var processor = new DamageProcessor();
+            processor.Apply(battle, new DamageRequest("a", "z", 100, DamageType.Physical));
+            processor.Apply(battle, new DamageRequest("a", "z", 100, DamageType.Magic));
+            processor.Apply(battle, new DamageRequest("a", "z", 10, DamageType.True));
+            foreach (var types in new[] { battle.DamageDealtTypes("a"), battle.DamageTakenTypes("z") })
+            {
+                Assert.That(types.physical, Is.EqualTo(50));
+                Assert.That(types.magic, Is.EqualTo(25));
+                Assert.That(types.trueDamage, Is.EqualTo(10));
+                Assert.That(types.Total, Is.EqualTo(85));
+            }
+            Assert.That(battle.DamageDealtBy("a"), Is.EqualTo(85));
+        }
+
+        [Test]
+        public void BattleDamageTotalsIncludeShieldsClampOverkillAndResetForNewBattle()
+        {
+            var battle = Create(extraAlly: true);
+            U(battle, "z").SetShield(30);
+            var processor = new DamageProcessor();
+            processor.Apply(battle, new DamageRequest("a", "z", 50, DamageType.True));
+            Assert.That(battle.DamageDealtBy("a"), Is.EqualTo(50));
+            Assert.That(battle.DamageTakenBy("z"), Is.EqualTo(50));
+            Assert.That(battle.DamageDealtBy("c"), Is.Zero);
+            processor.Apply(battle, new DamageRequest("a", "z", 1000, DamageType.True));
+            Assert.That(battle.DamageDealtBy("a"), Is.EqualTo(130));
+            Assert.That(battle.DamageTakenBy("z"), Is.EqualTo(130));
+            Assert.That(U(battle, "z").IsAlive, Is.False);
+            Assert.That(Create().DamageDealtBy("a"), Is.Zero);
+        }
+
         [Test] public void OverkillClampsHpAndRemovesOccupancy()
         {
             var b=Create();U(b,"z").SetShield(30);

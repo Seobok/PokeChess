@@ -8,6 +8,13 @@ namespace PokeChess.Core.Match
 {
     public enum MatchPhase { Waiting, Starting, Preparation, Combat, Result, Finished }
 
+    public static class MatchPhasePolicy
+    {
+        // Result is the five-second combat intermission, with the same economy/bench inputs.
+        public static bool IsBattlePhase(this MatchPhase phase) =>
+            phase == MatchPhase.Combat || phase == MatchPhase.Result;
+    }
+
     // Host-authoritative model. Project into filtered DTOs before network transmission.
     public sealed class MatchState
     {

@@ -6,6 +6,22 @@ using PokeChess.Core.Board;
 
 namespace PokeChess.Core.Battle
 {
+    [Serializable]
+    public struct BattleDamageBreakdown
+    {
+        public float physical, magic, trueDamage;
+        public float Total => physical + magic + trueDamage;
+        public void Add(DamageType type, float value)
+        {
+            switch (type)
+            {
+                case DamageType.Physical: physical += value; break;
+                case DamageType.Magic: magic += value; break;
+                case DamageType.True: trueDamage += value; break;
+            }
+        }
+    }
+
     public enum CombatActionState { Idle, Moving, Attacking, Casting, Dead }
     public enum BattleResult { InProgress, TeamOneWin, TeamTwoWin, Draw }
     public enum BattleEndReason { None, Elimination, TimeLimit, Surrender }
@@ -224,7 +240,26 @@ namespace PokeChess.Core.Battle
         private readonly List<DamageResult> damageResults = new List<DamageResult>();
         public IReadOnlyList<DamageResult> DamageResultsThisTick => Array.AsReadOnly(damageResults.ToArray());
         internal void BeginDamageTick() {damageResults.Clear();SkillProcs.BeginTick();}
-        internal void RecordDamage(DamageResult result) => damageResults.Add(result);
+        private readonly Dictionary<string, BattleDamageBreakdown> damageDealt = new Dictionary<string, BattleDamageBreakdown>(StringComparer.Ordinal);
+        private readonly Dictionary<string, BattleDamageBreakdown> damageTaken = new Dictionary<string, BattleDamageBreakdown>(StringComparer.Ordinal);
+        public BattleDamageBreakdown DamageDealtTypes(string unitId) => unitId != null && damageDealt.TryGetValue(unitId, out var value) ? value : default;
+        public BattleDamageBreakdown DamageTakenTypes(string unitId) => unitId != null && damageTaken.TryGetValue(unitId, out var value) ? value : default;
+        public float DamageDealtBy(string unitId) => DamageDealtTypes(unitId).Total;
+        public float DamageTakenBy(string unitId) => DamageTakenTypes(unitId).Total;
+        internal void RecordDamage(DamageResult result)
+        {
+            damageResults.Add(result);
+            float value = result.AppliedDamage + result.ShieldAbsorbed;
+            if (value <= 0 || result.Missed || result.Request.SourceId == null || result.Request.TargetId == null) return;
+            if (!unitsById.TryGetValue(result.Request.SourceId, out var source) ||
+                !unitsById.TryGetValue(result.Request.TargetId, out var target) || source.TeamId == target.TeamId) return;
+            var dealt = DamageDealtTypes(source.UnitInstanceId);
+            var taken = DamageTakenTypes(target.UnitInstanceId);
+            dealt.Add(result.Request.Type, value);
+            taken.Add(result.Request.Type, value);
+            damageDealt[source.UnitInstanceId] = dealt;
+            damageTaken[target.UnitInstanceId] = taken;
+        }
         private readonly CombatBoard board;
         private readonly Dictionary<string, UnitCombatState> unitsById;
         public IReadOnlyCombatBoard Board => board.ReadOnly;

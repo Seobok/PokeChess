@@ -144,9 +144,11 @@ namespace PokeChess.Core.Match
         private IEnumerable<PlayerState> Survivors => Match.Players.Where(p=>p.HP>0 && !p.IsEliminated);
         public bool PreparationReady => Match.Phase==MatchPhase.Preparation && !refreshing &&
             Survivors.All(p=>p.Shop.IsInitialized && p.Shop.LastRefreshRound==Match.RoundNumber);
-        public bool IsSettled => LastResult!=null && LastResult.Round==Match.RoundNumber &&
-            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.Elimination?.Reason==EliminationReason.Surrender || p.Elimination?.Reason==EliminationReason.DisconnectTimeout || p.LastEconomyRound==Match.RoundNumber && p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber) &&
+        public bool ResultReady => LastResult!=null && LastResult.Round==Match.RoundNumber &&
+            LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>p.Elimination?.Reason==EliminationReason.Surrender || p.Elimination?.Reason==EliminationReason.DisconnectTimeout || p.LastAutomaticXPRound==Match.RoundNumber && p.LastDamageRound==Match.RoundNumber) &&
             Match.Players.All(p=>p.HP>0 || p.IsEliminated);
+        public bool IsSettled => ResultReady && LastResult.PlayerResults.Keys.Select(Match.GetPlayer).All(p=>
+            p.Elimination?.Reason==EliminationReason.Surrender || p.Elimination?.Reason==EliminationReason.DisconnectTimeout || p.LastEconomyRound==Match.RoundNumber);
         public LocalRoundCoordinator(MatchState match,PokemonCatalog catalog,PlayerDamageRules damageRules=null,
             SkillCatalog skillCatalog=null,StatusCatalog statusCatalog=null)
         {
@@ -283,7 +285,7 @@ namespace PokeChess.Core.Match
             => plan.TryGetValue(unit.InstanceId,out var placement) ? placement.Position.Value : unit.Placement.Position.Value;
         public void Step()
         {
-            if(Match.Phase==MatchPhase.Result) { SettleResult();return; }
+            if(Match.Phase==MatchPhase.Result) { SettleResultCore(false);return; }
             if(Match.Phase!=MatchPhase.Combat)return;
             foreach(var battle in battles) {
                 if(battle.Battle!=null&&!rewardBound.Contains(battle.Battle.BattleId)) {
@@ -301,20 +303,21 @@ namespace PokeChess.Core.Match
         private void Finish()
         {
             LastResult=new LocalRoundResult(Match.RoundNumber,battles);
-            Match.TransitionTo(MatchPhase.Result);Match.CombatPairs=Array.Empty<LocalPairBattle>();SettleResult();
+            Match.TransitionTo(MatchPhase.Result);Match.CombatPairs=Array.Empty<LocalPairBattle>();SettleResultCore(false);
         }
-        public void SettleResult()
+        public void SettleResult() => SettleResultCore(true);
+        private void SettleResultCore(bool includeEconomy)
         {
             if(Match.Phase==MatchPhase.Finished && Match.FinalResult!=null)return;
             if(Match.Phase!=MatchPhase.Result || LastResult==null || LastResult.Round!=Match.RoundNumber)
                 throw new InvalidOperationException("No current completed round.");
             var recipients=LastResult.PlayerResults.Keys.Select(Match.GetPlayer).Where(p=>p.Elimination?.Reason!=EliminationReason.Surrender&&p.Elimination?.Reason!=EliminationReason.DisconnectTimeout).ToArray();
-            if(IsWildRound){SettleWildResult(recipients);return;}
+            if(IsWildRound){SettleWildResult(recipients, includeEconomy);return;}
             var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients)
             {
                 if(damagePlans[p.PlayerId].HPAfter==0 && !p.IsEliminated)EliminationSystem.ValidateRelease(Match,p);
-                if(p.LastEconomyRound!=Match.RoundNumber)economy.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
+                if(includeEconomy && p.LastEconomyRound!=Match.RoundNumber)economy.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)
                 {
                     if((long)p.LastAutomaticXPRound+1!=Match.RoundNumber)throw new InvalidOperationException("Automatic XP round gap.");
@@ -323,29 +326,29 @@ namespace PokeChess.Core.Match
             }
             foreach(var p in recipients)
             {
-                if(p.LastEconomyRound!=Match.RoundNumber)LastResult.Record(economy.Settle(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome));
+                if(includeEconomy && p.LastEconomyRound!=Match.RoundNumber)LastResult.Record(economy.Settle(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome));
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
                 SynergyPreparation.Settle(p,battles.First(b=>b.Pairing.Contains(p.PlayerId)),Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome);
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
             }
             elimination.SettleDamage(Match);
-            TryFinishMatch(Match.RoundNumber);
+            if (includeEconomy) TryFinishMatch(Match.RoundNumber);
         }
-        private void SettleWildResult(PlayerState[] recipients)
+        private void SettleWildResult(PlayerState[] recipients, bool includeEconomy)
         {
             var damagePlans=recipients.ToDictionary(p=>p.PlayerId,p=>playerDamage.Preview(p,Match.RoundNumber,LastResult.PlayerResults[p.PlayerId].Outcome,LastResult.PlayerResults[p.PlayerId].OpponentSurvivors));
             foreach(var p in recipients){
                 if(damagePlans[p.PlayerId].HPAfter==0&&!p.IsEliminated)EliminationSystem.ValidateRelease(Match,p);
                 var outcome=LastResult.PlayerResults[p.PlayerId].Outcome;
-                if(p.LastEconomyRound!=Match.RoundNumber){
+                if(includeEconomy && p.LastEconomyRound!=Match.RoundNumber){
                     var income=new RoundIncome(p.PlayerId,Match.RoundNumber,outcome,p.Gold,economy.Rules.BaseIncome,
                         Math.Min(p.Gold/economy.Rules.GoldPerInterest,economy.Rules.MaxInterest),0,p.WinStreak,p.LoseStreak,outcome==RoundOutcome.Win?2:0);
                     LastResult.Record(income);
-                    levels.PreviewXP(p,levels.Rules.AutomaticXP);
                 }
+                if(p.LastAutomaticXPRound!=Match.RoundNumber)levels.PreviewXP(p,levels.Rules.AutomaticXP);
             }
             foreach(var p in recipients){
-                if(p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
+                if(includeEconomy && p.LastEconomyRound!=Match.RoundNumber)p.ApplyRoundIncome(LastResult.Income[p.PlayerId]);
                 if(p.LastAutomaticXPRound!=Match.RoundNumber)LastResult.Record(levels.AwardAutomaticXP(p,Match.RoundNumber));
                 var pair = battles.First(b => b.Pairing.Contains(p.PlayerId));
                 var outcome = LastResult.PlayerResults[p.PlayerId].Outcome;
@@ -353,13 +356,16 @@ namespace PokeChess.Core.Match
                 playerDamage.Apply(p,damagePlans[p.PlayerId]);LastResult.Record(damagePlans[p.PlayerId]);
             }
             elimination.SettleDamage(Match);
-            TryFinishMatch(Match.RoundNumber);
+            if (includeEconomy) TryFinishMatch(Match.RoundNumber);
         }
         public bool NextRound(int completedRound)
         {
             if(!refreshing)
             {
-                if(Match.Phase!=MatchPhase.Result || completedRound!=Match.RoundNumber || !IsSettled)return false;
+                if(Match.Phase!=MatchPhase.Result || completedRound!=Match.RoundNumber || !ResultReady)return false;
+                // Calculate interest from the live gold balance after the intermission inputs.
+                if (!IsSettled) SettleResult();
+                if (Match.Phase == MatchPhase.Finished) return true;
                 Match.TransitionTo(MatchPhase.Preparation);refreshing=true;preparationRankUps.Clear();
                 PreparePairings(Match.RoundNumber);
             }

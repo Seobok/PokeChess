@@ -18,7 +18,8 @@ namespace PokeChess.Core.Match
     }
     [Serializable] public sealed class PublicMatchState
     {
-        public string matchId,winnerPlayerId;public int round;public MatchPhase phase;public long revision;
+        public string matchId,winnerPlayerId;public int round;
+        public int resultRound;public MatchPhase phase;public long revision;
         public bool wildRound;public string wildPreview;
         // Deadline uses the Host network clock; absent outside timed phases.
         public bool hasPhaseDeadline;public double phaseEndsAt;public PublicPlayer[] players;public PublicRoundResult[] results;
@@ -45,7 +46,7 @@ namespace PokeChess.Core.Match
         }
         public static PublicMatchState Public(MatchState match,LocalRoundCoordinator rounds,long version)
         {
-            return new PublicMatchState{matchId=match.MatchId,round=match.RoundNumber,phase=match.Phase,revision=version,
+            return new PublicMatchState{matchId=match.MatchId,round=match.RoundNumber,resultRound=rounds.LastResult?.Round??0,phase=match.Phase,revision=version,
                 wildRound=WildRoundSystem.IsWild(match),wildPreview=WildRoundSystem.IsWild(match)?WildRoundSystem.Preview(match.RoundNumber):null,
                 winnerPlayerId=match.FinalResult?.WinnerPlayerId,
                 players=match.Players.Select(p=>new PublicPlayer{id=p.PlayerId,hp=p.HP,maxHP=p.Rules.StartingHP,level=p.Level,eliminated=p.IsEliminated,

@@ -25,6 +25,8 @@ namespace PokeChess.Client.UI
         private float drawnAlpha=1;
         private float skillScale=1;
         private float guardianScale=1;
+        private float idleHeadPixels, overheadPixelScale=PixelScale*UnitSizeMultiplier;
+        internal float StableOverheadHeight => idleHeadPixels * overheadPixelScale * guardianScale;
         private Color guardianTint=Color.white;
         public Vector2 SkillLungeOffset {get;private set;}
         private const float PixelScale=1.5f;
@@ -45,6 +47,17 @@ namespace PokeChess.Client.UI
             }
             pokemon=id;library=PokemonAnimationLibrary.Load();
             animationPokemon=library?.Find(id,"Idle")!=null ? id : (id=="exeggcute"||id=="exeggutor"?"tangela":PokeChess.Content.GameContent.BaseForm(id));
+            // Use a fixed envelope of the idle frames rather than the currently drawn action frame.
+            var idle = library?.Find(animationPokemon, "Idle");
+            idleHeadPixels = 0;
+            if (idle != null)
+                for (int i = 0; i < idle.Frames.Length; i++)
+                {
+                    var frame = idle.Frames[i];
+                    if (frame == null) continue;
+                    float ground = idle.GroundOffsets != null && i < idle.GroundOffsets.Length ? idle.GroundOffsets[i].y : 0;
+                    idleHeadPixels = Mathf.Max(idleHeadPixels, ground + frame.bounds.max.y * frame.pixelsPerUnit);
+                }
             image=GetComponent<UnityEngine.UI.Image>()??gameObject.AddComponent<UnityEngine.UI.Image>();
             SetHardened(false);
             image.raycastTarget=false;image.color=Color.white;
@@ -129,6 +142,7 @@ namespace PokeChess.Client.UI
         }
         private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
+            overheadPixelScale = scale * UnitSizeMultiplier;
             scale*=UnitSizeMultiplier*skillScale*guardianScale;
             var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim==null){image.enabled=false;return false;}

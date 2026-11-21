@@ -14,11 +14,14 @@ namespace PokeChess.Client.UI
         private RectTransform unitInfoRoot,unitInfoTooltip;
         private UnityEngine.UI.Text unitInfoTitle,unitInfoTraits,unitInfoItems,unitInfoTooltipText;
         private UnityEngine.UI.Text unitDetailHeader, unitDetailCost, unitRoleLabel, unitDetailHPText, unitDetailManaText, unitDetailSkill;
+        private UnityEngine.UI.Image unitCostIcon;
         private UnityEngine.UI.Image unitDetailRank, unitRoleBadgeIcon, unitDetailHP, unitDetailMana, unitOwnedBall;
         private readonly UnityEngine.UI.Text[] unitStatValues=new UnityEngine.UI.Text[6];
         private string[] unitStatHints=new string[6];
         private string unitSkillHint;
         private UnityEngine.UI.Image unitPortrait,unitSkillImage;
+        private Vector2 unitPortraitAreaSize, unitPortraitAreaCenter;
+        private readonly Dictionary<Sprite, Bounds> unitPortraitVisibleBounds = new Dictionary<Sprite, Bounds>();
         private UnitPanelIconGraphic unitSkillMark;
         private RectTransform unitItemIcons;
         private readonly List<UnityEngine.UI.Image> unitEquippedIcons=new List<UnityEngine.UI.Image>();
@@ -64,11 +67,20 @@ namespace PokeChess.Client.UI
             sellButton = UiPrefab.Bind(detailPopup, "Sell", SellSelected);
             unitDetailHeader = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Header/Title");
             unitPortrait = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "UnitPortrait");
+            unitPortraitAreaSize = unitPortrait.rectTransform.sizeDelta;
+            unitPortraitAreaCenter = unitPortrait.rectTransform.anchoredPosition;
+            unitPortrait.preserveAspect = false;
+            unitPortrait.useSpriteMesh = true;
             unitInfoTitle = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Name");
             unitDetailRank = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "Rank");
+            unitCostIcon = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "CostIcon");
             unitRoleBadgeIcon = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "RoleBadge/Icon");
             unitRoleLabel = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "RoleBadge/Role");
             unitInfoTraits = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "TraitsBadge/Traits");
+            var traitBadgeRect = (RectTransform)unitInfoTraits.transform.parent;
+            traitBadgeRect.sizeDelta += new Vector2(0, 18);
+            traitBadgeRect.anchoredPosition += Vector2.down * 9;
+            unitInfoTraits.rectTransform.sizeDelta += new Vector2(0, 18);
             unitInfoTraits.enabled = false;
             unitDetailCost = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "CostBadge/Cost");
             unitDetailHP = UiPrefab.Get<UnityEngine.UI.Image>(unitInfoRoot, "HPTrack/Fill");
@@ -94,6 +106,7 @@ namespace PokeChess.Client.UI
             unitInfoItems = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoRoot, "Footer/FooterText");
             unitInfoTooltip = UiPrefab.Instantiate("UnitInfoTooltip", canvasRect, itemFont);
             unitInfoTooltipText = UiPrefab.Get<UnityEngine.UI.Text>(unitInfoTooltip, "Hint");
+            BuildSkillTooltip();
         }
 
         private static string DetailRole(PokemonDefinition definition, PokemonStats stats)
@@ -117,10 +130,31 @@ namespace PokeChess.Client.UI
             }
         }
 
+        private void FitUnitPortrait(Sprite sprite)
+        {
+            unitPortrait.sprite = sprite;
+            unitPortrait.enabled = sprite != null;
+            if (sprite == null) return;
+            if (!unitPortraitVisibleBounds.TryGetValue(sprite, out var bounds))
+            {
+                // The tight sprite mesh excludes the transparent padding in animation cells.
+                var vertices = sprite.vertices;
+                bounds = vertices.Length > 0 ? new Bounds(vertices[0], Vector3.zero) : sprite.bounds;
+                foreach (var vertex in vertices) bounds.Encapsulate(vertex);
+                unitPortraitVisibleBounds.Add(sprite, bounds);
+            }
+            var visible = (Vector2)bounds.size * sprite.pixelsPerUnit;
+            float scale = Mathf.Min(unitPortraitAreaSize.x * .9f / Mathf.Max(1, visible.x),
+                unitPortraitAreaSize.y * .9f / Mathf.Max(1, visible.y));
+            unitPortrait.rectTransform.sizeDelta = sprite.rect.size * scale;
+            unitPortrait.rectTransform.anchoredPosition = unitPortraitAreaCenter -
+                (Vector2)(bounds.center - sprite.bounds.center) * sprite.pixelsPerUnit * scale;
+        }
+
         private void RenderUnitPanelImages(PokemonDefinition definition, PokemonStats stats, string[] items, int? shopOwned)
         {
             var idle=unitPortraitLibrary?.Find(definition.Id,"Idle")??unitPortraitLibrary?.Find(PokeChess.Content.GameContent.BaseForm(definition.Id),"Idle");
-            unitPortrait.sprite=idle?.Frames?.FirstOrDefault();unitPortrait.enabled=unitPortrait.sprite!=null;
+            FitUnitPortrait(idle?.Frames?.FirstOrDefault());
             unitSkillImage.sprite=unitPanelLibrary?.GetSkillIcon(definition.SkillId)??Resources.Load<Sprite>("SkillIcons/"+definition.SkillId);
             unitSkillImage.enabled=unitSkillImage.sprite!=null;unitSkillMark.gameObject.SetActive(!unitSkillImage.enabled);
             unitRoleLabel.text = DetailRole(definition, stats);
@@ -178,9 +212,15 @@ namespace PokeChess.Client.UI
         {
             hoveredUnitItem=id;hoveredUnitInfo=-2;
             string key=ItemCatalog.DefinitionId(id);
-            unitInfoTooltipText.text=key==null?ItemCatalog.DisplayName(id):ItemCatalog.Get(key).Name+"\n"+ItemCatalog.Get(key).Description;
-            unitInfoTooltip.sizeDelta=new Vector2(370,90);unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,72);
-            unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();
+            if (key == null) return;
+            var source = unitEquippedIcons.FirstOrDefault(image => image.gameObject.activeSelf &&
+                image.GetComponent<UnitPanelItemId>().Id == id);
+            if (source == null) return;
+            hoveredComponentItem = id;
+            equippedRecipeSource = source.rectTransform;
+            var point = (Vector2)canvasRect.InverseTransformPoint(source.transform.position);
+            UpdateItemRecipePreview(ItemCatalog.Get(key), point);
+            itemRecipePreview.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
         }
         private void RenderUnitTraitLabels(PokemonDefinition definition, bool summon)
         {
@@ -188,10 +228,18 @@ namespace PokeChess.Client.UI
             HideUnitTraitHint();
             unitTraitDefinition = definition;
             unitTraitsAreSummon = summon;
-            unitTraitIds = summon ? NatureUnitTrait : definition.TraitIds;
+            var uniqueTraits = UniqueSynergies.Select((data, index) => (data, index))
+                .Where(entry => entry.data.species.Any(id => SynergyTraits.Family(id) == SynergyTraits.Family(definition.Id))).ToArray();
+            unitTraitIds = summon ? NatureUnitTrait : definition.TraitIds
+                .Concat(uniqueTraits.Select(entry => "unique-" + entry.index)).ToArray();
+            var names = unitTraitIds.Select(id => id.StartsWith("unique-", StringComparison.Ordinal)
+                ? UniqueSynergies[int.Parse(id.Substring(7))].name : summon ? "자연 소환수" : TraitName(id)).ToArray();
 
             int count = unitTraitIds.Count;
-            float width = unitInfoTraits.rectTransform.rect.width / Mathf.Max(1, count);
+            float totalWidth = unitInfoTraits.rectTransform.rect.width;
+            int normalCount = summon ? 1 : definition.TraitIds.Count;
+            float normalWeight = names.Take(normalCount).Sum(name => name.Length + 3);
+            float left = -totalWidth * .5f;
             for (int i = 0; i < count; i++)
             {
                 if (i == unitTraitLabels.Count)
@@ -199,7 +247,7 @@ namespace PokeChess.Client.UI
                     var label = ItemLabel("Trait_" + i, unitInfoTraits.transform, "", unitInfoTraits.fontSize, Vector2.zero, Vector2.zero);
                     label.font = unitInfoTraits.font;
                     label.fontStyle = unitInfoTraits.fontStyle;
-                    label.color = unitInfoTraits.color;
+                    label.color = DetailInk;
                     label.resizeTextForBestFit = true;
                     label.resizeTextMinSize = unitInfoTraits.resizeTextMinSize;
                     label.resizeTextMaxSize = unitInfoTraits.resizeTextMaxSize;
@@ -208,13 +256,36 @@ namespace PokeChess.Client.UI
                     var events = label.gameObject.AddComponent<EventTrigger>();
                     AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ => ShowUnitTraitHint(unitTraitIds[index]));
                     AddSynergyRowEvent(events, EventTriggerType.PointerExit, _ => HideUnitTraitHint());
+                    var iconView = HudImage("Icon", label.transform, new Vector2(22, 22), Vector2.zero, Color.white);
+                    iconView.preserveAspect = true;
+                    var nameView = ItemLabel("Name", label.transform, "", unitInfoTraits.fontSize, Vector2.zero, Vector2.zero);
+                    nameView.font = label.font;nameView.color = label.color;nameView.alignment = TextAnchor.MiddleLeft;
+                    nameView.resizeTextForBestFit = true;nameView.resizeTextMinSize = 9;nameView.resizeTextMaxSize = unitInfoTraits.fontSize;
+                    nameView.raycastTarget = false;
+                    var glyphView = ItemLabel("Glyph", label.transform, "", 16, new Vector2(22, 22), Vector2.zero);
+                    glyphView.font = label.font;glyphView.color = label.color;glyphView.raycastTarget = false;
                     unitTraitLabels.Add(label);
                 }
 
                 var trait = unitTraitLabels[i];
-                trait.text = summon ? "자연 소환수" : TraitName(unitTraitIds[i]);
-                trait.rectTransform.sizeDelta = new Vector2(width, unitInfoTraits.rectTransform.rect.height);
-                trait.rectTransform.anchoredPosition = new Vector2((i - (count - 1) * .5f) * width, 0);
+                bool uniqueRow = i >= normalCount;
+                float width = uniqueRow ? totalWidth : totalWidth * (names[i].Length + 3) / Mathf.Max(1, normalWeight);
+                trait.text = "";
+                trait.rectTransform.sizeDelta = new Vector2(width, 18);
+                trait.rectTransform.anchoredPosition = new Vector2(uniqueRow ? 0 : left + width * .5f, uniqueRow ? -9 : 9);
+                if (!uniqueRow) left += width;
+                var icon = trait.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>();
+                icon.rectTransform.anchoredPosition = new Vector2(-width * .5f + 12, 0);
+                icon.sprite = synergyPanelIcons?.Find(unitTraitIds[i]);
+                icon.enabled = icon.sprite != null;
+                var name = trait.transform.Find("Name").GetComponent<UnityEngine.UI.Text>();
+                name.text = names[i];
+                name.rectTransform.sizeDelta = new Vector2(Mathf.Max(1, width - 28), 18);
+                name.rectTransform.anchoredPosition = new Vector2(13, 0);
+                var glyph = trait.transform.Find("Glyph").GetComponent<UnityEngine.UI.Text>();
+                glyph.gameObject.SetActive(!icon.enabled);
+                glyph.text = SynergyMark(unitTraitIds[i], names[i]);
+                glyph.rectTransform.anchoredPosition = icon.rectTransform.anchoredPosition;
                 trait.gameObject.SetActive(true);
             }
             for (int i = count; i < unitTraitLabels.Count; i++)
@@ -225,20 +296,15 @@ namespace PokeChess.Client.UI
         {
             HideUnitInfoHint();
             hoveredUnitTrait = trait;
-            unitInfoTooltipText.text = TraitName(trait) + "\n\n" + SynergyDescription(trait);
-            unitInfoTooltipText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 346);
-            float height = Mathf.Max(72, Mathf.Ceil(unitInfoTooltipText.preferredHeight));
-            unitInfoTooltipText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            unitInfoTooltip.sizeDelta = new Vector2(370, height + 18);
-            unitInfoTooltip.gameObject.SetActive(true);
-            unitInfoTooltip.SetAsLastSibling();
+            RefreshSynergyRows();
         }
 
         private void HideUnitTraitHint()
         {
-            if (hoveredUnitTrait != null) HideUnitInfoHint();
+            if (hoveredUnitTrait == null) return;
+            hoveredUnitTrait = null;
+            RefreshSynergyRows();
         }
-
         private void AddUnitInfoHover(Transform target,int index)
         {
             var trigger=target.gameObject.AddComponent<EventTrigger>();
@@ -246,8 +312,22 @@ namespace PokeChess.Client.UI
             var exit=new EventTrigger.Entry{eventID=EventTriggerType.PointerExit};exit.callback.AddListener(_=>HideUnitInfoHint());trigger.triggers.Add(enter);trigger.triggers.Add(exit);
         }
         private void ShowUnitInfoHint(int index)
-        {if(equippedRecipeSource!=null)HideItemHint();hoveredUnitTrait=null;hoveredUnitInfo=index;unitInfoTooltip.sizeDelta=new Vector2(370,index<0?220:90);unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,index<0?202:72);unitInfoTooltipText.text=index<0?unitSkillHint:unitStatHints[index];unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();}
-        private void HideUnitInfoHint(){if(equippedRecipeSource!=null)HideItemHint();hoveredUnitItem=null;hoveredUnitTrait=null;hoveredUnitInfo=-2;if(unitInfoTooltip!=null)unitInfoTooltip.gameObject.SetActive(false);}
+        {
+            if(equippedRecipeSource!=null)HideItemHint();
+            hoveredUnitTrait=null;hoveredUnitInfo=index;
+            if (index < 0)
+            {
+                unitInfoTooltip.gameObject.SetActive(false);
+                ShowSkillTooltip();
+                return;
+            }
+            skillTooltip.gameObject.SetActive(false);
+            unitInfoTooltip.sizeDelta=new Vector2(370,90);
+            unitInfoTooltipText.rectTransform.sizeDelta=new Vector2(346,72);
+            unitInfoTooltipText.text=unitStatHints[index];
+            unitInfoTooltip.gameObject.SetActive(true);unitInfoTooltip.SetAsLastSibling();
+        }
+        private void HideUnitInfoHint(){if(equippedRecipeSource!=null)HideItemHint();hoveredUnitItem=null;hoveredUnitTrait=null;hoveredUnitInfo=-2;if(unitInfoTooltip!=null)unitInfoTooltip.gameObject.SetActive(false);if(skillTooltip!=null)skillTooltip.gameObject.SetActive(false);}
         private static string NatureGuardianSkillHint(int tier) => tier switch
         {
             2 => "수호자 포효\n주변 1칸의 적을 1.25초 도발하고 자신에게 3초 동안 보호막 120을 부여합니다.",
@@ -256,14 +336,16 @@ namespace PokeChess.Client.UI
             _ => "세계수의 심판\n주변 2칸의 적을 1.5초 도발합니다. 모든 적에게 특수 피해를 주고 아군의 잃은 체력 중 15%를 회복합니다."
         };
 
-        private void RenderUnitInfoIcons(PokemonDefinition definition,UnitRank rank,PokemonStats stats,double hp,double maxHP,double energy,double maxEnergy,double shield,string[] items,bool baseStats=false,int natureTier=0,int? shopCost=null,int? shopOwned=null)
+        private void RenderUnitInfoIcons(PokemonDefinition definition,UnitRank rank,PokemonStats stats,double hp,double maxHP,double energy,double maxEnergy,double shield,string[] items,bool baseStats=false,int natureTier=0,int? shopCost=null,int? shopOwned=null,int? saleGold=null)
         {
             bool has=definition!=null;unitInfoRoot.gameObject.SetActive(has);detailLabel.gameObject.SetActive(!has);
             if(!has){detailLabel.font=itemFont;detailLabel.text="포켓몬을 선택하세요\n보드 또는 벤치의 포켓몬을\n클릭하면 정보를 볼 수 있습니다.";HideUnitInfoHint();return;}
             unitDetailHeader.text = shopCost.HasValue ? "상점 상품" : "배치 유닛";
             unitInfoTitle.text = natureTier > 0 ? SynergySystem.GuardianForm(natureTier) : KoreanInfo(definition.Id);
             unitDetailRank.sprite = unitRankSprites[Mathf.Clamp((int)rank, 1, 3) - 1];
-            unitDetailCost.text = $"{shopCost ?? definition.Cost}G";
+            unitCostIcon.sprite = synergyPanelIcons?.FindCostBallIcon(definition.Cost);
+            unitCostIcon.enabled = unitCostIcon.sprite != null;
+            unitDetailCost.text = saleGold.HasValue ? $"{saleGold.Value}G" : shopCost.HasValue ? $"{shopCost.Value}G" : "—";
             RenderUnitTraitLabels(definition, natureTier > 0);
             unitDetailHPText.text = $"{Number((float)hp)} / {Number((float)maxHP)}";
             if (shield > 0) unitDetailHPText.text += $" +{Number((float)shield)}";

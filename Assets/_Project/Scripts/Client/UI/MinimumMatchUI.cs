@@ -32,7 +32,7 @@ namespace PokeChess.Client.UI
         private MatchPhase? shopPhase;
         private readonly Dictionary<string,float> highlights=new Dictionary<string,float>();
         public string SelectedUnitId => selectedUnitId;
-        public bool ShopExpanded => IsOnlineMatch?OnlineShopExpanded:Player.HP>0 && !Player.IsEliminated && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat) && !shopCollapsed;
+        public bool ShopExpanded => IsOnlineMatch?OnlineShopExpanded:Player.HP>0 && !Player.IsEliminated && (Match.Phase==MatchPhase.Preparation || Match.Phase.IsBattlePhase()) && !shopCollapsed;
         public UnityEngine.UI.Button ShopButton(int slot) => shopCards[slot];
         public UnityEngine.UI.Button SellButton => sellButton;
         public UnityEngine.UI.Button XPButton => xpButton;
@@ -56,7 +56,7 @@ namespace PokeChess.Client.UI
             inventoryLabel=Label("InventoryText",canvasRect,"",12,new Vector2(190,80),new Vector2(-510,-88));
             detailLabel=Label("UnitDetailText",canvasRect,"Select your unit\nto inspect or sell",12,new Vector2(210,175),new Vector2(490,173));
             if (randomizedPlaytest)
-                ActionButton("New match",new Vector2(225,25),new Vector2(490,-18),ResetMatchUI);
+                ActionButton("New match",new Vector2(225,25),new Vector2(490,-18),ResetMatchUI).gameObject.SetActive(false);
             else
             {
                 Label("DebugTitle",canvasRect,"DEBUG / TEST CONTROLS",12,new Vector2(220,22),new Vector2(490,13));
@@ -160,7 +160,7 @@ namespace PokeChess.Client.UI
             Match.TransitionTo(MatchPhase.Starting);Match.TransitionTo(MatchPhase.Preparation);AttachMinimumMatch();
             Feedback("Full bench demo: buying a card merges A + B and creates space. Debug pool has 100 copies.");Render();
         }
-        private void Perform(Func<MatchCommandResult> action)
+        private void Perform(Func<MatchCommandResult> action, bool playSaleSound = false)
         {
             if(Simulation?.Status==SimulationStatus.Running)return;
             if(busy) return;
@@ -169,6 +169,7 @@ namespace PokeChess.Client.UI
             try
             {
                 var result=action();LastPurchase=result.Purchase;
+                if (result.Accepted && playSaleSound) PlayActionSound(ActionSoundKind.Purchase);
                 if(!result.Accepted) Feedback(result.Message);
                 else if(result.Purchase!=null)
                 {
@@ -176,7 +177,7 @@ namespace PokeChess.Client.UI
                     var purchase=result.Purchase;RecordContextRankUps(purchase.RankUps);highlights[purchase.Unit.InstanceId]=Time.unscaledTime+1.2f;
                     string rank=purchase.RankUps.Count==0 ? "" : " / rank "+string.Join(" -> ",purchase.RankUps.Select(e=>(int)e.Rank));
                     int returned=purchase.RankUps.Sum(e=>e.ReturnedItemIds.Count);
-                    Feedback("Bought "+catalog.Get(purchase.Unit.DefinitionId).DisplayName+rank+(returned==0 ? "." : "; "+returned+" item(s) returned.")+(purchase.MergeNextPreparation ? " Merge pending: next preparation (board copies required)." : "")+(Match.Phase==MatchPhase.Combat?" Current battle unchanged.":""));
+                    Feedback("Bought "+catalog.Get(purchase.Unit.DefinitionId).DisplayName+rank+(returned==0 ? "." : "; "+returned+" item(s) returned.")+(purchase.MergeNextPreparation ? " Merge pending: next preparation (board copies required)." : "")+(Match.Phase.IsBattlePhase()?" Current battle unchanged.":""));
                 }
                 else Feedback(result.Message);
             }
@@ -215,9 +216,9 @@ namespace PokeChess.Client.UI
         {
             if(IsOnlineMatch){if(selectedUnitId!=null)SendOnlineCommand(MatchCommandKind.Sell,c=>c.unitId=selectedUnitId);return;}
             if(localViewedPlayerId!="p1"||selectedUnitId==null) { Feedback("Select your unit first.");return; }
-            string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision));
+            string id=selectedUnitId;long revision=displayedPlacementRevision;Perform(()=>commands.Sell(id,revision), playSaleSound: true);
         }
-        public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat)) { shopCollapsed=!shopCollapsed;Render(); } }
+        public void ToggleShop() { if(IsOnlineMatch){shopCollapsed=!shopCollapsed;RenderOnlineMatch();return;}if(Simulation?.Status==SimulationStatus.Running)return;if(Player.HP>0&&!Player.IsEliminated&&(Match.Phase==MatchPhase.Preparation || Match.Phase.IsBattlePhase())) { shopCollapsed=!shopCollapsed;Render(); } }
         private Color BaseSlotColor(Slot slot) => slot.Placement.Kind==PlacementKind.Board ? new Color(.35f,.62f,.65f,.6f) : slot.Color;
 
         private Color PlacementTokenColor(string id, bool highlighted) => highlighted
@@ -239,7 +240,7 @@ namespace PokeChess.Client.UI
             if(commands==null) return;
             bool finished=Match.Phase==MatchPhase.Finished;
             shopFrame.gameObject.SetActive(!finished);resources.gameObject.SetActive(false);status.gameObject.SetActive(!finished);
-            surrenderButton.interactable=!Player.IsEliminated && Player.HP>0 && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat || Match.Phase==MatchPhase.Result);
+            surrenderButton.interactable=!Player.IsEliminated && Player.HP>0 && (Match.Phase==MatchPhase.Preparation || Match.Phase.IsBattlePhase());
             displayedShopRevision=Player.Shop.Revision;displayedPlacementRevision=Player.PlacementRevision;displayedLocked=Player.Shop.IsLocked;
             bool live=Player.HP>0 && !Player.IsEliminated;bool trade=commands.CanTrade && !busy && !RoundLoop.NextPreparationPending;
             header.text=(localViewedPlayerId=="p1"?"BOARD ":"WATCHING "+localViewedPlayerId+" · BOARD ")+ViewedPlayer.DeployedUnitCount+" / "+ViewedPlayer.BoardCapacity+"    |    "+(trade ? "BOARD OPEN" : "BOARD LOCKED");
@@ -249,7 +250,7 @@ namespace PokeChess.Client.UI
             string xp=Player.Level==commands.LevelRules.MaxLevel ? "MAX" : Player.XP+" / "+commands.LevelRules.XPToNextLevel(Player.Level);
             resources.text="GOLD "+Player.Gold+"   |   LV "+Player.Level+"   XP "+xp+"   |   STREAK W"+Player.WinStreak+" / L"+Player.LoseStreak;
             debugLabel.text=Match.Phase+" / Shop "+Player.Shop.Revision+" / Board "+Player.PlacementRevision;
-            shopToggle.interactable=live && (Match.Phase==MatchPhase.Preparation || Match.Phase==MatchPhase.Combat);ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
+            shopToggle.interactable=live && (Match.Phase==MatchPhase.Preparation || Match.Phase.IsBattlePhase());ButtonText(shopToggle,ShopExpanded ? "Collapse shop" : "Open shop ("+(Player.Shop.IsLocked ? "LOCKED" : "unlocked")+")");
             for(int i=0;i<shopCards.Length;i++)
             {
                 shopCards[i].gameObject.SetActive(ShopExpanded);var offer=Player.Shop.Slots[i];

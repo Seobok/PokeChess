@@ -51,18 +51,9 @@ namespace PokeChess.Client.UI
         private float UnitBarHeight(Transform unit)
         {
             var character = unit.Find("PokemonSprite")?.GetComponent<PokemonSpriteView>() ?? unit.GetComponentInChildren<PokemonSpriteView>();
-            var image = character?.CharacterImage;
-            float head = 0;
-            if (image != null && image.enabled && image.sprite != null)
-            {
-                var rect = image.rectTransform;
-                float scale = rect.rect.height / image.sprite.rect.height;
-                head = rect.anchoredPosition.y + image.sprite.bounds.max.y * image.sprite.pixelsPerUnit * scale;
-            }
             bool equipped = unit.Find("EquippedItems")?.gameObject.activeSelf == true;
-            float headEffect = unit.GetComponentInChildren<StatusSpriteView>()?.Top ?? 0;
             float clearance = equipped ? 29 : 15;
-            return Mathf.Max(UnitHealthHeight, Mathf.Max(head, headEffect) + clearance);
+            return Mathf.Ceil(Mathf.Max(UnitHealthHeight, (character?.StableOverheadHeight ?? 0) + clearance));
         }
 
         private void RenderUnitRank(Transform unit, int rank, int evolutionStage, bool visible = true)
@@ -75,13 +66,7 @@ namespace PokeChess.Client.UI
             badge.gameObject.SetActive(visible && rank > 0);
             if (!badge.gameObject.activeSelf) return;
             var stage = badge.transform.Find("EvolutionStage")?.GetComponent<UnityEngine.UI.Text>();
-            if (stage == null && evolutionStage > 0)
-                stage = Label("EvolutionStage", badge.transform, "", 8, new Vector2(22, 11), new Vector2(0, -13));
-            if (stage != null)
-            {
-                stage.text = $"E{evolutionStage}";
-                stage.gameObject.SetActive(evolutionStage > 0);
-            }
+            if (stage != null) stage.gameObject.SetActive(false);
             badge.transform.SetAsLastSibling();
         }
 

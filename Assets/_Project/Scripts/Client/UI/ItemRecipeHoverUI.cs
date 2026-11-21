@@ -10,7 +10,10 @@ namespace PokeChess.Client.UI
         private const float RecipeRowHeight = 25;
         private RectTransform componentRecipes;
         private UnityEngine.UI.Text componentRecipeTitle;
+        private UnityEngine.UI.Text componentRecipeStats;
         private UnityEngine.UI.Image componentRecipeIcon;
+        private RectTransform componentRecipeHeader;
+        private ComponentRecipeRow highlightedRecipe;
         private ComponentRecipeRow[] componentRecipeRows;
         private int hoveredComponentSlot;
         private string hoveredComponentItem;
@@ -24,15 +27,38 @@ namespace PokeChess.Client.UI
             public ItemDefinition Recipe;
         }
 
+        private void StyleItemSurface(UnityEngine.UI.Image image, Sprite sprite)
+        {
+            image.sprite = sprite;
+            image.type = UnityEngine.UI.Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = 6;
+            image.color = Color.white;
+        }
+
+        private void HighlightRecipe(ComponentRecipeRow row)
+        {
+            if (highlightedRecipe != null)
+                StyleItemSurface(highlightedRecipe.Rect.GetComponent<UnityEngine.UI.Image>(), itemIcons.recipeRow);
+            highlightedRecipe = row;
+            if (row != null)
+                StyleItemSurface(row.Rect.GetComponent<UnityEngine.UI.Image>(), itemIcons.recipeRowHover);
+        }
+
         private void BuildComponentRecipeHint()
         {
             componentRecipes = HudImage("ComponentRecipes", canvasRect, new Vector2(230, 0), Vector2.zero,
                 new Color(.045f, .085f, .15f, .98f)).rectTransform;
             componentRecipes.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
+            StyleItemSurface(componentRecipes.GetComponent<UnityEngine.UI.Image>(), itemIcons.tooltipPanel);
+            componentRecipeHeader = HudImage("Header", componentRecipes, new Vector2(218, 30), Vector2.zero, Color.white).rectTransform;
+            StyleItemSurface(componentRecipeHeader.GetComponent<UnityEngine.UI.Image>(), itemIcons.tooltipHeader);
             componentRecipeIcon = HudImage("ComponentIcon", componentRecipes, new Vector2(28, 28), Vector2.zero, Color.white);
             componentRecipeIcon.preserveAspect = true;
             componentRecipeTitle = RecipeListText("Component", componentRecipes, 13, new Vector2(171, 46), Vector2.zero);
             componentRecipeTitle.fontStyle = FontStyle.Bold;
+            componentRecipeTitle.color = Color.white;
+            componentRecipeTitle.rectTransform.sizeDelta = new Vector2(165, 26);
+            componentRecipeStats = RecipeListText("Stats", componentRecipes, 11, new Vector2(204, 38), Vector2.zero);
 
             componentRecipeRows = new ComponentRecipeRow[ItemCatalog.Components.Count];
             for (int i = 0; i < componentRecipeRows.Length; i++)
@@ -40,12 +66,14 @@ namespace PokeChess.Client.UI
                 var image = HudImage("Recipe_" + i, componentRecipes, new Vector2(componentRecipes.rect.width, RecipeRowHeight - 2),
                     Vector2.zero, new Color(.12f, .2f, .31f));
                 image.raycastTarget = true;
+                image.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 214);
+                StyleItemSurface(image, itemIcons.recipeRow);
                 var row = componentRecipeRows[i] = new ComponentRecipeRow { Rect = image.rectTransform };
                 row.Ingredient = HudImage("Ingredient", row.Rect, new Vector2(20, 20), new Vector2(-76, 0), Color.white);
                 row.Result = HudImage("Result", row.Rect, new Vector2(20, 20), new Vector2(-37, 0), Color.white);
                 row.Ingredient.preserveAspect = row.Result.preserveAspect = true;
-                ItemLabel("Plus", row.Rect, "+", 12, new Vector2(14, 22), new Vector2(-96, 0));
-                ItemLabel("Arrow", row.Rect, "→", 12, new Vector2(15, 22), new Vector2(-57, 0));
+                ItemLabel("Plus", row.Rect, "+", 12, new Vector2(14, 22), new Vector2(-96, 0)).color = new Color(.08f, .12f, .23f);
+                ItemLabel("Arrow", row.Rect, "→", 12, new Vector2(15, 22), new Vector2(-57, 0)).color = new Color(.08f, .12f, .23f);
                 row.Name = RecipeListText("Name", row.Rect, 12, new Vector2(119, 21), new Vector2(37, 0));
                 var events = row.Rect.gameObject.AddComponent<EventTrigger>();
                 AddSynergyRowEvent(events, EventTriggerType.PointerEnter, _ => ShowHoveredRecipe(row));
@@ -66,13 +94,18 @@ namespace PokeChess.Client.UI
         {
             var label = ItemLabel(name, parent, "", size, bounds, position);
             label.alignment = TextAnchor.MiddleLeft;
+            label.color = new Color(.08f, .12f, .23f);
             return label;
         }
 
         private void ShowComponentRecipeHint(ItemDefinition component, int slot, string instanceId, RectTransform equippedIcon = null)
         {
-            const float headerHeight = 53;
-            componentRecipeTitle.text = component.Name + "\n" + component.Description;
+            bool hasDescription = !string.IsNullOrWhiteSpace(component.Description) && component.Description.Trim() != "없음";
+            float headerHeight = hasDescription ? 78 : 43;
+            HighlightRecipe(null);
+            componentRecipeTitle.text = component.Name;
+            componentRecipeStats.text = hasDescription ? component.Description : "";
+            componentRecipeStats.gameObject.SetActive(hasDescription);
             componentRecipeIcon.sprite = itemIcons?.Get(component.Id);
             componentRecipeIcon.enabled = componentRecipeIcon.sprite != null;
             int count = 0;
@@ -95,15 +128,19 @@ namespace PokeChess.Client.UI
 
             if (count == 0)
             {
-                itemTooltipLabel.text = componentRecipeTitle.text;
+                itemTooltipLabel.text = component.Name + "\n" + component.Description;
                 itemTooltip.gameObject.SetActive(true);
                 itemTooltip.SetAsLastSibling();
                 return;
             }
             float height = headerHeight + count * RecipeRowHeight + 6;
             componentRecipes.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            componentRecipeTitle.rectTransform.anchoredPosition = new Vector2(19, height * .5f - 24);
-            componentRecipeIcon.rectTransform.anchoredPosition = new Vector2(-87, height * .5f - 24);
+            componentRecipeTitle.rectTransform.anchoredPosition = new Vector2(19, height * .5f - 22);
+            componentRecipeIcon.rectTransform.anchoredPosition = new Vector2(-87, height * .5f - 22);
+            componentRecipeStats.rectTransform.anchoredPosition = new Vector2(0, height * .5f - 56);
+            componentRecipeHeader.anchoredPosition = new Vector2(0, height * .5f - 22);
+            componentRecipeTitle.rectTransform.SetAsLastSibling();
+            componentRecipeIcon.rectTransform.SetAsLastSibling();
             for (int i = 0; i < count; i++)
                 componentRecipeRows[i].Rect.anchoredPosition =
                     new Vector2(0, height * .5f - headerHeight - (i + .5f) * RecipeRowHeight);
@@ -135,6 +172,7 @@ namespace PokeChess.Client.UI
 
         private void ShowHoveredRecipe(ComponentRecipeRow row)
         {
+            HighlightRecipe(row);
             var point = canvasRect.InverseTransformPoint(componentRecipes.TransformPoint(
                 new Vector2(componentRecipes.rect.xMax, row.Rect.anchoredPosition.y + row.Rect.rect.yMax)));
             UpdateItemRecipePreview(row.Recipe, point, besideRecipeList: true);
@@ -153,7 +191,10 @@ namespace PokeChess.Client.UI
         {
             var hit = data.pointerCurrentRaycast.gameObject;
             if (hit == null || !hit.transform.IsChildOf(itemRecipePreview))
+            {
+                HighlightRecipe(null);
                 UpdateItemRecipePreview(null, Vector2.zero);
+            }
         }
 
         private void EndRecipeDetailHover(PointerEventData data)

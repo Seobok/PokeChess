@@ -19,12 +19,12 @@ namespace PokeChess.Core.Tests
         [SetUp]
         public void Setup() => CreateFixture();
 
-        private void CreateFixture(bool longBattle = false, bool initializeShops = true,int startingHP=60)
+        private void CreateFixture(bool longBattle = false, bool initializeShops = true,int startingHP=60,bool wildRounds=false)
         {
             var stats = new PokemonStats(longBattle ? 100000 : 100, longBattle ? 1 : 20,
                 0, 1, 0, 0, 1, 2, 0, 0, .25f);
             catalog = new PokemonCatalog(new[] { new PokemonDefinition("test", "Test", 1, stats, "role", "skill") });
-            match = MatchStateFactory.CreateWithPool("clock", new[] { "p1", "p2" }, catalog, new[] { "test" }, rules:new MatchRules(startingHP:startingHP),matchSeed: 123);
+            match = MatchStateFactory.CreateWithPool("clock", new[] { "p1", "p2" }, catalog, new[] { "test" }, rules:new MatchRules(startingHP:startingHP,enableWildRounds:wildRounds),matchSeed: 123);
             match.TransitionTo(MatchPhase.Starting);
             match.TransitionTo(MatchPhase.Preparation);
             if (initializeShops)
@@ -37,23 +37,127 @@ namespace PokeChess.Core.Tests
             => SharedPoolSystem.RegisterUnit(match, catalog.CreateUnit(id, "test", owner, UnitRank.One, 0, placement), "test");
 
         [Test]
-        public void DefaultClockImmediatelyReturnsToFullPreparationAfterCombat()
+        public void DefaultClockWaitsFiveSecondsAfterCombatBeforeFullPreparation()
         {
             AddFighters();
             flow = new RoundFlowController(loop);
-            Assert.That(flow.Rules.ResultSeconds, Is.Zero);
+            Assert.That(flow.Rules.ResultSeconds, Is.EqualTo(5));
             flow.AdvanceTime(30);
             for (int i = 0; i < 10000 && match.Phase == MatchPhase.Combat; i++) flow.AdvanceTime(1d / 30);
             Assert.That(flow.Fault, Is.Null);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            Assert.That(match.RoundNumber, Is.EqualTo(1));
+            Assert.That(loop.Battles.All(battle => battle.IsComplete), Is.True);
+            Assert.That(flow.RemainingSeconds, Is.EqualTo(5));
+            flow.AdvanceTime(4.999);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            flow.AdvanceTime(.001);
             Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
             Assert.That(match.RoundNumber, Is.EqualTo(2));
             Assert.That(flow.RemainingSeconds, Is.EqualTo(30));
-            Assert.That(flow.ResultElapsedSeconds, Is.Zero);
+            Assert.That(flow.ResultElapsedSeconds, Is.EqualTo(5));
             Assert.That(One.LastEconomyRound, Is.EqualTo(1));
             Assert.That(One.LastAutomaticXPRound, Is.EqualTo(1));
             Assert.That(One.Shop.LastRefreshRound, Is.EqualTo(2));
             Assert.That(flow.RequestAdvance(1, MatchPhase.Result), Is.False);
         }
+        [Test]
+        public void ResultCountdownStartsOnlyAfterTheLastPairFinishes()
+        {
+            match = MatchStateFactory.CreateWithPool("last-pair", new[] { "p1", "p2", "p3", "p4" },
+                catalog, new[] { "test" }, matchSeed: 123);
+            match.TransitionTo(MatchPhase.Starting);
+            match.TransitionTo(MatchPhase.Preparation);
+            foreach (var player in match.Players)
+            {
+                new ShopSystem().RefreshForRound(match, player.PlayerId);
+                Add("unit-" + player.PlayerId, player.PlayerId, UnitPlacement.OnBoard(new BoardPosition(2, 0)));
+            }
+            loop = new LocalRoundCoordinator(match, catalog);
+            flow = new RoundFlowController(loop);
+            flow.AdvanceTime(30);
+            var first = loop.Battles[0];
+            foreach (var unit in first.Battle.Units.Where(unit => unit.TeamId == 1)) unit.SetVitals(0, 0);
+            flow.AdvanceTime(1d / 30);
+            Assert.That(first.IsComplete, Is.True);
+            Assert.That(loop.Battles[1].IsComplete, Is.False);
+            flow.AdvanceTime(1);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Combat));
+            Assert.That(flow.ResultElapsedSeconds, Is.Zero);
+            foreach (var pair in loop.Battles.Where(pair => !pair.IsComplete))
+                foreach (var unit in pair.Battle.Units.Where(unit => unit.TeamId == 1)) unit.SetVitals(0, 0);
+            flow.AdvanceTime(1d / 30);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            Assert.That(flow.RemainingSeconds, Is.EqualTo(5));
+            flow.AdvanceTime(4);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            flow.AdvanceTime(1);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
+            Assert.That(match.RoundNumber, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void IntermissionKeepsCombatEconomyAvailableWithoutChangingFinishedBattle()
+        {
+            AddFighters();
+            flow = new RoundFlowController(loop);
+            flow.AdvanceTime(30);
+            FinishCombat();
+            One.SetProgress(100, One.XP, One.Level);
+            var commands = new MatchCommandExecutor(match, catalog, "p1");
+            var battle = loop.Battle;
+            int combatUnitCount = battle.Units.Count;
+            Assert.That(commands.CanBuy, Is.True);
+            Assert.That(commands.Buy(0, One.Shop.Revision).Accepted, Is.True);
+            Assert.That(commands.Reroll(One.Shop.Revision).Accepted, Is.True);
+            Assert.That(commands.BuyXP().Accepted, Is.True);
+            Assert.That(commands.Lock(true, One.Shop.Revision).Accepted, Is.True);
+            Assert.That(loop.Battle, Is.SameAs(battle));
+            Assert.That(battle.Units.Count, Is.EqualTo(combatUnitCount));
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
+            Assert.That(match.RoundNumber, Is.EqualTo(1));
+            flow.AdvanceTime(5);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
+            Assert.That(match.RoundNumber, Is.EqualTo(2));
+            match.Pool.AssertConservation(match);
+        }
+
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(false, true)]
+        [TestCase(true, true)]
+        public void IncomeAtEndOfIntermissionUsesGoldAfterSalesAndSpending(bool spend, bool wild)
+        {
+            if (wild) CreateFixture(wildRounds: true);
+            AddFighters();
+            Add("sell", "p1", UnitPlacement.OnBench(0));
+            One.SetProgress(9, 0, 1);
+            flow = new RoundFlowController(loop);
+            flow.AdvanceTime(30);
+            FinishCombat();
+            Assert.That(One.Gold, Is.EqualTo(9));
+            Assert.That(One.LastEconomyRound, Is.Zero);
+            Assert.That(loop.LastResult.Income.Count, Is.Zero);
+            var commands = new MatchCommandExecutor(match, catalog, "p1");
+            Assert.That(commands.Sell("sell", One.PlacementRevision).Accepted, Is.True);
+            Assert.That(One.Gold, Is.EqualTo(10));
+            if (spend) Assert.That(commands.Reroll(One.Shop.Revision).Accepted, Is.True);
+            int balance = One.Gold;
+            flow.AdvanceTime(4.999);
+            Assert.That(One.Gold, Is.EqualTo(balance));
+            Assert.That(One.LastEconomyRound, Is.Zero);
+            flow.AdvanceTime(.001);
+            Assert.That(flow.Fault, Is.Null);
+            Assert.That(match.Phase, Is.EqualTo(MatchPhase.Preparation));
+            var income = loop.LastResult.Income["p1"];
+            Assert.That(income.GoldBefore, Is.EqualTo(balance));
+            Assert.That(income.Interest, Is.EqualTo(spend ? 0 : 1));
+            Assert.That(One.Gold, Is.EqualTo(income.GoldAfter));
+            Assert.That(One.LastEconomyRound, Is.EqualTo(1));
+            flow.AdvanceTime(0);
+            Assert.That(One.Gold, Is.EqualTo(income.GoldAfter));
+        }
+
         private void AddFighters()
         {
             Add("A", "p1", UnitPlacement.OnBoard(new BoardPosition(2, 0)));
@@ -66,7 +170,7 @@ namespace PokeChess.Core.Tests
                 flow.AdvanceTime(frameSeconds);
             Assert.That(flow.Fault, Is.Null);
             Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
-            Assert.That(loop.IsSettled, Is.True);
+            Assert.That(loop.ResultReady, Is.True);
         }
 
         [Test]
@@ -153,8 +257,8 @@ namespace PokeChess.Core.Tests
             Assert.That(loop.LastResult.Result, Is.EqualTo(result));
             Assert.That(loop.LastResult.EndTick, Is.Zero);
             Assert.That(flow.RemainingSeconds, Is.EqualTo(3));
-            Assert.That(loop.IsSettled, Is.True);
-            Assert.That(One.LastEconomyRound, Is.EqualTo(1));
+            Assert.That(loop.ResultReady, Is.True);
+            Assert.That(One.LastEconomyRound, Is.Zero);
         }
 
         [Test]
@@ -169,7 +273,7 @@ namespace PokeChess.Core.Tests
             Assert.That(match.RoundNumber, Is.EqualTo(2));
             Assert.That(flow.RemainingSeconds, Is.EqualTo(30));
             Assert.That(One.Shop.LastRefreshRound, Is.EqualTo(2));
-            Assert.That(One.Gold, Is.EqualTo(gold));
+            Assert.That(One.Gold, Is.EqualTo(gold + loop.LastResult.Income["p1"].TotalIncome));
             Assert.That(One.LastAutomaticXPRound, Is.EqualTo(1));
         }
 
@@ -218,16 +322,19 @@ namespace PokeChess.Core.Tests
             Assert.That(flow.RequestAdvance(1, MatchPhase.Result), Is.False);
             Assert.That(flow.RequestAdvance(1, MatchPhase.Preparation), Is.False);
             Assert.That(One.Shop.Revision, Is.EqualTo(revision));
-            Assert.That(One.Gold, Is.EqualTo(gold));
+            Assert.That(One.Gold, Is.EqualTo(gold + loop.LastResult.Income["p1"].TotalIncome));
             Assert.That(One.XP, Is.EqualTo(xp));
             Assert.That(match.RoundNumber, Is.EqualTo(2));
         }
 
         [Test]
-        public void FailedSettlementPausesUntilExplicitRetryAndThenDisplaysFullResult()
+        public void FailedIncomeAtEndOfIntermissionPausesUntilExplicitRetry()
         {
             Two.SetProgress(int.MaxValue, 0, 1);
             flow.AdvanceTime(30);
+            Assert.That(flow.Fault, Is.Null);
+            Assert.That(One.LastEconomyRound, Is.Zero);
+            flow.AdvanceTime(3);
             Assert.That(flow.Fault, Is.TypeOf<OverflowException>());
             Assert.That(match.Phase, Is.EqualTo(MatchPhase.Result));
             Assert.That(flow.IsTimerRunning, Is.False);
@@ -238,10 +345,10 @@ namespace PokeChess.Core.Tests
             Assert.That(flow.RequestAdvance(1, MatchPhase.Preparation), Is.False);
             Assert.That(flow.RequestAdvance(1, MatchPhase.Result), Is.True);
             Assert.That(flow.Fault, Is.Null);
-            Assert.That(loop.IsSettled, Is.True);
-            Assert.That(flow.RemainingSeconds, Is.EqualTo(3));
+            Assert.That(loop.ResultReady, Is.True);
+            Assert.That(flow.RemainingSeconds, Is.Zero);
             Assert.That(One.Gold, Is.EqualTo(10));
-            flow.AdvanceTime(3);
+            flow.AdvanceTime(0);
             Assert.That(match.RoundNumber, Is.EqualTo(2));
         }
 
@@ -335,9 +442,10 @@ namespace PokeChess.Core.Tests
             {
                 flow.AdvanceTime(30);
                 FinishCombat();
-                Assert.That(One.LastEconomyRound, Is.EqualTo(round));
+                Assert.That(One.LastEconomyRound, Is.EqualTo(round - 1));
                 Assert.That(One.LastAutomaticXPRound, Is.EqualTo(round));
                 flow.AdvanceTime(3);
+                Assert.That(One.LastEconomyRound, Is.EqualTo(round));
                 Assert.That(match.RoundNumber, Is.EqualTo(round + 1));
                 Assert.That(One.Shop.LastRefreshRound, Is.EqualTo(round + 1));
                 Assert.That(flow.RemainingSeconds, Is.EqualTo(30));

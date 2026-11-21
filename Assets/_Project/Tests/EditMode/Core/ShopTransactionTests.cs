@@ -180,7 +180,7 @@ namespace PokeChess.Core.Tests
             Assert.DoesNotThrow(()=>new PokemonCatalog(new[]{Definition(2,"base",new[]{new EvolutionOption("next",0)}),Definition(2,"next")}));
         }
         [TestCase(MatchPhase.Waiting)] [TestCase(MatchPhase.Starting)]
-        [TestCase(MatchPhase.Result)] [TestCase(MatchPhase.Finished)]
+        [TestCase(MatchPhase.Finished)]
         public void AllOtherPhasesRejectTrades(MatchPhase phase)
         {
             var other=MatchStateFactory.Create("other",new[]{"p1","p2"});

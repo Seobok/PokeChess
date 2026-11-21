@@ -14,14 +14,11 @@ namespace PokeChess.Client.UI
         private readonly RectTransform[] boardTiles = new RectTransform[BoardColumns * BoardRows];
         private readonly Sprite[] deployOutlines = new Sprite[BoardColumns * BoardRows];
         private readonly Sprite[] benchIdleSprites = new Sprite[9];
-        private Sprite validTarget, blockedTarget, benchSlotActive, sellIdle, sellActive;
-        private UnityEngine.UI.Image sellDrop;
-        private UnityEngine.UI.Text sellDropPrice;
+        private Sprite validTarget, blockedTarget, benchSlotActive;
         private PokemonSpriteView draggedSprite;
         private Slot dragTarget;
         private int blockedBoardIndex = -1, dragBenchOrigin = -1;
         private bool dragTargetValid, sellHovered;
-        private int? dragSaleGold;
 
         private static Sprite LoadPlacementArt(string name) => Resources.Load<Sprite>("BoardBenchSell/" + name);
 
@@ -30,7 +27,6 @@ namespace PokeChess.Client.UI
             validTarget = LoadPlacementArt("BoardValidTarget");
             blockedTarget = LoadPlacementArt("BoardBlockedTarget");
             benchSlotActive = LoadPlacementArt("BenchSlotActive");
-            sellActive = LoadPlacementArt("SellDropActive");
 
             var root = UiPrefab.Instantiate("PlacementArt", canvasRect);
             root.SetSiblingIndex(1);
@@ -68,9 +64,6 @@ namespace PokeChess.Client.UI
                 foreach (Transform child in slot.Rect) child.gameObject.SetActive(false);
             }
 
-            sellDrop = UiPrefab.Get<UnityEngine.UI.Image>(root, "SellDropZone");
-            sellDropPrice = UiPrefab.Get<UnityEngine.UI.Text>(sellDrop.transform, "Price");
-            sellIdle = sellDrop.sprite;
             return root;
         }
 
@@ -99,8 +92,17 @@ namespace PokeChess.Client.UI
             ghost.SetAsLastSibling();
         }
 
-        private bool HitSellDrop(Vector2 point) => sellDrop != null && sellDrop.gameObject.activeInHierarchy &&
-            RectTransformUtility.RectangleContainsScreenPoint(sellDrop.rectTransform, point, null);
+        private bool HitSellDrop(Vector2 point)
+        {
+            if (shopFrame == null || !shopFrame.gameObject.activeInHierarchy) return false;
+            var toolbar = shopFrame.Find("ShopToolbar") as RectTransform;
+            if (toolbar == null || !toolbar.gameObject.activeInHierarchy) return false;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(shopFrame, point, null, out var local)) return false;
+            // Cover the visible shop footprint, including gaps between cards and the toolbar.
+            float halfWidth = toolbar.rect.width * .5f;
+            float top = toolbar.anchoredPosition.y + toolbar.rect.height * .5f;
+            return UnityEngine.Rect.MinMaxRect(-halfWidth, 0, halfWidth, top).Contains(local);
+        }
 
         private bool CanSellDraggedUnit() => commands.CanSell(dragged) && Player.PlacementRevision == dragRevision &&
             !busy && !RoundLoop.NextPreparationPending && Simulation?.Status != SimulationStatus.Running;
@@ -114,7 +116,7 @@ namespace PokeChess.Client.UI
             if (owner.guardianTile != null && owner.guardianTile.column == point.Column && owner.guardianTile.row == point.Row ||
                 owner.rockTiles?.Any(tile => tile.column == point.Column && tile.row == point.Row) == true)
                 return false;
-            return owner.units.Count(u => u.placement == PlacementKind.Board) < owner.level ||
+            return owner.units.Count(u => u.placement == PlacementKind.Board) < owner.BoardCapacity ||
                 owner.units.Any(u => u.placement == PlacementKind.Board && u.column == point.Column && u.row == point.Row);
         }
 
@@ -122,7 +124,6 @@ namespace PokeChess.Client.UI
         {
             dragTarget = destination;
             dragTargetValid = valid;
-            dragSaleGold = price;
             sellHovered = HitSellDrop(point);
             blockedBoardIndex = -1;
             if (destination == null && !sellHovered)
@@ -139,13 +140,12 @@ namespace PokeChess.Client.UI
         {
             dragTarget = null;
             blockedBoardIndex = dragBenchOrigin = -1;
-            dragSaleGold = null;
             sellHovered = false;
         }
 
         private void RenderPlacementArt()
         {
-            if (sellDrop == null) return;
+            if (boardMarks[0] == null) return;
             var owner = IsOnlineMatch ? onlineService.LocalMatchState : null;
             var phase = IsOnlineMatch ? onlineService.PublicState?.phase : Match?.Phase;
             bool ownBoard = IsOnlineMatch
@@ -176,11 +176,6 @@ namespace PokeChess.Client.UI
                 benchSlots[i].color = i == targetBench && !dragTargetValid ? new Color(1f, .4f, .4f) : Color.white;
             }
             foreach (var slot in slots) slot.Graphic.enabled = IsItemDragging && draggedItem != EvolutionDragId;
-            sellDrop.gameObject.SetActive(canInteract && (phase == MatchPhase.Preparation || phase == MatchPhase.Combat));
-            bool saleReady = IsDragging && dragSaleGold.HasValue;
-            sellDrop.sprite = saleReady ? sellActive : sellIdle;
-            sellDrop.color = saleReady && sellHovered ? new Color(1f, .97f, .73f) : Color.white;
-            sellDropPrice.text = saleReady ? $"+{dragSaleGold.Value}G" : "";
             if (IsDragging && draggedSprite != null && draggedSprite.ShowIdle(Time.unscaledTimeAsDouble))
             {
                 ghost.GetComponent<UnityEngine.UI.Image>().enabled = false;

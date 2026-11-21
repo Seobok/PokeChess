@@ -7,6 +7,8 @@ namespace PokeChess.Core.Match
 {
     [Serializable] public sealed class CombatUnitView
     {
+        public float damageDealt, damageTaken;
+        public BattleDamageBreakdown damageDealtTypes, damageTakenTypes;
         public string id,definitionId,owner,target;public int team,rank,column,row,moveColumn,moveRow,duelistStacks,trackerStacks;
         public bool assassinReady;
         public int sorcererTier, sorcererStacks;
@@ -91,6 +93,7 @@ namespace PokeChess.Core.Match
         public bool PreparationReady=>rounds.PreparationReady;
         public bool NextPreparationPending=>rounds.NextPreparationPending;
         public bool IsSettled=>rounds.IsSettled;
+        public bool ResultReady=>rounds.ResultReady;
         public int TickRate=>rounds.TickRate;
         public OnlineCombatRuntime(LocalRoundCoordinator rounds,HostCommandProcessor commands,RoundFlowRules rules=null)
         {this.rounds=rounds;this.commands=commands;Clock=new RoundFlowController(this,rules);}
@@ -196,7 +199,7 @@ namespace PokeChess.Core.Match
                 pathProjectiles=battle?.PathProjectiles.Active.Select(PathProjectile).ToArray()??Array.Empty<CombatPathProjectileView>(),
                 units=battle==null?Array.Empty<CombatUnitView>():battle.Units.Select(u=>{
                     var a=pair.GetActionRuntime(u.UnitInstanceId);var cast=a.SkillCast;var effective=u.EffectiveStats;
-                    return new CombatUnitView{id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
+                    return new CombatUnitView{damageDealtTypes=battle.DamageDealtTypes(u.UnitInstanceId),damageTakenTypes=battle.DamageTakenTypes(u.UnitInstanceId),damageDealt=battle.DamageDealtBy(u.UnitInstanceId),damageTaken=battle.DamageTakenBy(u.UnitInstanceId),id=u.UnitInstanceId,definitionId=u.DefinitionId,owner=u.OwnerPlayerId,team=u.TeamId,rank=(int)u.Rank,column=u.Position.Column,row=u.Position.Row,
                         hp=u.CurrentHP,maxHP=u.Stats.MaxHP,energy=u.CurrentEnergy,maxEnergy=u.Stats.MaxEnergy,shield=u.CurrentShield,onBoard=u.IsOnBoard,action=u.ActionState,target=cast?.TargetId??u.CurrentTargetId,
                         assassinReady=battle.Synergies.AssassinAttackReady(u),
                         sorcererTier=battle.Synergies.Tier(u,SynergyTraits.Sorcerer),sorcererStacks=battle.Synergies.SorcererStacks(u),

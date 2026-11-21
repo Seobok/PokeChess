@@ -32,7 +32,7 @@ namespace PokeChess.Core.Match
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation && !(buying && match.Phase == MatchPhase.Combat))
+            if (match.Phase != MatchPhase.Preparation && !(buying && match.Phase.IsBattlePhase()))
                 throw new InvalidOperationException("Trades require Preparation.");
             return player;
         }
@@ -58,7 +58,7 @@ namespace PokeChess.Core.Match
             if (definition.Cost != slot.Cost || slot.Cost < 1 || slot.Cost > 5)
                 throw new InvalidOperationException("Shop cost does not match catalog.");
             if (player.Gold < slot.Cost) throw new InvalidOperationException("Insufficient gold.");
-            bool benchOnly = match.Phase == MatchPhase.Combat;
+            bool benchOnly = match.Phase.IsBattlePhase();
             long revision = checked(shop.Revision + 1);
             var matchingSlots = new[] { slotIndex }.Concat(shop.Slots.Where(other =>
                 other.Index != slotIndex && other.DefinitionId == slot.DefinitionId &&
@@ -133,7 +133,7 @@ namespace PokeChess.Core.Match
             var unit = player.GetUnit(unitId);
             if (unit.Placement.Kind != PlacementKind.Board && unit.Placement.Kind != PlacementKind.Bench)
                 throw new InvalidOperationException("Only board or bench units can be sold.");
-            if(match.Phase==MatchPhase.Combat && unit.Placement.Kind!=PlacementKind.Bench)
+            if(match.Phase.IsBattlePhase() && unit.Placement.Kind!=PlacementKind.Bench)
                 throw new InvalidOperationException("Combat sales require a bench unit.");
             int price = SalePrice(unit);
             int gold = checked(player.Gold + price);

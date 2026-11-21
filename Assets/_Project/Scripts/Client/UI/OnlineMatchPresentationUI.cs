@@ -32,7 +32,7 @@ namespace PokeChess.Client.UI
             if (synchronized && pub.hasPhaseDeadline)
             {
                 remaining = onlineService.PhaseRemainingSeconds;
-                duration = pub.phase == MatchPhase.Preparation ? 30 : pub.wildRound ? 12 : 3;
+                duration = pub.phase == MatchPhase.Preparation ? 30 : RoundFlowRules.DefaultResultSeconds;
             }
             else if (synchronized && hasBattle)
             {
@@ -43,6 +43,11 @@ namespace PokeChess.Client.UI
                 duration = (endTick - (overtime ? frame.overtimeTick : 0)) / (double)frame.tickRate;
             }
             HudTimerProgress = remaining.HasValue && duration > 0 ? Mathf.Clamp01((float)(remaining.Value / duration)) : 0;
+            // Results can arrive together with the following preparation snapshot.
+            int resultRound = pub.resultRound > 0 ? pub.resultRound :
+                pub.phase == MatchPhase.Preparation ? pub.round - 1 : pub.round;
+            RecordRoundLosses(pub.matchId, resultRound, (pub.results ?? Array.Empty<PublicRoundResult>())
+                .Where(result => resultRound > 0 && result.outcome == "Loss").Select(result => result.playerId));
             RenderRoundStrip(pub.round, true, remaining);
             RenderHudTimer(pub.phase != MatchPhase.Finished && (pub.phase != MatchPhase.Combat || hasBattle),
                 HudTimerKind == "Overtime" || pub.phase == MatchPhase.Preparation && remaining <= 5);
@@ -50,13 +55,13 @@ namespace PokeChess.Client.UI
                 : !synchronized ? "Synchronizing…"
                 : pub.phase == MatchPhase.Combat && !hasBattle ? "Waiting for battle" : "");
             RenderBoardCapacity(synchronized && pub.phase == MatchPhase.Preparation && watchingOwnBoard && !owner.eliminated,
-                owner.units.Count(u => u.placement == PlacementKind.Board), owner.level);
+                owner.units.Count(u => u.placement == PlacementKind.Board), owner.BoardCapacity);
             RenderOnlineSpectators(owner, pub, synchronized, frame);
         }
         private void RenderOnlineCombat(OwnerMatchState owner,PublicMatchState pub)
         {
             var playback=onlineService.Combat;var frame=playback.Current;
-            bool show=frame!=null&&frame.round==pub.round&&(pub.phase==MatchPhase.Combat||playback.IsPlaying);
+            bool show=frame!=null&&frame.round==pub.round&&(pub.phase.IsBattlePhase()||playback.IsPlaying);
             combatRoot.gameObject.SetActive(show);if(!show)return;
             if(onlineBattleId!=frame.battleId){ClearOnlineFighters();onlineBattleId=frame.battleId;}
             combatInfo.text=string.Empty;
@@ -133,7 +138,7 @@ namespace PokeChess.Client.UI
             bool eliminated=own.eliminated&&!final&&!eliminationDismissed&&!playing;
             eliminationRoot.gameObject.SetActive(eliminated);
             if(eliminated){eliminationInfo.text="ELIMINATED · PLACEMENT #"+own.placement+"\n\nRound "+own.eliminationRound+" · "+own.eliminationReason+"\nThe remaining match continues.";eliminationRoot.SetAsLastSibling();}
-            resultRoot.gameObject.SetActive(!final&&!eliminated&&!owner.eliminated&&!playing&&!pub.wildRound&&pub.phase==MatchPhase.Result);
+            resultRoot.gameObject.SetActive(false);
             if(resultRoot.gameObject.activeSelf){
                 var result=pub.results.FirstOrDefault(r=>r.playerId==owner.playerId);var reward=owner.reward;
                 resultRoot.sizeDelta=new Vector2(600,resultExpanded?360:230);resultRoot.anchoredPosition=new Vector2(0,105);float shift=resultExpanded?65:0;

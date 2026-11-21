@@ -4,11 +4,12 @@ namespace PokeChess.Core.Match
 {
     public sealed class RoundFlowRules
     {
+        public const double DefaultResultSeconds = 5;
         public double PreparationSeconds { get; }
         public double ResultSeconds { get; }
         public int MaxCombatTicksPerUpdate { get; }
 
-        public RoundFlowRules(double preparationSeconds = 30, double resultSeconds = 0,
+        public RoundFlowRules(double preparationSeconds = 30, double resultSeconds = DefaultResultSeconds,
             int maxCombatTicksPerUpdate = 60)
         {
             ValidateDuration(preparationSeconds, nameof(preparationSeconds));

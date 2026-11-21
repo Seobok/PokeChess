@@ -246,7 +246,7 @@ namespace PokeChess.Core.Tests
 
         [Test] public void RecipesCoverAllUnorderedPairsAndCompletedStatsStack()
         {
-            Assert.That(ItemCatalog.Components.Count, Is.EqualTo(8));
+            Assert.That(ItemCatalog.Components.Count, Is.EqualTo(9));
             var results = ItemCatalog.Components.SelectMany(first => ItemCatalog.Components.Select(second =>
             {
                 var recipe = ItemCatalog.Recipe(first.Id, second.Id);
@@ -254,7 +254,7 @@ namespace PokeChess.Core.Tests
                 Assert.That(recipe, Is.SameAs(ItemCatalog.Recipe(second.Id, first.Id)));
                 return recipe.Id;
             }));
-            Assert.That(results.Distinct().Count(), Is.EqualTo(36));
+            Assert.That(results.Where(id => id != null).Distinct().Count(), Is.EqualTo(45));
 
             var catalog = Catalog();
             var baseStats = catalog.Get("bulbasaur").BaseStats;
@@ -336,7 +336,7 @@ namespace PokeChess.Core.Tests
             Assert.That(host.PublicSnapshot().wildRound, Is.True);
         }
         [Test] public void WildScheduleStartsWithThreeEncountersAndContinuesEveryFiveRounds()
-        {Assert.That(Enumerable.Range(1,40).Where(WildRoundSystem.IsWildRound),Is.EqualTo(new[]{1,2,3,9,14,19,24,29,34,39}));}
+        {Assert.That(Enumerable.Range(1,40).Where(WildRoundSystem.IsWildRound),Is.EqualTo(new[]{1,2,3,9,15,21,27,33,39}));}
         [Test] public void LivingWildBattleFinishesAndCanAdvanceIntoPvP()
         {
             var f=Match(units:true);Assert.That(f.rounds.StartCombat(1),Is.True);

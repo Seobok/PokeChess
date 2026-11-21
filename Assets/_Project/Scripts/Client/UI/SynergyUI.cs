@@ -168,9 +168,11 @@ namespace PokeChess.Client.UI
             var counts = own == null ? SynergyPreparation.Count(ViewedPlayer,catalog) : battle.Synergies.TeamCounts(own.TeamId);
             int earthTier=counts.First(c=>c.TraitId==SynergyTraits.Earth).Tier;
             var preview=Match.Phase==MatchPhase.Preparation&&earthTier>0?SynergyPreparation.PreparationRocks(ViewedPlayer,catalog):Enumerable.Empty<BoardPosition>();
+            preview = preview.ToArray();
             RenderEarthPreparation(preview);
             RenderNatureGuardian(Match.Phase == MatchPhase.Preparation ? SynergyPreparation.PreparationGuardian(ViewedPlayer, catalog) : null,
                 counts.First(count => count.TraitId == SynergyTraits.Nature).Tier);
+            RenderPreparationSummonEffects(Match.Phase == MatchPhase.Preparation, Match.MatchId + ":" + localViewedPlayerId, preview, natureGuardianTile, natureGuardianTier);
             int venomTier=counts.First(c=>c.TraitId==SynergyTraits.Venom).Tier;
             int samples=ViewedPlayer.Synergy.VenomSamples;
             int research=own!=null?battle.Synergies.VenomResearch(own.TeamId):venomTier>=6&&samples>=120?120:venomTier>=4&&samples>=40?40:venomTier>=2&&samples>=10?10:0;
@@ -217,11 +219,13 @@ namespace PokeChess.Client.UI
             var preview=pub.phase==MatchPhase.Preparation&&earthTier>0&&progress!=null&&onlineService.WatchingPlayerId==progress.playerId
                 ?(progress.rockTiles??Array.Empty<CombatCellView>()).Where(p=>!progress.units.Any(u=>u.placement==PlacementKind.Board&&u.column==p.column&&u.row==p.row)).Take(earthTier>=4?2:1).Select(p=>new BoardPosition(p.column,p.row))
                 :Enumerable.Empty<BoardPosition>();
+            preview = preview.ToArray();
             RenderEarthPreparation(preview);
             var guardian = pub.phase == MatchPhase.Preparation && progress != null &&
                 onlineService.WatchingPlayerId == progress.playerId ? progress.guardianTile : null;
             RenderNatureGuardian(guardian != null ? new BoardPosition(guardian.column, guardian.row) : (BoardPosition?)null,
                 counts.First(count => count.TraitId == SynergyTraits.Nature).Tier);
+            RenderPreparationSummonEffects(pub.phase == MatchPhase.Preparation, pub.matchId + ":" + onlineService.WatchingPlayerId, preview, natureGuardianTile, natureGuardianTier);
             if (progress != null)
             {
                 int tier = watching == progress.playerId ? counts.First(c => c.TraitId == SynergyTraits.Mystic).Tier : 0;

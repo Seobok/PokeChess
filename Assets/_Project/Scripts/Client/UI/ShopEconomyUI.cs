@@ -12,6 +12,9 @@ namespace PokeChess.Client.UI
         private sealed class ShopCardView {
             public UnityEngine.UI.Text Name,Price,Types;
             public UnityEngine.UI.Image Frame, PriceBadge, TraitBadge;
+            public readonly UnityEngine.UI.Image[] TraitIcons = new UnityEngine.UI.Image[3];
+            public readonly UnityEngine.UI.Text[] TraitNames = new UnityEngine.UI.Text[3];
+            public readonly UnityEngine.UI.Text[] TraitGlyphs = new UnityEngine.UI.Text[3];
             public RectTransform Portrait;
             public ShopSlot PurchasedSlot;
             public int PurchasePrice, PurchaseQuantity;
@@ -41,7 +44,7 @@ namespace PokeChess.Client.UI
         private readonly UnityEngine.UI.Image[] shopXpSegments = new UnityEngine.UI.Image[7];
         private readonly EconomyRules shopEconomyRules = new EconomyRules();
         private UnityEngine.UI.Text economyXPText, economyInterest;
-        private UnityEngine.UI.Image shopLockIcon, shopToggleIcon;
+        private UnityEngine.UI.Image shopLockIcon, shopLockedIcon, shopToggleIcon;
         private Sprite shopXpEmpty, shopXpFilled, shopEmptyFrame;
 
         private static Sprite ShopSprite(string name) => Resources.Load<Sprite>("ShopEconomy/Shop" + name);
@@ -78,6 +81,7 @@ namespace PokeChess.Client.UI
             economyDelta = UiPrefab.Get<UnityEngine.UI.Text>(gold, "EconomyDelta");
             BindShopOddsAndEconomyTooltips(level, gold);
             shopLockIcon = UiPrefab.Get<UnityEngine.UI.Image>(lockButton.transform, "LockIcon");
+            shopLockedIcon = UiPrefab.Get<UnityEngine.UI.Image>(lockButton.transform, "LockedIcon");
             shopToggleIcon = UiPrefab.Get<UnityEngine.UI.Image>(shopToggle.transform, "CollapseIcon");
 
             for (int i = 0; i < shopCards.Length; i++)
@@ -96,6 +100,14 @@ namespace PokeChess.Client.UI
                     Types = UiPrefab.Get<UnityEngine.UI.Text>(root, "SynergyBadge/Types"),
                     PurchaseEffect = UiPrefab.Get<UnityEngine.UI.Image>(root, "PurchaseEffect")
                 };
+
+                for (int row = 0; row < shopViews[i].TraitNames.Length; row++)
+                {
+                    string path = $"SynergyBadge/TraitRow_{row}";
+                    shopViews[i].TraitIcons[row] = UiPrefab.Get<UnityEngine.UI.Image>(root, path + "/Icon");
+                    shopViews[i].TraitNames[row] = UiPrefab.Get<UnityEngine.UI.Text>(root, path + "/Name");
+                    shopViews[i].TraitGlyphs[row] = UiPrefab.Get<UnityEngine.UI.Text>(root, path + "/Glyph");
+                }
 
                 var hover = button.gameObject.AddComponent<UnitHoverTarget>();
                 hover.View = this;
@@ -173,14 +185,17 @@ namespace PokeChess.Client.UI
                 shopXpSegments[i].sprite = i < filled ? shopXpFilled : shopXpEmpty;
             economyGold.text = $"{gold} G";
             int interest = Math.Min(gold / shopEconomyRules.GoldPerInterest, shopEconomyRules.MaxInterest);
-            economyInterest.text = $"이자 +{interest}";
+            economyInterest.text = $"+{interest}";
             economyStreak.text = wins > 0 ? $"{wins}연승" : losses > 0 ? $"{losses}연패" : "–";
             economyDelta.text = Time.unscaledTime < economyMessageUntil ? economyMessage : "";
             economyDelta.color = economyMessage.StartsWith("-") ? new Color32(255, 168, 117, 255) : new Color32(108, 255, 187, 255);
             ButtonText(xpButton, max ? "XP 최대" : $"XP 구매\n{levels.PurchaseGoldCost}G");
-            ButtonText(rerollButton, freeReroll ? "새로고침\n무료" : $"새로고침\n{shopRules.RerollGoldCost}G");
-            ButtonText(lockButton, locked ? "잠김" : "열림");
-            shopLockIcon.color = locked ? new Color32(156, 92, 0, 255) : ShopInk;
+            ButtonText(rerollButton, freeReroll ? "0G" : $"{shopRules.RerollGoldCost}G");
+            ButtonText(lockButton, "");
+            shopLockIcon.rectTransform.anchoredPosition = Vector2.zero;
+            shopLockIcon.color = shopLockedIcon.color = Color.white;
+            shopLockIcon.enabled = !locked;
+            shopLockedIcon.enabled = locked;
             shopToggleIcon.rectTransform.localRotation = Quaternion.Euler(0, 0, ShopExpanded ? 0 : 180);
             foreach (var button in new[] { xpButton, rerollButton, lockButton })
                 button.gameObject.SetActive(ShopExpanded);
@@ -200,21 +215,28 @@ namespace PokeChess.Client.UI
             sprite.ShowIdle(Time.unscaledTimeAsDouble);
         }
 
-        private static void RenderShopCardTraits(ShopCardView card, PokemonDefinition definition)
+        private void RenderShopCardTraits(ShopCardView card, PokemonDefinition definition)
         {
-            card.Types.text = TraitList(definition);
-            // Keep origin colors inside the badge. The frame is driven by the offer cost.
-            switch (definition.TraitIds.FirstOrDefault())
+            string family = SynergyTraits.Family(definition.Id);
+            var traits = definition.TraitIds.Select(id => (key: id, name: TraitName(id), unique: -1))
+                .Concat(UniqueSynergies.Select((data, index) => (data, index))
+                    .Where(entry => entry.data.species.Any(id => SynergyTraits.Family(id) == family))
+                    .Select(entry => (key: "unique-" + entry.index, name: entry.data.name, unique: entry.index)))
+                .ToArray();
+            card.Types.text = string.Join(" / ", traits.Select(trait => trait.name));
+            card.TraitBadge.enabled = false;
+            for (int row = 0; row < card.TraitNames.Length; row++)
             {
-                case SynergyTraits.Nature: card.TraitBadge.color = new Color32(186, 238, 176, 255); break;
-                case SynergyTraits.Flame: card.TraitBadge.color = new Color32(255, 194, 187, 255); break;
-                case SynergyTraits.Torrent: card.TraitBadge.color = new Color32(180, 225, 255, 255); break;
-                case SynergyTraits.Storm: card.TraitBadge.color = new Color32(255, 237, 163, 255); break;
-                case SynergyTraits.Mystic: card.TraitBadge.color = new Color32(230, 197, 252, 255); break;
-                case SynergyTraits.Earth: card.TraitBadge.color = new Color32(238, 218, 181, 255); break;
-                case SynergyTraits.Venom: card.TraitBadge.color = new Color32(221, 204, 248, 255); break;
-                case SynergyTraits.Adversity: card.TraitBadge.color = new Color32(255, 212, 171, 255); break;
-                default: card.TraitBadge.color = new Color32(219, 229, 244, 255); break;
+                bool present = row < traits.Length;
+                card.TraitNames[row].transform.parent.gameObject.SetActive(present);
+                if (!present) continue;
+                var trait = traits[row];
+                card.TraitNames[row].text = trait.name;
+                var icon = card.TraitIcons[row];
+                icon.sprite = synergyPanelIcons?.Find(trait.key);
+                icon.enabled = icon.sprite != null;
+                card.TraitGlyphs[row].gameObject.SetActive(!icon.enabled);
+                card.TraitGlyphs[row].text = SynergyMark(trait.key, trait.name);
             }
         }
 
@@ -274,7 +296,7 @@ namespace PokeChess.Client.UI
             for(int i=0;i<shopCards.Length;i++) {
                 var c=shopViews[i];var offer=Player.Shop.Slots[i];
                 if(offer.IsEmpty) {
-                    c.Name.text=ReferenceEquals(c.PurchasedSlot,offer)?"구매 완료":"빈 슬롯";c.Price.text=c.Types.text="";
+                    c.Name.text="";c.Price.text=c.Types.text="";
                     ApplyShopCardArt(i, 0);continue;
                 }
                 c.PurchasedSlot=null;var d=catalog.Get(offer.DefinitionId);

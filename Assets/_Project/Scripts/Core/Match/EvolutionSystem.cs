@@ -43,7 +43,7 @@ namespace PokeChess.Core.Match
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.HP == 0 || player.IsEliminated) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation && match.Phase != MatchPhase.Combat)
+            if (match.Phase != MatchPhase.Preparation && !match.Phase.IsBattlePhase())
                 throw new InvalidOperationException("Requires Preparation or Combat.");
             if (player.EvolutionRevision != expectedEvolutionRevision || player.PlacementRevision != expectedPlacementRevision)
                 throw new InvalidOperationException("Stale evolution state.");

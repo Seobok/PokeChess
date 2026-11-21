@@ -202,7 +202,9 @@ namespace PokeChess.Core.Match
             foreach(var node in plan.Final) { node.Unit.ApplyRankUnchecked(node.Rank);node.Unit.ApplyPlacementUnchecked(node.Placement); }
             PlacementRevision=revision;
         }
-        public int BoardCapacity => Level;
+        private int ItemDeploymentBonus => ItemCatalog.DeploymentBonus(
+            inventoryItems.Concat(units.SelectMany(unit => unit.ItemInstanceIds)));
+        public int BoardCapacity => Level + ItemDeploymentBonus;
         public int DeployedUnitCount => units.Count(u => u.Placement.Kind == PlacementKind.Board);
         public int RemainingDeploymentCapacity => BoardCapacity - DeployedUnitCount;
         // Includes every cell, row first, then column. Placement remains the only store.
@@ -285,7 +287,7 @@ namespace PokeChess.Core.Match
             if (level < 1 || level > Rules.MaxLevel) throw new ArgumentOutOfRangeException(nameof(level));
             if (level == Rules.MaxLevel && xp != 0)
                 throw new ArgumentException("Maximum level must have zero XP.", nameof(xp));
-            if (DeployedUnitCount > level)
+            if (DeployedUnitCount > level + ItemDeploymentBonus)
                 throw new InvalidOperationException("Level cannot be below the deployed unit count.");
             Gold = gold;
             XP = xp;

@@ -10,7 +10,7 @@ namespace PokeChess.Core.Match
     public static class WildRoundSystem
     {
         public static bool IsWild(MatchState match)=>match.Rules.EnableWildRounds&&IsWildRound(match.RoundNumber);
-        public static bool IsWildRound(int round)=>round>=1&&(round<=3||round>=9&&(round-9)%5==0);
+        public static bool IsWildRound(int round)=>round>=1&&(round<=3||round>=9&&(round-9)%6==0);
         public static int ItemRewardCount(int round)
             => !IsWildRound(round) ? 0 : round <= 2 ? 1 : round == 3 ? 2 : 3;
         public static int EnemyCount(int round)=>round==1?2:round<=3?3:1;

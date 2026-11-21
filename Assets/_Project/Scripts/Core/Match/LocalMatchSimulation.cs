@@ -63,7 +63,10 @@ namespace PokeChess.Core.Match
             ResultSeconds=run.Flow.ResultElapsedSeconds-run.StartResult+finalResultSeconds;
             var result=run.Coordinator.LastResult;
             if(result?.Round!=Round)result=null;
-            Settled=result!=null && run.Coordinator.IsSettled;
+            Settled=result!=null && result.PlayerResults.Keys.Select(run.Match.GetPlayer).All(p=>
+                p.Elimination?.Reason==PokeChess.Core.Match.EliminationReason.Surrender ||
+                p.Elimination?.Reason==PokeChess.Core.Match.EliminationReason.DisconnectTimeout ||
+                p.LastEconomyRound==Round && p.LastAutomaticXPRound==Round && p.LastDamageRound==Round);
             Players=Array.AsReadOnly(run.Match.Players.Select(p=>new SimulationPlayerRound(p,run.HPBefore[p.PlayerId],result)).ToArray());
         }
     }
@@ -199,15 +202,14 @@ namespace PokeChess.Core.Match
                 if(Match.Phase==MatchPhase.Preparation && Coordinator.PreparationReady && preparedRound!=Match.RoundNumber)
                 { bot.Prepare(Match);preparedRound=Match.RoundNumber; }
                 int round=Match.RoundNumber;
-                var completedRound=Match.Phase==MatchPhase.Result && Coordinator.IsSettled && Flow.IsTimerRunning && Flow.RemainingSeconds<=1d/30+1e-9
-                    ? new SimulationRoundRecord(this,Flow.RemainingSeconds) : null;
+                bool completedRound=Match.Phase==MatchPhase.Result && Coordinator.ResultReady && Flow.IsTimerRunning && Flow.RemainingSeconds<=1d/30+1e-9;
                 Flow.AdvanceTime(1d/30);
                 if(Flow.Fault!=null) { Stop(SimulationStatus.Faulted,Flow.Fault.ToString());return; }
                 if(Match.Phase==MatchPhase.Finished)Stop(SimulationStatus.Completed);
                 else if(Match.RoundNumber!=round)
                 {
-                    if(completedRound==null)throw new InvalidOperationException("Missing round record at transition.");
-                    records.Add(completedRound);
+                    if(!completedRound)throw new InvalidOperationException("Missing round record at transition.");
+                    records.Add(new SimulationRoundRecord(this));
                     BeginRecord();
                 }
             }

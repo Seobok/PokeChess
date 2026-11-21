@@ -40,8 +40,8 @@ namespace PokeChess.Client.UI
                 Image(hud, "Progress2", new Vector2(13, -8), new Vector2(21, 21))
             };
             tick = Image(hud, "ProgressTick", new Vector2(-13, -8), new Vector2(36, 36));
-            token = Image(button, "FreeToken", new Vector2(-73, 0), new Vector2(18, 18));
-            reroll = Image(button, "Reroll", Vector2.zero, new Vector2(170, 91));
+            token = Image(button, "FreeToken", new Vector2(-20, 0), new Vector2(18, 18));
+            reroll = Image(button, "Reroll", Vector2.zero, new Vector2(112, 64));
             glyph = Image(originVisuals, "SelectedOrigin", Vector2.zero, new Vector2(24, 24));
             selection = Image(originVisuals, "SelectionFlash", Vector2.zero, new Vector2(42, 42));
             reveal = Image(card, "FavoredReveal", Vector2.zero, new Vector2(230, 113));

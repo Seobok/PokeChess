@@ -25,7 +25,7 @@ namespace PokeChess.Core.Match
             if (match == null) throw new ArgumentNullException(nameof(match));
             var player = match.GetPlayer(playerId);
             if (player.IsEliminated || player.HP == 0) throw new InvalidOperationException("Player is eliminated.");
-            if (match.Phase != MatchPhase.Preparation && !(allowCombat && match.Phase == MatchPhase.Combat))
+            if (match.Phase != MatchPhase.Preparation && !(allowCombat && match.Phase.IsBattlePhase()))
                 throw new InvalidOperationException("Shop commands require Preparation.");
             return player;
         }

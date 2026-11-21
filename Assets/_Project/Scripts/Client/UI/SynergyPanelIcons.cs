@@ -17,6 +17,11 @@ namespace PokeChess.Client.UI
 
         [SerializeField] private Sprite[] portraitCostFrames = Array.Empty<Sprite>();
 
+        [SerializeField] private Sprite[] costBallIcons = Array.Empty<Sprite>();
+
+        public Sprite FindCostBallIcon(int cost) =>
+            cost > 0 && cost <= costBallIcons.Length ? costBallIcons[cost - 1] : null;
+
         public Sprite FindPortraitCostFrame(int cost) =>
             cost > 0 && cost <= portraitCostFrames.Length ? portraitCostFrames[cost - 1] : null;
 

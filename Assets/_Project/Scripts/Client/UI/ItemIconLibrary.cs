@@ -9,6 +9,7 @@ namespace PokeChess.Client.UI
         public Sprite[] icons;
         public Sprite evolutionPoint;
         public Sprite[] rewardFlight, rewardArrival;
+        public Sprite tooltipPanel, tooltipHeader, recipeSection, recipeRow, recipeRowHover, descriptionInset;
         public Sprite Get(string definition)
         {
             for(int i=0;i<ItemCatalog.All.Count;i++)

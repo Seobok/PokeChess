@@ -44,14 +44,14 @@ namespace PokeChess.Core.Match
             catch(ArgumentException) { return Reject(PlacementRejectReason.UnknownPlayer); }
             catch(KeyNotFoundException) { return Reject(PlacementRejectReason.UnknownPlayer); }
             long revision=player.PlacementRevision;
-            if(match.Phase!=MatchPhase.Preparation && match.Phase!=MatchPhase.Combat) return Reject(PlacementRejectReason.InvalidPhase,revision);
+            if(match.Phase!=MatchPhase.Preparation && !match.Phase.IsBattlePhase()) return Reject(PlacementRejectReason.InvalidPhase,revision);
             if(player.IsEliminated || player.HP==0) return Reject(PlacementRejectReason.Eliminated,revision);
             if(expectedRevision!=revision) return Reject(PlacementRejectReason.StaleRevision,revision);
             UnitInstance source;
             try { source=player.GetUnit(unitId); }
             catch(ArgumentException) { return Reject(PlacementRejectReason.UnitNotOwned,revision); }
             catch(KeyNotFoundException) { return Reject(PlacementRejectReason.UnitNotOwned,revision); }
-            if(match.Phase==MatchPhase.Combat && (source.Placement.Kind!=PlacementKind.Bench || destination.Kind!=PlacementKind.Bench))
+            if(match.Phase.IsBattlePhase() && (source.Placement.Kind!=PlacementKind.Bench || destination.Kind!=PlacementKind.Bench))
                 return Reject(PlacementRejectReason.InvalidPhase,revision);
             if(source.Placement.Kind!=PlacementKind.Board && source.Placement.Kind!=PlacementKind.Bench)
                 return Reject(PlacementRejectReason.InvalidSource,revision);

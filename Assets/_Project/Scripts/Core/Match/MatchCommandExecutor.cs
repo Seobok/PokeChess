@@ -31,7 +31,7 @@ namespace PokeChess.Core.Match
         public ShopRules ShopRules => shops.Rules;
         public LevelRules LevelRules => levels.Rules;
         private PlayerState Player => match.GetPlayer(playerId);
-        public bool CanBuy => (match.Phase==MatchPhase.Preparation || match.Phase==MatchPhase.Combat) && Player.HP>0 && !Player.IsEliminated;
+        public bool CanBuy => (match.Phase==MatchPhase.Preparation || match.Phase.IsBattlePhase()) && Player.HP>0 && !Player.IsEliminated;
         public bool CanTrade => match.Phase==MatchPhase.Preparation && Player.HP>0 && !Player.IsEliminated;
         public bool CanSell(string id) => CanBuy && System.Linq.Enumerable.Any(Player.Units,u=>u.InstanceId==id && (match.Phase==MatchPhase.Preparation || u.Placement.Kind==PlacementKind.Bench));
         public MatchCommandExecutor(MatchState match,PokemonCatalog catalog,string playerId)

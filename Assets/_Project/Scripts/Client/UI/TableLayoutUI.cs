@@ -91,7 +91,7 @@ namespace PokeChess.Client.UI
             foreach(var button in new[]{SimulationStartButton,SimulationSpeedButton}){button.transform.SetParent(developerPanel,false);Place((RectTransform)button.transform,new Vector2(215,20),new Vector2(0,220-index++*22));}
             developerPanel.sizeDelta=new Vector2(240,Mathf.Max(475,index*22+20));
             developerPanel.gameObject.SetActive(false);
-            developerToggle=ActionButton("DEV",new Vector2(45,22),new Vector2(590,332),()=>{developerPanel.gameObject.SetActive(!developerPanel.gameObject.activeSelf);developerPanel.SetAsLastSibling();});
+            developerToggle=ActionButton("DEV",new Vector2(45,22),new Vector2(374,332),()=>{developerPanel.gameObject.SetActive(!developerPanel.gameObject.activeSelf);developerPanel.SetAsLastSibling();});
         }
         private void UpdateTablePresentation()
         {
@@ -115,7 +115,7 @@ namespace PokeChess.Client.UI
             if (equippedRecipeSource != null && !equippedRecipeSource.gameObject.activeInHierarchy) HideItemHint();
             RenderPlacementArt();
             header.gameObject.SetActive(false);status.gameObject.SetActive(false);inventoryLabel.gameObject.SetActive(false);detailLabel.gameObject.SetActive(false);
-            hudNotice.gameObject.SetActive(true);wildPreviewLabel.gameObject.SetActive(false);
+            hudNotice.gameObject.SetActive(false);wildPreviewLabel.gameObject.SetActive(false);
         }
     }
 }
