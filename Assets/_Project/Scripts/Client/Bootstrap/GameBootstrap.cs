@@ -15,7 +15,17 @@ namespace PokeChess.Client.Bootstrap
         private string activeAccount;
         private int accountGeneration;
         private void Update() => OnlineAuthenticationService.Instance.Tick();
-        private void Awake() { IsInitialized = true; Debug.Log("PokeChess bootstrap initialized.", this); }
+        private void Awake()
+        {
+            // Room/local UI needs pointer input even when the account UI is disabled.
+            var events = FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>();
+            if (events == null)
+                events = new GameObject("EventSystem").AddComponent<UnityEngine.EventSystems.EventSystem>();
+            if (events.GetComponent<UnityEngine.EventSystems.BaseInputModule>() == null)
+                events.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>().AssignDefaultActions();
+            IsInitialized = true;
+            Debug.Log("PokeChess bootstrap initialized.", this);
+        }
         private async void Start()
         {
             if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-pokechess-content-qa") >= 0) return;
