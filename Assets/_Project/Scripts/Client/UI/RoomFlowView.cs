@@ -63,7 +63,7 @@ namespace PokeChess.Client.UI
             panel.SetActive(FindFirstObjectByType<PlacementSandboxView>() == null);
         }
 
-        private void StartLocalMatch()
+        public void StartLocalMatch()
         {
             panel.SetActive(false);
             var view = FindFirstObjectByType<PlacementSandboxView>();

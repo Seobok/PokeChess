@@ -124,6 +124,30 @@ namespace PokeChess.Client.UI
             for (int slot = 0; slot < Player.Shop.Slots.Count; slot++)
                 RenderShopPortrait(slot, Player.Shop.Slots[slot].DefinitionId);
         }
+        private object animationBattle;
+        private double animationBattleEndedAt;
+        private bool animationBattleComplete;
+
+        private double LocalAnimationTick(LocalPairBattle pair)
+        {
+            if (!ReferenceEquals(animationBattle, pair.Battle))
+            {
+                animationBattle = pair.Battle;
+                animationBattleComplete = false;
+            }
+            if (!pair.IsComplete)
+            {
+                animationBattleComplete = false;
+                return pair.Battle.CurrentTick;
+            }
+            if (!animationBattleComplete)
+            {
+                animationBattleComplete = true;
+                animationBattleEndedAt = Time.unscaledTimeAsDouble;
+            }
+            return pair.Battle.CurrentTick + (Time.unscaledTimeAsDouble - animationBattleEndedAt) * pair.Battle.TickRate;
+        }
+
         private bool RenderFighterSprite(LocalPairBattle pair,UnitCombatState unit,UnityEngine.UI.Text label)
         {
             if(!fighterSprites.TryGetValue(unit.UnitInstanceId,out var sprite)||sprite==null)
@@ -134,7 +158,7 @@ namespace PokeChess.Client.UI
             if(action.MoveDestination.HasValue)
             {
                 Vector2 destination=CombatPoint(action.MoveDestination.Value);facing=destination-current;
-                float progress=(float)(pair.Battle.CurrentTick-action.StartTick)/System.Math.Max(1,action.EndTick-action.StartTick);
+                float progress=(float)(LocalAnimationTick(pair)-action.StartTick)/System.Math.Max(1,action.EndTick-action.StartTick);
                 ((RectTransform)label.transform.parent).anchoredPosition=Vector2.Lerp(current,destination,progress);
             }
             else
@@ -146,8 +170,9 @@ namespace PokeChess.Client.UI
             var root=(RectTransform)label.transform.parent;
             root.anchoredPosition=ThrowPresentation.Local(pair.Battle,unit.UnitInstanceId,root.anchoredPosition,
                 (c,r)=>CombatPoint(new PokeChess.Core.Pokemon.BoardPosition(c,r)));
-            sprite.ShowCombat(pair.Battle,unit,action,facing);
-            RenderEquippedItemIcon(label.transform.parent,unit.ItemInstanceIds,unit.IsAlive);
+            sprite.ShowCombat(pair.Battle,unit,action,facing,presentationTick: LocalAnimationTick(pair));
+            RenderEquippedItemIcon(label.transform.parent,
+                Player.Units.FirstOrDefault(owned => owned.InstanceId == unit.UnitInstanceId)?.ItemInstanceIds ?? unit.ItemInstanceIds,unit.IsAlive);
             var healthBar = RenderUnitHealthBar(root, unit.CurrentHP, unit.Stats.MaxHP,
                 unit.TeamId == (pair.Pairing.PlayerOneId == localViewedPlayerId ? 1 : 2), unit.CurrentShield);
             var battle = pair.Battle;

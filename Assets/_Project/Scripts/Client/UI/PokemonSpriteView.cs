@@ -66,15 +66,17 @@ namespace PokeChess.Client.UI
         }
         public bool ShowIdle(double seconds)
         {statusView?.Clear();SetSkillLungeOffset(Vector2.zero);SetSkillHidden(false);SetSkillScale(1);SetHardened(false);return Draw("Idle",seconds,true,1);}
-        public void ShowCombat(BattleState battle,UnitCombatState unit,UnitActionRuntime action,Vector2 facing,float pixelScale=PixelScale)
+        public void ShowCombat(BattleState battle,UnitCombatState unit,UnitActionRuntime action,Vector2 facing,float pixelScale=PixelScale,double? presentationTick=null)
         {
+            double tick = presentationTick ?? battle.CurrentTick;
+            bool actionFinished = battle.Result != BattleResult.InProgress && tick >= action.EndTick;
             UnitInstanceId=unit.UnitInstanceId;
             SetGuardianForm(unit.IsSynergySummon?battle.Synergies.TeamTier(unit.TeamId,SynergyTraits.Nature):0);
             if(facing.sqrMagnitude>.001f)
                 direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
             if(previousHP>=0 && unit.CurrentHP<previousHP && unit.IsAlive)hurtStart=battle.CurrentTick;
             previousHP=unit.CurrentHP;
-            double elapsed=(battle.CurrentTick-action.StartTick)/(double)battle.TickRate;
+            double elapsed=(tick-action.StartTick)/(double)battle.TickRate;
             string name=unit.ActionState==CombatActionState.Moving?"Walk":unit.ActionState==CombatActionState.Attacking?
                 AttackAnimation():unit.ActionState==CombatActionState.Casting?
                 SkillAnimation():"Idle";
@@ -87,31 +89,32 @@ namespace PokeChess.Client.UI
                 long start=cast?.StartTick??action.StartTick;
                 long effect=cast?.EffectTick??action.EffectTick;
                 long end=cast?.EndTick??action.EndTick;
-                time=anim.ActionTime((battle.CurrentTick-start)/(double)battle.TickRate,
+                time=anim.ActionTime((tick-start)/(double)battle.TickRate,
                     (effect-start)/(double)battle.TickRate,(end-start)/(double)battle.TickRate);
             }
+            if (actionFinished && unit.IsAlive) name = "Idle";
             bool loop=name=="Idle"||name=="Walk";
-            if(name=="Idle")time=(battle.CurrentTick-idleStart)/(double)battle.TickRate;
+            if(name=="Idle")time=(tick-(actionFinished ? action.EndTick : idleStart))/(double)battle.TickRate;
             float alpha = unit.IsSynergyStealthed ? AssassinBattleVisuals.StealthAlpha : 1;
             if(!unit.IsAlive)
             {
                 if(deathStart<0)deathStart=battle.CurrentTick;
-                name="Hurt";time=(battle.CurrentTick-deathStart)/(double)battle.TickRate;loop=false;
+                name="Hurt";time=(tick-deathStart)/(double)battle.TickRate;loop=false;
                 alpha=Mathf.Clamp01(1-(float)time/.45f);
             }
             // Hurt never replaces an attack/cast: the synchronized effect pose keeps priority.
-            else if(name=="Idle" && battle.CurrentTick-hurtStart<battle.TickRate/6d)
-            {name="Hurt";time=(battle.CurrentTick-hurtStart)/(double)battle.TickRate;loop=false;}
+            else if(name=="Idle" && tick-hurtStart<battle.TickRate/6d)
+            {name="Hurt";time=(tick-hurtStart)/(double)battle.TickRate;loop=false;}
             SetHardened(unit.IsAlive && unit.ActionState!=CombatActionState.Casting &&
                 battle.StatusEffects.Active.Any(s=>s.TargetId==unit.UnitInstanceId &&
-                    s.StartTick<=battle.CurrentTick && s.ExpireTick>battle.CurrentTick && IsHarden(s.Definition.Id)));
+                    s.StartTick<=tick && s.ExpireTick>tick && IsHarden(s.Definition.Id)));
             DrawScaled(name,time,loop,alpha,pixelScale);
             statusView.Render(battle.StatusEffects.Active.Where(s=>s.TargetId==unit.UnitInstanceId).Select(s=>s.Definition.Behavior),
-                battle.CurrentTick/(double)battle.TickRate,image,unit.IsAlive&&image.enabled,pixelScale*UnitSizeMultiplier/2.25f,battle.StatusEffects.Active.Where(s=>s.TargetId==unit.UnitInstanceId&&s.StartTick<=battle.CurrentTick&&s.ExpireTick>battle.CurrentTick).Select(s=>s.Definition.CrowdControl));
+                tick/(double)battle.TickRate,image,unit.IsAlive&&image.enabled,pixelScale*UnitSizeMultiplier/2.25f,battle.StatusEffects.Active.Where(s=>s.TargetId==unit.UnitInstanceId&&s.StartTick<=tick&&s.ExpireTick>tick).Select(s=>s.Definition.CrowdControl));
         }
         private bool Draw(string name,double seconds,bool loop,float alpha)
             =>DrawScaled(name,seconds,loop,alpha,PixelScale);
-        public void ShowPlayback(PokeChess.Core.Match.CombatUnitView unit,double tick,int tickRate,Vector2 facing,float pixelScale=1f)
+        public void ShowPlayback(PokeChess.Core.Match.CombatUnitView unit,double tick,int tickRate,Vector2 facing,float pixelScale=1f,bool battleComplete=false)
         {
             UnitInstanceId=unit.id;
             if(facing.sqrMagnitude>.001f)direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
@@ -123,7 +126,9 @@ namespace PokeChess.Client.UI
             if(previousAction!=unit.action){idleStart=(long)tick;previousAction=unit.action;}
             double seconds=(tick-unit.startTick)/tickRate;var animation=library?.Find(animationPokemon,name);
             if(animation!=null&&(unit.action==CombatActionState.Attacking||unit.action==CombatActionState.Casting))seconds=animation.ActionTime(seconds,(unit.effectTick-unit.startTick)/(double)tickRate,(unit.endTick-unit.startTick)/(double)tickRate);
-            if(name=="Idle")seconds=(tick-idleStart)/tickRate;
+            bool actionFinished = battleComplete && tick >= unit.endTick;
+            if (actionFinished && unit.hp > 0) name = "Idle";
+            if(name=="Idle")seconds=(tick-(actionFinished ? unit.endTick : idleStart))/tickRate;
             bool stealthed = unit.statusDetails != null
                 ? unit.statusDetails.Any(s => s.definition == AssassinBattleVisuals.Stealth && s.startTick <= tick && s.endTick > tick)
                 : (unit.statuses ?? Array.Empty<string>()).Contains(AssassinBattleVisuals.Stealth);

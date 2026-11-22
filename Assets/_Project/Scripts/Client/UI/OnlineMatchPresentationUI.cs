@@ -65,7 +65,7 @@ namespace PokeChess.Client.UI
             combatRoot.gameObject.SetActive(show);if(!show)return;
             if(onlineBattleId!=frame.battleId){ClearOnlineFighters();onlineBattleId=frame.battleId;}
             combatInfo.text=string.Empty;
-            double tick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
+            double tick=playback.Tick+(frame.complete?playback.EndHold*frame.tickRate:0);
             var visuals=SkillVisualBattleView.Get(combatRoot,SkillVisuals);
             visuals.SetVenomHud(venomHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
             visuals.SetStormHud(stormBattleHud, frame.units.FirstOrDefault(unit => unit.owner == onlineService.WatchingPlayerId)?.team ?? 0);
@@ -83,9 +83,9 @@ namespace PokeChess.Client.UI
                 position=ThrowPresentation.Playback(frame,unit.id,tick,position,(c,r)=>CombatPoint(new BoardPosition(c,r)));
                 var sprite = fighterSprites[unit.id];
                 if (sprite.PokemonId != unit.definitionId) sprite.Initialize(unit.definitionId, unit.id);
-                ((RectTransform)label.transform.parent).anchoredPosition=position;sprite.ShowPlayback(unit,tick,30,facing,1.5f);
+                ((RectTransform)label.transform.parent).anchoredPosition=position;sprite.ShowPlayback(unit,tick,frame.tickRate,facing,1.5f,frame.complete);
                 label.transform.parent.gameObject.SetActive(unit.onBoard&&(unit.hp>0||fighterSprites[unit.id].Visible));
-                RenderEquippedItemIcon(label.transform.parent,unit.items,unit.hp>0);
+                RenderEquippedItemIcon(label.transform.parent,owner.units.FirstOrDefault(owned => owned.id == unit.id)?.items ?? unit.items,unit.hp>0);
                 var healthBar = RenderUnitHealthBar(label.transform.parent, unit.hp, unit.maxHP, unit.owner == onlineService.WatchingPlayerId, unit.shield);
                 BruiserVisuals.Render(label.transform.parent, healthBar, unit.hp > 0 && unit.onBoard, unit.bruiserHealth,
                     unit.bruiserSurvivalEndTick, tick, 30);
@@ -103,7 +103,7 @@ namespace PokeChess.Client.UI
             foreach(var shot in combatShots.Values)shot.gameObject.SetActive(false);
             foreach(var projectile in frame.projectiles){
                 if(!combatShots.TryGetValue(projectile.id,out var shot)){shot=Rect("Projectile_"+projectile.id,combatRoot,new Vector2(7,7),Vector2.zero);shot.gameObject.AddComponent<UnityEngine.UI.Image>().color=new Color(1,.8f,.15f);shot.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;combatShots[projectile.id]=shot;}
-                shot.gameObject.SetActive(!SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,projectile.skillId,projectile.stepIndex,projectile.iteration));shot.anchoredPosition=Vector2.Lerp(CombatPoint(new BoardPosition(projectile.column,projectile.row)),CombatPoint(new BoardPosition(projectile.targetColumn,projectile.targetRow)),(float)((tick-projectile.spawnTick)/Math.Max(1,projectile.arrivalTick-projectile.spawnTick)));
+                shot.gameObject.SetActive(tick < projectile.arrivalTick && !SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,projectile.skillId,projectile.stepIndex,projectile.iteration));shot.anchoredPosition=Vector2.Lerp(CombatPoint(new BoardPosition(projectile.column,projectile.row)),CombatPoint(new BoardPosition(projectile.targetColumn,projectile.targetRow)),(float)((tick-projectile.spawnTick)/Math.Max(1,projectile.arrivalTick-projectile.spawnTick)));
             }
         }
         private void ShowOnlineEffect(CombatEventView effect)

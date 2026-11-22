@@ -49,7 +49,9 @@ namespace PokeChess.Network.Session
     public enum RoomListState { Idle, Loading, Ready, Failed }
     public sealed class RoomBrowser
     {
-        public const string RoomKind="pokechess-room-v1";
+        public static string RoomKind=>OnlineConnection.RequireAccountAdmission?"pokechess-room-account-v2":"pokechess-room-anonymous-test-v1";
+        // Client flow gate only; server-verified account/UGS binding is a separate integration.
+        public static Func<bool> AccountAccessAllowed { get; set; } = () => false;
         public RoomListState State { get; private set; }
         public string Error { get; private set; }
         public IReadOnlyList<RoomListing> Rooms { get; private set; }=Array.Empty<RoomListing>();
@@ -68,6 +70,7 @@ namespace PokeChess.Network.Session
             State=RoomListState.Loading;Error=null;Changed?.Invoke();
             try
             {
+                if(!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
                 if(!AuthenticationService.Instance.IsAuthorized)throw new InvalidOperationException("NotAuthenticated");
                 var result=await MultiplayerService.Instance.QuerySessionsAsync(new QuerySessionsOptions {
                     Count=25,ContinuationToken=continuation,
@@ -78,6 +81,7 @@ namespace PokeChess.Network.Session
                         new FilterOption(FilterField.IsLocked,"false",FilterOperation.Equal)
                     }
                 });
+                if (!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
                 Rooms=Array.AsReadOnly(result.Sessions.Select(s=>new RoomListing(s.Id,s.Name,s.MaxPlayers-s.AvailableSlots,s.MaxPlayers)).ToArray());
                 NextPage=result.ContinuationToken;State=RoomListState.Ready;
             }

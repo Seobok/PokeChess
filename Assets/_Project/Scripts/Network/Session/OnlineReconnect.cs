@@ -35,7 +35,7 @@ namespace PokeChess.Network.Session
             PlayerPrefs.SetString(TicketKey,JsonUtility.ToJson(recoveryTicket));PlayerPrefs.Save();
         }
         private void ClearRecoveryTicket()
-        {if(AuthenticationService.Instance.IsAuthorized){PlayerPrefs.DeleteKey(TicketKey);PlayerPrefs.Save();}recoveryTicket=null;}
+        {if(Unity.Services.Core.UnityServices.State==Unity.Services.Core.ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized){PlayerPrefs.DeleteKey(TicketKey);PlayerPrefs.Save();}recoveryTicket=null;}
         private void ClientDisconnected(ulong clientId)
         {
             if(State==ConnectionState.Leaving)return;
@@ -73,7 +73,7 @@ namespace PokeChess.Network.Session
         private void UpdateReconnect()
         {
             if(manager.IsListening)lastKnownServerTime=manager.ServerTime.Time;
-            if(!AuthenticationService.Instance.IsAuthorized)return;
+            if(!AccountAccessAllowed() || !AuthenticationService.Instance.IsAuthorized)return;
             if(!ticketChecked){ticketChecked=true;
                 try{var saved=JsonUtility.FromJson<RecoveryTicket>(PlayerPrefs.GetString(TicketKey,""));
                     if(State==ConnectionState.Idle&&saved?.playerId==AuthenticationService.Instance.PlayerId&&saved.start?.players?.Contains(saved.playerId)==true){
@@ -106,6 +106,7 @@ namespace PokeChess.Network.Session
             int generation=recoveryGeneration;State=ConnectionState.Reconnecting;recoveryAttempts++;recoveryAttemptStarted=Time.realtimeSinceStartupAsDouble;
             RecoveryFeedback="Reconnecting… attempt "+recoveryAttempts;identityBound=false;recoverySnapshotReceived=false;Combat.Clear();
             try{
+                if(!AccountAccessAllowed() || !AuthenticationService.Instance.IsAuthorized) throw new InvalidOperationException("AccountLoginRequired");
                 UnregisterGameMessages();messagesRegistered=false;
                 if(session==null){networkHandler=new ResumableNetworkHandler(manager,false);
                     session=await MultiplayerService.Instance.ReconnectToSessionAsync(recoveryTicket.sessionId,new ReconnectSessionOptions{Type=recoveryTicket.sessionType}.WithNetworkHandler(networkHandler));
@@ -119,6 +120,8 @@ namespace PokeChess.Network.Session
                     session.CurrentPlayer.SetAllocationId(allocationId);await session.SaveCurrentPlayerDataAsync();
                 }
                 if(generation!=recoveryGeneration){await CleanupAsync();return;}
+                if(SessionValue("roomKind")!=RoomBrowser.RoomKind) throw new InvalidOperationException("RoomAuthenticationModeMismatch");
+                if(!AccountAccessAllowed() || (RequireAccountAdmission && !await ValidateAccountHost(session.Host))) throw new InvalidOperationException("AccountHostNotVerified");
                 var info=JsonUtility.FromJson<MatchStartInfo>(SessionValue("matchStart")??"");
                 if(info?.matchId!=StartInfo.matchId||info.ruleVersion!=RulesVersion||info.gameVersion!=Application.version||session.Host!=StartInfo.players[0])throw new InvalidOperationException("HostLost");
                 StartInfo=info;acknowledgedMatch=info.matchId;connectedPublished=true;

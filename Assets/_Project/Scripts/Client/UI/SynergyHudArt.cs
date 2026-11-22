@@ -17,11 +17,30 @@ namespace PokeChess.Client.UI
         private const int SynergiesPerPage = 8;
         private static readonly (string name, string[] species, string description)[] UniqueSynergies =
         {
-            ("텍스처", new[] { "porygon" }, "지정한 아군의 기본 계열 하나를 복사합니다."),
-            ("승선", new[] { "lapras" }, "인접한 아군을 승객으로 지정해 보호합니다."),
-            ("움직이지 않는 산", new[] { "snorlax" }, "뒤쪽 인접 아군을 강제 이동으로부터 보호합니다."),
-            ("왕가의 결속", new[] { "nidoran-f", "nidoran-m" }, "두 니도란 계열의 대표가 서로의 기술에 반응합니다."),
-            ("스타팅 삼원합동", new[] { "bulbasaur", "charmander", "squirtle" }, "세 계열의 대표가 모두 기술을 쓰면 합동 효과를 발동합니다.")
+            ("텍스처", new[] { "porygon" },
+                "배치 단계에 이 항목을 눌러 필드의 다른 아군 1명을 지정합니다.\n" +
+                "폴리곤은 지정한 아군의 기본 계열 시너지 1개를 추가로 얻습니다. 기존 시너지는 유지하며, 직업 시너지와 상징으로 얻은 계열은 복사하지 않습니다.\n" +
+                "지정 대상이 필드에 있어야 적용되며, 같은 진화 계열은 시너지 인원에 1회만 포함됩니다."),
+            ("승선", new[] { "lapras" },
+                "배치 단계에 이 항목을 눌러 라프라스와 인접한 아군 1명을 승객으로 지정합니다. 미지정 시 전투 시작 배치의 인접 아군 1명을 자동 선택합니다.\n" +
+                "승객이 받는 첫 군중 제어 또는 강제이동을 전투당 1회 막습니다. 피해를 막는 효과는 아닙니다.\n" +
+                "라프라스가 첫 기술을 완료하면 승객에게 승객 최대 HP의 16% 보호막을 4초간 부여합니다.\n" +
+                "라프라스가 여러 마리면 진화 단계 → 성급 순으로 높은 대표 1마리만 적용됩니다."),
+            ("움직이지 않는 산", new[] { "snorlax" },
+                "잠만보 자신은 강제이동에 면역입니다.\n" +
+                "전투 시작 시 뒤쪽에 인접한 아군 1명을 자동 선택해, 그 아군이 받는 첫 강제이동을 전투당 1회 막습니다. 일반 군중 제어는 막지 않습니다.\n" +
+                "잠만보가 기술을 완료할 때마다 선택한 아군에게 해당 아군 최대 HP의 10% 보호막을 4초간 부여합니다.\n" +
+                "아군 보호는 진화 단계 → 성급 순으로 높은 대표 잠만보 1마리만 적용됩니다."),
+            ("왕가의 결속", new[] { "nidoran-f", "nidoran-m" },
+                "니도란♀·니도란♂ 계열을 함께 배치하면 발동합니다. 각 계열은 진화 단계 → 성급 순으로 높은 대표 1마리가 참여하며, 두 대표가 모두 살아 있어야 합니다.\n" +
+                "♀ 기술 완료: ♂이 기술 사용자의 현재 대상(없으면 가까운 적)에게 물리 피해 90/130/175, 주변 1칸의 다른 적에게 그 절반의 피해를 줍니다.\n" +
+                "♂ 기술 완료: 같은 대상 위치에 반경 1칸의 독 지대를 3초간 생성합니다. 매초 마법 피해 30/45/60을 주고 20% 둔화를 적용합니다.\n" +
+                "피해 수치는 효과를 제공하는 상대 대표의 1/2/3성 기준입니다. 두 효과의 재발동 대기시간은 각각 6초입니다."),
+            ("스타팅 삼원합동", new[] { "bulbasaur", "charmander", "squirtle" },
+                "이상해씨·파이리·꼬부기 계열을 모두 배치하면 발동합니다. 각 계열은 진화 단계 → 성급 순으로 높은 대표 1마리가 참여합니다.\n" +
+                "세 대표가 각각 기술을 1회 이상 완료하면 전투당 1회 합동 효과가 발동합니다.\n" +
+                "현재 HP 비율이 가장 높은 적을 중심으로 반경 1칸의 적에게 마법 피해 120과 속박 1초를 적용합니다.\n" +
+                "동시에 생존한 세 대표에게 각자 최대 HP의 10% 보호막을 4초간 부여합니다.")
         };
 
         private sealed class SynergyHudRow
@@ -360,6 +379,8 @@ namespace PokeChess.Client.UI
             synergyHelp.text = entry.unique >= 0 ? UniqueSynergies[entry.unique].description :
                 string.Join("\n", lines.Skip(thresholds.Length));
             synergyHelp.gameObject.SetActive(synergyHelp.text.Length > 0);
+            synergyHelp.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                entry.unique >= 0 ? Mathf.Ceil(synergyHelp.preferredHeight) : 49);
             for (int i = 0; i < synergyThresholdRows.Length; i++)
             {
                 var row = synergyThresholdRows[i];
@@ -386,6 +407,12 @@ namespace PokeChess.Client.UI
             {
                 synergyHelp.rectTransform.anchoredPosition = new Vector2(0, membersY - 10);
                 membersY -= 44;
+            }
+            else if (entry.unique >= 0)
+            {
+                float descriptionHeight = synergyHelp.rectTransform.rect.height;
+                synergyHelp.rectTransform.anchoredPosition = new Vector2(0, 147 - descriptionHeight * .5f);
+                membersY = 147 - descriptionHeight - 18;
             }
             else synergyHelp.rectTransform.anchoredPosition = new Vector2(0, 123);
             synergyMemberLabel.rectTransform.anchoredPosition = new Vector2(0, membersY);

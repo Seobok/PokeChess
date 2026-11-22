@@ -145,21 +145,8 @@ namespace PokeChess.Client.UI
 
         private Slot EvolutionSlotAt(Vector2 point, Slot tile)
         {
-            if (ItemTarget(tile) != null) return tile;
-            Slot hit = null;
-            int frontmost = -1;
-            foreach (var slot in evolutionTargets.Keys)
-            {
-                var id = ItemTarget(slot);
-                if (id == null || !tokens.TryGetValue(id, out var token) || !token.gameObject.activeInHierarchy) continue;
-                var sprite = token.Find("PokemonSprite")?.GetComponent<PokemonSpriteView>()?.CharacterImage;
-                if (sprite == null || !sprite.enabled || !RectTransformUtility.RectangleContainsScreenPoint(sprite.rectTransform, point, null)) continue;
-                int order = token.GetSiblingIndex();
-                if (order <= frontmost) continue;
-                frontmost = order;
-                hit = slot;
-            }
-            return hit;
+            // Use the occupied placement tile, independent of sprite size, pose or drawing order.
+            return ItemTarget(tile) != null ? tile : null;
         }
 
         private void UpdateEvolutionHover(Slot slot)
@@ -175,6 +162,11 @@ namespace PokeChess.Client.UI
             }
 
             evolutionMarks[slot].sprite = slot.Placement.Kind == PlacementKind.Board ? evolutionBoardHovered : evolutionBenchHovered;
+            ShowEvolutionPreview(definition, slot.Rect.anchoredPosition);
+        }
+
+        private void ShowEvolutionPreview(PokemonDefinition definition, Vector2 targetPoint)
+        {
             var option = definition.Evolutions[0];
             var target = catalog.Get(option.TargetDefinitionId);
             SetEvolutionCard(primaryEvolutionCard, definition, target, option.EvolutionPointCost);
@@ -185,7 +177,6 @@ namespace PokeChess.Client.UI
                 var next = target.Evolutions[0];
                 SetEvolutionCard(nextEvolutionCard, target, catalog.Get(next.TargetDefinitionId), next.EvolutionPointCost);
             }
-            var targetPoint = slot.Rect.anchoredPosition;
             float x = targetPoint.x + (targetPoint.x > 65 ? -155 : 155);
             float y = Mathf.Clamp(targetPoint.y + 55, hasNext ? 62 : -43, 230);
             evolutionDragPreview.anchoredPosition = new Vector2(Mathf.Clamp(x, -200, 250), y);

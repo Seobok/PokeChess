@@ -29,7 +29,7 @@ namespace PokeChess.Client.UI
         {
             if(subscribedPlayback!=service.Combat){if(subscribedPlayback!=null)subscribedPlayback.EventPlayed-=ReplayEffect;subscribedPlayback=service.Combat;subscribedPlayback.EventPlayed+=ReplayEffect;}
             var playback=service.Combat;var frame=playback.Current;var pub=service.PublicState;
-            bool show=pub!=null&&frame!=null&&frame.round==pub.round&&(pub.phase==MatchPhase.Combat||playback.IsPlaying);
+            bool show=pub!=null&&frame!=null&&frame.round==pub.round&&(pub.phase.IsBattlePhase()||playback.IsPlaying);
             combatLayer.gameObject.SetActive(show);
             bool result=pub!=null&&(pub.phase==MatchPhase.Result||pub.phase==MatchPhase.Finished)&&!show;
             combatResults.gameObject.SetActive(result);
@@ -47,7 +47,7 @@ namespace PokeChess.Client.UI
             onlineObserved.text="Your combat";
             combatCaption.text="Round "+frame.round+" / "+(frame.shadow?"Shadow battle":"Combat")+" / "+(frame.tick/30d).ToString("0.0")+"s";
             if(visibleBattle!=frame.battleId){foreach(var f in combatFighters.Values)Destroy(f.root.gameObject);combatFighters.Clear();foreach(var p in combatProjectiles.Values)Destroy(p.gameObject);combatProjectiles.Clear();visibleBattle=frame.battleId;}
-            double renderTick=playback.Tick+(frame.complete?Math.Min(.4,playback.EndHold)*30:0);
+            double renderTick=playback.Tick+(frame.complete?playback.EndHold*frame.tickRate:0);
             var visuals=SkillVisualBattleView.Get(combatLayer,SkillVisuals);
             visuals.RenderPlayback(frame,renderTick,ReplayPoint,1f);
             foreach(var u in frame.units){
@@ -58,10 +58,10 @@ namespace PokeChess.Client.UI
                     f.label.raycastTarget=f.popup.raycastTarget=false;combatFighters.Add(u.id,f);
                 }
                 f.root.gameObject.SetActive(u.onBoard||u.hp<=0);var position=ReplayPoint(u.column,u.row);Vector2 facing=Vector2.zero;
-                if(u.action==CombatActionState.Moving){var destination=ReplayPoint(u.moveColumn,u.moveRow);facing=destination-position;position=Vector2.Lerp(position,destination,(float)((playback.Tick-u.startTick)/Math.Max(1,u.endTick-u.startTick)));}
+                if(u.action==CombatActionState.Moving){var destination=ReplayPoint(u.moveColumn,u.moveRow);facing=destination-position;position=Vector2.Lerp(position,destination,(float)((renderTick-u.startTick)/Math.Max(1,u.endTick-u.startTick)));}
                 else {var target=frame.units.FirstOrDefault(v=>v.id==u.target);if(target!=null)facing=ReplayPoint(target.column,target.row)-position;}
                 position=ThrowPresentation.Playback(frame,u.id,renderTick,position,ReplayPoint);
-                f.root.anchoredPosition=position;f.sprite.ShowPlayback(u,renderTick,30,facing);
+                f.root.anchoredPosition=position;f.sprite.ShowPlayback(u,renderTick,frame.tickRate,facing,battleComplete:frame.complete);
                 BruiserVisuals.Render(f.root, null, u.hp > 0 && u.onBoard, u.bruiserHealth, u.bruiserSurvivalEndTick, renderTick, 30);
                 f.label.text="R"+u.rank+" / "+Math.Ceiling(u.hp)+"HP"+(u.shield>0?" S"+Math.Ceiling(u.shield):"")+"\n"+Math.Floor(u.energy)+"E"+(u.statuses.Length>0?" / "+string.Join("/",u.statuses):"");
                 f.label.color=u.team==1?new Color(.5f,.85f,1):new Color(1,.65f,.55f);f.popup.gameObject.SetActive(Time.unscaledTimeAsDouble<f.popupUntil);
@@ -69,9 +69,9 @@ namespace PokeChess.Client.UI
             visuals.SortCombatDepth(combatFighters.Values.Select(f=>f.root));
             foreach(var id in combatProjectiles.Keys.Where(id=>!frame.projectiles.Any(p=>p.id==id)).ToArray()){Destroy(combatProjectiles[id].gameObject);combatProjectiles.Remove(id);}
             foreach(var p in frame.projectiles){if(!combatProjectiles.TryGetValue(p.id,out var marker)){marker=Rect("Projectile "+p.id,combatLayer,new Vector2(5,5),Vector2.zero);var image=marker.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=Color.yellow;image.raycastTarget=false;combatProjectiles[p.id]=marker;}
-                marker.gameObject.SetActive(!SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,p.skillId,p.stepIndex,p.iteration));
+                marker.gameObject.SetActive(renderTick < p.arrivalTick && !SkillVisualBattleView.UsesProjectileVisual(SkillVisuals,p.skillId,p.stepIndex,p.iteration));
                 var target=frame.units.FirstOrDefault(u=>u.id==p.target);var end=target==null?ReplayPoint(p.targetColumn,p.targetRow):ReplayPoint(target.column,target.row);
-                marker.anchoredPosition=Vector2.Lerp(ReplayPoint(p.column,p.row),end,(float)((playback.Tick-p.spawnTick)/Math.Max(1,p.arrivalTick-p.spawnTick)));}
+                marker.anchoredPosition=Vector2.Lerp(ReplayPoint(p.column,p.row),end,(float)((renderTick-p.spawnTick)/Math.Max(1,p.arrivalTick-p.spawnTick)));}
         }
         private void ReplayEffect(CombatEventView effect)
         {

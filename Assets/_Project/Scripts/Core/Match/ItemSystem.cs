@@ -240,7 +240,7 @@ namespace PokeChess.Core.Match
         {
             var p=match.GetPlayer(playerId);
             if(p.HP==0||p.IsEliminated)throw new InvalidOperationException("Player is eliminated.");
-            if(match.Phase!=MatchPhase.Preparation && match.Phase!=MatchPhase.Combat)throw new InvalidOperationException("Requires Preparation.");
+            if(match.Phase!=MatchPhase.Preparation && !match.Phase.IsBattlePhase())throw new InvalidOperationException("준비 또는 전투 단계에서 아이템을 조작할 수 있습니다.");
             if(p.ItemRevision!=revision)throw new InvalidOperationException("Stale item revision.");
             return p;
         }
@@ -262,6 +262,18 @@ namespace PokeChess.Core.Match
             var p=Validate(match,playerId,revision);var unit=p.GetUnit(unitId);
             if(unit.Placement.Kind==PlacementKind.Unplaced||!p.ItemInventory.Contains(itemId)||ItemCatalog.DefinitionId(itemId)==null)
                 throw new InvalidOperationException("Item is not available for this unit.");
+            string resultId = ItemCatalog.DefinitionId(itemId);
+            var equippedComponent = ItemCatalog.IsComponent(itemId)
+                ? unit.ItemInstanceIds.FirstOrDefault(ItemCatalog.IsComponent) : null;
+            if (equippedComponent != null)
+                resultId = ItemCatalog.Recipe(ItemCatalog.DefinitionId(equippedComponent), resultId)?.Id;
+            if (resultId != null && resultId.StartsWith("emblem-", StringComparison.Ordinal))
+            {
+                string trait = resultId.Substring(7);
+                if (match.Pool?.Definition(unit.DefinitionId).TraitIds.Contains(trait) == true ||
+                    unit.ItemInstanceIds.Any(id => ItemCatalog.DefinitionId(id) == resultId))
+                    throw new InvalidOperationException("이미 해당 시너지를 가진 포켓몬에게는 같은 상징을 장착할 수 없습니다.");
+            }
             p.EquipInventoryItem(unit,itemId);
             match.RefreshCombatUnit(unit);
         }

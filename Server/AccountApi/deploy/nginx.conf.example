@@ -1,0 +1,20 @@
+# Replace game.example.com and certificate paths. Host the WebGL client on this origin.
+server {
+    listen 443 ssl;
+    server_name game.example.com;
+    ssl_certificate /etc/letsencrypt/live/game.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/game.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 4k;
+    location /auth/ {
+        proxy_pass http://127.0.0.1:5080;
+        proxy_set_header Host $host;
+        # Overwrite incoming forwarded headers; one trusted hop only.
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 30s;
+        access_log off;
+    }
+}
+server { listen 80; server_name game.example.com; return 301 https://game.example.com$request_uri; }

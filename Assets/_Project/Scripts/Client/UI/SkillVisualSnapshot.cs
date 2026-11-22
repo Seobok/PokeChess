@@ -32,7 +32,7 @@ namespace PokeChess.Client.UI
                 TrackerTier=u.trackerTier,TrackerStacks=u.trackerStacks,TrackerTarget=u.trackerTarget,TrackerExpiry=u.trackerExpiryTick,
                 DuelistTier=u.duelistTier,DuelistStacks=u.duelistStacks,DuelistChaseEnd=u.duelistChaseEndTick,DuelistAttackEnd=u.duelistAttackEndTick,
                 MoveDirection=u.action==CombatActionState.Moving?point(u.moveColumn,u.moveRow)-point(u.column,u.row):Vector2.zero,
-                Action=u.action,Cast=u.castId,Start=u.startTick,Effect=u.effectTick,End=u.endTick,Statuses=u.statusDetails??Array.Empty<CombatStatusView>(),Shields=u.shields??Array.Empty<CombatShieldView>(),
+                Action=frame.complete && tick>=u.endTick ? CombatActionState.Idle : u.action,Cast=u.castId,Start=u.startTick,Effect=u.effectTick,End=u.endTick,Statuses=u.statusDetails??Array.Empty<CombatStatusView>(),Shields=u.shields??Array.Empty<CombatShieldView>(),
                 Position=ThrowPresentation.Playback(frame,u.id,tick,u.action==CombatActionState.Moving?Vector2.Lerp(point(u.column,u.row),point(u.moveColumn,u.moveRow),
                     (float)((tick-u.startTick)/Math.Max(1,u.endTick-u.startTick))):point(u.column,u.row),point)
             }).ToArray();
@@ -54,7 +54,7 @@ namespace PokeChess.Client.UI
                     DuelistChaseEnd=battle.Synergies.DuelistChaseEnd(u),DuelistAttackEnd=battle.Synergies.DuelistAttackEnd(u),
                     MoveDirection=u.ActionState==CombatActionState.Moving && action.MoveDestination.HasValue
                         ? point(action.MoveDestination.Value.Column,action.MoveDestination.Value.Row)-point(u.Position.Column,u.Position.Row) : Vector2.zero,
-                    Alive=u.IsAlive&&u.IsOnBoard,Targetable=u.IsTargetable,Position=position,Action=u.ActionState,
+                    Alive=u.IsAlive&&u.IsOnBoard,Targetable=u.IsTargetable,Position=position,Action=battle.Result!=BattleResult.InProgress && tick>=(cast?.EndTick??action.EndTick) ? CombatActionState.Idle : u.ActionState,
                     Cast=cast?.CastId??0,Start=cast?.StartTick??action.StartTick,Effect=cast?.EffectTick??action.EffectTick,End=cast?.EndTick??action.EndTick,
                     Shields=battle.Shields.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatShieldView{id=s.Id,source=s.SourceId,group=s.Group,remaining=s.Remaining,endTick=s.ExpireTick}).ToArray(),
                     Statuses=battle.StatusEffects.Active.Where(s=>s.TargetId==u.UnitInstanceId).Select(s=>new CombatStatusView {

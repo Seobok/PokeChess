@@ -95,6 +95,56 @@ namespace PokeChess.Core.Tests
             foreach(var p in m.Players){new ShopSystem().RefreshForRound(m,p.PlayerId);if(units)SharedPoolSystem.RegisterUnit(m,c.CreateUnit("unit-"+p.PlayerId,"bulbasaur",p.PlayerId,UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0))),"bulbasaur");}
             return(m,new LocalRoundCoordinator(m,c),c);
         }
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void NativeEmblemEquipAndCraftAreRejectedWithoutConsumingItems(bool craft, bool reverse)
+        {
+            var original = Catalog().Get("bulbasaur");
+            var catalog = new PokemonCatalog(new[] { new PokemonDefinition("bulbasaur", "Test", 1,
+                original.BaseStats, "role", "skill", traitIds: new[] { SynergyTraits.Flame }) });
+            var match = MatchStateFactory.CreateWithPool("emblem", new[] { "p1", "p2" }, catalog, new[] { "bulbasaur" });
+            match.TransitionTo(MatchPhase.Starting); match.TransitionTo(MatchPhase.Preparation);
+            var unit = catalog.CreateUnit("unit-p1", "bulbasaur", "p1", UnitRank.One, 0,
+                UnitPlacement.OnBoard(new BoardPosition(0, 0)));
+            SharedPoolSystem.RegisterUnit(match, unit, "bulbasaur");
+            var player = match.GetPlayer("p1");
+            var items = new ItemSystem();
+            var emblem = ItemCatalog.Get("emblem-" + SynergyTraits.Flame);
+            string incoming = Id(craft ? (reverse ? emblem.FirstComponent : emblem.SecondComponent) : emblem.Id);
+            if (craft)
+            {
+                string first = Id(reverse ? emblem.SecondComponent : emblem.FirstComponent);
+                player.AddInventoryItem(first);
+                items.Equip(match, "p1", unit.InstanceId, first, player.ItemRevision);
+            }
+            player.AddInventoryItem(incoming);
+            long revision = player.ItemRevision;
+            var equipped = unit.ItemInstanceIds.ToArray();
+            Assert.Throws<InvalidOperationException>(() => items.Equip(match, "p1", unit.InstanceId, incoming, revision));
+            Assert.That(player.ItemInventory, Does.Contain(incoming));
+            Assert.That(unit.ItemInstanceIds, Is.EqualTo(equipped));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision));
+        }
+
+        [Test] public void ForeignEmblemCanEquipButDuplicateIsRejected()
+        {
+            var fixture = Match(units: true);
+            var player = fixture.match.GetPlayer("p1");
+            var unit = player.Units.Single();
+            var items = new ItemSystem();
+            string first = Id("emblem-" + SynergyTraits.Flame);
+            player.AddInventoryItem(first);
+            items.Equip(fixture.match, "p1", unit.InstanceId, first, player.ItemRevision);
+            Assert.That(unit.ItemInstanceIds, Does.Contain(first));
+            string duplicate = Id("emblem-" + SynergyTraits.Flame, round: 2);
+            player.AddInventoryItem(duplicate);
+            long revision = player.ItemRevision;
+            Assert.Throws<InvalidOperationException>(() => items.Equip(fixture.match, "p1", unit.InstanceId, duplicate, revision));
+            Assert.That(player.ItemInventory, Does.Contain(duplicate));
+            Assert.That(player.ItemRevision, Is.EqualTo(revision));
+        }
+
         private static (MatchState match,LocalRoundCoordinator rounds,PokemonCatalog catalog) RewardMatch()
         {
             var f=Match(units:true);
@@ -209,6 +259,37 @@ namespace PokeChess.Core.Tests
             Assert.That(f.rounds.StartCombat(4), Is.True);
             Assert.That(player.ItemInventory, Is.EqualTo(items));
         }
+        [TestCase(MatchPhase.Preparation)]
+        [TestCase(MatchPhase.Combat)]
+        [TestCase(MatchPhase.Result)]
+        public void ItemsCanCombineAndEquipThroughoutBattleAndIntermission(MatchPhase phase)
+        {
+            var fixture = Match(units: true);
+            var player = fixture.match.GetPlayer("p1");
+            var unit = player.Units.Single();
+            if (phase != MatchPhase.Preparation) fixture.match.TransitionTo(MatchPhase.Combat);
+            if (phase == MatchPhase.Result) fixture.match.TransitionTo(MatchPhase.Result);
+            string first = Id("x-attack"), second = Id("x-defense");
+            player.AddInventoryItem(first); player.AddInventoryItem(second);
+            var items = new ItemSystem();
+            var recipe = items.Combine(fixture.match, "p1", first, second, player.ItemRevision);
+            string completed = player.ItemInventory.Single();
+            items.Equip(fixture.match, "p1", unit.InstanceId, completed, player.ItemRevision);
+            Assert.That(unit.ItemInstanceIds, Does.Contain(completed));
+            Assert.That(ItemCatalog.DefinitionId(completed), Is.EqualTo(recipe.Id));
+            Assert.That(player.ItemInventory, Is.Empty);
+            player.AddInventoryItem(Id("x-special"));
+            items.Equip(fixture.match, "p1", unit.InstanceId, player.ItemInventory.Single(), player.ItemRevision);
+            player.AddInventoryItem(Id("x-speed"));
+            long revision = player.ItemRevision;
+            Assert.Throws<InvalidOperationException>(() => items.Equip(fixture.match, "p1", unit.InstanceId,
+                player.ItemInventory.Single(), revision - 1));
+            items.Equip(fixture.match, "p1", unit.InstanceId, player.ItemInventory.Single(), revision);
+            Assert.That(unit.ItemInstanceIds.Count, Is.EqualTo(2));
+            Assert.That(player.ItemInventory, Is.Empty);
+            Assert.That(fixture.match.Phase, Is.EqualTo(phase));
+        }
+
         [Test] public void EquipCombinesComponentsAndKeepsExistingCompletedItems()
         {
             var fixture = Match(units: true);

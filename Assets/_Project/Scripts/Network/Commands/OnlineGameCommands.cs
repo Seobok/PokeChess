@@ -79,7 +79,7 @@ namespace PokeChess.Network.Session
         {
             if(boundPlayers.ContainsKey(sender)||challenges.ContainsKey(sender))return;
             var bytes=new byte[32];using(var random=RandomNumberGenerator.Create())random.GetBytes(bytes);
-            var nonce=Convert.ToBase64String(bytes);challenges[sender]=nonce;bindingDeadlines[sender]=Time.realtimeSinceStartupAsDouble+30;
+            var nonce=Convert.ToBase64String(bytes);challenges[sender]=nonce;bindingDeadlines[sender]=Time.realtimeSinceStartupAsDouble+45;
             SendText(ChallengeMessage,sender,nonce,512);
         }
         private async void OnBindingChallenge(ulong sender,FastBufferReader reader)
@@ -87,7 +87,19 @@ namespace PokeChess.Network.Session
             if(IsHost||sender!=NetworkManager.ServerClientId||session==null)return;
             string nonce;try{nonce=ReadText(reader,512);if(Convert.FromBase64String(nonce).Length!=32)return;}catch(Exception){return;}
             var current=session;lobbyPublishing=true;
-            try {current.CurrentPlayer.SetProperty("bindingProof",new PlayerProperty(BindingProof(nonce,current.Id,current.CurrentPlayer.Id),VisibilityPropertyOptions.Member));await current.SaveCurrentPlayerDataAsync();}
+            try {
+                if(!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
+                string ticket=null; double deadline=Time.realtimeSinceStartupAsDouble+25;
+                while(session==current && AccountAccessAllowed() && Time.realtimeSinceStartupAsDouble<deadline && ticket==null && RequireAccountAdmission) {
+                    ticket=await RequestAccountAdmission(current.Id,nonce);
+                    if(ticket==null) { double retry=Time.realtimeSinceStartupAsDouble+1; while(session==current && Time.realtimeSinceStartupAsDouble<retry) await Task.Yield(); }
+                }
+                if(session!=current)return;
+                if((RequireAccountAdmission && ticket==null) || !AccountAccessAllowed()) throw new InvalidOperationException("AccountAdmissionFailed");
+                current.CurrentPlayer.SetProperty("bindingProof",new PlayerProperty(BindingProof(nonce,current.Id,current.CurrentPlayer.Id),VisibilityPropertyOptions.Member));
+                if(RequireAccountAdmission) current.CurrentPlayer.SetProperty("accountAdmission",new PlayerProperty(ticket,VisibilityPropertyOptions.Member));
+                await current.SaveCurrentPlayerDataAsync();
+            }
             catch(Exception){if(session==current){Error="IdentityBindingFailed";SessionEnded();}}
             finally{lobbyPublishing=false;}
         }
@@ -110,6 +122,14 @@ namespace PokeChess.Network.Session
                     if(!manager.ConnectedClientsIds.Contains(pair.Key)){challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);continue;}
                     var matches=current.Players.Where(p=>p.Id!=current.Host&&p.Properties.TryGetValue("bindingProof",out var proof)&&proof.Value==BindingProof(pair.Value,current.Id,p.Id)).ToArray();
                     if(matches.Length==1&&!boundPlayers.Values.Contains(matches[0].Id)){
+                        if(RequireAccountAdmission) {
+                        if(!matches[0].Properties.TryGetValue("accountAdmission",out var admission) || admission.Value==null || admission.Value.Length!=64) { if(Time.realtimeSinceStartupAsDouble>bindingDeadlines[pair.Key]) { manager.DisconnectClient(pair.Key,"AccountAdmissionDenied"); challenges.Remove(pair.Key); bindingDeadlines.Remove(pair.Key); } continue; }
+                        var admitted=await VerifyAccountAdmission(current.Id,pair.Value,matches[0].Id,admission.Value);
+                        if(session!=current || !manager.IsListening)return;
+                        if(!challenges.TryGetValue(pair.Key,out var expectedNonce) || expectedNonce!=pair.Value)continue;
+                        if(!admitted.HasValue) { if(Time.realtimeSinceStartupAsDouble>bindingDeadlines[pair.Key]) { manager.DisconnectClient(pair.Key,"AccountAdmissionTimeout"); challenges.Remove(pair.Key); bindingDeadlines.Remove(pair.Key); } continue; }
+                        if(!admitted.Value) { manager.DisconnectClient(pair.Key,"AccountAdmissionDenied"); challenges.Remove(pair.Key); bindingDeadlines.Remove(pair.Key); continue; }
+                        }
                         var reason=ValidateRecoveredBinding(matches[0].Id);
                         if(reason!=null){manager.DisconnectClient(pair.Key,reason);challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);continue;}
                         boundPlayers[pair.Key]=matches[0].Id;challenges.Remove(pair.Key);bindingDeadlines.Remove(pair.Key);SendText(BoundMessage,pair.Key,matches[0].Id,512);

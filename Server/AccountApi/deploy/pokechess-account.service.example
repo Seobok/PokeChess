@@ -1,0 +1,19 @@
+[Unit]
+Description=PokeChess account API
+After=network-online.target
+[Service]
+User=pokechess
+Group=pokechess
+WorkingDirectory=/opt/pokechess-account
+ExecStart=/usr/bin/dotnet /opt/pokechess-account/AccountApi.dll
+EnvironmentFile=/etc/pokechess/account.env
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/pokechess
+[Install]
+WantedBy=multi-user.target

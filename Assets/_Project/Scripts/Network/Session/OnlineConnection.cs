@@ -15,7 +15,13 @@ namespace PokeChess.Network.Session
 
     public sealed partial class OnlineConnection : MonoBehaviour
     {
-        private const ushort ProtocolVersion = 5;
+        private const ushort ProtocolVersion = 6;
+        public static bool RequireAccountAdmission { get; set; } = true;
+        // Account readiness plus server-issued, nonce-bound peer admission (protocol v6).
+        public static Func<bool> AccountAccessAllowed { get; set; } = () => false;
+        public static Func<string,string,Task<string>> RequestAccountAdmission { get; set; } = (room,nonce)=>Task.FromResult<string>(null);
+        public static Func<string,string,string,string,Task<bool?>> VerifyAccountAdmission { get; set; } = (room,nonce,player,ticket)=>Task.FromResult<bool?>(false);
+        public static Func<string,Task<bool>> ValidateAccountHost { get; set; } = player=>Task.FromResult(false);
         private const string RequestMessage = "PokeChess.Connection.Request.v1", ReplyMessage = "PokeChess.Connection.Reply.v1";
         private static OnlineConnection instance;
         public static OnlineConnection Instance
@@ -78,6 +84,7 @@ namespace PokeChess.Network.Session
             Error = null; RequestsReceived = RepliesReceived = sequence = 0;
             try
             {
+                if(!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
                 if(!AuthenticationService.Instance.IsAuthorized) throw new InvalidOperationException("NotAuthenticated");
                 if(code != null && (code.Length == 0 || code.Length > (byId?128:32))) throw new ArgumentException(byId?"InvalidRoomId":"InvalidJoinCode");
                 if(room != null)room.Validate();
@@ -92,6 +99,10 @@ namespace PokeChess.Network.Session
                         }
                     }.WithRelayNetwork().WithNetworkHandler(networkHandler));
                 else session = byId ? await MultiplayerService.Instance.JoinSessionByIdAsync(code,new JoinSessionOptions().WithNetworkHandler(networkHandler)) : await MultiplayerService.Instance.JoinSessionByCodeAsync(code,new JoinSessionOptions().WithNetworkHandler(networkHandler));
+                if (!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
+                if(session.Properties.TryGetValue("roomKind",out var kind)==false || kind.Value!=RoomBrowser.RoomKind) throw new InvalidOperationException("RoomAuthenticationModeMismatch");
+                if(session.CurrentPlayer.Id!=AuthenticationService.Instance.PlayerId || (RequireAccountAdmission && !await ValidateAccountHost(session.Host))) throw new InvalidOperationException("AccountHostNotVerified");
+                if (!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
                 session.Deleted += SessionEnded; session.RemovedFromSession += SessionEnded;
                 ResetLobby();
                 State = ConnectionState.Connecting;

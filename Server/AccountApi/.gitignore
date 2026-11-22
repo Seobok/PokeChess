@@ -1,0 +1,16 @@
+bin/
+obj/
+data/
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite*
+
+# Runtime secrets and TLS private material
+*.env
+!*.env.example
+*.pfx
+*.pem
+*.key

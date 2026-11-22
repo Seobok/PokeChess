@@ -11,6 +11,7 @@ namespace PokeChess.Client.UI
     {
         private RectTransform itemInventoryPanel,itemDragGhost,itemTooltip;
         private RectTransform itemRecipePreview;
+        private PlacementHexGraphic combatItemHover;
         private UnityEngine.UI.Image itemRecipeIcon;
         private UnityEngine.UI.Text itemRecipeName, itemRecipeDescription;
         private UnityEngine.UI.Text itemTooltipLabel, itemDragName;
@@ -108,31 +109,37 @@ namespace PokeChess.Client.UI
         private MatchPhase? ItemPhase => IsOnlineMatch ? onlineService.LocalMatchState?.phase : Match?.Phase;
         private bool CanDragItems() => CanDragItemsInPhase(ItemPhase);
         private bool CanDragItemsInPhase(MatchPhase? phase) =>
-            (phase == MatchPhase.Preparation || phase == MatchPhase.Combat) && (IsOnlineMatch
+            (phase == MatchPhase.Preparation || phase.HasValue && phase.Value.IsBattlePhase()) && (IsOnlineMatch
             ? onlineService.WatchingPlayerId==onlineService.LocalMatchState?.playerId&&OnlineInputReady&&!onlineService.LocalMatchState.eliminated&&onlineService.LocalMatchState.hp>0
             : localViewedPlayerId=="p1"&&Match!=null&&!busy&&!RoundLoop.NextPreparationPending&&Simulation?.Status!=SimulationStatus.Running&&!Player.IsEliminated&&Player.HP>0);
 
         private string ItemTarget(Vector2 point)
         {
             var slot = Hit(point);
-            if (ItemPhase != MatchPhase.Combat || slot?.Placement.Kind == PlacementKind.Bench)
+            if (ItemPhase?.IsBattlePhase() != true || slot?.Placement.Kind == PlacementKind.Bench)
                 return ItemTarget(slot);
 
-            if (combatRoot == null || !combatRoot.gameObject.activeInHierarchy) return null;
-            for (int i = combatRoot.childCount - 1; i >= 0; i--)
+            if (combatRoot == null || !combatRoot.gameObject.activeInHierarchy)
+                return ItemPhase == MatchPhase.Result ? ItemTarget(slot) : null;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(combatRoot, point, null, out var local);
+            var size = CombatItemFootprintSize();
+            var candidates = IsOnlineMatch
+                ? onlineService.LocalMatchState.units.Where(unit => unit.placement == PlacementKind.Board).Select(unit => unit.id)
+                : Player.Units.Where(unit => unit.Placement.Kind == PlacementKind.Board).Select(unit => unit.InstanceId);
+            string target = null;
+            float closest = float.MaxValue;
+            foreach (string id in candidates.OrderBy(id => id, StringComparer.Ordinal))
             {
-                var fighter = combatRoot.GetChild(i) as RectTransform;
-                if (fighter == null || !fighter.gameObject.activeInHierarchy ||
-                    !fighter.name.StartsWith("Fighter_", StringComparison.Ordinal) ||
-                    !RectTransformUtility.RectangleContainsScreenPoint(fighter, point, null)) continue;
-
-                string id = fighter.name.Substring("Fighter_".Length);
-                bool owned = IsOnlineMatch
-                    ? onlineService.LocalMatchState.units.Any(unit => unit.id == id && unit.placement == PlacementKind.Board)
-                    : Player.Units.Any(unit => unit.InstanceId == id && unit.Placement.Kind == PlacementKind.Board);
-                if (owned) return id;
+                var ground = CombatItemGroundPoint(id);
+                if (!ground.HasValue) continue;
+                var offset = local - ground.Value;
+                if (Mathf.Abs(offset.x) > size.x * .5f ||
+                    Mathf.Abs(offset.y) > size.y * .5f - Mathf.Abs(offset.x) * size.y / (2 * size.x)) continue;
+                if (offset.sqrMagnitude >= closest) continue;
+                closest = offset.sqrMagnitude;
+                target = id;
             }
-            return null;
+            return target;
         }
         private string ItemTarget(Slot slot)
         {
@@ -209,16 +216,92 @@ namespace PokeChess.Client.UI
             var destination = Hit(point);
             if (draggedItem == EvolutionDragId && ItemPhase == MatchPhase.Preparation)
             {
+                if (combatItemHover != null) combatItemHover.gameObject.SetActive(false);
                 UpdateEvolutionHover(EvolutionSlotAt(point, destination));
                 return;
             }
             int hoveredSlot = HoveredInventorySlot(point);
             string target = hoveredSlot < 0 ? ItemTarget(point) : null;
+            UpdateCombatItemHover(target);
+            if (draggedItem == EvolutionDragId)
+            {
+                UpdateItemRecipePreview(null, Vector2.zero);
+                UpdateCombatEvolutionHover(target);
+                return;
+            }
             UpdateItemRecipePreview(PreviewRecipe(hoveredSlot, target), local);
             foreach (var slot in slots) slot.Graphic.color = BaseSlotColor(slot);
             if (destination != null && hoveredSlot < 0)
                 destination.Graphic.color = target != null ? new Color(.08f,.36f,.29f) : new Color(.48f,.12f,.17f);
         }
+        private Vector2 CombatItemFootprintSize() => PlacementSize(boardTiles[0]);
+
+        private Vector2? CombatItemGroundPoint(string id)
+        {
+            if (id == null || combatRoot == null) return null;
+            if (IsOnlineMatch)
+            {
+                var frame = onlineService.Combat.Current;
+                var unit = frame?.units.FirstOrDefault(candidate => candidate.id == id);
+                if (unit != null && unit.onBoard && unit.hp > 0)
+                    return CombatPoint(new BoardPosition(unit.column, unit.row));
+            }
+            else
+            {
+                var unit = RoundLoop.GetBattleFor(localViewedPlayerId)?.Battle?.Units
+                    .FirstOrDefault(candidate => candidate.UnitInstanceId == id);
+                if (unit != null && unit.IsOnBoard && unit.IsAlive) return CombatPoint(unit.Position);
+            }
+            if (ItemPhase == MatchPhase.Result)
+            {
+                var slot = slots.FirstOrDefault(candidate => ItemTarget(candidate) == id);
+                if (slot != null) return (Vector2)combatRoot.InverseTransformPoint(slot.Rect.position);
+            }
+            return null;
+        }
+
+        private void UpdateCombatItemHover(string id)
+        {
+            var ground = ItemPhase?.IsBattlePhase() == true ? CombatItemGroundPoint(id) : null;
+            bool visible = ground.HasValue && (draggedItem != EvolutionDragId || CanEvolveTarget(id));
+            if (!visible)
+            {
+                if (combatItemHover != null) combatItemHover.gameObject.SetActive(false);
+                return;
+            }
+            if (combatItemHover == null)
+            {
+                var root = Rect("CombatItemHover", combatRoot, new Vector2(56, 34), Vector2.zero);
+                combatItemHover = root.gameObject.AddComponent<PlacementHexGraphic>();
+                combatItemHover.color = new Color(.015f, .035f, .065f, .85f);
+                combatItemHover.raycastTarget = false;
+            }
+            // Keep the ground marker above board cells and below all fighters and effects.
+            int groundIndex = 0;
+            for (int i = 0; i < combatRoot.childCount; i++)
+                if (combatRoot.GetChild(i).name.StartsWith("CombatCell_", StringComparison.Ordinal)) groundIndex = i + 1;
+            combatItemHover.transform.SetSiblingIndex(groundIndex);
+            combatItemHover.rectTransform.sizeDelta = CombatItemFootprintSize() * .92f;
+            combatItemHover.rectTransform.anchoredPosition = ground.Value;
+            combatItemHover.gameObject.SetActive(true);
+        }
+
+        private void UpdateCombatEvolutionHover(string id)
+        {
+            if (id == null || !CanEvolveTarget(id))
+            {
+                evolutionDragPreview.gameObject.SetActive(false);
+                return;
+            }
+            string definitionId = IsOnlineMatch
+                ? onlineService.LocalMatchState.units.First(unit => unit.id == id).definitionId
+                : Player.GetUnit(id).DefinitionId;
+            var ground = CombatItemGroundPoint(id);
+            Vector2 targetPoint = ground.HasValue
+                ? (Vector2)canvasRect.InverseTransformPoint(combatRoot.TransformPoint(ground.Value)) : Vector2.zero;
+            ShowEvolutionPreview(catalog.Get(definitionId), targetPoint);
+        }
+
         public void EndItemDrag(Vector2 point)
         {
             if(!IsItemDragging)return;
@@ -265,6 +348,7 @@ namespace PokeChess.Client.UI
             draggedItem=null;if(itemDragGhost!=null)itemDragGhost.gameObject.SetActive(false);
             if (itemRecipePreview != null) itemRecipePreview.gameObject.SetActive(false);
             ClearEvolutionHighlights();
+            if (combatItemHover != null) combatItemHover.gameObject.SetActive(false);
             if(Match!=null)foreach(var slot in slots)slot.Graphic.color=BaseSlotColor(slot);
         }
         private void PlayItemReward(BoardPosition monsterCell, string rewardKey, int index)
@@ -382,7 +466,12 @@ namespace PokeChess.Client.UI
                 button.GetComponent<UnityEngine.UI.Image>().sprite = key == null ? inventoryEmptySlot : inventoryToolSlot;
                 button.interactable = canUseTools && key != null;
             }
-            if(IsItemDragging)itemDragGhost.SetAsLastSibling();
+            if (IsItemDragging)
+            {
+                var pointer = UnityEngine.InputSystem.Pointer.current;
+                if (pointer != null) DragItem(pointer.position.ReadValue());
+                itemDragGhost.SetAsLastSibling();
+            }
         }
         private bool CanEvolveTarget(string id)
         {
