@@ -56,17 +56,26 @@ namespace PokeChess.Network.Session
         public string Error { get; private set; }
         public IReadOnlyList<RoomListing> Rooms { get; private set; }=Array.Empty<RoomListing>();
         public string NextPage { get; private set; }
+        public bool IsLoadingMore { get; private set; }
+        public bool CanLoadMore => State == RoomListState.Ready && !string.IsNullOrEmpty(NextPage) && Time.realtimeSinceStartupAsDouble >= nextRequest;
         public event Action Changed;
         private Task pending;
         private double nextRequest;
         public Task RefreshAsync(bool nextPage=false)
         {
+            if (nextPage && string.IsNullOrEmpty(NextPage)) return Task.CompletedTask;
             if(pending!=null&&!pending.IsCompleted)return pending;
             if(Time.realtimeSinceStartupAsDouble<nextRequest)return Task.CompletedTask;
             pending=QueryAsync(nextPage?NextPage:null);return pending;
         }
+        private static IReadOnlyList<RoomListing> MergeRooms(IEnumerable<RoomListing> existing, IEnumerable<RoomListing> page)
+            => Array.AsReadOnly(existing.Concat(page).GroupBy(room => room.Id, StringComparer.Ordinal)
+                .Select(group => group.Last()).ToArray());
+
         private async Task QueryAsync(string continuation)
         {
+            bool append = !string.IsNullOrEmpty(continuation);
+            IsLoadingMore = append;
             State=RoomListState.Loading;Error=null;Changed?.Invoke();
             try
             {
@@ -82,11 +91,12 @@ namespace PokeChess.Network.Session
                     }
                 });
                 if (!AccountAccessAllowed()) throw new InvalidOperationException("AccountLoginRequired");
-                Rooms=Array.AsReadOnly(result.Sessions.Select(s=>new RoomListing(s.Id,s.Name,s.MaxPlayers-s.AvailableSlots,s.MaxPlayers)).ToArray());
+                var page = result.Sessions.Select(s=>new RoomListing(s.Id,s.Name,s.MaxPlayers-s.AvailableSlots,s.MaxPlayers));
+                Rooms = MergeRooms(append ? Rooms : Array.Empty<RoomListing>(), page);
                 NextPage=result.ContinuationToken;State=RoomListState.Ready;
             }
-            catch(Exception e){Rooms=Array.Empty<RoomListing>();NextPage=null;Error=e is SessionException failure?failure.Error.ToString():e.GetType().Name;State=RoomListState.Failed;}
-            finally {nextRequest=Time.realtimeSinceStartupAsDouble+1;Changed?.Invoke();}
+            catch(Exception e){if(!append){Rooms=Array.Empty<RoomListing>();NextPage=null;}Error=e is SessionException failure?failure.Error.ToString():e.GetType().Name;State=RoomListState.Failed;}
+            finally {IsLoadingMore=false;nextRequest=Time.realtimeSinceStartupAsDouble+1;Changed?.Invoke();}
         }
     }
 }
