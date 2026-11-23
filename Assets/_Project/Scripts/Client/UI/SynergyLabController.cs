@@ -20,7 +20,7 @@ namespace PokeChess.Client.UI
         private Font font;
         private void Start()
         {
-            View=GetComponent<PlacementSandboxView>();font=Font.CreateDynamicFontFromOSFont(new[]{"Malgun Gothic","Arial"},14);
+            View=GetComponent<PlacementSandboxView>();font=UiFont.Default;
             BuildToolbar();Select(InitialSynergy,InitialThreshold);
         }
         private void Update()

@@ -29,7 +29,7 @@ namespace PokeChess.Client.UI
         private GameObject roomsToggle;
         private void Awake()
         {
-            font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial Unicode MS", "Arial" }, 18);
+            font = UiFont.Default;
             var root = UiPrefab.Instantiate("RoomCanvas", transform);
             foreach (var label in root.GetComponentsInChildren<UnityEngine.UI.Text>(true)) label.font = font;
             recoveryPanel = root.Find("ReconnectPanel").gameObject;

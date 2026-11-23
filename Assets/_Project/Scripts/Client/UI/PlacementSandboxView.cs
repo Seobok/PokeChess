@@ -71,7 +71,7 @@ namespace PokeChess.Client.UI
         }
         private void BuildUI()
         {
-            font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            font=UiFont.Default;
             canvasRect=Rect("PlacementCanvas",transform,new Vector2(1280,720),Vector2.zero);
             var canvas=canvasRect.gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvasRect.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;

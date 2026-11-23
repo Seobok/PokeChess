@@ -89,7 +89,9 @@ namespace PokeChess.Network.Session
                     ValidateStartRoster(current,roster);
                     if(current.Players.Where(p=>p.Id!=current.Host).All(p=>p.Properties.TryGetValue("startAck",out var ack)&&ack.Value==info.matchId))break;
                     if(Time.realtimeSinceStartupAsDouble>deadline)throw new TimeoutException("StartAcknowledgementTimeout");
-                    await Task.Delay(1000);await current.RefreshAsync();
+                    double refreshAt=Time.realtimeSinceStartupAsDouble+1;
+                    while(Time.realtimeSinceStartupAsDouble<refreshAt)await Awaitable.NextFrameAsync();
+                    await current.RefreshAsync();
                 }
                 host.SetProperty("lobbyPhase",new SessionProperty("Started",VisibilityPropertyOptions.Member));await host.SavePropertiesAsync();StartInfo=info;Error=null;
             }

@@ -34,6 +34,7 @@ namespace PokeChess.Network.Session
             if(manager.IsListening)return;
             while(manager.ShutdownInProgress)await Task.Yield();
             var transport=(UnityTransport)manager.NetworkConfig.NetworkTransport;
+            transport.UseWebSockets=data.IsWebSocket!=0;
             transport.SetRelayServerData(data);
             if(!(role==NetworkRole.Client?manager.StartClient():manager.StartHost()))throw new InvalidOperationException("NetworkStartFailed");
             double deadline=Time.realtimeSinceStartupAsDouble+12;
@@ -54,7 +55,9 @@ namespace PokeChess.Network.Session
             // membership, but get fresh Relay credentials; old allocations expire.
             var allocation=await RelayService.Instance.JoinAllocationAsync(relayCode);
             if(cancelled||epoch!=generation)throw new OperationCanceledException();
-            await StartTransportAsync(NetworkRole.Client,allocation.ToRelayServerData(configuration.RelayServerData.IsSecure!=0?"dtls":"udp"));
+            var data=configuration.RelayServerData;
+            string protocol=data.IsWebSocket!=0?(data.IsSecure!=0?"wss":"ws"):(data.IsSecure!=0?"dtls":"udp");
+            await StartTransportAsync(NetworkRole.Client,allocation.ToRelayServerData(protocol));
             return allocation.AllocationId.ToString();
         }
     }

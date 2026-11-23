@@ -131,7 +131,7 @@ namespace PokeChess.Client.UI
             var text = image.GetComponentInChildren<Text>(true);
             if (text == null)
             {
-                font ??= Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                font ??= UiFont.Default;
                 text = new GameObject("TrackerNumber", typeof(RectTransform), typeof(Text)).GetComponent<Text>();
                 text.transform.SetParent(image.transform, false);
                 text.rectTransform.anchoredPosition = Vector2.left * 9;

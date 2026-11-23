@@ -34,7 +34,7 @@ namespace PokeChess.Client.UI
         {var label=Label(name,parent,value,size,dimensions,position);label.font=itemFont;return label;}
         private void BuildItemWildUI()
         {
-            itemFont = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial Unicode MS", "Arial" }, 14);
+            itemFont = UiFont.Default;
             wildPreviewLabel = ItemLabel("WildPreview", canvasRect, "", 12, new Vector2(720, 22), new Vector2(0, 285));
             itemIcons = Resources.Load<ItemIconLibrary>("ItemIcons");
 

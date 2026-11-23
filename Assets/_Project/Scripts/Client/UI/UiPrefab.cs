@@ -14,11 +14,9 @@ namespace PokeChess.Client.UI
 
             var instance = UnityEngine.Object.Instantiate(prefab, parent, false);
             instance.name = prefab.name;
-            if (fallbackFont != null)
-            {
-                foreach (var label in instance.GetComponentsInChildren<UnityEngine.UI.Text>(true))
-                    if (label.font == null) label.font = fallbackFont;
-            }
+            var uiFont = fallbackFont != null ? fallbackFont : UiFont.Default;
+            foreach (var label in instance.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+                label.font = uiFont;
             return instance;
         }
 

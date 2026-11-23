@@ -40,7 +40,7 @@ namespace PokeChess.Client.UI
         private void Start()
         {
             if(Roster==null)Roster=GameContent.Roster;
-            font=Font.CreateDynamicFontFromOSFont(new[]{"Malgun Gothic","Arial Unicode MS","Arial"},15);
+            font=UiFont.Default;
             Session=new EffectLabSession(Roster);Session.SetPreserveHealth(true);chosenPokemon=Session.Layout[0].Pokemon;
             chosenStatus=Roster.Statuses.FirstOrDefault(s=>s.Behavior==StatusBehavior.Poison)?.Id??Roster.Statuses.First().Id;
             Build();Session.Changed+=Capture;RefreshList();Capture();Render();

@@ -142,7 +142,7 @@ namespace PokeChess.Client.UI
             tooltipCanvas.overrideSorting = true;
             tooltipCanvas.sortingOrder = canvasRect.GetComponent<Canvas>().sortingOrder + 1;
             var label = Label("Bonuses", tooltip, text, 13, new Vector2(198, 95), Vector2.zero);
-            label.font = null;
+            label.font = itemFont;
             tooltip.gameObject.SetActive(false);
 
             source.raycastTarget = true;

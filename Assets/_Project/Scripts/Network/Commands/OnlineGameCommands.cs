@@ -176,13 +176,19 @@ namespace PokeChess.Network.Session
             if(PendingCommand!=null){CommandFeedback="Waiting for the previous command. Retry to confirm it.";return null;}
             if(command==null||!IdentityBound||StartInfo==null||State!=ConnectionState.Connected||(command.kind!=MatchCommandKind.Sync&&!StateSynchronized)){CommandFeedback="Match connection is not ready.";return null;}
             PendingCommand=command.Copy();pendingAck=new TaskCompletionSource<CommandAck>();CommandFeedback="Confirming action…";SaveRecoveryTicket();var completion=pendingAck.Task;DispatchPending();
-            if(await Task.WhenAny(completion,Task.Delay(5000))==completion)return await completion;
+            if(await WaitForCommandAsync(completion))return await completion;
             if(PendingCommand!=null)CommandFeedback="Confirmation delayed. Retry the same action.";return null;
         }
         public async Task<CommandAck> RetryPendingCommandAsync()
         {
             if(PendingCommand==null)return LastCommandAck;if(!IdentityBound||(State!=ConnectionState.Connected&&State!=ConnectionState.Recovering))return null;var completion=pendingAck.Task;DispatchPending();
-            return await Task.WhenAny(completion,Task.Delay(5000))==completion?await completion:null;
+            return await WaitForCommandAsync(completion)?await completion:null;
+        }
+        private static async Task<bool> WaitForCommandAsync(Task<CommandAck> completion)
+        {
+            double deadline=Time.realtimeSinceStartupAsDouble+5;
+            while(!completion.IsCompleted&&Time.realtimeSinceStartupAsDouble<deadline)await Awaitable.NextFrameAsync();
+            return completion.IsCompleted;
         }
         private void DispatchPending()
         {
