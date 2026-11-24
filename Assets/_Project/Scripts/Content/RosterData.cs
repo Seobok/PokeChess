@@ -78,7 +78,8 @@ namespace PokeChess.Content
         {
             SynergySystem.NatureGuardianDefinition(2),
             SynergySystem.NatureGuardianDefinition(4)
-        }));
+        }).Concat(PokeChess.Core.Match.WildRoundSystem.TutorialDefinitions(Pokemon.FirstOrDefault(p=>p.Id=="caterpie")?.ToCore()))
+            .Concat(new[]{PokeChess.Core.Match.WildRoundSystem.BossDefinition()}));
         public PokemonDefinition[] CreateDefinitions()=>ShopPokemon.Select(p=>p.ToCore()).ToArray();
         public SkillCatalog CreateSkills()=>new SkillCatalog(Skills.SelectMany(s=>s.ToDefinitions()));
         public StatusCatalog CreateStatuses()=>new StatusCatalog(Statuses.Select(s=>s.ToCore()));

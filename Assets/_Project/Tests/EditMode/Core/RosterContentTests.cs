@@ -12,6 +12,68 @@ namespace PokeChess.Core.Tests
 {
     public sealed class RosterContentTests
     {
+        [TestCase(1,"magikarp","잉어킹",2)]
+        [TestCase(2,"magikarp","잉어킹",3)]
+        [TestCase(3,"rattata","꼬렛",3)]
+        [TestCase(9,"gyarados","갸라도스",1)]
+        [TestCase(15,"gyarados","갸라도스",1)]
+        [TestCase(21,"gyarados","갸라도스",1)]
+        [TestCase(39,"gyarados","갸라도스",1)]
+        public void TutorialWildBattleUsesDisplayedSpecies(int round,string species,string name,int count)
+        {
+            var catalog=GameContent.CreateCatalog();
+            var match=PokeChess.Core.Match.MatchStateFactory.CreateWithPool("wild-species",new[]{"p1","p2"},catalog,new[]{"caterpie"});
+            match.TransitionTo(PokeChess.Core.Match.MatchPhase.Starting);
+            match.TransitionTo(PokeChess.Core.Match.MatchPhase.Preparation);
+            for(int i=1;i<round;i++){
+                match.TransitionTo(PokeChess.Core.Match.MatchPhase.Combat);
+                match.TransitionTo(PokeChess.Core.Match.MatchPhase.Result);
+                match.TransitionTo(PokeChess.Core.Match.MatchPhase.Preparation);
+            }
+            var factory=typeof(PokeChess.Core.Match.WildRoundSystem).GetMethod("CreateBattle",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static);
+            var ally=catalog.CreateUnit("ally","caterpie","p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(0,0)));
+            var battle=(BattleState)factory.Invoke(null,new object[]{match,catalog,match.GetPlayer("p1"),new[]{new BattleUnitSetup(ally,1,new BoardPosition(0,0))},30});
+            var enemies=battle.Units.Where(u=>u.TeamId==2).ToArray();
+            Assert.That(enemies.Length,Is.EqualTo(count));
+            foreach(var unit in enemies){
+                Assert.That(unit.DefinitionId,Is.EqualTo(species));
+                Assert.That(catalog.Get(unit.DefinitionId).DisplayName,Is.EqualTo(name));
+                Assert.That(unit.Stats.MaxEnergy,Is.Zero);
+                if(round>=9){
+                    Assert.That(unit.Stats.MaxHP,Is.EqualTo(PokeChess.Core.Match.WildRoundSystem.BossStats(round).MaxHP));
+                    Assert.That(unit.Stats.Attack,Is.EqualTo(PokeChess.Core.Match.WildRoundSystem.BossStats(round).Attack));
+                    Assert.That(unit.Rank,Is.EqualTo(UnitRank.One));
+                }
+            }
+            Assert.That(GameContent.CreateDefinitions().Any(d=>d.Id==species),Is.False);
+        }
+        [Test]
+        public void WildBossGrowsEveryEncounterWithBoundedSpeedAndSize()
+        {
+            var previous=PokeChess.Core.Match.WildRoundSystem.BossStats(9);
+            for(int round=15;round<=99;round+=6){
+                var next=PokeChess.Core.Match.WildRoundSystem.BossStats(round);
+                Assert.That(next.MaxHP,Is.GreaterThan(previous.MaxHP));
+                Assert.That(next.Attack,Is.GreaterThan(previous.Attack));
+                Assert.That(next.AttackSpeed,Is.InRange(previous.AttackSpeed,1.1f));
+                Assert.That(PokeChess.Core.Match.WildRoundSystem.BossVisualScale(round),Is.InRange(1f,1.42f));
+                previous=next;
+            }
+            var animations=PokeChess.Client.Data.PokemonAnimationLibrary.Load();
+            foreach(var action in new[]{"Idle","Walk","Attack","Hurt"})
+                Assert.That(animations.Find("gyarados",action)?.Frames,Is.Not.Null.And.Not.Empty);
+            var node=new GameObject("WildBossScaleTest",typeof(RectTransform));
+            try {
+                var view=node.AddComponent<PokeChess.Client.UI.PokemonSpriteView>();
+                view.Initialize("gyarados","wild-9-p1-0");
+                Assert.That(view.ShowIdle(0),Is.True);
+                var initial=view.CharacterImage.rectTransform.sizeDelta;
+                view.Initialize("gyarados","wild-45-p1-0");view.ShowIdle(0);
+                Assert.That(view.CharacterImage.rectTransform.sizeDelta.x/initial.x,Is.EqualTo(1.42f).Within(.001f));
+                view.Initialize("gyarados","ordinary-unit");view.ShowIdle(0);
+                Assert.That(view.CharacterImage.rectTransform.sizeDelta.x,Is.EqualTo(initial.x).Within(.001f));
+            } finally {UnityEngine.Object.DestroyImmediate(node);}
+        }
         [Test]
         public void NumericStatusAndBossAuthoringConvertsWithoutChangingLegacyDefaults()
         {

@@ -41,6 +41,8 @@ namespace PokeChess.Client.UI
             var contentName=PokeChess.Content.GameContent.DisplayName(id);
             if(contentName!=null)return contentName;
             switch(id){
+                case WildRoundSystem.BasicAttackSkillId:return "일반 공격";
+                case "wild":return "야생 포켓몬";
                 case "normal":return "노말";case "fire":return "불꽃";case "water":return "물";case "grass":return "풀";case "poison":return "독";case "bug":return "벌레";case "fighting":return "격투";case "psychic":return "에스퍼";case "rock":return "바위";case "ground":return "땅";case "electric":return "전기";case "steel":return "강철";case "ghost":return "고스트";
                 case "tank":return "탱커";case "support":return "지원";case "carry":return "딜러";case "caster":return "기술 딜러";
                 case "guardian":return "수호";case "assault":return "돌격";case "focus":return "집중";case "link":return "연결";

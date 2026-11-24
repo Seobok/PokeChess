@@ -16,7 +16,10 @@ namespace PokeChess.Client.UI
             instance.name = prefab.name;
             var uiFont = fallbackFont != null ? fallbackFont : UiFont.Default;
             foreach (var label in instance.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+            {
                 label.font = uiFont;
+                UiFont.EnsureLineHeight(label);
+            }
             return instance;
         }
 

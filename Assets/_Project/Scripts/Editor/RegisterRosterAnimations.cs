@@ -18,6 +18,7 @@ namespace PokeChess.Editor
             Register(PokeChess.Content.GameContent.Roster.Pokemon.Select(r=>r.Id).Concat(new[]{"exeggcute","exeggutor"}));
         }
         public static void RegisterNatureGuardians()=>Register(new[]{"exeggcute","exeggutor"});
+        public static void RegisterWildBoss()=>Register(new[]{"gyarados"});
         private static void Register(IEnumerable<string> ids)
         {
             var library=PokemonAnimationLibrary.Load();var animations=library.Animations.ToList();

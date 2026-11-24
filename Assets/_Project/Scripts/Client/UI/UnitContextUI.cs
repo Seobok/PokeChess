@@ -36,6 +36,7 @@ namespace PokeChess.Client.UI
         }
         private string ContextSkill(PokemonDefinition definition,UnitRank rank,PokemonStats stats)
         {
+            if(definition.SkillId==WildRoundSystem.BasicAttackSkillId)return "일반 공격\n기술 없이 일반 공격만 사용합니다.";
             if(!contextSkills.TryGet(definition.SkillId,out var skill))return Readable(definition.SkillId)+"\nDescription unavailable";
             var lines=new List<string>{Readable(skill.Id)+" · cast "+Number(skill.CastTime)+"s"};
             foreach(var effect in skill.Effects)

@@ -274,7 +274,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -288,7 +288,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -312,7 +312,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -346,1765 +346,1778 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Charge-Anim_0
+      name: gyarados_Charge_d0_f0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 831
-        width: 36
-        height: 55
+        x: 0
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2400968f23cc7f350800000000000000
-      internalID: 6050529143683612738
+      spriteID: f1ea560e18eb135439b6f00f2d55570d
+      internalID: 962284279
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_1
+      name: gyarados_Charge_d0_f1
       rect:
         serializedVersion: 2
-        x: 126
-        y: 831
-        width: 36
-        height: 55
+        x: 96
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 58761210855e94fd0800000000000000
-      internalID: -2357100763812894843
+      spriteID: a29df75ade4ddd84fb89e7b5ebccc3f0
+      internalID: -143428046
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_2
+      name: gyarados_Charge_d0_f2
       rect:
         serializedVersion: 2
-        x: 223
-        y: 831
-        width: 36
-        height: 55
+        x: 192
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1b028aa22f9822170800000000000000
-      internalID: 8152229948684771505
+      spriteID: 7ba279a6255810b418a9353ed9ec11b9
+      internalID: -2113811351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_3
+      name: gyarados_Charge_d0_f3
       rect:
         serializedVersion: 2
-        x: 318
-        y: 831
-        width: 36
-        height: 55
+        x: 288
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f0137c10bcfffa3b0800000000000000
-      internalID: -5498895372622810865
+      spriteID: 6f16a0f6081221946a7627cc3bb893a7
+      internalID: 989765107
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_4
+      name: gyarados_Charge_d0_f4
       rect:
         serializedVersion: 2
-        x: 415
-        y: 831
-        width: 36
-        height: 55
+        x: 384
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0962f9135487fe830800000000000000
-      internalID: 4102630024138401424
+      spriteID: 8a874902c92c4874485ddbe0bffd9699
+      internalID: 1218079099
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_5
+      name: gyarados_Charge_d0_f5
       rect:
         serializedVersion: 2
-        x: 510
-        y: 831
-        width: 36
-        height: 55
+        x: 480
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0f9226cf00d290130800000000000000
-      internalID: 3533404864906406384
+      spriteID: f33c9aa786689ca438933a68db9480a3
+      internalID: -1282895151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_6
+      name: gyarados_Charge_d0_f6
       rect:
         serializedVersion: 2
-        x: 607
-        y: 831
-        width: 36
-        height: 55
+        x: 576
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2848640407fdf3a70800000000000000
-      internalID: 8809005069367673986
+      spriteID: 5a781a39ef4bc7a4d849fcac1740de58
+      internalID: -732128393
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_7
+      name: gyarados_Charge_d0_f7
       rect:
         serializedVersion: 2
-        x: 702
-        y: 831
-        width: 36
-        height: 55
+        x: 672
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 55aa74ea16683ae20800000000000000
-      internalID: 3360677501042403925
+      spriteID: fa84482714650fa44b7925a9191640f3
+      internalID: -948620761
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_8
+      name: gyarados_Charge_d0_f8
       rect:
         serializedVersion: 2
-        x: 799
-        y: 831
-        width: 36
-        height: 55
+        x: 768
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 91e8152a81a18d210800000000000000
-      internalID: 1357863980756995609
+      spriteID: bf99d9b44ee066a4385563d85dd631bd
+      internalID: -568887111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_9
+      name: gyarados_Charge_d0_f9
       rect:
         serializedVersion: 2
-        x: 894
-        y: 831
-        width: 36
-        height: 55
+        x: 864
+        y: 784
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e186304d1ee82bad0800000000000000
-      internalID: -2687928927010985954
+      spriteID: 10818d2c83abb094d8c48bad148f4cbd
+      internalID: -1407693747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_10
+      name: gyarados_Charge_d1_f0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 725
-        width: 68
-        height: 49
+        x: 0
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 881f7c9da4b7c6a80800000000000000
-      internalID: -8472261237579189880
+      spriteID: 91818aedde6f66a4aa61627ac07bfe2a
+      internalID: -874824650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_11
+      name: gyarados_Charge_d1_f1
       rect:
         serializedVersion: 2
-        x: 114
-        y: 724
-        width: 68
-        height: 49
+        x: 96
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8bea2767873910190800000000000000
-      internalID: -7997949317640704328
+      spriteID: 832bb2a6fcd3c4b48999c23ea95ff5ac
+      internalID: -1149557363
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_12
+      name: gyarados_Charge_d1_f2
       rect:
         serializedVersion: 2
-        x: 211
-        y: 725
-        width: 68
-        height: 49
+        x: 192
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 532e97184af3ad800800000000000000
-      internalID: 637892273005781557
+      spriteID: 0a9450c56ffed274b8fdb7e8c9c1c5b2
+      internalID: 31140173
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_13
+      name: gyarados_Charge_d1_f3
       rect:
         serializedVersion: 2
-        x: 306
-        y: 724
-        width: 68
-        height: 49
+        x: 288
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb96e130a20e2b560800000000000000
-      internalID: 7328166014730791356
+      spriteID: a74fb7aa42920d14cba107975c7722c5
+      internalID: 1103379711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_14
+      name: gyarados_Charge_d1_f4
       rect:
         serializedVersion: 2
-        x: 403
-        y: 725
-        width: 68
-        height: 49
+        x: 384
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f63e80a1f771c5c10800000000000000
-      internalID: 2043534165584438127
+      spriteID: d1f6a3fcedc397148bb1c7b980973728
+      internalID: -1799196817
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_15
+      name: gyarados_Charge_d1_f5
       rect:
         serializedVersion: 2
-        x: 498
-        y: 724
-        width: 68
-        height: 49
+        x: 480
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 40787a755423b7a50800000000000000
-      internalID: 6519860158953654020
+      spriteID: ac8e9694ca05cc94ba3e21a98a3e3266
+      internalID: -399749711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_16
+      name: gyarados_Charge_d1_f6
       rect:
         serializedVersion: 2
-        x: 595
-        y: 725
-        width: 68
-        height: 49
+        x: 576
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0b1b7cc353a500d80800000000000000
-      internalID: -8286524129662226000
+      spriteID: 1dcdc7667ea600445b605f745dc0c5c8
+      internalID: 2126073102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_17
+      name: gyarados_Charge_d1_f7
       rect:
         serializedVersion: 2
-        x: 690
-        y: 724
-        width: 68
-        height: 49
+        x: 672
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 769ad79f6c75a28a0800000000000000
-      internalID: -6329149814214907545
+      spriteID: 5873a4a39275ee342b2b33e83479f4ec
+      internalID: -1621003279
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_18
+      name: gyarados_Charge_d1_f8
       rect:
         serializedVersion: 2
-        x: 787
-        y: 725
-        width: 68
-        height: 49
+        x: 768
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3ccd8a7f3c1188100800000000000000
-      internalID: 110357724241910979
+      spriteID: 80e23c4510050be4781efa6833f6fef3
+      internalID: 1947338521
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_19
+      name: gyarados_Charge_d1_f9
       rect:
         serializedVersion: 2
-        x: 882
-        y: 724
-        width: 68
-        height: 49
+        x: 864
+        y: 672
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9baf10f5d15c64260800000000000000
-      internalID: 7081564194025372345
+      spriteID: 3aae61d9cee9a0447b98ae6676086b7e
+      internalID: -1840794529
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_20
+      name: gyarados_Charge_d2_f0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 616
-        width: 91
-        height: 50
+        x: 0
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7a6ebdb3e0c2e0b10800000000000000
-      internalID: 1949544128343434919
+      spriteID: cb66a8618faf9f74887008bf3ee3cad4
+      internalID: -329451873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_21
+      name: gyarados_Charge_d2_f1
       rect:
         serializedVersion: 2
-        x: 98
-        y: 615
-        width: 91
-        height: 50
+        x: 96
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2b010a3cb045ed0a0800000000000000
-      internalID: -6854949173307895630
+      spriteID: 129f594c894ccfd438a5b4e2078ea058
+      internalID: 1640102906
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_22
+      name: gyarados_Charge_d2_f2
       rect:
         serializedVersion: 2
-        x: 194
-        y: 616
-        width: 91
-        height: 50
+        x: 192
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d16fe73a7897543d0800000000000000
-      internalID: -3223036334843169251
+      spriteID: f17bf91c8aa8d7741a737bb8c47bc48a
+      internalID: -1241525878
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_23
+      name: gyarados_Charge_d2_f3
       rect:
         serializedVersion: 2
-        x: 290
-        y: 615
-        width: 91
-        height: 50
+        x: 288
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4c2e4edfc4eaa02c0800000000000000
-      internalID: -4464564434884042044
+      spriteID: a704740745a506b4998d6942da9ccfdd
+      internalID: -645652122
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_24
+      name: gyarados_Charge_d2_f4
       rect:
         serializedVersion: 2
-        x: 386
-        y: 616
-        width: 91
-        height: 50
+        x: 384
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d933ba54d1f68a0a0800000000000000
-      internalID: -6870119060040109155
+      spriteID: 9a1f3b57f9c799b4c9cb5febbfdc6ccd
+      internalID: -1135121411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_25
+      name: gyarados_Charge_d2_f5
       rect:
         serializedVersion: 2
-        x: 482
-        y: 615
-        width: 91
-        height: 50
+        x: 480
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ed51811cfde0d690800000000000000
-      internalID: -7579296505983312416
+      spriteID: 6943b74fd323a5841bb83d0f0cfde1ac
+      internalID: 237802558
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_26
+      name: gyarados_Charge_d2_f6
       rect:
         serializedVersion: 2
-        x: 578
-        y: 616
-        width: 91
-        height: 50
+        x: 576
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 98293440683ca8eb0800000000000000
-      internalID: -4716742679352601975
+      spriteID: a38b33be36d36594abeb071b054b83ad
+      internalID: 571821547
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_27
+      name: gyarados_Charge_d2_f7
       rect:
         serializedVersion: 2
-        x: 674
-        y: 615
-        width: 91
-        height: 50
+        x: 672
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cc68b984300e62a00800000000000000
-      internalID: 731518294201960140
+      spriteID: 1a4a4bb289d5dbb47b3460b76d91d8ed
+      internalID: 1473324312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_28
+      name: gyarados_Charge_d2_f8
       rect:
         serializedVersion: 2
-        x: 770
-        y: 616
-        width: 91
-        height: 50
+        x: 768
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 384b87e4153b16460800000000000000
-      internalID: 7233259638323983491
+      spriteID: 8cb3d25706031b246a8719cd3fe04972
+      internalID: 420033349
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_29
+      name: gyarados_Charge_d2_f9
       rect:
         serializedVersion: 2
-        x: 866
-        y: 615
-        width: 91
-        height: 50
+        x: 864
+        y: 560
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8071c3683392c7380800000000000000
-      internalID: -8972251056356714744
+      spriteID: f5e9c0e643954b44f80afb96f63f026c
+      internalID: 839856331
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_30
+      name: gyarados_Charge_d3_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 504
-        width: 67
-        height: 53
+        x: 0
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4907eb11597918cc0800000000000000
-      internalID: -3710517951472963436
+      spriteID: 6b1f66fd82c135b45ab4765c3f7dac18
+      internalID: 1410417676
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_31
+      name: gyarados_Charge_d3_f1
       rect:
         serializedVersion: 2
-        x: 108
-        y: 503
-        width: 67
-        height: 53
+        x: 96
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d0ab81697c868e620800000000000000
-      internalID: 2803605974464117261
+      spriteID: c9a140df26eea3b41a4660eeed4e160e
+      internalID: -507882507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_32
+      name: gyarados_Charge_d3_f2
       rect:
         serializedVersion: 2
-        x: 203
-        y: 504
-        width: 67
-        height: 53
+        x: 192
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8b62126e8d6e46730800000000000000
-      internalID: 3991568989005358776
+      spriteID: 27743506bde283b4fab6ef2dda76321d
+      internalID: 1150607591
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_33
+      name: gyarados_Charge_d3_f3
       rect:
         serializedVersion: 2
-        x: 300
-        y: 503
-        width: 67
-        height: 53
+        x: 288
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f416c97da766219e0800000000000000
-      internalID: -1652145435502157489
+      spriteID: 165dabf69c34d5e45ab4397aeb2b0cf3
+      internalID: -488929277
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_34
+      name: gyarados_Charge_d3_f4
       rect:
         serializedVersion: 2
-        x: 395
-        y: 504
-        width: 67
-        height: 53
+        x: 384
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0c1098cb9cf1a060800000000000000
-      internalID: 6963124244906515467
+      spriteID: bf9897d793275b847b45c7f40f4d55e1
+      internalID: -1505511467
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_35
+      name: gyarados_Charge_d3_f5
       rect:
         serializedVersion: 2
-        x: 492
-        y: 503
-        width: 67
-        height: 53
+        x: 480
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bea5335bbd65a43b0800000000000000
-      internalID: -5527510091005994261
+      spriteID: edb2fd52decc0594ab4a02f1facb3fd2
+      internalID: 139235262
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_36
+      name: gyarados_Charge_d3_f6
       rect:
         serializedVersion: 2
-        x: 587
-        y: 504
-        width: 67
-        height: 53
+        x: 576
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cee79d7a76085f3b0800000000000000
-      internalID: -5479332188940304660
+      spriteID: 6fea91d08c57da74ea848fb4bc146137
+      internalID: -2092999013
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_37
+      name: gyarados_Charge_d3_f7
       rect:
         serializedVersion: 2
-        x: 684
-        y: 503
-        width: 67
-        height: 53
+        x: 672
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 787401d70023d7f60800000000000000
-      internalID: 8033632287978440583
+      spriteID: fcb6fa2b5d4837d4ab72881dd8134f64
+      internalID: 374698649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_38
+      name: gyarados_Charge_d3_f8
       rect:
         serializedVersion: 2
-        x: 779
-        y: 504
-        width: 67
-        height: 53
+        x: 768
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f7722546597224de0800000000000000
-      internalID: -1350473415671011457
+      spriteID: a60085cd4f9ee0141bfbb27d15d3f38f
+      internalID: 2090165170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_39
+      name: gyarados_Charge_d3_f9
       rect:
         serializedVersion: 2
-        x: 876
-        y: 503
-        width: 67
-        height: 53
+        x: 864
+        y: 448
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d8a33ee6b471bdf60800000000000000
-      internalID: 8060061570860006029
+      spriteID: a818d77b1de6c7446bf933f5131702a4
+      internalID: -259548612
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_40
+      name: gyarados_Charge_d4_f0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 391
-        width: 35
-        height: 58
+        x: 0
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a0ab501f3989cfb30800000000000000
-      internalID: 4322497503540132362
+      spriteID: 3757ef15bd89c2140bcb19bdc76ef8ad
+      internalID: -263391040
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_41
+      name: gyarados_Charge_d4_f1
       rect:
         serializedVersion: 2
-        x: 127
-        y: 391
-        width: 35
-        height: 58
+        x: 96
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c39611306ee2b9ab0800000000000000
-      internalID: -5000351395835975364
+      spriteID: 8afa85ff2cdf84644becccbf18bad8d5
+      internalID: 147854207
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_42
+      name: gyarados_Charge_d4_f2
       rect:
         serializedVersion: 2
-        x: 224
-        y: 391
-        width: 35
-        height: 58
+        x: 192
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4d568186c9ecf420800000000000000
-      internalID: 2665262118282353995
+      spriteID: cf914451406b99c43aa1d2ec9ee9a584
+      internalID: 1576564326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_43
+      name: gyarados_Charge_d4_f3
       rect:
         serializedVersion: 2
-        x: 319
-        y: 391
-        width: 35
-        height: 58
+        x: 288
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ae5ee86530e015ac0800000000000000
-      internalID: -3868295197434649110
+      spriteID: 9466ce6449f4cb042b8f4ce156251ed9
+      internalID: -952025226
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_44
+      name: gyarados_Charge_d4_f4
       rect:
         serializedVersion: 2
-        x: 416
-        y: 391
-        width: 35
-        height: 58
+        x: 384
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 900e7a8c6e2998690800000000000000
-      internalID: -7599381376304422903
+      spriteID: 3f2d7ebba8d32154497f4de81009612b
+      internalID: -1194213304
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_45
+      name: gyarados_Charge_d4_f5
       rect:
         serializedVersion: 2
-        x: 511
-        y: 391
-        width: 35
-        height: 58
+        x: 480
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1556b3c3eff345e0800000000000000
-      internalID: -1926414861878274786
+      spriteID: 2fe733490f912c04ebc0548bfc899d04
+      internalID: -1016796013
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_46
+      name: gyarados_Charge_d4_f6
       rect:
         serializedVersion: 2
-        x: 608
-        y: 391
-        width: 35
-        height: 58
+        x: 576
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9e99ec9c5875b74a0800000000000000
-      internalID: -6594580997225932311
+      spriteID: 03cdedcf1d482bb41b2ba947b145353a
+      internalID: 301186167
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_47
+      name: gyarados_Charge_d4_f7
       rect:
         serializedVersion: 2
-        x: 703
-        y: 391
-        width: 35
-        height: 58
+        x: 672
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96c05c6b60a76a220800000000000000
-      internalID: 2496817212678278249
+      spriteID: c4dcc6f2b9d0fc34796a77b7a14cd587
+      internalID: 1162920966
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_48
+      name: gyarados_Charge_d4_f8
       rect:
         serializedVersion: 2
-        x: 800
-        y: 391
-        width: 35
-        height: 58
+        x: 768
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 31596c61dcc166350800000000000000
-      internalID: 6009522419948492051
+      spriteID: 3754fc3d3513d4d4fb40e15584a6e818
+      internalID: 775635399
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_49
+      name: gyarados_Charge_d4_f9
       rect:
         serializedVersion: 2
-        x: 895
-        y: 391
-        width: 35
-        height: 58
+        x: 864
+        y: 336
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 52434446dfad1a300800000000000000
-      internalID: 261731035207971877
+      spriteID: 4641bb9086931304f84307d29cd6a12f
+      internalID: 1579216302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_50
+      name: gyarados_Charge_d5_f0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 280
-        width: 67
-        height: 53
+        x: 0
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a7b5d08b97e24ac0800000000000000
-      internalID: -3872278074517768287
+      spriteID: 9781f4556300dce4692824a228120439
+      internalID: 1787777007
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_51
+      name: gyarados_Charge_d5_f1
       rect:
         serializedVersion: 2
-        x: 114
-        y: 279
-        width: 67
-        height: 53
+        x: 96
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fc5956a0b6ee4f950800000000000000
-      internalID: 6482067907196327375
+      spriteID: d44f79d334da1e54faa5c44b5e92e095
+      internalID: 508973644
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_52
+      name: gyarados_Charge_d5_f2
       rect:
         serializedVersion: 2
-        x: 211
-        y: 280
-        width: 67
-        height: 53
+        x: 192
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c369e661e21a59a0800000000000000
-      internalID: -6243657174092258361
+      spriteID: bf94dae505282214fa2d47f19e5f3664
+      internalID: -517094667
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_53
+      name: gyarados_Charge_d5_f3
       rect:
         serializedVersion: 2
-        x: 306
-        y: 279
-        width: 67
-        height: 53
+        x: 288
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 20c3eb35f9be25a80800000000000000
-      internalID: -8479456078847919102
+      spriteID: d65ce7646d9c4a442a5dbb8718c8eed4
+      internalID: -853939012
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_54
+      name: gyarados_Charge_d5_f4
       rect:
         serializedVersion: 2
-        x: 403
-        y: 280
-        width: 67
-        height: 53
+        x: 384
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: df210e51a16b71310800000000000000
-      internalID: 1375768434337387261
+      spriteID: dd4fa7ad0e818da47bedad652f3ace24
+      internalID: 579585528
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_55
+      name: gyarados_Charge_d5_f5
       rect:
         serializedVersion: 2
-        x: 498
-        y: 279
-        width: 67
-        height: 53
+        x: 480
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 717c78275bc42f050800000000000000
-      internalID: 5832808809592506135
+      spriteID: 42e09fc0b55077747947a9ac4cbc03eb
+      internalID: -22850432
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_56
+      name: gyarados_Charge_d5_f6
       rect:
         serializedVersion: 2
-        x: 595
-        y: 280
-        width: 67
-        height: 53
+        x: 576
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce063c9772f52e7d0800000000000000
-      internalID: -2890643387667226388
+      spriteID: 7dd82577afbe90047ae49244944bf3bd
+      internalID: 1718967419
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_57
+      name: gyarados_Charge_d5_f7
       rect:
         serializedVersion: 2
-        x: 690
-        y: 279
-        width: 67
-        height: 53
+        x: 672
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cabcafa669bf5a080800000000000000
-      internalID: -9176652042239030356
+      spriteID: 660633059ce70174697edc372409d568
+      internalID: -363558645
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_58
+      name: gyarados_Charge_d5_f8
       rect:
         serializedVersion: 2
-        x: 787
-        y: 280
-        width: 67
-        height: 53
+        x: 768
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 859d2b03a65aa5d80800000000000000
-      internalID: -8261108690955609768
+      spriteID: e295a449621ed6b47bfe9306090a002f
+      internalID: -769233077
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_59
+      name: gyarados_Charge_d5_f9
       rect:
         serializedVersion: 2
-        x: 882
-        y: 279
-        width: 67
-        height: 53
+        x: 864
+        y: 224
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62f65665b06e302d0800000000000000
-      internalID: -3313551964446036186
+      spriteID: 51537290fb83ab24184801bc8bfe74e4
+      internalID: 1314187987
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_60
+      name: gyarados_Charge_d6_f0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 168
-        width: 91
-        height: 50
+        x: 0
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 281e48d21cb58d770800000000000000
-      internalID: 8635753170733425026
+      spriteID: 27c81c90e4a9a4b43bd6cc9d707c955d
+      internalID: -1547836708
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_61
+      name: gyarados_Charge_d6_f1
       rect:
         serializedVersion: 2
-        x: 99
-        y: 167
-        width: 91
-        height: 50
+        x: 96
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c10fbe3deeae9e80800000000000000
-      internalID: -8169900340020313659
+      spriteID: 8ced8727aaf8fff4f9ad2d7ab984abca
+      internalID: -1238601382
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_62
+      name: gyarados_Charge_d6_f2
       rect:
         serializedVersion: 2
-        x: 195
-        y: 168
-        width: 91
-        height: 50
+        x: 192
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 896f0c6a41eabdcd0800000000000000
-      internalID: -2532238961745529192
+      spriteID: aa2d5538eda925b4a890881cdcbf8bec
+      internalID: 960731843
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_63
+      name: gyarados_Charge_d6_f3
       rect:
         serializedVersion: 2
-        x: 291
-        y: 167
-        width: 91
-        height: 50
+        x: 288
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb3c8bd58481ba6a0800000000000000
-      internalID: -6437024543306890308
+      spriteID: d3d26036bb0c4fd49ae13631e778b9c0
+      internalID: -359932663
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_64
+      name: gyarados_Charge_d6_f4
       rect:
         serializedVersion: 2
-        x: 387
-        y: 168
-        width: 91
-        height: 50
+        x: 384
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d0faeec0793ea6470800000000000000
-      internalID: 8388767493827505933
+      spriteID: d8461e2f58a35b54f880bbc43a5da205
+      internalID: -886259660
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_65
+      name: gyarados_Charge_d6_f5
       rect:
         serializedVersion: 2
-        x: 483
-        y: 167
-        width: 91
-        height: 50
+        x: 480
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd38038deec65ec20800000000000000
-      internalID: 3235111680420643803
+      spriteID: cb3efe96e8672414aacb42c822bde38f
+      internalID: -1547150126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_66
+      name: gyarados_Charge_d6_f6
       rect:
         serializedVersion: 2
-        x: 579
-        y: 168
-        width: 91
-        height: 50
+        x: 576
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7730164c27f26dad0800000000000000
-      internalID: -2677900758457711753
+      spriteID: 4f21bc8fbccc95c488f3be926c56be5c
+      internalID: -1965715031
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_67
+      name: gyarados_Charge_d6_f7
       rect:
         serializedVersion: 2
-        x: 675
-        y: 167
-        width: 91
-        height: 50
+        x: 672
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 09fc43d0f2533f100800000000000000
-      internalID: 140514489579917200
+      spriteID: 1aac64d980662b347835b66ed26e95c4
+      internalID: 1366780675
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_68
+      name: gyarados_Charge_d6_f8
       rect:
         serializedVersion: 2
-        x: 771
-        y: 168
-        width: 91
-        height: 50
+        x: 768
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7ada5d861955a7e50800000000000000
-      internalID: 6807847869741378983
+      spriteID: 106881462b99e014b993252b5115b743
+      internalID: 94592285
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_69
+      name: gyarados_Charge_d6_f9
       rect:
         serializedVersion: 2
-        x: 867
-        y: 167
-        width: 91
-        height: 50
+        x: 864
+        y: 112
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d72bf1046d8cf6590800000000000000
-      internalID: -7678698017119030659
+      spriteID: d176d9f1dbe7d634e842049077c4d038
+      internalID: -179254843
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_70
+      name: gyarados_Charge_d7_f0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 53
-        width: 68
-        height: 49
+        x: 0
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87a1cec2124fa6950800000000000000
-      internalID: 6443230640231684728
+      spriteID: c3c04e81f220af04283254db108680c3
+      internalID: 6481792
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_71
+      name: gyarados_Charge_d7_f1
       rect:
         serializedVersion: 2
-        x: 106
-        y: 52
-        width: 68
-        height: 49
+        x: 96
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5fd02749bf706a7b0800000000000000
-      internalID: -5213470741526082059
+      spriteID: 0864594aa424ecd4b9cfff573edabf70
+      internalID: -1493314970
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_72
+      name: gyarados_Charge_d7_f2
       rect:
         serializedVersion: 2
-        x: 201
-        y: 53
-        width: 68
-        height: 49
+        x: 192
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8097feac61ab29cc0800000000000000
-      internalID: -3705694936315758328
+      spriteID: 2cd8ccf3d1770744f9eeafdadb47d11a
+      internalID: 928182921
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_73
+      name: gyarados_Charge_d7_f3
       rect:
         serializedVersion: 2
-        x: 298
-        y: 52
-        width: 68
-        height: 49
+        x: 288
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 17f321596ef37e550800000000000000
-      internalID: 6189986472420065137
+      spriteID: bd40f92fa8363e74cb155d9150e60d7c
+      internalID: -1840641844
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_74
+      name: gyarados_Charge_d7_f4
       rect:
         serializedVersion: 2
-        x: 393
-        y: 53
-        width: 68
-        height: 49
+        x: 384
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ce99bf6326d910c0800000000000000
-      internalID: -4604413696322986304
+      spriteID: e8aca137166de8042b65129639c930ac
+      internalID: 868073110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_75
+      name: gyarados_Charge_d7_f5
       rect:
         serializedVersion: 2
-        x: 490
-        y: 52
-        width: 68
-        height: 49
+        x: 480
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: df8df50f2dfb28f30800000000000000
-      internalID: 4576431084058695933
+      spriteID: 7e8930da623020649968fbcb9b1f8c92
+      internalID: -1725322663
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_76
+      name: gyarados_Charge_d7_f6
       rect:
         serializedVersion: 2
-        x: 585
-        y: 53
-        width: 68
-        height: 49
+        x: 576
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6b90d6b24c2213350800000000000000
-      internalID: 5994610804944341430
+      spriteID: 4ef3e53dc06c91e488f20153a244f6ba
+      internalID: 1390540890
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_77
+      name: gyarados_Charge_d7_f7
       rect:
         serializedVersion: 2
-        x: 682
-        y: 52
-        width: 68
-        height: 49
+        x: 672
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 837adb8c26e391840800000000000000
-      internalID: 5195252239144167224
+      spriteID: c6cbd2f59d2953d4fb3cd618b0836ac0
+      internalID: 1838779597
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_78
+      name: gyarados_Charge_d7_f8
       rect:
         serializedVersion: 2
-        x: 777
-        y: 53
-        width: 68
-        height: 49
+        x: 768
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fea2cf4dde9326320800000000000000
-      internalID: 2549664032688450287
+      spriteID: 1ebfca46867d0a54fb909a30f9a5245a
+      internalID: -230618503
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Charge-Anim_79
+      name: gyarados_Charge_d7_f9
       rect:
         serializedVersion: 2
-        x: 874
-        y: 52
-        width: 68
-        height: 49
+        x: 864
+        y: 0
+        width: 96
+        height: 112
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4a80dd1920ad6700800000000000000
-      internalID: 535260029181266510
+      spriteID: 2f483381b45d90b4c86a5ade5c7751a6
+      internalID: 1242675528
       vertices: []
       indices: 
       edges: []
@@ -2113,7 +2126,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2795ccdf22fec2844a0e13cc7d1eb121
     internalID: 0
     vertices: []
     indices: 
@@ -2123,86 +2136,86 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Charge-Anim_0: 6050529143683612738
-      Charge-Anim_1: -2357100763812894843
-      Charge-Anim_10: -8472261237579189880
-      Charge-Anim_11: -7997949317640704328
-      Charge-Anim_12: 637892273005781557
-      Charge-Anim_13: 7328166014730791356
-      Charge-Anim_14: 2043534165584438127
-      Charge-Anim_15: 6519860158953654020
-      Charge-Anim_16: -8286524129662226000
-      Charge-Anim_17: -6329149814214907545
-      Charge-Anim_18: 110357724241910979
-      Charge-Anim_19: 7081564194025372345
-      Charge-Anim_2: 8152229948684771505
-      Charge-Anim_20: 1949544128343434919
-      Charge-Anim_21: -6854949173307895630
-      Charge-Anim_22: -3223036334843169251
-      Charge-Anim_23: -4464564434884042044
-      Charge-Anim_24: -6870119060040109155
-      Charge-Anim_25: -7579296505983312416
-      Charge-Anim_26: -4716742679352601975
-      Charge-Anim_27: 731518294201960140
-      Charge-Anim_28: 7233259638323983491
-      Charge-Anim_29: -8972251056356714744
-      Charge-Anim_3: -5498895372622810865
-      Charge-Anim_30: -3710517951472963436
-      Charge-Anim_31: 2803605974464117261
-      Charge-Anim_32: 3991568989005358776
-      Charge-Anim_33: -1652145435502157489
-      Charge-Anim_34: 6963124244906515467
-      Charge-Anim_35: -5527510091005994261
-      Charge-Anim_36: -5479332188940304660
-      Charge-Anim_37: 8033632287978440583
-      Charge-Anim_38: -1350473415671011457
-      Charge-Anim_39: 8060061570860006029
-      Charge-Anim_4: 4102630024138401424
-      Charge-Anim_40: 4322497503540132362
-      Charge-Anim_41: -5000351395835975364
-      Charge-Anim_42: 2665262118282353995
-      Charge-Anim_43: -3868295197434649110
-      Charge-Anim_44: -7599381376304422903
-      Charge-Anim_45: -1926414861878274786
-      Charge-Anim_46: -6594580997225932311
-      Charge-Anim_47: 2496817212678278249
-      Charge-Anim_48: 6009522419948492051
-      Charge-Anim_49: 261731035207971877
-      Charge-Anim_5: 3533404864906406384
-      Charge-Anim_50: -3872278074517768287
-      Charge-Anim_51: 6482067907196327375
-      Charge-Anim_52: -6243657174092258361
-      Charge-Anim_53: -8479456078847919102
-      Charge-Anim_54: 1375768434337387261
-      Charge-Anim_55: 5832808809592506135
-      Charge-Anim_56: -2890643387667226388
-      Charge-Anim_57: -9176652042239030356
-      Charge-Anim_58: -8261108690955609768
-      Charge-Anim_59: -3313551964446036186
-      Charge-Anim_6: 8809005069367673986
-      Charge-Anim_60: 8635753170733425026
-      Charge-Anim_61: -8169900340020313659
-      Charge-Anim_62: -2532238961745529192
-      Charge-Anim_63: -6437024543306890308
-      Charge-Anim_64: 8388767493827505933
-      Charge-Anim_65: 3235111680420643803
-      Charge-Anim_66: -2677900758457711753
-      Charge-Anim_67: 140514489579917200
-      Charge-Anim_68: 6807847869741378983
-      Charge-Anim_69: -7678698017119030659
-      Charge-Anim_7: 3360677501042403925
-      Charge-Anim_70: 6443230640231684728
-      Charge-Anim_71: -5213470741526082059
-      Charge-Anim_72: -3705694936315758328
-      Charge-Anim_73: 6189986472420065137
-      Charge-Anim_74: -4604413696322986304
-      Charge-Anim_75: 4576431084058695933
-      Charge-Anim_76: 5994610804944341430
-      Charge-Anim_77: 5195252239144167224
-      Charge-Anim_78: 2549664032688450287
-      Charge-Anim_79: 535260029181266510
-      Charge-Anim_8: 1357863980756995609
-      Charge-Anim_9: -2687928927010985954
+      gyarados_Charge_d0_f0: 962284279
+      gyarados_Charge_d0_f1: -143428046
+      gyarados_Charge_d0_f2: -2113811351
+      gyarados_Charge_d0_f3: 989765107
+      gyarados_Charge_d0_f4: 1218079099
+      gyarados_Charge_d0_f5: -1282895151
+      gyarados_Charge_d0_f6: -732128393
+      gyarados_Charge_d0_f7: -948620761
+      gyarados_Charge_d0_f8: -568887111
+      gyarados_Charge_d0_f9: -1407693747
+      gyarados_Charge_d1_f0: -874824650
+      gyarados_Charge_d1_f1: -1149557363
+      gyarados_Charge_d1_f2: 31140173
+      gyarados_Charge_d1_f3: 1103379711
+      gyarados_Charge_d1_f4: -1799196817
+      gyarados_Charge_d1_f5: -399749711
+      gyarados_Charge_d1_f6: 2126073102
+      gyarados_Charge_d1_f7: -1621003279
+      gyarados_Charge_d1_f8: 1947338521
+      gyarados_Charge_d1_f9: -1840794529
+      gyarados_Charge_d2_f0: -329451873
+      gyarados_Charge_d2_f1: 1640102906
+      gyarados_Charge_d2_f2: -1241525878
+      gyarados_Charge_d2_f3: -645652122
+      gyarados_Charge_d2_f4: -1135121411
+      gyarados_Charge_d2_f5: 237802558
+      gyarados_Charge_d2_f6: 571821547
+      gyarados_Charge_d2_f7: 1473324312
+      gyarados_Charge_d2_f8: 420033349
+      gyarados_Charge_d2_f9: 839856331
+      gyarados_Charge_d3_f0: 1410417676
+      gyarados_Charge_d3_f1: -507882507
+      gyarados_Charge_d3_f2: 1150607591
+      gyarados_Charge_d3_f3: -488929277
+      gyarados_Charge_d3_f4: -1505511467
+      gyarados_Charge_d3_f5: 139235262
+      gyarados_Charge_d3_f6: -2092999013
+      gyarados_Charge_d3_f7: 374698649
+      gyarados_Charge_d3_f8: 2090165170
+      gyarados_Charge_d3_f9: -259548612
+      gyarados_Charge_d4_f0: -263391040
+      gyarados_Charge_d4_f1: 147854207
+      gyarados_Charge_d4_f2: 1576564326
+      gyarados_Charge_d4_f3: -952025226
+      gyarados_Charge_d4_f4: -1194213304
+      gyarados_Charge_d4_f5: -1016796013
+      gyarados_Charge_d4_f6: 301186167
+      gyarados_Charge_d4_f7: 1162920966
+      gyarados_Charge_d4_f8: 775635399
+      gyarados_Charge_d4_f9: 1579216302
+      gyarados_Charge_d5_f0: 1787777007
+      gyarados_Charge_d5_f1: 508973644
+      gyarados_Charge_d5_f2: -517094667
+      gyarados_Charge_d5_f3: -853939012
+      gyarados_Charge_d5_f4: 579585528
+      gyarados_Charge_d5_f5: -22850432
+      gyarados_Charge_d5_f6: 1718967419
+      gyarados_Charge_d5_f7: -363558645
+      gyarados_Charge_d5_f8: -769233077
+      gyarados_Charge_d5_f9: 1314187987
+      gyarados_Charge_d6_f0: -1547836708
+      gyarados_Charge_d6_f1: -1238601382
+      gyarados_Charge_d6_f2: 960731843
+      gyarados_Charge_d6_f3: -359932663
+      gyarados_Charge_d6_f4: -886259660
+      gyarados_Charge_d6_f5: -1547150126
+      gyarados_Charge_d6_f6: -1965715031
+      gyarados_Charge_d6_f7: 1366780675
+      gyarados_Charge_d6_f8: 94592285
+      gyarados_Charge_d6_f9: -179254843
+      gyarados_Charge_d7_f0: 6481792
+      gyarados_Charge_d7_f1: -1493314970
+      gyarados_Charge_d7_f2: 928182921
+      gyarados_Charge_d7_f3: -1840641844
+      gyarados_Charge_d7_f4: 868073110
+      gyarados_Charge_d7_f5: -1725322663
+      gyarados_Charge_d7_f6: 1390540890
+      gyarados_Charge_d7_f7: 1838779597
+      gyarados_Charge_d7_f8: -230618503
+      gyarados_Charge_d7_f9: 1242675528
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

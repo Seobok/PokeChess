@@ -67,7 +67,7 @@ namespace PokeChess.Client.UI
         {
             var rect=Rect(name,parent,dimensions,position);var label=rect.gameObject.AddComponent<UnityEngine.UI.Text>();
             label.font=font;label.fontSize=size;label.color=Color.white;label.alignment=TextAnchor.MiddleCenter;
-            label.raycastTarget=false;label.text=text;return label;
+            label.raycastTarget=false;label.text=text;UiFont.EnsureLineHeight(label);return label;
         }
         private void BuildUI()
         {

@@ -69,7 +69,7 @@ namespace PokeChess.Client.UI
         }
         private UnityEngine.UI.Text Text(string name,Transform parent,string value,int size,Vector2 dimensions,Vector2 position)
         {
-            var t=Rect(name,parent,dimensions,position).gameObject.AddComponent<UnityEngine.UI.Text>();t.font=font;t.fontSize=size;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.text=value;t.raycastTarget=false;return t;
+            var t=Rect(name,parent,dimensions,position).gameObject.AddComponent<UnityEngine.UI.Text>();t.font=font;t.fontSize=size;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.text=value;t.raycastTarget=false;UiFont.EnsureLineHeight(t);return t;
         }
         private UnityEngine.UI.Text Button(Transform parent,string name,string label,float x,float width,Action action)
         {

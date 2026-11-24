@@ -231,6 +231,8 @@ namespace PokeChess.Client.UI
             var d = catalog.Get(definition);
             int natureTier = fighter?.isSynergySummon == true ? fighter.natureTier : 0;
             var stats = natureTier > 0 ? SynergySystem.NatureGuardianDefinition(natureTier).BaseStats : RankRules.Default.Apply(d, (UnitRank)rank);
+            if(fighter!=null&&definition==WildRoundSystem.BossId&&fighter.id.StartsWith("wild-",StringComparison.Ordinal))
+                stats=WildRoundSystem.BossStats(activeFrame.round);
             var items = unit?.items ?? board?.items ?? fighter?.items ?? Array.Empty<string>();
             detailLabel.font=itemFont;
             detailLabel.text=d.DisplayName+" "+RankBadge((UnitRank)rank)+"\n"+Readable(d.RoleId)+" · "+string.Join(" / ",d.TypeIds)+"\n"+(d.TraitIds.Count>0?"Traits: "+string.Join(", ",d.TraitIds)+"\n":"")+

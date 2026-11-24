@@ -25,8 +25,10 @@ namespace PokeChess.Client.UI
         private float drawnAlpha=1;
         private float skillScale=1;
         private float guardianScale=1;
+        private float wildScale=1;
+        private string wildScaleInstanceId;
         private float idleHeadPixels, overheadPixelScale=PixelScale*UnitSizeMultiplier;
-        internal float StableOverheadHeight => idleHeadPixels * overheadPixelScale * guardianScale;
+        internal float StableOverheadHeight => idleHeadPixels * overheadPixelScale * guardianScale * wildScale;
         private Color guardianTint=Color.white;
         public Vector2 SkillLungeOffset {get;private set;}
         private const float PixelScale=1.5f;
@@ -38,13 +40,8 @@ namespace PokeChess.Client.UI
         public void Initialize(string id,string instanceId=null)
         {
             UnitInstanceId=instanceId;
+            SetWildScale(instanceId);
             SetSkillLungeOffset(Vector2.zero);SetSkillScale(1);skillHidden=false;drawnAlpha=1;
-            if(instanceId!=null&&instanceId.StartsWith("wild-",StringComparison.Ordinal))
-            {
-                var parts=instanceId.Split('-');
-                if(parts.Length>1&&int.TryParse(parts[1],out int round))
-                    id=round==1||round==2?"magikarp":round==3?"rattata":id;
-            }
             pokemon=id;library=PokemonAnimationLibrary.Load();
             animationPokemon=library?.Find(id,"Idle")!=null ? id : (id=="exeggcute"||id=="exeggutor"?"tangela":PokeChess.Content.GameContent.BaseForm(id));
             // Use a fixed envelope of the idle frames rather than the currently drawn action frame.
@@ -71,6 +68,7 @@ namespace PokeChess.Client.UI
             double tick = presentationTick ?? battle.CurrentTick;
             bool actionFinished = battle.Result != BattleResult.InProgress && tick >= action.EndTick;
             UnitInstanceId=unit.UnitInstanceId;
+            SetWildScale(UnitInstanceId);
             SetGuardianForm(unit.IsSynergySummon?battle.Synergies.TeamTier(unit.TeamId,SynergyTraits.Nature):0);
             if(facing.sqrMagnitude>.001f)
                 direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
@@ -117,6 +115,7 @@ namespace PokeChess.Client.UI
         public void ShowPlayback(PokeChess.Core.Match.CombatUnitView unit,double tick,int tickRate,Vector2 facing,float pixelScale=1f,bool battleComplete=false)
         {
             UnitInstanceId=unit.id;
+            SetWildScale(UnitInstanceId);
             if(facing.sqrMagnitude>.001f)direction=((int)Math.Round(Math.Atan2(facing.x,-facing.y)/(Math.PI/4))+8)%8;
             SetGuardianForm(unit.isSynergySummon?unit.natureTier:0);
             if(previousHP>=0&&unit.hp<previousHP&&unit.hp>0)hurtStart=(long)tick;previousHP=unit.hp;
@@ -148,7 +147,7 @@ namespace PokeChess.Client.UI
         private bool DrawScaled(string name,double seconds,bool loop,float alpha,float scale)
         {
             overheadPixelScale = scale * UnitSizeMultiplier;
-            scale*=UnitSizeMultiplier*skillScale*guardianScale;
+            scale*=UnitSizeMultiplier*skillScale*guardianScale*wildScale;
             var anim=library==null?null:library.Find(animationPokemon,name);
             if(anim==null){image.enabled=false;return false;}
             int index=(anim.Directions==1?0:direction)*anim.FrameCount+anim.FrameAt(seconds,loop);
@@ -164,6 +163,16 @@ namespace PokeChess.Client.UI
         internal void SetGuardianForm(int tier) {
             guardianScale=tier>=10?1.45f:tier>=6?1.15f:1;
             guardianTint=tier>=10?new Color(.75f,1,.55f):tier>=6?new Color(.8f,1,.8f):Color.white;
+        }
+        private void SetWildScale(string instanceId)
+        {
+            if(wildScaleInstanceId==instanceId)return;
+            wildScaleInstanceId=instanceId;
+            wildScale=1;
+            if(instanceId==null||!instanceId.StartsWith("wild-",StringComparison.Ordinal))return;
+            var parts=instanceId.Split('-');
+            if(parts.Length>1&&int.TryParse(parts[1],out int round)&&round>=9)
+                wildScale=PokeChess.Core.Match.WildRoundSystem.BossVisualScale(round);
         }
         private string AttackAnimation()
             =>PokeChess.Content.GameContent.FindPokemon(pokemon)?.Visual?.Attack ?? "Attack";

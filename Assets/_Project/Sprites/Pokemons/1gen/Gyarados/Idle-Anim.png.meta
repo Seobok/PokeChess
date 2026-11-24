@@ -130,7 +130,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -144,7 +144,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -168,7 +168,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -202,709 +202,722 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle-Anim_0
+      name: gyarados_Idle_d0_f0
       rect:
         serializedVersion: 2
-        x: 17
-        y: 958
-        width: 39
-        height: 57
+        x: 0
+        y: 896
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fa864d247f1766b60800000000000000
-      internalID: 7738998316474853551
+      spriteID: 1c7e388db961be1489a458b8e0349bb2
+      internalID: 552446592
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_1
+      name: gyarados_Idle_d0_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 959
-        width: 39
-        height: 57
+        x: 72
+        y: 896
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 30f49f3b6ebff6b10800000000000000
-      internalID: 1977075729719447299
+      spriteID: 48016fef1fb268c4ea1e60eca951e449
+      internalID: -1576046599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_2
+      name: gyarados_Idle_d0_f2
       rect:
         serializedVersion: 2
-        x: 161
-        y: 960
-        width: 39
-        height: 57
+        x: 144
+        y: 896
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04047ac9bd83f4f70800000000000000
-      internalID: 9173613481854189632
+      spriteID: bab93a5862108d04cb4135f16c5274f7
+      internalID: -1495414029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_3
+      name: gyarados_Idle_d0_f3
       rect:
         serializedVersion: 2
-        x: 233
-        y: 959
-        width: 39
-        height: 57
+        x: 216
+        y: 896
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 12fbfb24eb2beff20800000000000000
-      internalID: 3458398094100512545
+      spriteID: 0e058ac923aae944d9a6afaf8f18c321
+      internalID: 881723443
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_4
+      name: gyarados_Idle_d1_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 831
-        width: 56
-        height: 56
+        x: 0
+        y: 768
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4adc0a0e11377bae0800000000000000
-      internalID: -1533630627476091484
+      spriteID: 32c6400e52d47534798698504d8abc85
+      internalID: 17697757
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_5
+      name: gyarados_Idle_d1_f1
       rect:
         serializedVersion: 2
-        x: 83
-        y: 832
-        width: 56
-        height: 56
+        x: 72
+        y: 768
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 710667869a1b9d030800000000000000
-      internalID: 3520039924926930967
+      spriteID: e44eba55c55a0d84a884f724662d5130
+      internalID: -1935388562
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_6
+      name: gyarados_Idle_d1_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 833
-        width: 56
-        height: 56
+        x: 144
+        y: 768
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c93ba9d2f01700380800000000000000
-      internalID: -9007074944737430628
+      spriteID: cb3f815fd70c3b84ebecf2f26a0220b7
+      internalID: 1251621121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_7
+      name: gyarados_Idle_d1_f3
       rect:
         serializedVersion: 2
-        x: 227
-        y: 832
-        width: 56
-        height: 56
+        x: 216
+        y: 768
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e4ac36e2dbb6eb40800000000000000
-      internalID: 5469265311968306403
+      spriteID: 38f3c9afbac4bb543b6da454d217962b
+      internalID: 1088663886
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_8
+      name: gyarados_Idle_d2_f0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 703
-        width: 66
-        height: 56
+        x: 0
+        y: 640
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: abaf72ac278605a70800000000000000
-      internalID: 8813659312991238842
+      spriteID: b8602306fe02283409851c2c1a11e36e
+      internalID: 2121385745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_9
+      name: gyarados_Idle_d2_f1
       rect:
         serializedVersion: 2
-        x: 73
-        y: 704
-        width: 66
-        height: 56
+        x: 72
+        y: 640
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 218bfb460cfaffb90800000000000000
-      internalID: -7205847637910636526
+      spriteID: 2a1b736fdd20da847a7b584fadae0c65
+      internalID: -1596375498
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_10
+      name: gyarados_Idle_d2_f2
       rect:
         serializedVersion: 2
-        x: 145
-        y: 705
-        width: 66
-        height: 56
+        x: 144
+        y: 640
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9429d91a826ac4dd0800000000000000
-      internalID: -2500440999657106871
+      spriteID: f38c676698542f44695b03f0baa83029
+      internalID: -1204743745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_11
+      name: gyarados_Idle_d2_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 704
-        width: 66
-        height: 56
+        x: 216
+        y: 640
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96cdb23a9847bee20800000000000000
-      internalID: 3380924079768591465
+      spriteID: c5de0a5743a657e48b81671eb3aaea3e
+      internalID: 633898555
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_12
+      name: gyarados_Idle_d3_f0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 571
-        width: 48
-        height: 63
+        x: 0
+        y: 512
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7fdda996a9f0c9750800000000000000
-      internalID: 6312937933537730039
+      spriteID: 187af27355d65644292f4235d10e010f
+      internalID: -1367750913
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_13
+      name: gyarados_Idle_d3_f1
       rect:
         serializedVersion: 2
-        x: 84
-        y: 572
-        width: 48
-        height: 63
+        x: 72
+        y: 512
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 77f8961a485984660800000000000000
-      internalID: 7370305187068088183
+      spriteID: 88d3bcfc6af36254f9cb712ef9858a45
+      internalID: 1240595018
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_14
+      name: gyarados_Idle_d3_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 573
-        width: 48
-        height: 63
+        x: 144
+        y: 512
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5035613e1c7abe2c0800000000000000
-      internalID: -4401239759644110075
+      spriteID: 5f35aba160644d0429a9f2b328e3ad72
+      internalID: 1047473351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_15
+      name: gyarados_Idle_d3_f3
       rect:
         serializedVersion: 2
-        x: 228
-        y: 572
-        width: 48
-        height: 63
+        x: 216
+        y: 512
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c808dca5d0f935f40800000000000000
-      internalID: 5716087231770099852
+      spriteID: c264649d229b6524db0cf13a3198c80e
+      internalID: -1329816212
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_16
+      name: gyarados_Idle_d4_f0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 443
-        width: 41
-        height: 66
+        x: 0
+        y: 384
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c6531675e307f440800000000000000
-      internalID: 4969444997890004679
+      spriteID: 1393132d1f3331445bb80ea579f52a25
+      internalID: -1168435710
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_17
+      name: gyarados_Idle_d4_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 444
-        width: 41
-        height: 66
+        x: 72
+        y: 384
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4b444a8c9eda31180800000000000000
-      internalID: -9145775198654151500
+      spriteID: f83618984ea39c348befc85df2fd1929
+      internalID: 1632249160
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_18
+      name: gyarados_Idle_d4_f2
       rect:
         serializedVersion: 2
-        x: 160
-        y: 445
-        width: 41
-        height: 66
+        x: 144
+        y: 384
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1f1d399fef9e93a0800000000000000
-      internalID: -6656707347790094562
+      spriteID: 5ac14851c539a4a4a81893727becaf97
+      internalID: 1716855104
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_19
+      name: gyarados_Idle_d4_f3
       rect:
         serializedVersion: 2
-        x: 232
-        y: 444
-        width: 41
-        height: 66
+        x: 216
+        y: 384
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a1c5edbf1de43c4b0800000000000000
-      internalID: -5421402862643160038
+      spriteID: 74d6d496c10d77c458948f63c2c2e7da
+      internalID: 1448886762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_20
+      name: gyarados_Idle_d5_f0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 315
-        width: 48
-        height: 63
+        x: 0
+        y: 256
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: defdd81d784ed1a00800000000000000
-      internalID: 728989986691342317
+      spriteID: a613aec70ab0a054084ea3862162c23f
+      internalID: -1245475968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_21
+      name: gyarados_Idle_d5_f1
       rect:
         serializedVersion: 2
-        x: 84
-        y: 316
-        width: 48
-        height: 63
+        x: 72
+        y: 256
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bf74809e3bf50810800000000000000
-      internalID: 1731065877924970417
+      spriteID: bf4a52146fbf87c47bc1c850c8bde8ea
+      internalID: 902977430
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_22
+      name: gyarados_Idle_d5_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 317
-        width: 48
-        height: 63
+        x: 144
+        y: 256
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dcda8cca7f8eeb900800000000000000
-      internalID: 702254742369775053
+      spriteID: e65a99748cf4af3459dfa69a3b11974a
+      internalID: -858355452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_23
+      name: gyarados_Idle_d5_f3
       rect:
         serializedVersion: 2
-        x: 228
-        y: 316
-        width: 48
-        height: 63
+        x: 216
+        y: 256
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a89579fd543d5bb00800000000000000
-      internalID: 843812802259278218
+      spriteID: f2f6b187b7ffb594db3bd24d448538e9
+      internalID: -1023972475
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_24
+      name: gyarados_Idle_d6_f0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 191
-        width: 66
-        height: 56
+        x: 0
+        y: 128
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 69906a69f391192e0800000000000000
-      internalID: -2120886188613695082
+      spriteID: 22dacdd60e8183d4595c1f4860d775ca
+      internalID: -1833819427
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_25
+      name: gyarados_Idle_d6_f1
       rect:
         serializedVersion: 2
-        x: 77
-        y: 192
-        width: 66
-        height: 56
+        x: 72
+        y: 128
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8afe6a79463be50b0800000000000000
-      internalID: -5737951630601031768
+      spriteID: e43ede779af7c1e44afb2ce62ea47237
+      internalID: -629411351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_26
+      name: gyarados_Idle_d6_f2
       rect:
         serializedVersion: 2
-        x: 149
-        y: 193
-        width: 66
-        height: 56
+        x: 144
+        y: 128
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a683f0ec316423bc0800000000000000
-      internalID: -3804901684299220886
+      spriteID: 66d867d2d8501fb41a6f6a3ac7b09784
+      internalID: 1188345170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_27
+      name: gyarados_Idle_d6_f3
       rect:
         serializedVersion: 2
-        x: 221
-        y: 192
-        width: 66
-        height: 56
+        x: 216
+        y: 128
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f7bbce720a1b088c0800000000000000
-      internalID: -3999001167682290817
+      spriteID: 96893d2385849a4408b276f8a088f70e
+      internalID: 476605087
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_28
+      name: gyarados_Idle_d7_f0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 63
-        width: 56
-        height: 56
+        x: 0
+        y: 0
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 18a9cff227ff57830800000000000000
-      internalID: 4068438704295549569
+      spriteID: 35fa5dca9dcbf7d47a4d8a0ad6b130af
+      internalID: -973669488
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_29
+      name: gyarados_Idle_d7_f1
       rect:
         serializedVersion: 2
-        x: 77
-        y: 64
-        width: 56
-        height: 56
+        x: 72
+        y: 0
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cac0c4c0757dbef0800000000000000
-      internalID: -90787290279785787
+      spriteID: 6454e70609c67104395b63ca6f6e0c7f
+      internalID: 28979303
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_30
+      name: gyarados_Idle_d7_f2
       rect:
         serializedVersion: 2
-        x: 149
-        y: 65
-        width: 56
-        height: 56
+        x: 144
+        y: 0
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8112eda686edbb2d0800000000000000
-      internalID: -3261768965048884968
+      spriteID: 2cc59b44657ae104e8c585f84dc38892
+      internalID: 1432030910
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Idle-Anim_31
+      name: gyarados_Idle_d7_f3
       rect:
         serializedVersion: 2
-        x: 221
-        y: 64
-        width: 56
-        height: 56
+        x: 216
+        y: 0
+        width: 72
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fb0f82efb8734fc20800000000000000
-      internalID: 3239275106390307007
+      spriteID: 86042715cf3c8a744898bdff787e83ac
+      internalID: -756377689
       vertices: []
       indices: 
       edges: []
@@ -913,7 +926,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 31720d4b1f3077b4fae5a833a6dcbeec
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +936,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Idle-Anim_0: 7738998316474853551
-      Idle-Anim_1: 1977075729719447299
-      Idle-Anim_10: -2500440999657106871
-      Idle-Anim_11: 3380924079768591465
-      Idle-Anim_12: 6312937933537730039
-      Idle-Anim_13: 7370305187068088183
-      Idle-Anim_14: -4401239759644110075
-      Idle-Anim_15: 5716087231770099852
-      Idle-Anim_16: 4969444997890004679
-      Idle-Anim_17: -9145775198654151500
-      Idle-Anim_18: -6656707347790094562
-      Idle-Anim_19: -5421402862643160038
-      Idle-Anim_2: 9173613481854189632
-      Idle-Anim_20: 728989986691342317
-      Idle-Anim_21: 1731065877924970417
-      Idle-Anim_22: 702254742369775053
-      Idle-Anim_23: 843812802259278218
-      Idle-Anim_24: -2120886188613695082
-      Idle-Anim_25: -5737951630601031768
-      Idle-Anim_26: -3804901684299220886
-      Idle-Anim_27: -3999001167682290817
-      Idle-Anim_28: 4068438704295549569
-      Idle-Anim_29: -90787290279785787
-      Idle-Anim_3: 3458398094100512545
-      Idle-Anim_30: -3261768965048884968
-      Idle-Anim_31: 3239275106390307007
-      Idle-Anim_4: -1533630627476091484
-      Idle-Anim_5: 3520039924926930967
-      Idle-Anim_6: -9007074944737430628
-      Idle-Anim_7: 5469265311968306403
-      Idle-Anim_8: 8813659312991238842
-      Idle-Anim_9: -7205847637910636526
+      gyarados_Idle_d0_f0: 552446592
+      gyarados_Idle_d0_f1: -1576046599
+      gyarados_Idle_d0_f2: -1495414029
+      gyarados_Idle_d0_f3: 881723443
+      gyarados_Idle_d1_f0: 17697757
+      gyarados_Idle_d1_f1: -1935388562
+      gyarados_Idle_d1_f2: 1251621121
+      gyarados_Idle_d1_f3: 1088663886
+      gyarados_Idle_d2_f0: 2121385745
+      gyarados_Idle_d2_f1: -1596375498
+      gyarados_Idle_d2_f2: -1204743745
+      gyarados_Idle_d2_f3: 633898555
+      gyarados_Idle_d3_f0: -1367750913
+      gyarados_Idle_d3_f1: 1240595018
+      gyarados_Idle_d3_f2: 1047473351
+      gyarados_Idle_d3_f3: -1329816212
+      gyarados_Idle_d4_f0: -1168435710
+      gyarados_Idle_d4_f1: 1632249160
+      gyarados_Idle_d4_f2: 1716855104
+      gyarados_Idle_d4_f3: 1448886762
+      gyarados_Idle_d5_f0: -1245475968
+      gyarados_Idle_d5_f1: 902977430
+      gyarados_Idle_d5_f2: -858355452
+      gyarados_Idle_d5_f3: -1023972475
+      gyarados_Idle_d6_f0: -1833819427
+      gyarados_Idle_d6_f1: -629411351
+      gyarados_Idle_d6_f2: 1188345170
+      gyarados_Idle_d6_f3: 476605087
+      gyarados_Idle_d7_f0: -973669488
+      gyarados_Idle_d7_f1: 28979303
+      gyarados_Idle_d7_f2: 1432030910
+      gyarados_Idle_d7_f3: -756377689
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

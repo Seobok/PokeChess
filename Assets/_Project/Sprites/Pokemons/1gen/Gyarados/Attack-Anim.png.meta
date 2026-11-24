@@ -274,7 +274,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -288,7 +288,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -312,7 +312,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -346,1765 +346,1778 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Attack-Anim_0
+      name: gyarados_Attack_d0_f0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 1019
-        width: 36
-        height: 56
+        x: 0
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c17c9fb90b7ee5b20800000000000000
-      internalID: 3125189937158801180
+      spriteID: cf199a426b3b71d4c9eddaa877f6b3a1
+      internalID: 631270305
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_1
+      name: gyarados_Attack_d0_f1
       rect:
         serializedVersion: 2
-        x: 138
-        y: 1021
-        width: 36
-        height: 56
+        x: 104
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f440ecf7e631152d0800000000000000
-      internalID: -3291828487319583665
+      spriteID: 7b2f80bf80adae64a8138b25b50a3610
+      internalID: -594026542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_2
+      name: gyarados_Attack_d0_f2
       rect:
         serializedVersion: 2
-        x: 241
-        y: 1018
-        width: 39
-        height: 57
+        x: 208
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 80dcb8351046fd290800000000000000
-      internalID: -7863456467506180856
+      spriteID: 07d126796d5c9714a91dee93dbb99e16
+      internalID: 257482905
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_3
+      name: gyarados_Attack_d0_f3
       rect:
         serializedVersion: 2
-        x: 346
-        y: 1015
-        width: 36
-        height: 51
+        x: 312
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ad7663daf0e199fd0800000000000000
-      internalID: -2334801879135524902
+      spriteID: 480de33a3baa30948ba65432cbeb9c37
+      internalID: -1627869893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_4
+      name: gyarados_Attack_d0_f4
       rect:
         serializedVersion: 2
-        x: 450
-        y: 1008
-        width: 36
-        height: 51
+        x: 416
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b058e7818408a5250800000000000000
-      internalID: 5934196506150995211
+      spriteID: 419a696f4f5d5b242b05100c100cd1bd
+      internalID: 2007172763
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_5
+      name: gyarados_Attack_d0_f5
       rect:
         serializedVersion: 2
-        x: 554
-        y: 994
-        width: 36
-        height: 51
+        x: 520
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 10d3f8855d75ec6f0800000000000000
-      internalID: -662495521351451391
+      spriteID: 89982edb7a16514408a077d7a0372e2e
+      internalID: -1504518659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_6
+      name: gyarados_Attack_d0_f6
       rect:
         serializedVersion: 2
-        x: 657
-        y: 994
-        width: 36
-        height: 51
+        x: 624
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6afea62bcc83f9230800000000000000
-      internalID: 3647696675011227558
+      spriteID: 5847c14a723782f40b22a921d9ee13ea
+      internalID: -2028190565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_7
+      name: gyarados_Attack_d0_f7
       rect:
         serializedVersion: 2
-        x: 762
-        y: 994
-        width: 36
-        height: 51
+        x: 728
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 169d914b06dc58400800000000000000
-      internalID: 325892363276376417
+      spriteID: 13ab520f484f9fc4599426b7c1b26b1c
+      internalID: 1698169964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_8
+      name: gyarados_Attack_d0_f8
       rect:
         serializedVersion: 2
-        x: 865
-        y: 994
-        width: 36
-        height: 51
+        x: 832
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 53b910df479746fa0800000000000000
-      internalID: -5808384076033189067
+      spriteID: 915a4fad9256e7a458932f62ff57ec9b
+      internalID: -241568678
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_9
+      name: gyarados_Attack_d0_f9
       rect:
         serializedVersion: 2
-        x: 969
-        y: 1016
-        width: 39
-        height: 57
+        x: 936
+        y: 952
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46a0f901fef9fe180800000000000000
-      internalID: -9083866074258142620
+      spriteID: 60352795ef42aae4ab00249dd0af0b8a
+      internalID: 953040079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_10
+      name: gyarados_Attack_d1_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 882
-        width: 55
-        height: 62
+        x: 0
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46bac43a23ceb44f0800000000000000
-      internalID: -843320802969605276
+      spriteID: 8e4a9016b94a7844eb79338e37d13cc8
+      internalID: 1290361990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_11
+      name: gyarados_Attack_d1_f1
       rect:
         serializedVersion: 2
-        x: 126
-        y: 884
-        width: 55
-        height: 62
+        x: 104
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b7384eb1dfcb17a70800000000000000
-      internalID: 8823040940276220795
+      spriteID: 2e59aeee35831e84285aa55e7f66d7b6
+      internalID: -903577508
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_12
+      name: gyarados_Attack_d1_f2
       rect:
         serializedVersion: 2
-        x: 235
-        y: 883
-        width: 56
-        height: 56
+        x: 208
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 562bbee1fc943be50800000000000000
-      internalID: 6823879014322254437
+      spriteID: 0fd1b6417ca01634692432d768a88576
+      internalID: -278298113
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_13
+      name: gyarados_Attack_d1_f3
       rect:
         serializedVersion: 2
-        x: 337
-        y: 879
-        width: 65
-        height: 52
+        x: 312
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1d4a20cb8d2a39590800000000000000
-      internalID: -7668606688730897199
+      spriteID: 9958845decb28a841a6e6861236f2570
+      internalID: -1884398748
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_14
+      name: gyarados_Attack_d1_f4
       rect:
         serializedVersion: 2
-        x: 445
-        y: 875
-        width: 65
-        height: 52
+        x: 416
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d54b787bbba48d280800000000000000
-      internalID: -9018376083710954403
+      spriteID: af6d88c5ec4b1d24ea5b4fa3cf759ee1
+      internalID: -1891113594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_15
+      name: gyarados_Attack_d1_f5
       rect:
         serializedVersion: 2
-        x: 557
-        y: 860
-        width: 65
-        height: 52
+        x: 520
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 700c6c44c87e26960800000000000000
-      internalID: 7593886511335391239
+      spriteID: 05475fc06852fd24789736e976cde1f0
+      internalID: -1461998942
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_16
+      name: gyarados_Attack_d1_f6
       rect:
         serializedVersion: 2
-        x: 660
-        y: 859
-        width: 65
-        height: 52
+        x: 624
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82ae06a3f26554b00800000000000000
-      internalID: 812150068653124136
+      spriteID: 06b7113b6d2384445b341f6d4e10feb8
+      internalID: -1433060885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_17
+      name: gyarados_Attack_d1_f7
       rect:
         serializedVersion: 2
-        x: 765
-        y: 860
-        width: 65
-        height: 52
+        x: 728
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 693f06e9e7882c370800000000000000
-      internalID: 8341379537247990678
+      spriteID: dd5f2b562bea40546b8b5093b7654c01
+      internalID: -1431424354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_18
+      name: gyarados_Attack_d1_f8
       rect:
         serializedVersion: 2
-        x: 868
-        y: 859
-        width: 65
-        height: 52
+        x: 832
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 70eed65df4d159ee0800000000000000
-      internalID: -1255064692432441849
+      spriteID: 129056a6a6fda834f85a6ced65106757
+      internalID: -1875767086
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_19
+      name: gyarados_Attack_d1_f9
       rect:
         serializedVersion: 2
-        x: 965
-        y: 881
-        width: 56
-        height: 56
+        x: 936
+        y: 816
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 39564603eae7cf0f0800000000000000
-      internalID: -1081850523874466413
+      spriteID: 14b54fa03c382254db5ffa4f6fff9e55
+      internalID: -1325756679
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_20
+      name: gyarados_Attack_d2_f0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 739
-        width: 62
-        height: 69
+        x: 0
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 297e9a5e227a1bbb0800000000000000
-      internalID: -4921969149415397486
+      spriteID: 2bde8bb4b57d58e42bb374309fbd9dbc
+      internalID: -1027823846
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_21
+      name: gyarados_Attack_d2_f1
       rect:
         serializedVersion: 2
-        x: 116
-        y: 739
-        width: 62
-        height: 69
+        x: 104
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3cd70915dbb0f9ff0800000000000000
-      internalID: -27290164995785277
+      spriteID: 05772bbb52f215247856e6f1d994d311
+      internalID: 38634659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_22
+      name: gyarados_Attack_d2_f2
       rect:
         serializedVersion: 2
-        x: 225
-        y: 747
-        width: 66
-        height: 56
+        x: 208
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f6e66b9faa7c91270800000000000000
-      internalID: 8221822131889401455
+      spriteID: 12549aada2373534e97c374908c59aa3
+      internalID: -1382696575
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_23
+      name: gyarados_Attack_d2_f3
       rect:
         serializedVersion: 2
-        x: 321
-        y: 746
-        width: 85
-        height: 53
+        x: 312
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7815914985e205a40800000000000000
-      internalID: 5354830914920206727
+      spriteID: cbb28cb220585ec4698875e5a5caa701
+      internalID: -567814278
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_24
+      name: gyarados_Attack_d2_f4
       rect:
         serializedVersion: 2
-        x: 429
-        y: 745
-        width: 85
-        height: 53
+        x: 416
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 88129147bde55c660800000000000000
-      internalID: 7405429458919301512
+      spriteID: 155c7ea3926cb344bb65a64d1c8cff92
+      internalID: -1428679854
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_25
+      name: gyarados_Attack_d2_f5
       rect:
         serializedVersion: 2
-        x: 538
-        y: 744
-        width: 85
-        height: 53
+        x: 520
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1fb5f031cbae138d0800000000000000
-      internalID: -2868253394163770383
+      spriteID: 0cf4dbedb3c69224b84e8ed185d3dd67
+      internalID: 258734460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_26
+      name: gyarados_Attack_d2_f6
       rect:
         serializedVersion: 2
-        x: 642
-        y: 743
-        width: 85
-        height: 53
+        x: 624
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 11aaa3f56034e4070800000000000000
-      internalID: 8092479275077904913
+      spriteID: 634c74888f7d09a479d262bd98b64fb2
+      internalID: 212691020
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_27
+      name: gyarados_Attack_d2_f7
       rect:
         serializedVersion: 2
-        x: 746
-        y: 744
-        width: 85
-        height: 53
+        x: 728
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8749b314e8b271f70800000000000000
-      internalID: 9157836257260967032
+      spriteID: e0eba763440a08c43b83e5a67e206c25
+      internalID: 1094916802
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_28
+      name: gyarados_Attack_d2_f8
       rect:
         serializedVersion: 2
-        x: 850
-        y: 743
-        width: 85
-        height: 53
+        x: 832
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b15c0020d119bd850800000000000000
-      internalID: 6402870849010976027
+      spriteID: 0f102917770b09741826151935cc02d3
+      internalID: -1746423935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_29
+      name: gyarados_Attack_d2_f9
       rect:
         serializedVersion: 2
-        x: 955
-        y: 745
-        width: 66
-        height: 56
+        x: 936
+        y: 680
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3f79221661ff91440800000000000000
-      internalID: 4907233740580886515
+      spriteID: 8b6886314a613874a956a7c3092bd73f
+      internalID: -2114501170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_30
+      name: gyarados_Attack_d3_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 602
-        width: 48
-        height: 70
+        x: 0
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 73e9dd2f2c93d2000800000000000000
-      internalID: 12729883413028407
+      spriteID: acebe2981415fb640824743e80e6372e
+      internalID: -620479885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_31
+      name: gyarados_Attack_d3_f1
       rect:
         serializedVersion: 2
-        x: 127
-        y: 600
-        width: 48
-        height: 70
+        x: 104
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9b47bb0a466874740800000000000000
-      internalID: 5136221666790831289
+      spriteID: 3e4cf5cbf4f52fc4e8d5197c2c7bb2f7
+      internalID: 639055404
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_32
+      name: gyarados_Attack_d3_f2
       rect:
         serializedVersion: 2
-        x: 236
-        y: 613
-        width: 48
-        height: 63
+        x: 208
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4baa1a11b734fbd0800000000000000
-      internalID: -2597389851299239092
+      spriteID: c5718bd09b0372044951c7d74c509dd0
+      internalID: -431750651
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_33
+      name: gyarados_Attack_d3_f3
       rect:
         serializedVersion: 2
-        x: 332
-        y: 617
-        width: 65
-        height: 55
+        x: 312
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7412f33c9e7bc7240800000000000000
-      internalID: 4790906318246322503
+      spriteID: dfbd64f04cb208a4e95ae51f4aafae15
+      internalID: -203656545
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_34
+      name: gyarados_Attack_d3_f4
       rect:
         serializedVersion: 2
-        x: 440
-        y: 619
-        width: 65
-        height: 55
+        x: 416
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dbfb75048447b6dc0800000000000000
-      internalID: -3644691619760324675
+      spriteID: 272bf70742002514b91dda09f5e66b9b
+      internalID: 1595345654
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_35
+      name: gyarados_Attack_d3_f5
       rect:
         serializedVersion: 2
-        x: 549
-        y: 621
-        width: 65
-        height: 55
+        x: 520
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8fc51f038bb5cbc70800000000000000
-      internalID: 8988159802977901816
+      spriteID: d40bbec228b80c843b2e561de879613b
+      internalID: 152027298
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_36
+      name: gyarados_Attack_d3_f6
       rect:
         serializedVersion: 2
-        x: 654
-        y: 620
-        width: 65
-        height: 55
+        x: 624
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9738b9e1d43665e90800000000000000
-      internalID: -7037328184842681479
+      spriteID: 49a1af826cdf511429366158d6a55721
+      internalID: -380346555
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_37
+      name: gyarados_Attack_d3_f7
       rect:
         serializedVersion: 2
-        x: 757
-        y: 621
-        width: 65
-        height: 55
+        x: 728
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c679557e2c6f38aa0800000000000000
-      internalID: -6159808548347472020
+      spriteID: a7fccba3fbb7dfa45a94b825070f2598
+      internalID: -2114546964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_38
+      name: gyarados_Attack_d3_f8
       rect:
         serializedVersion: 2
-        x: 862
-        y: 620
-        width: 65
-        height: 55
+        x: 832
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4fc36f3ac66c6810800000000000000
-      internalID: 1759894573227953995
+      spriteID: 7820aded71f756248b3108ef6076b97d
+      internalID: -1872291310
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_39
+      name: gyarados_Attack_d3_f9
       rect:
         serializedVersion: 2
-        x: 966
-        y: 610
-        width: 48
-        height: 63
+        x: 936
+        y: 544
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2d4b7f818c1da6ba0800000000000000
-      internalID: -6094828488349993774
+      spriteID: 70dcd3a92794163449ee50bd0a170b32
+      internalID: 546183085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_40
+      name: gyarados_Attack_d4_f0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 463
-        width: 41
-        height: 74
+        x: 0
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e927290865c1eeda0800000000000000
-      internalID: -5913758102841036130
+      spriteID: c6ccdc3ad532db049a05642c962e63bb
+      internalID: 1671369181
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_41
+      name: gyarados_Attack_d4_f1
       rect:
         serializedVersion: 2
-        x: 136
-        y: 461
-        width: 41
-        height: 74
+        x: 104
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 253e678b3e5754c90800000000000000
-      internalID: -7186208009486933166
+      spriteID: d66d1f7044b352b46b4ed0fee52980ff
+      internalID: 880281229
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_42
+      name: gyarados_Attack_d4_f2
       rect:
         serializedVersion: 2
-        x: 240
-        y: 477
-        width: 41
-        height: 66
+        x: 208
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 70d95d325c8cb34b0800000000000000
-      internalID: -5459549374221279993
+      spriteID: cb5fd7b25a856b04193249ce0c4695e0
+      internalID: 1441381108
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_43
+      name: gyarados_Attack_d4_f3
       rect:
         serializedVersion: 2
-        x: 347
-        y: 482
-        width: 35
-        height: 59
+        x: 312
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6b2cf5ec4c20e5e50800000000000000
-      internalID: 6799875531675255478
+      spriteID: 14b3570d02fe35b458c1e57bc3d43479
+      internalID: -166989664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_44
+      name: gyarados_Attack_d4_f4
       rect:
         serializedVersion: 2
-        x: 451
-        y: 484
-        width: 35
-        height: 59
+        x: 416
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ddf132cf75b3430d0800000000000000
-      internalID: -3444062565953232931
+      spriteID: 37f4d9534fa71a54d972df51f361b037
+      internalID: -737339987
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_45
+      name: gyarados_Attack_d4_f5
       rect:
         serializedVersion: 2
-        x: 555
-        y: 486
-        width: 35
-        height: 59
+        x: 520
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7159aa9d9fcd55960800000000000000
-      internalID: 7590215712659641623
+      spriteID: 28d8baf88d7a28742921b3190506e884
+      internalID: 1635284856
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_46
+      name: gyarados_Attack_d4_f6
       rect:
         serializedVersion: 2
-        x: 658
-        y: 486
-        width: 35
-        height: 59
+        x: 624
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2eed5e478d0d338d0800000000000000
-      internalID: -2867718909612138782
+      spriteID: faeb24a62603f7741bcd781b45049f9f
+      internalID: 1962222424
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_47
+      name: gyarados_Attack_d4_f7
       rect:
         serializedVersion: 2
-        x: 763
-        y: 486
-        width: 35
-        height: 59
+        x: 728
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b50adf96dcb1c7df0800000000000000
-      internalID: -181239315941187493
+      spriteID: 59372320d224ee74ba6c107baf53e2ac
+      internalID: 1023741953
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_48
+      name: gyarados_Attack_d4_f8
       rect:
         serializedVersion: 2
-        x: 866
-        y: 486
-        width: 35
-        height: 59
+        x: 832
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e0b4e9c96fcd971b0800000000000000
-      internalID: -5658248505066632434
+      spriteID: e2a49e4d2fc69b94f9db0e6683b9aa85
+      internalID: 1670213623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_49
+      name: gyarados_Attack_d4_f9
       rect:
         serializedVersion: 2
-        x: 968
-        y: 474
-        width: 41
-        height: 66
+        x: 936
+        y: 408
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 197e06fb52239bac0800000000000000
-      internalID: -3838982069650659439
+      spriteID: 149c789e0f58da348b3e912d74b9b0f6
+      internalID: -1835478166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_50
+      name: gyarados_Attack_d5_f0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 330
-        width: 48
-        height: 70
+        x: 0
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: de3f5a78337718d20800000000000000
-      internalID: 3279033066905269229
+      spriteID: 978a6a34600c8804182d9f72fdbad33c
+      internalID: -939687343
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_51
+      name: gyarados_Attack_d5_f1
       rect:
         serializedVersion: 2
-        x: 137
-        y: 328
-        width: 48
-        height: 70
+        x: 104
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3baada5768a167e60800000000000000
-      internalID: 7959578556226185907
+      spriteID: 1b29f4ca1f0d61847b5f16b8dbd04dbe
+      internalID: -1619794798
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_52
+      name: gyarados_Attack_d5_f2
       rect:
         serializedVersion: 2
-        x: 236
-        y: 341
-        width: 48
-        height: 63
+        x: 208
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3112331f7f701c40800000000000000
-      internalID: 5481020930269516092
+      spriteID: 40412d81916e835449b2b3572af6e341
+      internalID: 524983707
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_53
+      name: gyarados_Attack_d5_f3
       rect:
         serializedVersion: 2
-        x: 331
-        y: 345
-        width: 65
-        height: 55
+        x: 312
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: afda672c6d2b17340800000000000000
-      internalID: 4859862108364779002
+      spriteID: 2a3ff9a3d635c2a45825e874e25b9e10
+      internalID: -147832136
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_54
+      name: gyarados_Attack_d5_f4
       rect:
         serializedVersion: 2
-        x: 431
-        y: 347
-        width: 65
-        height: 55
+        x: 416
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f63aacae489e34cd0800000000000000
-      internalID: -2574957804841688209
+      spriteID: 5c27af7d6d87f6f41a84c1048ffcb3f6
+      internalID: 2014927930
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_55
+      name: gyarados_Attack_d5_f5
       rect:
         serializedVersion: 2
-        x: 530
-        y: 349
-        width: 65
-        height: 55
+        x: 520
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 315999d7b9f11ae30800000000000000
-      internalID: 4512923054289556755
+      spriteID: f450d3b4e92b0ee4c8a42f795877b7c3
+      internalID: -44084236
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_56
+      name: gyarados_Attack_d5_f6
       rect:
         serializedVersion: 2
-        x: 633
-        y: 348
-        width: 65
-        height: 55
+        x: 624
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8ceaad7cf9fbd3120800000000000000
-      internalID: 2395281269804674760
+      spriteID: 6fbf3cd77ddc4864ea1b460c26345dc2
+      internalID: 1336944797
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_57
+      name: gyarados_Attack_d5_f7
       rect:
         serializedVersion: 2
-        x: 738
-        y: 349
-        width: 65
-        height: 55
+        x: 728
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c51372982bbddc090800000000000000
-      internalID: -8012506602170535588
+      spriteID: aea644c074e62d8449e2cc5ebd97012d
+      internalID: 485431722
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_58
+      name: gyarados_Attack_d5_f8
       rect:
         serializedVersion: 2
-        x: 841
-        y: 348
-        width: 65
-        height: 55
+        x: 832
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a68b5839e0455b200800000000000000
-      internalID: 195154580441774186
+      spriteID: cd82f09ce4b5d904bb06d4247f008ed8
+      internalID: -1182554822
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_59
+      name: gyarados_Attack_d5_f9
       rect:
         serializedVersion: 2
-        x: 962
-        y: 338
-        width: 48
-        height: 63
+        x: 936
+        y: 272
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 72df92f3cef696780800000000000000
-      internalID: -8689290945571979993
+      spriteID: b04f013099661bb4795ca542c2fb4e2f
+      internalID: 539844825
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_60
+      name: gyarados_Attack_d6_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 195
-        width: 62
-        height: 69
+        x: 0
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5cbff0b8fe51ba300800000000000000
-      internalID: 264329121705753541
+      spriteID: 1916881dba8ab0a4aadc5ea9e15d4754
+      internalID: 1360396634
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_61
+      name: gyarados_Attack_d6_f1
       rect:
         serializedVersion: 2
-        x: 134
-        y: 195
-        width: 62
-        height: 69
+        x: 104
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d45d39e469edb3e00800000000000000
-      internalID: 1025658077301691725
+      spriteID: 758892fc4e1966b42a165c0b03300e98
+      internalID: 1489094877
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_62
+      name: gyarados_Attack_d6_f2
       rect:
         serializedVersion: 2
-        x: 229
-        y: 203
-        width: 66
-        height: 56
+        x: 208
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aeb13fcce9eb7fcd0800000000000000
-      internalID: -2524339476865278998
+      spriteID: 16c1f4086619ece4b9ae881f27d22a40
+      internalID: 390492918
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_63
+      name: gyarados_Attack_d6_f3
       rect:
         serializedVersion: 2
-        x: 322
-        y: 202
-        width: 85
-        height: 53
+        x: 312
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b8e9de9178e8ed9a0800000000000000
-      internalID: -6206366525563232629
+      spriteID: 1d92134014b61ed42863b5644e6cbe2b
+      internalID: 2097601458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_64
+      name: gyarados_Attack_d6_f4
       rect:
         serializedVersion: 2
-        x: 422
-        y: 201
-        width: 85
-        height: 53
+        x: 416
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07d31d9f20b888650800000000000000
-      internalID: 6235386528991886704
+      spriteID: bc54d5f428db45c41bb636dd9165e996
+      internalID: 482407137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_65
+      name: gyarados_Attack_d6_f5
       rect:
         serializedVersion: 2
-        x: 521
-        y: 200
-        width: 85
-        height: 53
+        x: 520
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7b7999bd01961add0800000000000000
-      internalID: -2476582798952392777
+      spriteID: 2e9661e6818739f44a9cfefcd34bae43
+      internalID: 751157499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_66
+      name: gyarados_Attack_d6_f6
       rect:
         serializedVersion: 2
-        x: 625
-        y: 199
-        width: 85
-        height: 53
+        x: 624
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5fe8acfef192fb240800000000000000
-      internalID: 4809608144198733557
+      spriteID: 88006bb30eaf07148825cd6695a34215
+      internalID: 1108464441
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_67
+      name: gyarados_Attack_d6_f7
       rect:
         serializedVersion: 2
-        x: 729
-        y: 200
-        width: 85
-        height: 53
+        x: 728
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8e896b16108acc5b0800000000000000
-      internalID: -5346713933707831064
+      spriteID: 4916f2a35f899eb47bce22105b7e958c
+      internalID: 1749952695
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_68
+      name: gyarados_Attack_d6_f8
       rect:
         serializedVersion: 2
-        x: 833
-        y: 199
-        width: 85
-        height: 53
+        x: 832
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2d2567854160f7a10800000000000000
-      internalID: 1909251451481641682
+      spriteID: b41f0c42a3afc424290b3839c8700ced
+      internalID: 1000866699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_69
+      name: gyarados_Attack_d6_f9
       rect:
         serializedVersion: 2
-        x: 955
-        y: 201
-        width: 66
-        height: 56
+        x: 936
+        y: 136
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 869a355ef16b429f0800000000000000
-      internalID: -494069810996205208
+      spriteID: c8d4a8390dc1d98409546625bbbd8f91
+      internalID: -334525209
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_70
+      name: gyarados_Attack_d7_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 66
-        width: 55
-        height: 62
+        x: 0
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a2db5761bbd0ba00800000000000000
-      internalID: 770357091270120097
+      spriteID: 4a61e40080a9f644cbf48928558e18fe
+      internalID: -1057331323
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_71
+      name: gyarados_Attack_d7_f1
       rect:
         serializedVersion: 2
-        x: 131
-        y: 68
-        width: 55
-        height: 62
+        x: 104
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 368f76db155a05a20800000000000000
-      internalID: 3049118718218467427
+      spriteID: ecd6149de77aa654ea69df6661733763
+      internalID: -981160168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_72
+      name: gyarados_Attack_d7_f2
       rect:
         serializedVersion: 2
-        x: 229
-        y: 67
-        width: 56
-        height: 56
+        x: 208
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ea7c2d5eca0a32a10800000000000000
-      internalID: 1883525733621614510
+      spriteID: 73b8556651f49d7418c818a51be1ed8f
+      internalID: -1932569430
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_73
+      name: gyarados_Attack_d7_f3
       rect:
         serializedVersion: 2
-        x: 326
-        y: 63
-        width: 65
-        height: 52
+        x: 312
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 743cdcd1a4d792df0800000000000000
-      internalID: -204494550787570873
+      spriteID: 8351b43809251a0419d31382a1c288cd
+      internalID: -312771201
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_74
+      name: gyarados_Attack_d7_f4
       rect:
         serializedVersion: 2
-        x: 426
-        y: 59
-        width: 65
-        height: 52
+        x: 416
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1d6f2977827661d00800000000000000
-      internalID: 943054595483170513
+      spriteID: dd73027d740609649bb8951679963495
+      internalID: -864770620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_75
+      name: gyarados_Attack_d7_f5
       rect:
         serializedVersion: 2
-        x: 522
-        y: 44
-        width: 65
-        height: 52
+        x: 520
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bdcf76e466e007380800000000000000
-      internalID: -8975658224784507685
+      spriteID: 825f4d8141918424fa9efd31e9b23c52
+      internalID: 1272317433
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_76
+      name: gyarados_Attack_d7_f6
       rect:
         serializedVersion: 2
-        x: 627
-        y: 43
-        width: 65
-        height: 52
+        x: 624
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f35fdbd580a7b3530800000000000000
-      internalID: 3835793683987166527
+      spriteID: a467560328399ac48a38bf97a07c5cfa
+      internalID: 1356692418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_77
+      name: gyarados_Attack_d7_f7
       rect:
         serializedVersion: 2
-        x: 730
-        y: 44
-        width: 65
-        height: 52
+        x: 728
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a23c2f0935fc37390800000000000000
-      internalID: -7821680169991355606
+      spriteID: 414db470c807eb04bb711eba77beee69
+      internalID: 2063478208
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_78
+      name: gyarados_Attack_d7_f8
       rect:
         serializedVersion: 2
-        x: 835
-        y: 43
-        width: 65
-        height: 52
+        x: 832
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fb70e19b80f48ef30800000000000000
-      internalID: 4605017517870417855
+      spriteID: d017e3b5e3174924fb01ee7a8246ead4
+      internalID: -507956692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack-Anim_79
+      name: gyarados_Attack_d7_f9
       rect:
         serializedVersion: 2
-        x: 955
-        y: 65
-        width: 56
-        height: 56
+        x: 936
+        y: 0
+        width: 104
+        height: 136
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ccc0737eb33ad72d0800000000000000
-      internalID: -3279285475978310452
+      spriteID: 37d0fb1df06db8e4983783207da9b28e
+      internalID: 1308480874
       vertices: []
       indices: 
       edges: []
@@ -2113,7 +2126,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 623b75b1e0b8a654381acbf17bdf232a
     internalID: 0
     vertices: []
     indices: 
@@ -2123,86 +2136,86 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Attack-Anim_0: 3125189937158801180
-      Attack-Anim_1: -3291828487319583665
-      Attack-Anim_10: -843320802969605276
-      Attack-Anim_11: 8823040940276220795
-      Attack-Anim_12: 6823879014322254437
-      Attack-Anim_13: -7668606688730897199
-      Attack-Anim_14: -9018376083710954403
-      Attack-Anim_15: 7593886511335391239
-      Attack-Anim_16: 812150068653124136
-      Attack-Anim_17: 8341379537247990678
-      Attack-Anim_18: -1255064692432441849
-      Attack-Anim_19: -1081850523874466413
-      Attack-Anim_2: -7863456467506180856
-      Attack-Anim_20: -4921969149415397486
-      Attack-Anim_21: -27290164995785277
-      Attack-Anim_22: 8221822131889401455
-      Attack-Anim_23: 5354830914920206727
-      Attack-Anim_24: 7405429458919301512
-      Attack-Anim_25: -2868253394163770383
-      Attack-Anim_26: 8092479275077904913
-      Attack-Anim_27: 9157836257260967032
-      Attack-Anim_28: 6402870849010976027
-      Attack-Anim_29: 4907233740580886515
-      Attack-Anim_3: -2334801879135524902
-      Attack-Anim_30: 12729883413028407
-      Attack-Anim_31: 5136221666790831289
-      Attack-Anim_32: -2597389851299239092
-      Attack-Anim_33: 4790906318246322503
-      Attack-Anim_34: -3644691619760324675
-      Attack-Anim_35: 8988159802977901816
-      Attack-Anim_36: -7037328184842681479
-      Attack-Anim_37: -6159808548347472020
-      Attack-Anim_38: 1759894573227953995
-      Attack-Anim_39: -6094828488349993774
-      Attack-Anim_4: 5934196506150995211
-      Attack-Anim_40: -5913758102841036130
-      Attack-Anim_41: -7186208009486933166
-      Attack-Anim_42: -5459549374221279993
-      Attack-Anim_43: 6799875531675255478
-      Attack-Anim_44: -3444062565953232931
-      Attack-Anim_45: 7590215712659641623
-      Attack-Anim_46: -2867718909612138782
-      Attack-Anim_47: -181239315941187493
-      Attack-Anim_48: -5658248505066632434
-      Attack-Anim_49: -3838982069650659439
-      Attack-Anim_5: -662495521351451391
-      Attack-Anim_50: 3279033066905269229
-      Attack-Anim_51: 7959578556226185907
-      Attack-Anim_52: 5481020930269516092
-      Attack-Anim_53: 4859862108364779002
-      Attack-Anim_54: -2574957804841688209
-      Attack-Anim_55: 4512923054289556755
-      Attack-Anim_56: 2395281269804674760
-      Attack-Anim_57: -8012506602170535588
-      Attack-Anim_58: 195154580441774186
-      Attack-Anim_59: -8689290945571979993
-      Attack-Anim_6: 3647696675011227558
-      Attack-Anim_60: 264329121705753541
-      Attack-Anim_61: 1025658077301691725
-      Attack-Anim_62: -2524339476865278998
-      Attack-Anim_63: -6206366525563232629
-      Attack-Anim_64: 6235386528991886704
-      Attack-Anim_65: -2476582798952392777
-      Attack-Anim_66: 4809608144198733557
-      Attack-Anim_67: -5346713933707831064
-      Attack-Anim_68: 1909251451481641682
-      Attack-Anim_69: -494069810996205208
-      Attack-Anim_7: 325892363276376417
-      Attack-Anim_70: 770357091270120097
-      Attack-Anim_71: 3049118718218467427
-      Attack-Anim_72: 1883525733621614510
-      Attack-Anim_73: -204494550787570873
-      Attack-Anim_74: 943054595483170513
-      Attack-Anim_75: -8975658224784507685
-      Attack-Anim_76: 3835793683987166527
-      Attack-Anim_77: -7821680169991355606
-      Attack-Anim_78: 4605017517870417855
-      Attack-Anim_79: -3279285475978310452
-      Attack-Anim_8: -5808384076033189067
-      Attack-Anim_9: -9083866074258142620
+      gyarados_Attack_d0_f0: 631270305
+      gyarados_Attack_d0_f1: -594026542
+      gyarados_Attack_d0_f2: 257482905
+      gyarados_Attack_d0_f3: -1627869893
+      gyarados_Attack_d0_f4: 2007172763
+      gyarados_Attack_d0_f5: -1504518659
+      gyarados_Attack_d0_f6: -2028190565
+      gyarados_Attack_d0_f7: 1698169964
+      gyarados_Attack_d0_f8: -241568678
+      gyarados_Attack_d0_f9: 953040079
+      gyarados_Attack_d1_f0: 1290361990
+      gyarados_Attack_d1_f1: -903577508
+      gyarados_Attack_d1_f2: -278298113
+      gyarados_Attack_d1_f3: -1884398748
+      gyarados_Attack_d1_f4: -1891113594
+      gyarados_Attack_d1_f5: -1461998942
+      gyarados_Attack_d1_f6: -1433060885
+      gyarados_Attack_d1_f7: -1431424354
+      gyarados_Attack_d1_f8: -1875767086
+      gyarados_Attack_d1_f9: -1325756679
+      gyarados_Attack_d2_f0: -1027823846
+      gyarados_Attack_d2_f1: 38634659
+      gyarados_Attack_d2_f2: -1382696575
+      gyarados_Attack_d2_f3: -567814278
+      gyarados_Attack_d2_f4: -1428679854
+      gyarados_Attack_d2_f5: 258734460
+      gyarados_Attack_d2_f6: 212691020
+      gyarados_Attack_d2_f7: 1094916802
+      gyarados_Attack_d2_f8: -1746423935
+      gyarados_Attack_d2_f9: -2114501170
+      gyarados_Attack_d3_f0: -620479885
+      gyarados_Attack_d3_f1: 639055404
+      gyarados_Attack_d3_f2: -431750651
+      gyarados_Attack_d3_f3: -203656545
+      gyarados_Attack_d3_f4: 1595345654
+      gyarados_Attack_d3_f5: 152027298
+      gyarados_Attack_d3_f6: -380346555
+      gyarados_Attack_d3_f7: -2114546964
+      gyarados_Attack_d3_f8: -1872291310
+      gyarados_Attack_d3_f9: 546183085
+      gyarados_Attack_d4_f0: 1671369181
+      gyarados_Attack_d4_f1: 880281229
+      gyarados_Attack_d4_f2: 1441381108
+      gyarados_Attack_d4_f3: -166989664
+      gyarados_Attack_d4_f4: -737339987
+      gyarados_Attack_d4_f5: 1635284856
+      gyarados_Attack_d4_f6: 1962222424
+      gyarados_Attack_d4_f7: 1023741953
+      gyarados_Attack_d4_f8: 1670213623
+      gyarados_Attack_d4_f9: -1835478166
+      gyarados_Attack_d5_f0: -939687343
+      gyarados_Attack_d5_f1: -1619794798
+      gyarados_Attack_d5_f2: 524983707
+      gyarados_Attack_d5_f3: -147832136
+      gyarados_Attack_d5_f4: 2014927930
+      gyarados_Attack_d5_f5: -44084236
+      gyarados_Attack_d5_f6: 1336944797
+      gyarados_Attack_d5_f7: 485431722
+      gyarados_Attack_d5_f8: -1182554822
+      gyarados_Attack_d5_f9: 539844825
+      gyarados_Attack_d6_f0: 1360396634
+      gyarados_Attack_d6_f1: 1489094877
+      gyarados_Attack_d6_f2: 390492918
+      gyarados_Attack_d6_f3: 2097601458
+      gyarados_Attack_d6_f4: 482407137
+      gyarados_Attack_d6_f5: 751157499
+      gyarados_Attack_d6_f6: 1108464441
+      gyarados_Attack_d6_f7: 1749952695
+      gyarados_Attack_d6_f8: 1000866699
+      gyarados_Attack_d6_f9: -334525209
+      gyarados_Attack_d7_f0: -1057331323
+      gyarados_Attack_d7_f1: -981160168
+      gyarados_Attack_d7_f2: -1932569430
+      gyarados_Attack_d7_f3: -312771201
+      gyarados_Attack_d7_f4: -864770620
+      gyarados_Attack_d7_f5: 1272317433
+      gyarados_Attack_d7_f6: 1356692418
+      gyarados_Attack_d7_f7: 2063478208
+      gyarados_Attack_d7_f8: -507956692
+      gyarados_Attack_d7_f9: 1308480874
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
