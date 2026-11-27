@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Battle;
@@ -14,7 +14,7 @@ namespace PokeChess.Core.Match
         public int sorcererTier, sorcererStacks;
         public int trackerTier;
         public long trackerExpiryTick;
-        public string trackerTarget; public bool guarded,isSynergySummon,contaminated; public int natureTier,stormEnergy,venomResearch;
+        public string trackerTarget; public bool guarded,isSynergySummon,contaminated; public int natureTier,stormEnergy,venomResearch,venomSamples;
         public long contaminationEndTick; public bool venomErosion;
         public BruiserHealthBonus bruiserHealth;
         public long bruiserSurvivalEndTick;
@@ -207,7 +207,7 @@ namespace PokeChess.Core.Match
                         duelistTier=battle.Synergies.Tier(u,SynergyTraits.Duelist),duelistChaseEndTick=battle.Synergies.DuelistChaseEnd(u),
                         duelistAttackEndTick=battle.Synergies.DuelistAttackEnd(u),
                         bruiserHealth=battle.Synergies.AppliedBruiserHealth(u),bruiserSurvivalEndTick=battle.Synergies.BruiserSurvivalEnd(u),
-                        synergyIds=u.TraitIds.ToArray(),duelistStacks=battle.Synergies.DuelistStacks(u),trackerStacks=battle.Synergies.TrackerStacks(u),trackerTarget=battle.Synergies.TrackerTarget(u),guarded=battle.Synergies.IsGuarded(u),isSynergySummon=u.IsSynergySummon,contaminated=battle.Synergies.IsContaminated(u),contaminationEndTick=battle.Synergies.ContaminationEnd(u),venomErosion=battle.Synergies.HasVenomManaErosion(u),natureTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Nature),stormEnergy=battle.Synergies.StormEnergy(u.TeamId),stormTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Storm),stormCircuitBonus=battle.Synergies.StormCircuitBonus(u),venomResearch=battle.Synergies.VenomResearch(u.TeamId),skillId=cast?.Definition.Id,castId=cast?.CastId??0,
+                        synergyIds=u.TraitIds.ToArray(),duelistStacks=battle.Synergies.DuelistStacks(u),trackerStacks=battle.Synergies.TrackerStacks(u),trackerTarget=battle.Synergies.TrackerTarget(u),guarded=battle.Synergies.IsGuarded(u),isSynergySummon=u.IsSynergySummon,contaminated=battle.Synergies.IsContaminated(u),contaminationEndTick=battle.Synergies.ContaminationEnd(u),venomErosion=battle.Synergies.HasVenomManaErosion(u),natureTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Nature),stormEnergy=battle.Synergies.StormEnergy(u.TeamId),stormTier=battle.Synergies.TeamTier(u.TeamId,SynergyTraits.Storm),stormCircuitBonus=battle.Synergies.StormCircuitBonus(u),venomResearch=battle.Synergies.VenomResearch(u.TeamId),venomSamples=battle.Synergies.VenomSampleCount(u.TeamId),skillId=cast?.Definition.Id,castId=cast?.CastId??0,
                         startTick=cast?.StartTick??a.StartTick,effectTick=cast?.EffectTick??a.EffectTick,endTick=cast?.EndTick??a.EndTick,
                         moveColumn=a.MoveDestination?.Column??u.Position.Column,moveRow=a.MoveDestination?.Row??u.Position.Row,
                         untargetable=u.IsUntargetable,isBoss=u.IsBoss,accuracy=effective.Accuracy,evasion=effective.Evasion,

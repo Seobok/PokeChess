@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -199,16 +199,16 @@ namespace PokeChess.Client.UI
             foreach(var slot in slots){slot.Graphic.color=slot.Color;if(slot.Placement.Kind==PlacementKind.Board)slot.Rect.gameObject.SetActive(!combat&&pub.phase==MatchPhase.Preparation);}
             if(!combat&&pub.phase==MatchPhase.Preparation&&observed!=null)foreach(var unit in observed.board){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBoard(new BoardPosition(unit.column,unit.row)));RenderEquippedItemIcon(tokens[unit.id],unit.items);RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,observed.id==owner.playerId);}
             var previewBoard=!combat&&pub.phase==MatchPhase.Preparation?observed?.board:null;
-            if(guardianPreviewBoard!=previewBoard || (previewBoard==null && (guardianLinks.Count>0||stormLinks.Count>0)))
+            if(guardianPreviewBoard!=previewBoard || (previewBoard==null && (guardianTiles.Values.Any(tile=>tile.gameObject.activeSelf)||textureTiles.Values.Any(tile=>tile.gameObject.activeSelf)||mountainTiles.Values.Any(tile=>tile.gameObject.activeSelf)||stormLinks.Count>0)))
             {
                 guardianPreviewBoard=previewBoard;
                 var roster=previewBoard==null?Array.Empty<UnitInstance>():previewBoard.Select(u=>
                     catalog.CreateUnit(u.id,u.definitionId,observed.id,(UnitRank)u.rank,u.evolutionStage,
                         UnitPlacement.OnBoard(new BoardPosition(u.column,u.row)),u.items)).ToArray();
-                RefreshGuardianLinks(PokeChess.Core.Battle.SynergySystem.PreviewGuardianLinks(roster,catalog));
+                RefreshGuardianTiles(roster);
                 RefreshStormLinks(roster);
             }
-            AnimateGuardianLinks();
+            AnimateGuardianTiles();
             AnimateStormLinks();
             foreach(var unit in owner.units.Where(u=>u.placement==PlacementKind.Bench)){ShowOnlineToken(unit.id,unit.definitionId,unit.rank,UnitPlacement.OnBench(unit.bench));RenderEquippedItemIcon(tokens[unit.id],unit.items);RenderPreparationVitals(tokens[unit.id],unit.definitionId,unit.rank,true);}
         }

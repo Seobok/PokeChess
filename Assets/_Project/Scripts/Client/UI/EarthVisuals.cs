@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -296,7 +296,11 @@ namespace PokeChess.Client.UI
     public sealed partial class PlacementSandboxView
     {
         private readonly EarthPreparationVisuals earthPreparation=new EarthPreparationVisuals();
-        private void RenderEarthPreparation(IEnumerable<BoardPosition> tiles) {
+        private BoardPosition[] earthPreviewTiles = Array.Empty<BoardPosition>();
+        private int earthPreviewTier;
+        private void RenderEarthPreparation(IEnumerable<BoardPosition> tiles, int tier) {
+            earthPreviewTiles = tiles.ToArray();
+            earthPreviewTier = tier;
             if(IsEarthRockDragging && !CanContinueSpecialDrag)CancelEarthRockDrag();
             Vector2 a=FindSlot(PokeChess.Core.Pokemon.UnitPlacement.OnBoard(new BoardPosition(0,0))).Rect.anchoredPosition;
             Vector2 b=FindSlot(PokeChess.Core.Pokemon.UnitPlacement.OnBoard(new BoardPosition(1,0))).Rect.anchoredPosition;

@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using PokeChess.Core.Battle;
 using PokeChess.Core.Match;
+using PokeChess.Core.Pokemon;
 
 namespace PokeChess.Client.UI
 {
@@ -63,47 +64,55 @@ namespace PokeChess.Client.UI
             var rect=Rect("PokemonSprite",parent,Vector2.one,Vector2.zero);
             var view=rect.gameObject.AddComponent<PokemonSpriteView>();view.Initialize(species,instanceId);return view;
         }
-        private readonly Dictionary<(string guardian,string target),UnityEngine.UI.Image> guardianLinks =
-            new Dictionary<(string,string),UnityEngine.UI.Image>();
+        private readonly Dictionary<PokeChess.Core.Pokemon.BoardPosition, PlacementHexGraphic> guardianTiles =
+            new Dictionary<PokeChess.Core.Pokemon.BoardPosition, PlacementHexGraphic>();
 
-        private void RefreshGuardianLinks(IEnumerable<(string guardian,string target)> desired)
+        private readonly Dictionary<BoardPosition, PlacementHexGraphic> textureTiles = new Dictionary<BoardPosition, PlacementHexGraphic>();
+
+        private readonly Dictionary<BoardPosition, PlacementHexGraphic> mountainTiles = new Dictionary<BoardPosition, PlacementHexGraphic>();
+
+        private void RefreshGuardianTiles(IEnumerable<UnitInstance> roster)
         {
-            var links=new HashSet<(string guardian,string target)>(desired);
-            foreach(var stale in guardianLinks.Keys.Where(key=>!links.Contains(key)).ToArray())
+            var board = roster.Where(u => u.Placement.Kind == PlacementKind.Board).ToArray();
+            RefreshSideTiles(guardianTiles, SynergySystem.PreviewGuardianTiles(board, catalog), "GuardianSideTile", new Color(1, .82f, .22f, .9f));
+            var texture = board.Where(u => SynergyTraits.Family(u.DefinitionId) == SynergyTraits.Family("porygon"))
+                .SelectMany(u => SynergySystem.GuardianSideTiles(u.Placement.Position.Value)).Where(PokeChess.Core.Board.HexBoardBounds.Preparation.Contains);
+            RefreshSideTiles(textureTiles, texture, "TextureSideTile", new Color(.72f, .52f, 1, .95f));
+            RefreshSideTiles(mountainTiles, SynergySystem.PreviewMountainTiles(board), "MountainProtectionTile", new Color(.36f, .9f, .72f, .95f));
+        }
+
+        private void RefreshSideTiles(Dictionary<BoardPosition, PlacementHexGraphic> markers, IEnumerable<BoardPosition> tiles, string name, Color color)
+        {
+            var desired = new HashSet<BoardPosition>(tiles);
+            foreach (var entry in markers) entry.Value.gameObject.SetActive(desired.Contains(entry.Key));
+            foreach (var tile in desired)
             {
-                guardianLinks[stale].enabled=false;
-                Destroy(guardianLinks[stale].gameObject);
-                guardianLinks.Remove(stale);
-            }
-            foreach(var link in links)
-            {
-                if(guardianLinks.ContainsKey(link))continue;
-                var image=GuardianVisuals.Create(canvasRect,"prep-link");
-                image.transform.SetSiblingIndex(Mathf.Max(tokens[link.guardian].GetSiblingIndex(),tokens[link.target].GetSiblingIndex())+1);
-                guardianLinks.Add(link,image);
+                if (markers.ContainsKey(tile)) continue;
+                var slot = FindSlot(UnitPlacement.OnBoard(tile));
+                var rect = Rect(name, slot.Rect, slot.Rect.rect.size, Vector2.zero);
+                var fill = rect.gameObject.AddComponent<PlacementHexGraphic>();
+                fill.raycastTarget = false;
+                var edge = Rect("Outline", rect, rect.sizeDelta, Vector2.zero).gameObject.AddComponent<PlacementHexGraphic>();
+                edge.OutlineOnly = true;
+                edge.LineWidth = 2;
+                edge.color = color;
+                edge.raycastTarget = false;
+                markers.Add(tile, fill);
             }
         }
 
-        private void AnimateGuardianLinks()
+        private void AnimateGuardianTiles()
         {
-            foreach(var entry in guardianLinks)
-            {
-                var source=tokens[entry.Key.guardian];var target=tokens[entry.Key.target];var image=entry.Value;
-                if(!source.gameObject.activeInHierarchy || !target.gameObject.activeInHierarchy ||
-                    dragged==entry.Key.guardian || dragged==entry.Key.target)
-                {image.enabled=false;continue;}
-                var delta=target.anchoredPosition-source.anchoredPosition;
-                image.rectTransform.anchoredPosition=(source.anchoredPosition+target.anchoredPosition)*.5f;
-                image.rectTransform.sizeDelta=new Vector2(delta.magnitude*64/50,48);
-                image.rectTransform.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg);
-                GuardianVisuals.Draw(image,"prep-link",Time.unscaledTimeAsDouble,true);
-            }
+            float alpha = .18f + .04f * Mathf.Sin(Time.unscaledTime * 3);
+            foreach (var tile in guardianTiles.Values) tile.color = new Color(1, .76f, .18f, alpha);
+            foreach (var tile in textureTiles.Values) tile.color = new Color(.64f, .38f, 1, alpha);
+            foreach (var tile in mountainTiles.Values) tile.color = new Color(.2f, .78f, .58f, alpha);
         }
 
         private void AnimateRosterSprites()
         {
             AnimateNatureGuardian();
-            AnimateGuardianLinks();
+            AnimateGuardianTiles();
             AnimateStormLinks();
             foreach(var unit in ViewedPlayer.Units)
             {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Pokemon;
@@ -44,6 +44,14 @@ namespace PokeChess.Core.Battle
         internal float BaseAttack => baseStats.Attack;
         private bool canEvolve;
         private float maxHpMultiplier = 1;
+        private float roundBonusHP, roundBonusAttack;
+        public bool IsEmbarked { get; internal set; }
+        internal void AddRoundStats(float hp, float attack)
+        {
+            roundBonusHP += hp;
+            roundBonusAttack += attack;
+            RefreshEquipment();
+        }
         internal long ActiveSynergyCastId { get; set; }
         internal void ScaleMaxHP(float bonus)
         {
@@ -54,10 +62,10 @@ namespace PokeChess.Core.Battle
         internal void RefreshEquipment()
         {
             var stats = ItemCombatSystem.ApplyStats(PersistentUnit, baseStats, canEvolve);
-            float maxHp = stats.MaxHP * maxHpMultiplier;
+            float maxHp = stats.MaxHP * maxHpMultiplier + roundBonusHP;
             if (maxHp != Stats.MaxHP)
                 CurrentHP = Math.Min(maxHp, CurrentHP / Stats.MaxHP * maxHp);
-            Stats = maxHpMultiplier == 1 ? stats : new PokemonStats(maxHp, stats.Attack, stats.SpellPower,
+            Stats = maxHpMultiplier == 1 && roundBonusHP == 0 && roundBonusAttack == 0 ? stats : new PokemonStats(maxHp, stats.Attack + roundBonusAttack, stats.SpellPower,
                 stats.AttackSpeed, stats.Armor, stats.MagicResistance, stats.AttackRange, stats.MoveSpeed,
                 stats.MaxEnergy, stats.StartingEnergy, stats.AttackHitTime, stats.AttackDelivery,
                 stats.ProjectileSpeed, stats.CritChance, stats.CritMultiplier, stats.EnergyLockSeconds);
@@ -156,6 +164,14 @@ namespace PokeChess.Core.Battle
         }
         internal void SetPosition(BoardPosition position) => Position = position;
         internal void MarkRemovedFromBoard() => IsOnBoard = false;
+        internal void RestoreToBoard(BoardPosition position)
+        {
+            Position = position;
+            IsOnBoard = true;
+            IsEmbarked = false;
+            ActionState = CombatActionState.Idle;
+            CurrentTargetId = null;
+        }
     }
 
     public sealed class BattleUnitSetup
@@ -273,6 +289,14 @@ namespace PokeChess.Core.Battle
             if (result == BoardOperationResult.Success) unitsById[unitId].SetPosition(destination);
             return result;
         }
+        internal bool TryRestoreUnit(UnitCombatState unit, BoardPosition destination)
+        {
+            if (!unit.IsAlive || unit.IsOnBoard || board.TryPlace(unit.UnitInstanceId, destination) != BoardOperationResult.Success)
+                return false;
+            unit.RestoreToBoard(destination);
+            return true;
+        }
+
         public BoardOperationResult TryRemoveUnit(string unitId)
         {
             var result = board.TryRemove(unitId);
@@ -306,11 +330,9 @@ namespace PokeChess.Core.Battle
 
     public static class BattleStateFactory
     {
-        internal static string[] ResolveTraits(UnitInstance unit,IEnumerable<UnitInstance> entries,PokemonCatalog catalog) {
-            var traits=PokeChess.Core.Match.SynergyPreparation.Traits(unit,catalog).ToList();
-            if(SynergyTraits.Family(unit.DefinitionId)==SynergyTraits.Family("porygon")&&unit.SynergyTargetId!=null){var target=entries.FirstOrDefault(e=>e.InstanceId==unit.SynergyTargetId&&e.OwnerPlayerId==unit.OwnerPlayerId);if(target!=null)traits.AddRange(catalog.Get(target.DefinitionId).TraitIds.Where(SynergyTraits.Origins.Contains).Take(1));}
-            return traits.Distinct(StringComparer.Ordinal).ToArray();
-        }
+        internal static string[] ResolveTraits(UnitInstance unit,IEnumerable<UnitInstance> entries,PokemonCatalog catalog,
+            Func<UnitInstance, BoardPosition?> position = null)
+            => PokeChess.Core.Match.SynergyPreparation.RosterTraits(unit, entries, catalog, position);
         public static BattleState Create(string battleId, int roundNumber, ulong seed, int tickRate,
             PokemonCatalog catalog, IEnumerable<BattleUnitSetup> setup,
             Func<UnitInstance, PokemonDefinition, PokemonStats> resolveStats = null, SynergyRules synergyRules = null,
@@ -332,12 +354,13 @@ namespace PokeChess.Core.Battle
                 if (placement != BoardOperationResult.Success)
                     throw new ArgumentException("Invalid initial placement: " + placement, nameof(setup));
             }
+            var combatPositions = entries.ToDictionary(e => e.Unit.InstanceId, e => e.Position);
             var states = entries.Select(e =>
             {
                 var definition = catalog.Get(e.Unit.DefinitionId);
                 var stats = resolveStats == null ? RankRules.Default.Apply(definition,e.Unit.Rank) : resolveStats(e.Unit, definition);
                 if (stats == null) throw new ArgumentException("Stat resolver returned null.");
-                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, ResolveTraits(e.Unit,entries.Select(entry => entry.Unit),catalog), definition.Evolutions.Count > 0){IsBoss=definition.IsBoss,IsOriginalCombatUnit=true};
+                return new UnitCombatState(e.Unit, stats, e.TeamId, e.Position, definition.SkillId, ResolveTraits(e.Unit,entries.Where(entry => entry.TeamId == e.TeamId).Select(entry => entry.Unit),catalog, u => combatPositions[u.InstanceId]), definition.Evolutions.Count > 0){IsBoss=definition.IsBoss,IsOriginalCombatUnit=true};
             }).ToArray();
             var expanded=states.ToList();
             if(synergyRules==null||synergyRules.Enabled)foreach(int team in new[]{1,2}) {

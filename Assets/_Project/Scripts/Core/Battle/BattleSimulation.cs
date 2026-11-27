@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Board;
@@ -176,6 +176,7 @@ namespace PokeChess.Core.Battle
         }
         private void CleanupUnavailable()
         {
+            battle.Synergies.AdvancePassengers();
             foreach(var unit in ordered)
                 if(!unit.IsAlive||!unit.IsOnBoard)
                 {
@@ -192,6 +193,8 @@ namespace PokeChess.Core.Battle
                     runtime.IsAttackTargetLocked=false;runtime.MovementTargetId=null;
                     unit.CurrentTargetId=null;unit.ActionState=CombatActionState.Dead;
                 }
+            // A carrier's death can free the only cell available to its passenger.
+            battle.Synergies.AdvancePassengers();
         }
         private bool TryEndBattle()
         {

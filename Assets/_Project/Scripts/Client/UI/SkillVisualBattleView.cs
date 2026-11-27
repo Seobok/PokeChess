@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -81,6 +81,7 @@ namespace PokeChess.Client.UI
         }
 
         private readonly NatureBattleVisuals nature = new NatureBattleVisuals();
+        private readonly PassengerBattleVisuals passenger = new PassengerBattleVisuals();
         private readonly EarthBattleVisuals earth=new EarthBattleVisuals();
         private (int team,int column,int row)[] earthTiles=Array.Empty<(int,int,int)>();
         private bool earthComplete;
@@ -139,6 +140,13 @@ namespace PokeChess.Client.UI
             foreach (var e in battle.Shields.EventsThisTick)
                 if (e.Shield.Group == SynergyTraits.Nature)
                     nature.ShieldSignal(transform, e.Shield.TargetId, e.Kind.ToString(), e.Shield.Remaining, e.Tick);
+            foreach (var e in battle.Synergies.EventsThisTick.Where(e => e.TraitId == "passenger" && e.Cell.HasValue))
+            {
+                var cell = e.Cell.Value;
+                var destination = e.Destination ?? cell;
+                passenger.Signal(transform, e.Detail, e.TargetId, battle.Units.FirstOrDefault(u => u.UnitInstanceId == e.TargetId)?.DefinitionId,
+                    point(cell.Column, cell.Row), point(destination.Column, destination.Row), e.Tick);
+            }
             foreach(var e in battle.Synergies.EventsThisTick)if(e.TraitId==SynergyTraits.Earth) {
                 if(e.Cell.HasValue)earth.TileSignal(transform,e.Detail,(int)e.Value,e.Cell.Value.Column,e.Cell.Value.Row,e.Tick);
                 else if(e.Detail=="RANGED_GUARD"||e.Detail=="FORTRESS_GUARD")earth.GuardSignal(transform,e.SourceId,e.TargetId,e.Tick,e.Detail=="FORTRESS_GUARD");
@@ -256,6 +264,12 @@ namespace PokeChess.Client.UI
         public void PlaybackEvent(CombatEventView e,CombatFrame frame,Func<int,int,Vector2> project,float scale=1.5f)
         {
             Context(frame.battleId);point=project;pixelScale=scale;rate=frame.tickRate;
+            if (e.kind == "SynergyTile" && e.synergyCell != null && e.detail?.StartsWith("passenger:", StringComparison.Ordinal) == true)
+            {
+                var destination = e.synergyDestination ?? e.synergyCell;
+                passenger.Signal(transform, e.detail.Substring(10), e.target, frame.units.FirstOrDefault(u => u.id == e.target)?.definitionId,
+                    point(e.synergyCell.column, e.synergyCell.row), point(destination.column, destination.row), e.tick);
+            }
             if (e.kind == "SynergyTile" && e.synergyCell != null &&
                 e.detail?.StartsWith("venom:", StringComparison.Ordinal) == true)
             {
@@ -492,6 +506,7 @@ namespace PokeChess.Client.UI
             disruptor.Render(transform, units, tick, rate, earthComplete);
             assassin.Render(transform, units, tick, rate, earthComplete);
             supporter.Render(transform, units, tick, rate, earthComplete);
+            passenger.Render(tick, rate, pixelScale);
             guardian.Render(transform,units,tick,rate,pixelScale);if(catalog==null)return;
             foreach(var bolt in bolts.ToArray()) {
                 double elapsed=(tick-bolt.Start)/Math.Max(1,rate);var source=Find(bolt.Source);var target=Find(bolt.Target);
@@ -736,7 +751,7 @@ namespace PokeChess.Client.UI
             foreach(var bolt in bolts.ToArray())RemoveBolt(bolt);
             foreach(var actor in GetComponentsInChildren<PokemonSpriteView>()){actor.SetSkillLungeOffset(Vector2.zero);actor.SetSkillHidden(false);actor.SetSkillScale(1);}
             lunges.Clear();
-            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();guardian.Clear();duelist.Clear();tracker.Clear();sorcerer.Clear();invoker.Clear();disruptor.Clear();assassin.Clear();supporter.Clear();flame.Clear();torrent.Clear();storm.Clear();earth.Clear();nature.Clear();venom.Clear();earthTiles=Array.Empty<(int,int,int)>();earthComplete=false;flameTiles=Array.Empty<(int,int)>();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
+            foreach(var visual in visuals.ToArray())Remove(visual);continuous.Clear();passenger.Clear();guardian.Clear();duelist.Clear();tracker.Clear();sorcerer.Clear();invoker.Clear();disruptor.Clear();assassin.Clear();supporter.Clear();flame.Clear();torrent.Clear();storm.Clear();earth.Clear();nature.Clear();venom.Clear();earthTiles=Array.Empty<(int,int,int)>();earthComplete=false;flameTiles=Array.Empty<(int,int)>();casts.Clear();castTargets.Clear();seen.Clear();afterimages.Clear();lastTick=-1;
         }
         private void RemoveBolt(BoltVisual bolt)
         {

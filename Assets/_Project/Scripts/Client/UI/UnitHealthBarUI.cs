@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,6 +45,7 @@ namespace PokeChess.Client.UI
         {
             var image = HudImage(name, parent, size, position, Color.white);
             image.sprite = sprite;
+            UiPrefab.ApplySlicing(image);
             return image;
         }
 
@@ -78,7 +79,19 @@ namespace PokeChess.Client.UI
 
         private void RenderPreparationVitals(Transform unit, PokemonStats stats, int rank, int evolutionStage, bool friendly)
         {
-            RenderUnitHealthBar(unit, stats.MaxHP, stats.MaxHP, friendly);
+            bool earth = earthPreviewTiles.Any(tile => EarthVisuals.Cells(tile, true).Any(cell =>
+                Vector2.SqrMagnitude(((RectTransform)unit).anchoredPosition - FindSlot(UnitPlacement.OnBoard(cell)).Rect.anchoredPosition) < 1));
+            double maxHP = stats.MaxHP * (earth && earthPreviewTier >= 4 ? 1.10 : 1);
+            RenderUnitHealthBar(unit, maxHP, maxHP, friendly, earth ? 160 : 0);
+            var earthShield = unit.Find("Earth_PreparationShield")?.GetComponent<UnityEngine.UI.Image>();
+            if (earth && earthShield == null) earthShield = EarthVisuals.Create(unit, "PreparationShield");
+            if (earthShield != null)
+            {
+                var art = Resources.Load<EarthVisuals>("EarthVisuals");
+                EarthVisuals.Draw(earthShield, earth && art != null ? art.shieldHold : null, Time.unscaledTimeAsDouble, true);
+                earthShield.rectTransform.sizeDelta = new Vector2(60, 60);
+                earthShield.rectTransform.anchoredPosition = new Vector2(0, 12);
+            }
             RenderUnitEnergyBar(unit, stats.StartingEnergy, stats.MaxEnergy, true);
             RenderUnitRank(unit, rank, evolutionStage);
         }

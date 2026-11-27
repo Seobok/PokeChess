@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -68,8 +68,8 @@ namespace PokeChess.Core.Match
             if(!IsComplete || survivorCountsFrozen)return;
             if(Battle!=null)
             {
-                oneSurvivors=Battle.Units.Count(u=>u.TeamId==1 && u.IsAlive && u.IsOnBoard && !u.IsSynergySummon);
-                twoSurvivors=Battle.Units.Count(u=>u.TeamId==2 && u.IsAlive && u.IsOnBoard && !u.IsSynergySummon);
+                oneSurvivors=Battle.Units.Count(u=>u.TeamId==1 && u.IsAlive && (u.IsOnBoard || u.IsEmbarked) && !u.IsSynergySummon);
+                twoSurvivors=Battle.Units.Count(u=>u.TeamId==2 && u.IsAlive && (u.IsOnBoard || u.IsEmbarked) && !u.IsSynergySummon);
             }
             survivorCountsFrozen=true;
         }

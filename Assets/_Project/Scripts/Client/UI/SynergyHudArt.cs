@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Battle;
@@ -18,14 +18,14 @@ namespace PokeChess.Client.UI
         private static readonly (string name, string[] species, string description)[] UniqueSynergies =
         {
             ("텍스처", new[] { "porygon" },
-                "배치 단계에 이 항목을 눌러 필드의 다른 아군 1명을 지정합니다.\n" +
-                "폴리곤은 지정한 아군의 기본 계열 시너지 1개를 추가로 얻습니다. 기존 시너지는 유지하며, 직업 시너지와 상징으로 얻은 계열은 복사하지 않습니다.\n" +
-                "지정 대상이 필드에 있어야 적용되며, 같은 진화 계열은 시너지 인원에 1회만 포함됩니다."),
+                "폴리곤 양옆 같은 행의 두 칸에 아군을 배치하세요. 양쪽 유닛의 기본 계열이 같으면 폴리곤이 해당 계열을 추가로 얻습니다.\n" +
+                "한쪽이라도 비어 있거나 공통 계열이 없으면 발동하지 않습니다. 직업 시너지와 상징으로 얻은 계열은 복사하지 않습니다.\n" +
+                "기존 신비는 유지하며, 신비를 얻어도 중복 집계하지 않습니다. 같은 진화 계열은 시너지 인원에 1회만 포함됩니다."),
             ("승선", new[] { "lapras" },
-                "배치 단계에 이 항목을 눌러 라프라스와 인접한 아군 1명을 승객으로 지정합니다. 미지정 시 전투 시작 배치의 인접 아군 1명을 자동 선택합니다.\n" +
-                "승객이 받는 첫 군중 제어 또는 강제이동을 전투당 1회 막습니다. 피해를 막는 효과는 아닙니다.\n" +
-                "라프라스가 첫 기술을 완료하면 승객에게 승객 최대 HP의 16% 보호막을 4초간 부여합니다.\n" +
-                "라프라스가 여러 마리면 진화 단계 → 성급 순으로 높은 대표 1마리만 적용됩니다."),
+                "배치 단계에 라프라스 바로 오른쪽 칸에 아군을 놓으면 전투 시작 시 승선하며, 승객은 하선 전까지 전투에서 비활성화됩니다.\n" +
+                "라프라스는 승객 최대 체력의 15%와 공격력의 20%를 얻으며, 하선 후에도 라운드 종료까지 유지합니다.\n" +
+                "라프라스 체력이 75% 미만이 되거나 군중 제어에 걸리면 승객이 뒤쪽에 하선합니다. 막혔으면 인접 빈칸, 이후 가장 가까운 빈칸 중 무작위로 나옵니다.\n" +
+                "하선한 승객은 자신의 최대 체력 15% 보호막을 4초간 얻습니다. 라프라스가 여러 마리면 진화 단계 → 성급 순으로 높은 대표 1마리만 적용됩니다."),
             ("움직이지 않는 산", new[] { "snorlax" },
                 "잠만보 자신은 강제이동에 면역입니다.\n" +
                 "전투 시작 시 뒤쪽에 인접한 아군 1명을 자동 선택해, 그 아군이 받는 첫 강제이동을 전투당 1회 막습니다. 일반 군중 제어는 막지 않습니다.\n" +
@@ -36,11 +36,10 @@ namespace PokeChess.Client.UI
                 "♀ 기술 완료: ♂이 기술 사용자의 현재 대상(없으면 가까운 적)에게 물리 피해 90/130/175, 주변 1칸의 다른 적에게 그 절반의 피해를 줍니다.\n" +
                 "♂ 기술 완료: 같은 대상 위치에 반경 1칸의 독 지대를 3초간 생성합니다. 매초 마법 피해 30/45/60을 주고 20% 둔화를 적용합니다.\n" +
                 "피해 수치는 효과를 제공하는 상대 대표의 1/2/3성 기준입니다. 두 효과의 재발동 대기시간은 각각 6초입니다."),
-            ("스타팅 삼원합동", new[] { "bulbasaur", "charmander", "squirtle" },
-                "이상해씨·파이리·꼬부기 계열을 모두 배치하면 발동합니다. 각 계열은 진화 단계 → 성급 순으로 높은 대표 1마리가 참여합니다.\n" +
-                "세 대표가 각각 기술을 1회 이상 완료하면 전투당 1회 합동 효과가 발동합니다.\n" +
-                "현재 HP 비율이 가장 높은 적을 중심으로 반경 1칸의 적에게 마법 피해 120과 속박 1초를 적용합니다.\n" +
-                "동시에 생존한 세 대표에게 각자 최대 HP의 10% 보호막을 4초간 부여합니다.")
+            ("스타팅", new[] { "bulbasaur", "charmander", "squirtle" },
+                "이상해씨·파이리·꼬부기 계열 중 서로 다른 2계열부터 발동합니다. 각 계열은 진화 단계 → 성급 순으로 높은 대표 1마리가 참여하며, 이전 단계 효과도 유지됩니다.\n" +
+                "(2) 적 처치에 관여한 스타팅 대표가 에너지를 15 획득합니다.\n" +
+                "(3) 스타팅 대표가 적 처치에 관여하면 세 대표 중 현재 체력이 가장 낮은 생존 유닛이 자신의 최대 체력 10%를 회복합니다. 적 하나당 1회 발동합니다.")
         };
 
         private sealed class SynergyHudRow
@@ -81,6 +80,7 @@ namespace PokeChess.Client.UI
         {
             var image = HudImage(name, parent, size, position, Color.white);
             image.sprite = sprite;
+            UiPrefab.ApplySlicing(image);
             return image;
         }
 
@@ -273,8 +273,9 @@ namespace PokeChess.Client.UI
             var unique = UniqueSynergies.Select((data, i) => (data, i))
                 .Select(entry => (entry.data, entry.i, count: entry.data.species.Count(id => families.Contains(SynergyTraits.Family(id)))))
                 .Where(entry => entry.count > 0)
-                .Select(entry => ("unique-" + entry.i, entry.data.name, entry.count, entry.data.species.Length,
-                    entry.count == entry.data.species.Length ? 1 : 0, entry.i));
+                .Select(entry => ("unique-" + entry.i, entry.data.name, entry.count,
+                    entry.i == 4 && entry.count < 2 ? 2 : entry.data.species.Length,
+                    entry.i == 4 ? (entry.count >= 3 ? 3 : entry.count >= 2 ? 2 : 0) : entry.count == entry.data.species.Length ? 1 : 0, entry.i));
             var ownerState = IsOnlineMatch ? onlineService.LocalMatchState : null;
             bool viewingOwnBoard = IsOnlineMatch ? ownerState != null && onlineService.WatchingPlayerId == ownerState.playerId
                 : localViewedPlayerId == "p1";
@@ -374,23 +375,34 @@ namespace PokeChess.Client.UI
             synergyTooltipSignature = signature;
             HideSynergyPokemonPreview();
             synergyTooltipTitle.text = entry.name;
-            string[] lines = entry.unique >= 0 ? Array.Empty<string>() : SynergyDescription(entry.key).Split('\n');
-            int[] thresholds = entry.unique >= 0 ? Array.Empty<int>() : SynergyTraits.Thresholds(entry.key);
-            synergyHelp.text = entry.unique >= 0 ? UniqueSynergies[entry.unique].description :
-                string.Join("\n", lines.Skip(thresholds.Length));
+            bool stagedUnique = entry.unique == 4;
+            string[] lines = entry.unique >= 0 && !stagedUnique ? Array.Empty<string>() :
+                (stagedUnique ? UniqueSynergies[entry.unique].description : SynergyDescription(entry.key)).Split('\n');
+            int[] thresholds = stagedUnique ? new[] { 2, 3 } : entry.unique >= 0 ? Array.Empty<int>() : SynergyTraits.Thresholds(entry.key);
+            bool IsStageLine(string line) => thresholds.Any(value => line.TrimStart().StartsWith("(" + value + ")", StringComparison.Ordinal));
+            var commonLines = lines.TakeWhile(line => !IsStageLine(line)).ToArray();
+            var stageLines = lines.Skip(commonLines.Length).ToArray();
+            bool hasIntroduction = commonLines.Length > 0;
+            synergyHelp.text = entry.unique >= 0 && !stagedUnique ? UniqueSynergies[entry.unique].description :
+                string.Join("\n", hasIntroduction ? commonLines : stageLines.Skip(thresholds.Length));
             synergyHelp.gameObject.SetActive(synergyHelp.text.Length > 0);
             synergyHelp.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                entry.unique >= 0 ? Mathf.Ceil(synergyHelp.preferredHeight) : 49);
+                entry.unique >= 0 || hasIntroduction ? Mathf.Ceil(synergyHelp.preferredHeight) : 49);
+            // Place the first effect directly below the measured introduction instead of
+            // adding its height to the prefab's existing description clearance.
+            float firstStageY = hasIntroduction ? 147 - synergyHelp.rectTransform.rect.height - 22 : 100;
             for (int i = 0; i < synergyThresholdRows.Length; i++)
             {
                 var row = synergyThresholdRows[i];
                 row.gameObject.SetActive(i < thresholds.Length);
                 if (i >= thresholds.Length) continue;
                 int threshold = thresholds[i];
+                row.rectTransform.anchoredPosition = new Vector2(0, firstStageY - i * 51);
                 row.color = threshold == entry.tier ? Color.white : new Color(1, 1, 1, 0);
                 row.transform.Find("Badge/Count").GetComponent<UnityEngine.UI.Text>().text = threshold.ToString();
                 var effect = row.transform.Find("Effect").GetComponent<UnityEngine.UI.Text>();
-                effect.text = i < lines.Length ? lines[i].Substring(lines[i].IndexOf(')') + 1).Trim() : "";
+                string stage = stageLines.FirstOrDefault(line => line.TrimStart().StartsWith("(" + threshold + ")", StringComparison.Ordinal));
+                effect.text = stage == null ? "" : stage.Substring(stage.IndexOf(')') + 1).Trim();
                 effect.color = threshold <= entry.count ? SynergyInk : new Color32(99, 104, 117, 255);
             }
             var deployed = synergyBoard.Where(unit => entry.unique >= 0
@@ -402,8 +414,10 @@ namespace PokeChess.Client.UI
                 .Concat(deployed).GroupBy(SynergyTraits.Family)
                 .Select(group => deployed.FirstOrDefault(id => SynergyTraits.Family(id) == group.Key) ??
                     group.OrderBy(PokeChess.Content.GameContent.Stage).First()).ToArray();
-            float membersY = thresholds.Length == 0 ? 87 : 55 - (thresholds.Length - 1) * 51;
-            if (thresholds.Length > 0 && synergyHelp.gameObject.activeSelf)
+            float membersY = thresholds.Length == 0 ? 87 : firstStageY - 45 - (thresholds.Length - 1) * 51;
+            if (hasIntroduction)
+                synergyHelp.rectTransform.anchoredPosition = new Vector2(0, 147 - synergyHelp.rectTransform.rect.height * .5f);
+            else if (thresholds.Length > 0 && synergyHelp.gameObject.activeSelf)
             {
                 synergyHelp.rectTransform.anchoredPosition = new Vector2(0, membersY - 10);
                 membersY -= 44;
@@ -461,7 +475,7 @@ namespace PokeChess.Client.UI
                 !busy && !RoundLoop.NextPreparationPending && Simulation?.Status != SimulationStatus.Running;
 
         private bool CanConfigureSynergyRow(string key, int unique) =>
-            unique >= 0 && unique <= 1 || key == SynergyTraits.Mystic && mysticChoiceAvailable;
+            key == SynergyTraits.Mystic && mysticChoiceAvailable;
 
         private void ChooseMysticOrigin(string origin)
         {

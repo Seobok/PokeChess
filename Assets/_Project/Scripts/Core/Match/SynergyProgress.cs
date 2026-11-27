@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Battle;
@@ -46,20 +46,13 @@ namespace PokeChess.Core.Match
     {
         public const int GuardianPlacementMode = 4;
 
-        // mode 0: texture/passenger, 1: rock slot, 2: prophecy, 3: adversity reward.
+        // mode 0: retired manual target selection, 1: rock slot, 2: prophecy, 3: adversity reward.
         public static void Configure(MatchState match,PokemonCatalog catalog,string playerId,int mode,string unitId,string value,int slot=0,int column=0,int row=0)
         {
             var player=match.GetPlayer(playerId);
             if(match.Phase!=MatchPhase.Preparation||player.IsEliminated||player.HP==0)throw new InvalidOperationException("준비 단계에서 설정할 수 있습니다.");
             if(mode==0)
-            {
-                var source=player.Units.Single(u=>u.InstanceId==unitId&&u.Placement.Kind==PlacementKind.Board);
-                var target=player.Units.Single(u=>u.InstanceId==value&&u.Placement.Kind==PlacementKind.Board&&u!=source);
-                var family=SynergyTraits.Family(source.DefinitionId);
-                if(family!=SynergyTraits.Family("porygon")&&family!=SynergyTraits.Family("lapras"))throw new ArgumentException("텍스처 또는 승선 대상만 지정할 수 있습니다.");
-                if(family==SynergyTraits.Family("lapras")&&HexCoordinates.Distance(source.Placement.Position.Value,target.Placement.Position.Value)!=1)throw new ArgumentException("승객은 인접해야 합니다.");
-                source.SynergyTargetId=target.InstanceId;
-            }
+                throw new ArgumentException("텍스처는 폴리곤 양옆 유닛의 공통 계열로 자동 결정됩니다. 승객은 라프라스 오른쪽에 배치하세요.");
             else if(mode==1 || mode==GuardianPlacementMode)
                 MoveSpecial(player,catalog,mode,slot,new BoardPosition(column,row));
             else if(mode==2)
@@ -146,18 +139,46 @@ namespace PokeChess.Core.Match
         {
             var traits=catalog.Get(unit.DefinitionId).TraitIds.ToList();
             foreach(var item in unit.ItemInstanceIds){var id=ItemCatalog.DefinitionId(item);if(id!=null&&id.StartsWith("emblem-",StringComparison.Ordinal))traits.Add(id.Substring(7));}
-            if(player!=null&&SynergyTraits.Family(unit.DefinitionId)==SynergyTraits.Family("porygon")&&unit.SynergyTargetId!=null){var target=player.Units.FirstOrDefault(u=>u.InstanceId==unit.SynergyTargetId&&u.Placement.Kind==PlacementKind.Board);if(target!=null)traits.AddRange(catalog.Get(target.DefinitionId).TraitIds.Where(SynergyTraits.Origins.Contains).Take(1));}
+            if (player != null)
+            {
+                var origin = TextureOrigin(unit, player.Units, catalog);
+                if (origin != null) traits.Add(origin);
+            }
             return traits.Distinct(StringComparer.Ordinal).ToArray();
         }
         public static System.Collections.Generic.IReadOnlyList<SynergyCount> Count(PlayerState player,PokemonCatalog catalog)
         {var units=player.Units.Where(u=>u.Placement.Kind==PlacementKind.Board).ToArray();return Array.AsReadOnly(SynergyTraits.All.Select(t=>new SynergyCount(t,units.Where(u=>Traits(u,catalog,player).Contains(t)).Select(u=>SynergyTraits.Family(u.DefinitionId)).Distinct(StringComparer.Ordinal).Count())).ToArray());}
-        internal static System.Collections.Generic.IReadOnlyList<SynergyCount> CountUnits(System.Collections.Generic.IEnumerable<UnitInstance> source,PokemonCatalog catalog) {
+        public static string TextureOrigin(UnitInstance unit, IEnumerable<UnitInstance> source, PokemonCatalog catalog,
+            Func<UnitInstance, BoardPosition?> position = null)
+        {
+            if (SynergyTraits.Family(unit.DefinitionId) != SynergyTraits.Family("porygon")) return null;
+            position ??= u => u.Placement.Kind == PlacementKind.Board ? u.Placement.Position : null;
+            var center = position(unit);
+            if (!center.HasValue || center.Value.Column == 0 || center.Value.Column >= 6) return null;
+            var neighbors = source.Where(u => u != unit && u.OwnerPlayerId == unit.OwnerPlayerId)
+                .Select(u => (unit: u, cell: position(u))).Where(u => u.cell.HasValue && u.cell.Value.Row == center.Value.Row).ToArray();
+            var left = neighbors.FirstOrDefault(u => u.cell.Value.Column == center.Value.Column - 1).unit;
+            var right = neighbors.FirstOrDefault(u => u.cell.Value.Column == center.Value.Column + 1).unit;
+            if (left == null || right == null) return null;
+            // Only native origins can be copied; never recurse through another Porygon or copy emblems/jobs.
+            return catalog.Get(left.DefinitionId).TraitIds.Intersect(catalog.Get(right.DefinitionId).TraitIds)
+                .FirstOrDefault(SynergyTraits.Origins.Contains);
+        }
+
+        internal static string[] RosterTraits(UnitInstance unit, IEnumerable<UnitInstance> source, PokemonCatalog catalog,
+            Func<UnitInstance, BoardPosition?> position = null)
+        {
+            var traits = Traits(unit, catalog).ToList();
+            var origin = TextureOrigin(unit, source, catalog, position);
+            if (origin != null) traits.Add(origin);
+            return traits.Distinct(StringComparer.Ordinal).ToArray();
+        }
+
+        internal static System.Collections.Generic.IReadOnlyList<SynergyCount> CountUnits(IEnumerable<UnitInstance> source,PokemonCatalog catalog)
+        {
             var units=source.ToArray();
-            return SynergySystem.CountAssignments(units.Select(u=> {
-                var traits=Traits(u,catalog).ToList();
-                if(SynergyTraits.Family(u.DefinitionId)==SynergyTraits.Family("porygon")){var target=units.FirstOrDefault(t=>t.InstanceId==u.SynergyTargetId);if(target!=null)traits.AddRange(catalog.Get(target.DefinitionId).TraitIds.Where(SynergyTraits.Origins.Contains).Take(1));}
-                return new System.Collections.Generic.KeyValuePair<string,System.Collections.Generic.IReadOnlyList<string>>(u.DefinitionId,traits);
-            }));
+            return SynergySystem.CountAssignments(units.Select(u =>
+                new KeyValuePair<string, System.Collections.Generic.IReadOnlyList<string>>(u.DefinitionId, RosterTraits(u,units,catalog))));
         }
         internal static void Settle(PlayerState player,LocalPairBattle pair,int round,RoundOutcome outcome)
         {

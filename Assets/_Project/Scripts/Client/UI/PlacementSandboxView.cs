@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -202,9 +202,7 @@ namespace PokeChess.Client.UI
             }
             RenderMinimumUI();
             RefreshStormLinks(Match.Phase==MatchPhase.Preparation?ViewedPlayer.Units:Array.Empty<UnitInstance>());
-            RefreshGuardianLinks(Match.Phase==MatchPhase.Preparation
-                ? PokeChess.Core.Battle.SynergySystem.PreviewGuardianLinks(ViewedPlayer.Units,catalog)
-                : Array.Empty<(string,string)>());
+            RefreshGuardianTiles(Match.Phase==MatchPhase.Preparation ? ViewedPlayer.Units : Array.Empty<UnitInstance>());
             AnimateRosterSprites();
         }
         public void BeginDrag(string id,Vector2 point)

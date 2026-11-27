@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Board;
@@ -110,10 +110,30 @@ namespace PokeChess.Core.Battle
             battle.Shields.Add(target,"synergy:"+trait,trait,Math.Max(old,value),duration);
             Record(trait,source,target,"SHIELD",value);
         }
+        public static IEnumerable<BoardPosition> GuardianSideTiles(BoardPosition position)
+        {
+            if (position.Column > 0)
+            {
+                var left = new BoardPosition(position.Column - 1, position.Row);
+                if (HexBoardBounds.Combat.Contains(left)) yield return left;
+            }
+            var right = new BoardPosition(position.Column + 1, position.Row);
+            if (HexBoardBounds.Combat.Contains(right)) yield return right;
+        }
+
         private static IEnumerable<UnitCombatState> GuardianTargets(UnitCombatState guardian,IEnumerable<UnitCombatState> allies,int tier)
-            =>allies.Where(a=>!a.TraitIds.Contains(SynergyTraits.Guardian)&&HexCoordinates.Distance(guardian.Position,a.Position)<=1)
-                .OrderByDescending(a=>a.ItemInstanceIds.Count).ThenByDescending(a=>a.Stats.Attack+a.Stats.SpellPower)
-                .ThenBy(a=>SynergyTraits.Dex(a.DefinitionId)).ThenBy(a=>a.UnitInstanceId,StringComparer.Ordinal).Take(tier>=4?2:1);
+            => allies.Where(a => !a.TraitIds.Contains(SynergyTraits.Guardian) &&
+                GuardianSideTiles(guardian.Position).Contains(a.Position));
+
+        public static IEnumerable<BoardPosition> PreviewGuardianTiles(IEnumerable<UnitInstance> roster, PokemonCatalog catalog)
+        {
+            var board = roster.Where(u => u.Placement.Kind == PlacementKind.Board).ToArray();
+            if (SynergyPreparation.CountUnits(board, catalog).First(c => c.TraitId == SynergyTraits.Guardian).Tier == 0)
+                return Array.Empty<BoardPosition>();
+            return board.Where(u => SynergyPreparation.Traits(u, catalog).Contains(SynergyTraits.Guardian))
+                .SelectMany(u => GuardianSideTiles(u.Placement.Position.Value))
+                .Where(HexBoardBounds.Preparation.Contains).Distinct();
+        }
 
         public static IEnumerable<(string guardian,string target)> PreviewGuardianLinks(IEnumerable<UnitInstance> roster,PokemonCatalog catalog)
         {
@@ -159,6 +179,7 @@ namespace PokeChess.Core.Battle
                 {var r=R(ally);r.Guarded=true;r.GuardReduction=tier==5?.10f:tier==4?.07f:.04f;r.GuardFirst=tier==5?.20f:tier==4?.15f:0;Record(SynergyTraits.Guardian,u,ally,"GUARD",tier);}
             }
             InitializeOrigins();
+            InitializeBoarding();
         }
         internal void BeginTick()=>events.Clear();
         internal void Advance()
@@ -253,6 +274,7 @@ namespace PokeChess.Core.Battle
         }
         internal void OnDebuffApplied(StatusEffectDefinition d,UnitCombatState source,UnitCombatState target)
         {
+            if (IsPassengerControl(d)) Disembark(target);
             if(d.Id.StartsWith("synergy-",StringComparison.Ordinal)||source.TeamId==target.TeamId||Tier(source,SynergyTraits.Disruptor)==0)return;
             bool valid=d.CrowdControl!=CrowdControlKind.None||new[]{StatusBehavior.Sleep,StatusBehavior.Freeze,StatusBehavior.Paralysis,StatusBehavior.Confusion,StatusBehavior.Blind,StatusBehavior.Bleed}.Contains(d.Behavior)||d.Modifiers.Any(m=>m.Value<0);
             if(!valid)return;int tier=Tier(source,SynergyTraits.Disruptor);float penalty=tier==6?-.18f:tier==4?-.12f:-.08f;
@@ -317,6 +339,7 @@ namespace PokeChess.Core.Battle
                     }
                 }
             }
+            AdvancePassengers();
             OriginDamage(source,target,result);
             if(target.CurrentHP>0&&target.IsOnBoard)
             {
@@ -327,6 +350,7 @@ namespace PokeChess.Core.Battle
         }
         private void Takedown(UnitCombatState target)
         {
+            StarterTakedown(target);
             foreach(var u in battle.Units.Where(u=>R(target).Contributors.Contains(u.UnitInstanceId)&&u.CurrentHP>0&&u.IsOnBoard).OrderBy(u=>u.UnitInstanceId,StringComparer.Ordinal))
             {
                 var r=R(u);var next=Enemies(u).OrderBy(e=>HexCoordinates.Distance(u.Position,e.Position)).ThenBy(e=>e.UnitInstanceId,StringComparer.Ordinal).FirstOrDefault();

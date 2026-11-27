@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using NUnit.Framework;
 using PokeChess.Core.Battle;
@@ -135,7 +135,59 @@ namespace PokeChess.Core.Tests
             Assert.That(player.Synergy.LastAdversityChoice.slot, Is.EqualTo(2));
             Assert.That(player.Synergy.LastAdversityChoice.sequence, Is.EqualTo(1));
         }
-        [Test] public void TextureAndEmblemsOnlyAddOriginsAndCountFamiliesOnce(){var m=Match(out var catalog,D("porygon",SynergyTraits.Mystic,SynergyTraits.Invoker),D("squirtle",SynergyTraits.Torrent,SynergyTraits.Guardian));var p=m.GetPlayer("p1");p.SetProgress(0,0,2);foreach(var id in new[]{"porygon","squirtle"})SharedPoolSystem.RegisterUnit(m,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(id=="porygon"?0:1,0))),id);SynergyPreparation.Configure(m,catalog,"p1",0,"porygon","squirtle");var counts=SynergyPreparation.Count(p,catalog);Assert.That(counts.Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(2));Assert.That(counts.Single(c=>c.TraitId==SynergyTraits.Guardian).Count,Is.EqualTo(1));p.GetUnit("porygon").AddItem("item:emblem-torrent:1:p1");Assert.That(SynergyPreparation.Count(p,catalog).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(2));}
+        private static MatchState TextureMatch(out PokemonCatalog catalog,string left=SynergyTraits.Torrent,string right=SynergyTraits.Torrent)
+        {
+            var match=Match(out catalog,D("porygon",SynergyTraits.Mystic,SynergyTraits.Invoker),D("left",left,SynergyTraits.Guardian),D("right",right,SynergyTraits.Guardian));
+            match.GetPlayer("p1").SetProgress(0,0,3);
+            foreach(var id in new[]{"left","porygon","right"})SharedPoolSystem.RegisterUnit(match,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,
+                UnitPlacement.OnBoard(new BoardPosition(id=="left"?2:id=="porygon"?3:4,1))),id);
+            return match;
+        }
+        [Test] public void TextureAndEmblemsOnlyAddOriginsAndCountFamiliesOnce()
+        {
+            var m=TextureMatch(out var catalog);var p=m.GetPlayer("p1");
+            var traits=SynergyPreparation.Traits(p.GetUnit("porygon"),catalog,p);
+            Assert.That(traits,Does.Contain(SynergyTraits.Torrent));Assert.That(traits,Does.Not.Contain(SynergyTraits.Guardian));
+            Assert.That(SynergyPreparation.Count(p,catalog).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(3));
+            p.GetUnit("porygon").AddItem("item:emblem-torrent:1:p1");
+            Assert.That(SynergyPreparation.Count(p,catalog).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(3));
+            Assert.That(SynergyPreparation.CountUnits(p.Units,catalog).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(3));
+        }
+        [TestCase("left-missing")][TestCase("right-missing")][TestCase("diagonal")][TestCase("mismatch")][TestCase("edge")]
+        public void TextureNeedsBothHorizontalNeighborsWithMatchingNativeOrigins(string scenario)
+        {
+            var m=TextureMatch(out var catalog,right:scenario=="mismatch"?SynergyTraits.Flame:SynergyTraits.Torrent);var p=m.GetPlayer("p1");
+            if(scenario=="left-missing")p.GetUnit("left").ApplyPlacementUnchecked(UnitPlacement.OnBench(0));
+            if(scenario=="right-missing")p.GetUnit("right").ApplyPlacementUnchecked(UnitPlacement.OnBench(0));
+            if(scenario=="diagonal")p.GetUnit("right").ApplyPlacementUnchecked(UnitPlacement.OnBoard(new BoardPosition(4,2)));
+            if(scenario=="edge")p.GetUnit("porygon").ApplyPlacementUnchecked(UnitPlacement.OnBoard(new BoardPosition(0,1)));
+            p.GetUnit("porygon").SynergyTargetId="left";
+            Assert.That(SynergyPreparation.Traits(p.GetUnit("porygon"),catalog,p),Does.Not.Contain(SynergyTraits.Torrent));
+        }
+        [Test] public void TextureMysticIsNotCountedTwiceAndEmblemsAreNotCopied()
+        {
+            var m=TextureMatch(out var catalog,SynergyTraits.Mystic,SynergyTraits.Mystic);var p=m.GetPlayer("p1");
+            p.GetUnit("left").AddItem("item:emblem-torrent:1:p1");p.GetUnit("right").AddItem("item:emblem-torrent:2:p1");
+            var traits=SynergyPreparation.Traits(p.GetUnit("porygon"),catalog,p);
+            Assert.That(traits.Count(t=>t==SynergyTraits.Mystic),Is.EqualTo(1));Assert.That(traits,Does.Not.Contain(SynergyTraits.Torrent));
+            Assert.That(SynergyPreparation.Count(p,catalog).Single(c=>c.TraitId==SynergyTraits.Mystic).Count,Is.EqualTo(3));
+            Assert.Throws<ArgumentException>(()=>SynergyPreparation.Configure(m,catalog,"p1",0,"porygon","left"));
+        }
+        [TestCase(1)][TestCase(2)] public void TextureCombatUsesSetupPositionsAndRetainsStartingOriginAfterMovement(int team)
+        {
+            var m=TextureMatch(out var catalog);var player=m.GetPlayer("p1");
+            var own=player.Units.Select(unit=>{
+                var cell=unit.Placement.Position.Value;
+                if(team==2)cell=PokeChess.Core.Board.HexCoordinates.MirrorCombat(cell);
+                return new BattleUnitSetup(catalog.CreateUnit(unit.InstanceId,unit.DefinitionId,"p1",UnitRank.One,0,UnitPlacement.Unplaced),team,cell);
+            });
+            var enemy=new BattleUnitSetup(catalog.CreateUnit("enemy","left","p2",UnitRank.One,0,UnitPlacement.Unplaced),3-team,new BoardPosition(6,team==1?7:0));
+            var battle=BattleStateFactory.Create("texture",1,1,30,catalog,own.Concat(new[]{enemy}));
+            var porygon=battle.Units.Single(unit=>unit.DefinitionId=="porygon");
+            Assert.That(porygon.TraitIds,Does.Contain(SynergyTraits.Torrent));Assert.That(porygon.TraitIds,Does.Not.Contain(SynergyTraits.Guardian));
+            Assert.That(battle.Synergies.TeamCounts(team).Single(c=>c.TraitId==SynergyTraits.Torrent).Count,Is.EqualTo(3));
+            battle.TryMoveUnit("right",new BoardPosition(0,3));Assert.That(porygon.TraitIds,Does.Contain(SynergyTraits.Torrent));
+        }
         [Test] public void ConfigurationRejectsCombatPhase(){var m=Match(out var catalog);m.TransitionTo(MatchPhase.Combat);Assert.Throws<InvalidOperationException>(()=>SynergyPreparation.Configure(m,catalog,"p1",2,null,SynergyTraits.Flame));}
         [Test] public void RockAndUnitCanSwapInBothDirections(){var m=Match(out var catalog,D("a",SynergyTraits.Earth),D("b",SynergyTraits.Earth));m.GetPlayer("p1").SetProgress(0,0,2);foreach(var id in new[]{"a","b"})SharedPoolSystem.RegisterUnit(m,catalog.CreateUnit(id,id,"p1",UnitRank.One,0,UnitPlacement.OnBoard(new BoardPosition(id=="a"?0:1,0))),id);var player=m.GetPlayer("p1");var origin=SynergyPreparation.PreparationRocks(player,catalog).Single();
             SynergyPreparation.Configure(m,catalog,"p1",1,null,null,0,0,0);

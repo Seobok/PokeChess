@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Board;
@@ -21,6 +21,12 @@ namespace PokeChess.Core.Battle
         public bool IsContaminated(UnitCombatState unit) => ContaminationEnd(unit) > 0;
         public float StormCircuitBonus(UnitCombatState unit)=>circuitBonus.TryGetValue(unit.UnitInstanceId,out var bonus)?bonus:0;
         public int StormEnergy(int team)=>stormEnergy.TryGetValue(team,out var n)?n:0;
+        public int VenomSampleCount(int team)
+        {
+            int starting = researchSamples.TryGetValue(team, out var samples) ? samples : 0;
+            int earned = battle.VenomEarned.TryGetValue(team, out var gain) ? gain : 0;
+            return checked(starting + earned);
+        }
         public int VenomResearch(int team) {
             int tier=TeamTier(team,SynergyTraits.Venom),samples=researchSamples.TryGetValue(team,out var n)?n:0;
             return tier>=6&&samples>=120?120:tier>=4&&samples>=40?40:tier>=2&&samples>=10?10:0;

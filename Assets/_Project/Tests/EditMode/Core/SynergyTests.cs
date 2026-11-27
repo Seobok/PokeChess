@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using NUnit.Framework;
 using PokeChess.Core.Battle;
@@ -23,6 +23,40 @@ namespace PokeChess.Core.Tests
         [TestCase("guardian",3,2,1)][TestCase("guardian",5,5,0)][TestCase("tracker",3,3,1)][TestCase("torrent",8,6,2)][TestCase("assassin",4,3,0)] public void ThresholdsAreSpecificToEachTrait(string trait,int count,int tier,int needed){var c=new SynergyCount(trait,count);Assert.That(c.Tier,Is.EqualTo(tier));Assert.That(c.Needed,Is.EqualTo(needed));}
         [Test] public void BruiserAppliesHighestTierAndPreservesHealthRatio(){var b=Battle(SynergyTraits.Bruiser,6);Assert.That(U(b).Stats.MaxHP,Is.EqualTo(1460).Within(.01));Assert.That(U(b,"ally").Stats.MaxHP,Is.EqualTo(1080).Within(.01));Assert.That(U(b).CurrentHP,Is.EqualTo(U(b).Stats.MaxHP));}
         [Test] public void GuardianMarksDoNotStackAndFirstHitOnlyOnce(){var b=Battle(SynergyTraits.Guardian,4);Assert.That(U(b).EffectiveStats.Armor,Is.EqualTo(20));Assert.That(b.Synergies.IsGuarded(U(b,"ally")),Is.True);var a=Hit(b,"enemy","ally",amount:100);var c=Hit(b,"enemy","ally",amount:100);Assert.That(a.PostMitigationDamage,Is.EqualTo(79));Assert.That(c.PostMitigationDamage,Is.EqualTo(93));Assert.That(b.Synergies.EventsThisTick.Count(e=>e.Detail=="FIRST_HIT"&&e.TargetId=="ally"),Is.EqualTo(1));}
+        [TestCase(2, 2)][TestCase(2, 3)][TestCase(4, 2)][TestCase(5, 3)]
+        public void GuardianProtectsBothHorizontalSidesAndExcludesDiagonals(int tier, int row)
+        {
+            var definitions = Enumerable.Range(0,tier).Select(i=>Def("guard"+i,SynergyTraits.Guardian))
+                .Concat(new[]{Def("left"),Def("right"),Def("diagonal"),Def("enemy")}).ToArray();
+            var catalog = new PokemonCatalog(definitions);
+            var roster = definitions.Select((d,i)=>catalog.CreateUnit(d.Id,d.Id,d.Id=="enemy"?"p2":"p1",UnitRank.One,0,
+                UnitPlacement.OnBoard(d.Id=="left"?new BoardPosition(2,row):d.Id=="right"?new BoardPosition(4,row):
+                d.Id=="diagonal"?new BoardPosition(3,row+1):d.Id=="enemy"?new BoardPosition(6,6):
+                i==0?new BoardPosition(3,row):new BoardPosition(i-1,0)))).ToArray();
+            var battle=BattleStateFactory.Create("guardian-sides",1,1,30,catalog,
+                roster.Select(u=>new BattleUnitSetup(u,u.OwnerPlayerId=="p2"?2:1,u.Placement.Position.Value)));
+            battle.Synergies.Initialize();
+            Assert.That(battle.Synergies.IsGuarded(U(battle,"left")),Is.True);
+            Assert.That(battle.Synergies.IsGuarded(U(battle,"right")),Is.True);
+            Assert.That(battle.Synergies.IsGuarded(U(battle,"diagonal")),Is.False);
+            var links=SynergySystem.PreviewGuardianLinks(roster.Where(u=>u.OwnerPlayerId=="p1"),catalog).ToArray();
+            Assert.That(links,Does.Contain(("guard0","left")));
+            Assert.That(links,Does.Contain(("guard0","right")));
+            Assert.That(links.Any(link=>link.target=="diagonal"),Is.False);
+            var emptyPreview=SynergySystem.PreviewGuardianTiles(roster.Where(u=>u.DefinitionId.StartsWith("guard")),catalog).ToArray();
+            Assert.That(emptyPreview,Does.Contain(new BoardPosition(2,row)));
+            Assert.That(emptyPreview,Does.Contain(new BoardPosition(4,row)));
+            Assert.That(battle.TryMoveUnit("left",new BoardPosition(6,4)),Is.EqualTo(BoardOperationResult.Success));
+            Assert.That(battle.Synergies.IsGuarded(U(battle,"left")),Is.True);
+        }
+
+        [TestCase(0,1)][TestCase(6,5)]
+        public void GuardianSideTilesStayInsideBoardAtEdges(int column,int expected)
+        {
+            Assert.That(SynergySystem.GuardianSideTiles(new BoardPosition(column,2)),
+                Is.EquivalentTo(new[]{new BoardPosition(expected,2)}));
+        }
+
         [Test] public void DuelistOnlyStacksSuccessfulBasicsAndCapsAtSix(){var b=Battle(SynergyTraits.Duelist,4);Hit(b,basic:false,cast:1);Assert.That(b.Synergies.DuelistStacks(U(b)),Is.Zero);for(int i=0;i<8;i++)Hit(b);Assert.That(b.Synergies.DuelistStacks(U(b)),Is.EqualTo(6));Assert.That(U(b).EffectiveStats.AttackSpeed,Is.EqualTo(.68f).Within(.001));}
         [Test] public void TrackerCountsOneHitPerCastAndIgnoresDotAndExpires(){var b=Battle(SynergyTraits.Tracker,3);Hit(b,basic:false,cast:10);Hit(b,basic:false,cast:10);Hit(b,basic:false,cast:11,origin:DamageOrigin.Periodic);Assert.That(b.Synergies.TrackerStacks(U(b)),Is.EqualTo(1));Hit(b);Assert.That(b.Synergies.TrackerStacks(U(b)),Is.EqualTo(2));b.CurrentTick=90;Assert.That(b.Synergies.TrackerStacks(U(b)),Is.Zero);}
         [Test] public void TrackerCompletionDamageDoesNotRecursivelyStack(){var b=Battle(SynergyTraits.Tracker,3);Hit(b);Hit(b);int before=b.DamageResultsThisTick.Count;Hit(b);Assert.That(b.Synergies.TrackerStacks(U(b)),Is.EqualTo(3));Assert.That(b.DamageResultsThisTick.Count-before,Is.EqualTo(2));}
@@ -167,6 +201,25 @@ namespace PokeChess.Core.Tests
             var b=RevisionBattle(SynergyTraits.Venom,tier);Hit(b,"r0","e0");Hit(b,"r1","e0",amount:2000);
             Assert.That(b.Synergies.VenomReward(1),Is.EqualTo(samples));
         }
+        [TestCase(2,9,10)][TestCase(4,38,40)][TestCase(6,117,120)]
+        public void VenomLiveCountIncludesEachEarnedSampleWithoutDoubleCounting(int tier,int start,int total)
+        {
+            var battle=RevisionBattle(SynergyTraits.Venom,tier,start);
+            Assert.That(battle.Synergies.VenomSampleCount(1),Is.EqualTo(start));
+            Hit(battle,"r0","e0",amount:2000);
+            Assert.That(battle.Synergies.VenomSampleCount(1),Is.EqualTo(total));
+            Assert.That(battle.Synergies.VenomSampleCount(2),Is.Zero);
+            battle.VenomSamples[1]=total; // Settlement/public progress may arrive while the combat snapshot remains visible.
+            Assert.That(battle.Synergies.VenomSampleCount(1),Is.EqualTo(total));
+        }
+        [Test] public void VenomLiveCountDoesNotPreAwardMinimumRoundReward()
+        {
+            var battle=RevisionBattle(SynergyTraits.Venom,2,9);
+            Hit(battle,"r0","e0");Assert.That(battle.Synergies.VenomReward(1),Is.EqualTo(1));
+            Assert.That(battle.Synergies.VenomSampleCount(1),Is.EqualTo(9));
+            Hit(battle,"r1","e0",amount:2000);Assert.That(battle.Synergies.VenomSampleCount(1),Is.EqualTo(10));
+            Assert.That(battle.Synergies.VenomResearch(1),Is.Zero);
+        }
         [Test] public void VenomTransferIsLimitedAndDealsNoInitialDamage() {
             var b=RevisionBattle(SynergyTraits.Venom,6);Hit(b,"r0","e0",amount:2000);
             Assert.That(b.Synergies.IsContaminated(U(b,"e1")),Is.True);
@@ -246,6 +299,58 @@ namespace PokeChess.Core.Tests
             b.CurrentTick=150;b.Synergies.OnSkillCompleted(e);Assert.That(e.CurrentHP,Is.EqualTo(hp-50));
         }
 
+        private static BattleState StarterBattle(int count)
+        {
+            var definitions=new[]{Def("bulbasaur"),Def("charmander"),Def("squirtle")}.Take(count)
+                .Concat(new[]{Def("ally"),Def("enemy0"),Def("enemy1")}).ToArray();
+            var catalog=new PokemonCatalog(definitions);
+            var setups=definitions.Select((d,i)=>new BattleUnitSetup(catalog.CreateUnit(d.Id,d.Id,d.Id.StartsWith("enemy")?"p2":"p1",UnitRank.One,0,UnitPlacement.Unplaced),
+                d.Id.StartsWith("enemy")?2:1,new BoardPosition(i,0)));
+            var battle=BattleStateFactory.Create("starter",1,1,30,catalog,setups);battle.Synergies.Initialize();return battle;
+        }
+        private static void StarterHit(BattleState battle,string source,string target,float amount)
+            => new DamageProcessor().Apply(battle,new DamageRequest(source,target,amount,DamageType.True));
+
+        [TestCase(1,0)][TestCase(2,15)][TestCase(3,15)]
+        public void StarterManaRequiresTwoFamiliesAndTakedownParticipation(int count,int energy)
+        {
+            var battle=StarterBattle(count);StarterHit(battle,"bulbasaur","enemy0",10);
+            StarterHit(battle,"ally","enemy0",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentEnergy,Is.EqualTo(energy));
+            if(count>=2)Assert.That(U(battle,"charmander").CurrentEnergy,Is.Zero);
+            StarterHit(battle,"ally","enemy1",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentEnergy,Is.EqualTo(energy));
+        }
+        [Test] public void StarterThreeHealsLowestCurrentHealthOncePerDefeatedEnemy()
+        {
+            var battle=StarterBattle(3);U(battle,"bulbasaur").SetVitals(300,0);
+            U(battle,"charmander").AddRoundStats(3000,0);U(battle,"charmander").SetVitals(500,0);
+            StarterHit(battle,"bulbasaur","enemy0",10);StarterHit(battle,"charmander","enemy0",10);
+            StarterHit(battle,"ally","enemy0",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentHP,Is.EqualTo(400));
+            Assert.That(U(battle,"charmander").CurrentHP,Is.EqualTo(500));
+            Assert.That(U(battle,"bulbasaur").CurrentEnergy,Is.EqualTo(15));Assert.That(U(battle,"charmander").CurrentEnergy,Is.EqualTo(15));
+            Assert.That(U(battle,"squirtle").CurrentEnergy,Is.Zero);
+            Assert.That(battle.Synergies.EventsThisTick.Count(e=>e.TraitId=="starter"&&e.Detail=="HEAL"),Is.EqualTo(1));
+            StarterHit(battle,"squirtle","enemy1",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentHP,Is.EqualTo(500));Assert.That(U(battle,"squirtle").CurrentEnergy,Is.EqualTo(15));
+        }
+        [Test] public void StarterTwoDoesNotHealAndThreeCannotResurrect()
+        {
+            var battle=StarterBattle(2);U(battle,"bulbasaur").SetVitals(300,0);StarterHit(battle,"bulbasaur","enemy0",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentHP,Is.EqualTo(300));
+            battle=StarterBattle(3);U(battle,"bulbasaur").SetVitals(0,0);U(battle,"charmander").SetVitals(950,0);
+            StarterHit(battle,"squirtle","enemy0",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentHP,Is.Zero);Assert.That(U(battle,"charmander").CurrentHP,Is.EqualTo(1000));
+        }
+        [Test] public void StarterManaCapsWithoutReducingExistingOverflow()
+        {
+            var battle=StarterBattle(2);U(battle,"bulbasaur").SetVitals(1000,95);StarterHit(battle,"bulbasaur","enemy0",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentEnergy,Is.EqualTo(100));
+            U(battle,"bulbasaur").SetVitals(1000,120);StarterHit(battle,"bulbasaur","enemy1",2000);
+            Assert.That(U(battle,"bulbasaur").CurrentEnergy,Is.EqualTo(120));
+        }
+
         private static BattleState EarthDefenseBattle(int tier, float allyHP = 2000)
         {
             var ally = new PokemonDefinition("ally", "ally", 1,
@@ -267,70 +372,42 @@ namespace PokeChess.Core.Tests
             return battle;
         }
 
-        [Test] public void EarthRangedDefenseUsesImpactDistanceAndDirectDamage()
+        [TestCase(2, 2000)][TestCase(4, 2200)][TestCase(6, 2200)]
+        public void EarthStartBonusesStackAndShieldExpiresWithoutRefresh(int tier, float hp)
         {
-            var battle = EarthDefenseBattle(2);
-            Assert.That(Hit(battle,"enemy","ally",amount:300).PostMitigationDamage, Is.EqualTo(264));
-            Assert.That(Hit(battle,"enemy","ally",basic:false,amount:300).PostMitigationDamage, Is.EqualTo(264));
-            Assert.That(Hit(battle,"enemy","ally",basic:false,origin:DamageOrigin.Periodic,amount:300).PostMitigationDamage, Is.EqualTo(300));
-            battle.TryMoveUnit("enemy",new BoardPosition(3,3));
-            Assert.That(Hit(battle,"enemy","ally",amount:300).PostMitigationDamage, Is.EqualTo(300));
-            battle.TryMoveUnit("enemy",new BoardPosition(3,5));
-            Assert.That(battle.TryMoveUnit("ally",new BoardPosition(2,0)), Is.EqualTo(BoardOperationResult.Success));
-            Assert.That(Hit(battle,"enemy","ally",amount:300).PostMitigationDamage, Is.EqualTo(300));
-            Assert.That(battle.Synergies.EventsThisTick.Count(e=>e.Detail=="RANGED_GUARD"), Is.EqualTo(2));
-        }
-
-        [Test] public void EarthFirstShieldAbsorbsTriggeringHitAndDoesNotRefreshAfterExpiry()
-        {
-            var battle = EarthDefenseBattle(4);
-            Assert.That(Hit(battle,"enemy","ally",amount:0).ShieldAbsorbed, Is.Zero);
-            Assert.That(battle.Shields.Active, Is.Empty);
-            var first = Hit(battle,"enemy","ally",amount:300);
-            Assert.That(first.PostMitigationDamage, Is.EqualTo(264));
-            Assert.That(first.ShieldAbsorbed, Is.EqualTo(160));
-            Assert.That(first.AppliedDamage, Is.EqualTo(104));
-            Assert.That(battle.Shields.EventsThisTick.Single(e=>e.Kind==ShieldEventKind.Applied).Shield.ExpireTick, Is.EqualTo(120));
-            battle.CurrentTick = 120;
-            Assert.That(Hit(battle,"enemy","ally",amount:100).ShieldAbsorbed, Is.Zero);
-        }
-
-        [TestCase(2000,240)][TestCase(3000,250)]
-        public void EarthFortressPulsesOnScheduleAndShieldsEachAdjacentAllyOnce(float hp, float shield)
-        {
-            var battle = EarthDefenseBattle(6, hp);
+            var battle = EarthDefenseBattle(tier);
             var ally = U(battle,"ally");
-            foreach (int tick in new[]{0, 119, 120, 240, 359, 360, 600})
-            {
-                battle.CurrentTick = tick;
-                battle.Synergies.BeginTick();
-                battle.Shields.BeginTick();
-                battle.Synergies.Advance();
-                bool pulse = tick == 120 || tick == 360 || tick == 600;
-                Assert.That(battle.Synergies.EventsThisTick.Count(e=>e.Detail=="protective-pulse"), Is.EqualTo(pulse?2:0));
-                Assert.That(ally.CurrentShield, Is.EqualTo(pulse?shield:0).Within(.001));
-                if (pulse)
-                    Assert.That(battle.Shields.Active.Single(e=>e.TargetId=="ally").ExpireTick, Is.EqualTo(tick+120));
-            }
-            Assert.That(U(battle,"enemy").CurrentHP, Is.EqualTo(1000));
-            Assert.That(battle.StatusEffects.Active, Is.Empty);
-            var hit = Hit(battle,"enemy","ally",basic:false,origin:DamageOrigin.Periodic,amount:100);
-            Assert.That(hit.PostMitigationDamage, Is.EqualTo(85));
-            Assert.That(battle.Shields.Active.Where(e=>e.TargetId=="ally").Select(e=>e.Group),
-                Is.EquivalentTo(new[]{SynergyTraits.Earth,SynergySystem.EarthPulseShieldGroup}));
-            Assert.That(ally.CurrentShield, Is.EqualTo(shield+160-85).Within(.001));
+            Assert.That(ally.Stats.MaxHP, Is.EqualTo(hp).Within(.001));
+            Assert.That(ally.CurrentHP, Is.EqualTo(hp).Within(.001));
+            Assert.That(ally.CurrentShield, Is.EqualTo(160));
+            Assert.That(battle.Shields.Active.Single(e=>e.TargetId=="ally").ExpireTick, Is.EqualTo(180));
+            battle.CurrentTick = 179;
+            battle.Shields.BeginTick();
+            Assert.That(ally.CurrentShield, Is.EqualTo(160));
+            battle.CurrentTick = 180;
+            battle.Shields.BeginTick();
+            Assert.That(ally.CurrentShield, Is.Zero);
+            Hit(battle,"enemy","ally",amount:100);
+            battle.CurrentTick = 600;
+            battle.Synergies.Advance();
+            Assert.That(ally.CurrentShield, Is.Zero);
+            Assert.That(battle.Synergies.EventsThisTick.Any(e=>e.Detail=="protective-pulse"), Is.False);
         }
 
-        [Test] public void EarthFortressReplacesRangedReductionAndKeepsTrueDamagePolicy()
+        [TestCase(2, 100)][TestCase(4, 100)][TestCase(6, 90)]
+        public void EarthBonusesFollowStartingRecipientAfterMovement(int tier, float damage)
         {
-            var battle = EarthDefenseBattle(6);
-            Assert.That(Hit(battle,"enemy","ally",amount:300).PostMitigationDamage, Is.EqualTo(255));
-            battle.TryMoveUnit("enemy",new BoardPosition(3,3));
-            Assert.That(Hit(battle,"enemy","ally",amount:300).PostMitigationDamage, Is.EqualTo(255));
+            var battle = EarthDefenseBattle(tier);
+            Assert.That(battle.TryMoveUnit("ally",new BoardPosition(6,0)), Is.EqualTo(BoardOperationResult.Success));
+            Assert.That(U(battle,"ally").CurrentShield, Is.EqualTo(160));
+            Assert.That(Hit(battle,"enemy","ally",amount:100).PostMitigationDamage, Is.EqualTo(damage).Within(.001));
             var trueHit = new DamageProcessor().Apply(battle,new DamageRequest("enemy","ally",100,DamageType.True,origin:DamageOrigin.Debuff));
-            Assert.That(trueHit.PostMitigationDamage, Is.EqualTo(100));
-            battle.TryMoveUnit("ally",new BoardPosition(6,0));
-            Assert.That(Hit(battle,"enemy","ally",amount:100).PostMitigationDamage, Is.EqualTo(100));
+            Assert.That(trueHit.PostMitigationDamage, Is.EqualTo(damage).Within(.001));
+            Assert.That(Hit(battle,"enemy","ally",basic:false,origin:DamageOrigin.Periodic,amount:100).PostMitigationDamage, Is.EqualTo(damage).Within(.001));
+            Assert.That(U(battle,"member0").CurrentShield, Is.Zero);
+            battle.TryMoveUnit("member0",new BoardPosition(3,2));
+            Assert.That(U(battle,"member0").CurrentShield, Is.Zero);
+            Assert.That(Hit(battle,"enemy","member0",amount:100).PostMitigationDamage, Is.EqualTo(100).Within(.001));
         }
     }
 }

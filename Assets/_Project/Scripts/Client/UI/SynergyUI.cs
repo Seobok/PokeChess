@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -169,12 +169,12 @@ namespace PokeChess.Client.UI
             int earthTier=counts.First(c=>c.TraitId==SynergyTraits.Earth).Tier;
             var preview=Match.Phase==MatchPhase.Preparation&&earthTier>0?SynergyPreparation.PreparationRocks(ViewedPlayer,catalog):Enumerable.Empty<BoardPosition>();
             preview = preview.ToArray();
-            RenderEarthPreparation(preview);
+            RenderEarthPreparation(preview, earthTier);
             RenderNatureGuardian(Match.Phase == MatchPhase.Preparation ? SynergyPreparation.PreparationGuardian(ViewedPlayer, catalog) : null,
                 counts.First(count => count.TraitId == SynergyTraits.Nature).Tier);
             RenderPreparationSummonEffects(Match.Phase == MatchPhase.Preparation, Match.MatchId + ":" + localViewedPlayerId, preview, natureGuardianTile, natureGuardianTier);
             int venomTier=counts.First(c=>c.TraitId==SynergyTraits.Venom).Tier;
-            int samples=ViewedPlayer.Synergy.VenomSamples;
+            int samples=own!=null?battle.Synergies.VenomSampleCount(own.TeamId):ViewedPlayer.Synergy.VenomSamples;
             int research=own!=null?battle.Synergies.VenomResearch(own.TeamId):venomTier>=6&&samples>=120?120:venomTier>=4&&samples>=40?40:venomTier>=2&&samples>=10?10:0;
             venomHud.Show(Match, localViewedPlayerId, Match.RoundNumber, battle != null ? research : 0,
                 Match.Phase == MatchPhase.Result && ViewedPlayer.Synergy.VenomMinimumRewardRound == Match.RoundNumber);
@@ -220,7 +220,7 @@ namespace PokeChess.Client.UI
                 ?(progress.rockTiles??Array.Empty<CombatCellView>()).Where(p=>!progress.units.Any(u=>u.placement==PlacementKind.Board&&u.column==p.column&&u.row==p.row)).Take(earthTier>=4?2:1).Select(p=>new BoardPosition(p.column,p.row))
                 :Enumerable.Empty<BoardPosition>();
             preview = preview.ToArray();
-            RenderEarthPreparation(preview);
+            RenderEarthPreparation(preview, earthTier);
             var guardian = pub.phase == MatchPhase.Preparation && progress != null &&
                 onlineService.WatchingPlayerId == progress.playerId ? progress.guardianTile : null;
             RenderNatureGuardian(guardian != null ? new BoardPosition(guardian.column, guardian.row) : (BoardPosition?)null,
@@ -241,7 +241,7 @@ namespace PokeChess.Client.UI
                 progress?.adversitySettlement ?? default, progress?.adversityChoice ?? default);
             bool showStacks = ownView && pub.phase != MatchPhase.Finished;
             int venomTier = counts.First(c => c.TraitId == SynergyTraits.Venom).Tier;
-            int samples = progress?.venomSamples ?? 0;
+            int samples = combat && member != null ? member.venomSamples : progress?.venomSamples ?? 0;
             int research = combat ? member?.venomResearch ?? 0 :
                 venomTier >= 6 && samples >= 120 ? 120 : venomTier >= 4 && samples >= 40 ? 40 : venomTier >= 2 && samples >= 10 ? 10 : 0;
             RenderSynergyStacks(showStacks && venomTier > 0, samples, research,

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -150,6 +150,7 @@ namespace PokeChess.Client.UI
         {
             var sprite = unitPortraitLibrary?.Find(species, "Idle")?.Frames?.FirstOrDefault();
             image.sprite = sprite;
+            UiPrefab.ApplySlicing(image);
             image.enabled = sprite != null;
             if (sprite == null) return;
             if (!unitPortraitVisibleBounds.TryGetValue(sprite, out var bounds))

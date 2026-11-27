@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokeChess.Core.Board;
@@ -233,6 +233,13 @@ namespace PokeChess.Core.Battle
             Reservations.Release(unit.UnitInstanceId);
         }
         internal void EndBattle(){foreach(var p in active.ToArray())Cancel(p.Unit);}
-        private void Record(CombatMovementSnapshot movement,CombatMovementEventKind kind)=>events.Add(new CombatMovementEvent(movement,kind,battle.CurrentTick));
+        private void Record(CombatMovementSnapshot movement,CombatMovementEventKind kind)
+        {
+            events.Add(new CombatMovementEvent(movement,kind,battle.CurrentTick));
+            // Forced landing cells are already reserved before the passenger chooses its exit.
+            if (kind == CombatMovementEventKind.Started &&
+                (movement.Kind == SkillMovementKind.Knockback || movement.Kind == SkillMovementKind.Throw))
+                battle.Synergies.Disembark(battle.Units.First(u => u.UnitInstanceId == movement.UnitId));
+        }
     }
 }

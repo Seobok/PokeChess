@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 namespace PokeChess.Core.Battle {
 // v1.2 origin tuning. Values remain prototype balance assumptions.
 public sealed class SynergyOriginTuning {
@@ -30,7 +30,7 @@ public float WorldTreeDamage { get; }
 public float GuardianHeal { get; }
 public float WorldTreeRootSeconds { get; }
 public float VenomReactionDamage { get; }
-public SynergyOriginTuning(float flameDamage=25f,float flameExplosion=60f,float stormDamage=80f,float torrentShield=60f,float torrentDamage=30f,float ultimateWaveDamage=120f,float earthReduction=.12f,float earthShield=160f,float earthPulseSeconds=8f,float earthFortressReduction=.15f,float earthPulseHealthFraction=.12f,float guardianHP=700f,float worldTreeHP=7500f,float guardianAttack=35f,float worldTreeAttack=135f,float guardianPeriod=8f,float guardianDamage=250f,float worldTreeDamage=150f,float guardianHeal=0.15f,float worldTreeRootSeconds=2f,float venomReactionDamage=50f,float earthPulseShieldCap=250f,float earthFirstPulseSeconds=4f) {
+public SynergyOriginTuning(float flameDamage=25f,float flameExplosion=60f,float stormDamage=80f,float torrentShield=60f,float torrentDamage=30f,float ultimateWaveDamage=120f,float earthReduction=.12f,float earthShield=160f,float earthPulseSeconds=8f,float earthFortressReduction=.10f,float earthPulseHealthFraction=.12f,float guardianHP=700f,float worldTreeHP=7500f,float guardianAttack=35f,float worldTreeAttack=135f,float guardianPeriod=8f,float guardianDamage=250f,float worldTreeDamage=150f,float guardianHeal=0.15f,float worldTreeRootSeconds=2f,float venomReactionDamage=50f,float earthPulseShieldCap=250f,float earthFirstPulseSeconds=4f) {
 DamageCalculator.Validate(flameDamage,true);FlameDamage=flameDamage;
 DamageCalculator.Validate(flameExplosion,true);FlameExplosion=flameExplosion;
 DamageCalculator.Validate(stormDamage,true);StormDamage=stormDamage;

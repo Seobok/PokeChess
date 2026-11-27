@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,7 +20,22 @@ namespace PokeChess.Client.UI
                 label.font = uiFont;
                 UiFont.EnsureLineHeight(label);
             }
+            foreach (var image in instance.GetComponentsInChildren<UnityEngine.UI.Image>(true))
+                ApplySlicing(image);
             return instance;
+        }
+
+        public static void ApplySlicing(UnityEngine.UI.Image image)
+        {
+            if (image.sprite == null || image.sprite.border == Vector4.zero ||
+                image.type == UnityEngine.UI.Image.Type.Filled) return;
+            image.type = UnityEngine.UI.Image.Type.Sliced;
+            // Honor authored scales (for example the large tooltip atlases).
+            if (!Mathf.Approximately(image.pixelsPerUnitMultiplier, 1)) return;
+            var size = image.rectTransform.rect.size;
+            image.pixelsPerUnitMultiplier = Mathf.Max(1, Mathf.Min(
+                image.sprite.rect.width / Mathf.Max(1, size.x),
+                image.sprite.rect.height / Mathf.Max(1, size.y)));
         }
 
         public static T Get<T>(Transform root, string path) where T : Component

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using PokeChess.Core.Pokemon;
@@ -32,6 +32,7 @@ namespace PokeChess.Client.UI
         {
             var image = HudImage(name, parent, size, position, Color.white);
             image.sprite = sprite;
+            UiPrefab.ApplySlicing(image);
             return image;
         }
 
