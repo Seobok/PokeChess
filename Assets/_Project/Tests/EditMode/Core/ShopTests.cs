@@ -113,7 +113,7 @@ namespace PokeChess.Core.Tests
             var before=Snapshot(p);Assert.Throws<InvalidOperationException>(()=>system.Reroll(m,"p1"));Assert.That(Snapshot(p),Is.EqualTo(before));
         }
         [Test]
-        public void PersistentLockSkipsAutomaticRefreshAndAllowsManualReroll()
+        public void LockSkipsOneAutomaticRefreshThenUnlocksAndAllowsManualReroll()
         {
             var m=Prepared();var p=m.GetPlayer("p1");var system=new ShopSystem(Source());system.RefreshForRound(m,"p1");
             ulong state=p.Shop.RandomState;long draws=p.Shop.RandomDrawCount;int gold=p.Gold;
@@ -122,9 +122,10 @@ namespace PokeChess.Core.Tests
             var old=p.Shop.Slots;NextRound(m);
             Assert.That(system.RefreshForRound(m,"p1"),Is.False);Assert.That(p.Shop.Slots,Is.SameAs(old));
             Assert.That(p.Shop.RandomDrawCount,Is.EqualTo(draws));Assert.That(p.Shop.LastRefreshRound,Is.EqualTo(2));
+            Assert.That(p.Shop.IsLocked,Is.False);Assert.That(p.Shop.RandomState,Is.EqualTo(state));Assert.That(p.Gold,Is.EqualTo(gold));
             var before=Snapshot(p);Assert.Throws<InvalidOperationException>(()=>system.RefreshForRound(m,"p1"));Assert.That(Snapshot(p),Is.EqualTo(before));
-            system.Reroll(m,"p1");Assert.That(p.Shop.IsLocked,Is.True);Assert.That(p.Gold,Is.EqualTo(gold-2));
-            system.SetLocked(m,"p1",false);NextRound(m);Assert.That(system.RefreshForRound(m,"p1"),Is.True);
+            system.Reroll(m,"p1");Assert.That(p.Shop.IsLocked,Is.False);Assert.That(p.Gold,Is.EqualTo(gold-2));
+            NextRound(m);Assert.That(system.RefreshForRound(m,"p1"),Is.True);
         }
         [Test]
         public void RefreshDuplicateAndSkippedRoundsAreRejectedWithoutChanges()

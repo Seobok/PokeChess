@@ -73,7 +73,11 @@ namespace PokeChess.Core.Match
             long revision=checked(Revision+1);
             slots=Array.AsReadOnly(replacement);Revision=revision;
         }
-        internal void RecordLockedRefresh(int roundNumber) => LastRefreshRound = roundNumber;
+        internal void RecordLockedRefresh(int roundNumber)
+        {
+            LastRefreshRound = roundNumber;
+            IsLocked = false;
+        }
         internal void Apply(ReadOnlyCollection<ShopSlot> replacement, ulong randomState, long drawCount, int? roundNumber, long revision)
         {
             slots = replacement;

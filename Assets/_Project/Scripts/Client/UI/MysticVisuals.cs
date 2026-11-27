@@ -55,6 +55,9 @@ namespace PokeChess.Client.UI
         {
             art ??= Resources.Load<MysticVisuals>("MysticVisuals");
             if (art == null) return;
+            // Network snapshots can represent an unset origin as an empty string.
+            // Only show the card decoration when an actual origin glyph exists.
+            var favoredGlyph = Glyph(favoredOrigin);
             bool hasFree = SynergyProgress.IsFreeRerollAvailable(freeRound, round);
             bool canReroll = phase == MatchPhase.Preparation || phase == MatchPhase.Combat;
             bool newScope = !Equals(match, matchKey) || player != playerId;
@@ -77,7 +80,7 @@ namespace PokeChess.Client.UI
                 {
                     rerollClip = art.spent;
                     rerollAt = now;
-                    if (favoredOrigin != null) revealAt = now;
+                    if (favoredGlyph != null) revealAt = now;
                 }
                 else if (hasFree && !ready)
                 {
@@ -101,8 +104,8 @@ namespace PokeChess.Client.UI
                 Static(slots[i], i < total ? art.progressSlot[i < filled ? 1 : 0] : null);
             Static(token, hasFree && canReroll ? art.freeToken[0] : null);
             Static(glyph, phase == MatchPhase.Preparation && (tier >= 6 || lastTier >= 6) ? Glyph(prophecy) : null);
-            Static(badge, favoredOrigin != null ? art.cardBadge[0] : null);
-            Static(badgeGlyph, Glyph(favoredOrigin));
+            Static(badge, favoredGlyph != null ? art.cardBadge[0] : null);
+            Static(badgeGlyph, favoredGlyph);
             Draw(tick, total > 0 ? art.progressTick : null, now - tickAt);
             Draw(reroll, canReroll ? rerollClip : null, now - rerollAt);
             Draw(selection, glyph.enabled ? art.select : null, now - selectionAt);
@@ -111,6 +114,7 @@ namespace PokeChess.Client.UI
 
         private Sprite Glyph(string origin)
         {
+            if (string.IsNullOrWhiteSpace(origin)) return null;
             for (int i = 0; i < SynergyTraits.Origins.Count; i++)
                 if (SynergyTraits.Origins[i] == origin) return art.originGlyphs[i];
             return null;

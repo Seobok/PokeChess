@@ -192,6 +192,8 @@ namespace PokeChess.Client.UI
             ButtonText(xpButton, max ? "XP 최대" : $"XP 구매\n{levels.PurchaseGoldCost}G");
             ButtonText(rerollButton, freeReroll ? "0G" : $"{shopRules.RerollGoldCost}G");
             ButtonText(lockButton, "");
+            lockButton.GetComponent<UnityEngine.UI.Image>().color = locked
+                ? new Color32(110, 110, 110, 255) : Color.white;
             shopLockIcon.rectTransform.anchoredPosition = Vector2.zero;
             shopLockIcon.color = shopLockedIcon.color = Color.white;
             shopLockIcon.enabled = !locked;

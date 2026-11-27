@@ -20,7 +20,7 @@ namespace PokeChess.Client.UI
             public Vector2 FirstPosition;
             public Sprite DefaultSprite;
             public UnityEngine.UI.Image Background, Avatar, Arrow, Track, HP;
-            public UnityEngine.UI.Text Name, State, Damage, Status;
+            public UnityEngine.UI.Text Name, State, Health, Damage, Status;
             public UnityEngine.UI.Button Button;
             public int PreviousHP, DamageValue;
             public float DamageUntil;
@@ -68,6 +68,7 @@ namespace PokeChess.Client.UI
                 Arrow = UiPrefab.Get<UnityEngine.UI.Image>(rect, "WatchArrow"),
                 Name = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Name"),
                 State = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Status"),
+                Health = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Health"),
                 Damage = UiPrefab.Get<UnityEngine.UI.Text>(rect, "Damage"),
                 Status = UiPrefab.Get<UnityEngine.UI.Text>(rect, "MatchStatus")
             };
@@ -75,7 +76,7 @@ namespace PokeChess.Client.UI
             return row;
         }
 
-        private void RenderProfileRow(string id, string name, int index, int avatarIndex, int hp, int maxHP, int placement,
+        private void RenderProfileRow(string id, string name, int index, int avatarIndex, int hp, int maxHP, int level, int placement,
             bool eliminated, bool selected, bool selectable, string status)
         {
             if (!hudProfiles.TryGetValue(id, out var row))
@@ -87,7 +88,9 @@ namespace PokeChess.Client.UI
             row.Arrow.gameObject.SetActive(selected && !eliminated);
             row.Button.interactable = selectable && !eliminated && !selected;
             row.Name.text = name;
-            row.State.text = eliminated ? (placement > 0 ? $"{placement}위 탈락" : "탈락") : $"{hp} HP";
+            row.State.text = eliminated ? (placement > 0 ? $"{placement}위 탈락" : "탈락") : $"Lv. {level}";
+            row.Health.text = $"{hp} HP";
+            row.Health.gameObject.SetActive(!eliminated);
             row.HP.fillAmount = Mathf.Clamp01(hp / (float)Mathf.Max(1, maxHP));
             row.Status.text = status;
             row.Track.gameObject.SetActive(!eliminated);
@@ -139,7 +142,7 @@ namespace PokeChess.Client.UI
                 var player = ordered[i];
                 string status = player.PlayerId == opponent ? "VS" : "";
                 RenderProfileRow(player.PlayerId, player.PlayerId == "p1" ? "나" : player.PlayerId.ToUpperInvariant(),
-                    i, System.Array.IndexOf(roster, player), player.HP, player.Rules.StartingHP, player.FinalPlacement ?? 0,
+                    i, System.Array.IndexOf(roster, player), player.HP, player.Rules.StartingHP, player.Level, player.FinalPlacement ?? 0,
                     player.IsEliminated, player.PlayerId == localViewedPlayerId, Match.Phase != MatchPhase.Finished, status);
             }
             RefreshCombatDamageSidebar();
@@ -163,7 +166,7 @@ namespace PokeChess.Client.UI
                 var player = ordered[i];
                 string status = player.disconnected ? "연결 끊김" : player.id == opponent ? "VS" : "";
                 RenderProfileRow(player.id, player.id == owner.playerId ? "나" : PlayerLabel(player.id, owner.playerId),
-                    i, System.Array.IndexOf(roster, player), player.hp, player.maxHP, player.placement, player.eliminated,
+                    i, System.Array.IndexOf(roster, player), player.hp, player.maxHP, player.level, player.placement, player.eliminated,
                     player.id == watched, synchronized && match.phase != MatchPhase.Finished, status);
             }
             RefreshCombatDamageSidebar();
